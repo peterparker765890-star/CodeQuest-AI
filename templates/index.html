@@ -1,1076 +1,1303 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>CodeQuest AI</title>
 
 <style>
-
 *{
     box-sizing:border-box;
     margin:0;
     padding:0;
 }
 
+:root{
+    --bg:#090b14;
+    --card:#111525;
+    --card2:#171b2d;
+    --border:#292f49;
+    --text:#f4f6ff;
+    --muted:#9da5c3;
+    --purple:#8b5cf6;
+    --purple2:#a78bfa;
+    --blue:#3b82f6;
+    --green:#22c55e;
+    --orange:#f59e0b;
+    --red:#ef4444;
+    --cyan:#06b6d4;
+}
+
 body{
     font-family:Arial,Helvetica,sans-serif;
     background:
         radial-gradient(circle at top right,#25104d 0%,transparent 35%),
-        radial-gradient(circle at bottom left,#101b3d 0%,transparent 35%),
-        #07070b;
-    color:white;
+        radial-gradient(circle at bottom left,#071c36 0%,transparent 35%),
+        var(--bg);
+    color:var(--text);
     min-height:100vh;
 }
 
 button,
-textarea,
 input,
-select{
-    font-family:inherit;
+textarea{
+    font:inherit;
 }
 
 button{
-    -webkit-tap-highlight-color:transparent;
+    cursor:pointer;
 }
 
-header{
-    padding:18px 7%;
+.hidden{
+    display:none !important;
+}
+
+/* =========================
+   LOGIN
+========================= */
+
+#loginScreen{
+    min-height:100vh;
     display:flex;
-    justify-content:space-between;
+    justify-content:center;
     align-items:center;
-    border-bottom:1px solid #25252e;
-    position:sticky;
-    top:0;
-    background:rgba(7,7,11,.94);
-    backdrop-filter:blur(15px);
-    z-index:50;
+    padding:20px;
+}
+
+.login-card{
+    width:100%;
+    max-width:460px;
+    background:rgba(17,21,37,.95);
+    border:1px solid var(--border);
+    border-radius:28px;
+    padding:38px 25px;
+    text-align:center;
+    box-shadow:0 25px 80px rgba(0,0,0,.45);
 }
 
 .logo{
-    font-size:22px;
-    font-weight:900;
+    width:78px;
+    height:78px;
+    margin:0 auto 20px;
+    border-radius:22px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:38px;
+    background:linear-gradient(135deg,#7c3aed,#2563eb);
+    box-shadow:0 12px 35px rgba(124,58,237,.35);
 }
 
-.logo span{
-    color:#a855f7;
+.login-card h1{
+    font-size:34px;
+    margin-bottom:8px;
 }
 
-.status{
-    font-size:12px;
-    color:#4ade80;
+.login-card h1 span{
+    color:var(--purple2);
+}
+
+.login-subtitle{
+    color:var(--muted);
+    margin-bottom:28px;
+    line-height:1.6;
+}
+
+.google-btn{
+    width:100%;
+    border:1px solid #d5d7df;
+    background:#fff;
+    color:#222;
+    padding:14px 18px;
+    border-radius:13px;
+    font-weight:bold;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:12px;
+    transition:.2s;
+}
+
+.google-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 25px rgba(255,255,255,.12);
+}
+
+.google-icon{
+    width:22px;
+    height:22px;
+}
+
+.login-status{
+    margin-top:16px;
+    color:var(--muted);
+    font-size:13px;
+}
+
+/* =========================
+   APP
+========================= */
+
+#app{
+    min-height:100vh;
+}
+
+.navbar{
+    position:sticky;
+    top:0;
+    z-index:100;
+    background:rgba(9,11,20,.9);
+    backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--border);
+}
+
+.nav-inner{
+    max-width:1250px;
+    margin:auto;
+    min-height:72px;
+    padding:12px 18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    font-weight:bold;
+    font-size:20px;
+}
+
+.brand-icon{
+    width:42px;
+    height:42px;
+    border-radius:13px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(135deg,#7c3aed,#2563eb);
+}
+
+.user-area{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.user-photo{
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    object-fit:cover;
+    border:2px solid var(--purple);
+}
+
+.user-name{
+    max-width:150px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    color:#ddd;
+    font-size:14px;
+}
+
+.logout-btn{
+    background:#1b2033;
+    border:1px solid var(--border);
+    color:#ddd;
+    padding:9px 13px;
+    border-radius:9px;
 }
 
 .container{
-    width:86%;
     max-width:1250px;
     margin:auto;
+    padding:25px 18px 60px;
 }
+
+/* =========================
+   HERO
+========================= */
 
 .hero{
-    padding:65px 0 30px;
-}
-
-.hero small{
-    color:#a855f7;
-    font-weight:bold;
-    letter-spacing:2px;
+    padding:35px 0 30px;
 }
 
 .hero h1{
-    font-size:clamp(38px,7vw,72px);
-    line-height:1;
-    margin:15px 0;
+    font-size:clamp(30px,6vw,54px);
+    line-height:1.08;
+    margin-bottom:14px;
 }
 
-.gradient{
-    background:linear-gradient(
-        90deg,
-        #a855f7,
-        #ec4899,
-        #6366f1
-    );
+.hero h1 span{
+    background:linear-gradient(90deg,#a78bfa,#60a5fa);
     -webkit-background-clip:text;
-    background-clip:text;
     color:transparent;
 }
 
 .hero p{
+    color:var(--muted);
     max-width:700px;
-    color:#a1a1aa;
-    font-size:17px;
     line-height:1.7;
 }
 
-.player-card{
-    margin:30px 0;
-    padding:25px;
-    border:1px solid #2a2a35;
-    border-radius:22px;
-    background:
-        linear-gradient(
-            135deg,
-            rgba(168,85,247,.16),
-            rgba(30,30,40,.6)
-        );
+.hero-actions{
     display:flex;
-    justify-content:space-between;
-    gap:25px;
     flex-wrap:wrap;
+    gap:12px;
+    margin-top:24px;
 }
 
-.player-title{
-    font-size:12px;
-    color:#a1a1aa;
-    letter-spacing:1px;
+.primary-btn,
+.secondary-btn{
+    border:none;
+    padding:13px 18px;
+    border-radius:12px;
+    font-weight:bold;
 }
 
-.player-level{
+.primary-btn{
+    background:linear-gradient(135deg,#7c3aed,#2563eb);
+    color:white;
+}
+
+.secondary-btn{
+    background:#181d30;
+    color:#ddd;
+    border:1px solid var(--border);
+}
+
+.primary-btn:hover,
+.secondary-btn:hover{
+    transform:translateY(-2px);
+}
+
+/* =========================
+   STATS
+========================= */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+    margin-bottom:30px;
+}
+
+.stat-card{
+    background:linear-gradient(145deg,#12172a,#0e1220);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:20px;
+}
+
+.stat-icon{
+    font-size:23px;
+    margin-bottom:10px;
+}
+
+.stat-value{
     font-size:25px;
     font-weight:bold;
-    margin-top:7px;
 }
 
-.xp{
-    color:#c084fc;
-    margin-top:6px;
+.stat-label{
+    color:var(--muted);
+    font-size:13px;
+    margin-top:5px;
 }
 
-.progress{
-    width:260px;
-    height:9px;
-    background:#27272f;
-    border-radius:10px;
-    margin-top:13px;
-    overflow:hidden;
+/* =========================
+   SECTION
+========================= */
+
+.section{
+    margin-top:35px;
 }
 
-.progress div{
-    height:100%;
-    width:0%;
-    background:linear-gradient(
-        90deg,
-        #a855f7,
-        #ec4899
-    );
-    transition:.4s;
+.section-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    margin-bottom:16px;
 }
 
 .section-title{
-    margin:48px 0 20px;
     font-size:25px;
 }
 
-.features{
+.section-subtitle{
+    color:var(--muted);
+    font-size:13px;
+}
+
+/* =========================
+   COURSE GRID
+========================= */
+
+.course-grid{
     display:grid;
-    grid-template-columns:
-        repeat(auto-fit,minmax(180px,1fr));
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
+}
+
+.course-card{
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(145deg,#12172a,#0f1322);
+    border:1px solid var(--border);
+    border-radius:19px;
+    padding:21px;
+    transition:.25s;
+}
+
+.course-card:hover{
+    transform:translateY(-5px);
+    border-color:#51427c;
+    box-shadow:0 15px 40px rgba(0,0,0,.25);
+}
+
+.course-icon{
+    width:50px;
+    height:50px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:14px;
+    background:#211a3d;
+    font-size:25px;
+    margin-bottom:14px;
+}
+
+.course-card h3{
+    font-size:18px;
+    margin-bottom:7px;
+}
+
+.course-card p{
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.5;
+    min-height:40px;
+}
+
+.course-meta{
+    display:flex;
+    justify-content:space-between;
+    margin-top:17px;
+    color:#aaa;
+    font-size:12px;
+}
+
+.progress-bar{
+    height:7px;
+    border-radius:10px;
+    background:#20253a;
+    overflow:hidden;
+    margin-top:12px;
+}
+
+.progress-fill{
+    height:100%;
+    width:0;
+    border-radius:10px;
+    background:linear-gradient(90deg,#7c3aed,#3b82f6);
+    transition:.3s;
+}
+
+/* =========================
+   FEATURE CARDS
+========================= */
+
+.feature-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
     gap:15px;
 }
 
-.feature{
-    padding:22px;
-    border:1px solid #292933;
+.feature-card{
+    background:linear-gradient(145deg,#14192b,#101423);
+    border:1px solid var(--border);
     border-radius:18px;
-    background:#111116;
-    cursor:pointer;
+    padding:20px;
     transition:.2s;
 }
 
-.feature:hover{
+.feature-card:hover{
     transform:translateY(-4px);
-    border-color:#a855f7;
+    border-color:#51427c;
 }
 
 .feature-icon{
     font-size:30px;
+    margin-bottom:13px;
 }
 
-.feature h3{
-    margin-top:12px;
+.feature-card h3{
+    margin-bottom:7px;
 }
 
-.feature p{
-    color:#92929c;
-    font-size:13px;
-    margin-top:7px;
+.feature-card p{
+    color:var(--muted);
     line-height:1.5;
+    font-size:13px;
 }
 
-.courses{
-    display:grid;
-    grid-template-columns:
-        repeat(auto-fit,minmax(260px,1fr));
-    gap:18px;
-}
-
-.course{
-    border:1px solid #292933;
-    border-radius:20px;
-    padding:23px;
-    background:rgba(17,17,22,.94);
-    transition:.2s;
-}
-
-.course:hover{
-    transform:translateY(-5px);
-    border-color:#7c3aed;
-}
-
-.course-icon{
-    font-size:35px;
-}
-
-.course h3{
-    margin:12px 0 6px;
-}
-
-.course p{
-    color:#92929c;
-    font-size:14px;
-    line-height:1.6;
-}
-
-.level{
-    display:inline-block;
-    margin-top:12px;
-    padding:5px 9px;
-    border-radius:20px;
-    background:#211536;
-    color:#c084fc;
-    font-size:11px;
-}
-
-.course button,
-.primary{
-    border:none;
-    margin-top:18px;
-    padding:12px 17px;
-    border-radius:10px;
-    background:linear-gradient(
-        90deg,
-        #7c3aed,
-        #a855f7
-    );
-    color:white;
-    font-weight:bold;
-    cursor:pointer;
-}
-
-.course button:hover,
-.primary:hover{
-    opacity:.9;
-    transform:translateY(-1px);
-}
-
-.secondary{
-    border:1px solid #3b3b49;
-    padding:11px 16px;
-    border-radius:10px;
-    background:#17171d;
-    color:white;
-    cursor:pointer;
-    margin-top:12px;
-}
+/* =========================
+   MODAL
+========================= */
 
 .modal{
-    display:none;
     position:fixed;
     inset:0;
-    background:rgba(0,0,0,.84);
-    z-index:100;
+    z-index:200;
+    background:rgba(0,0,0,.72);
+    backdrop-filter:blur(7px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
     padding:15px;
-    overflow-y:auto;
 }
 
 .modal-box{
+    width:100%;
     max-width:900px;
-    margin:25px auto;
-    background:#111116;
-    border:1px solid #343442;
+    max-height:92vh;
+    overflow-y:auto;
+    background:#0f1322;
+    border:1px solid var(--border);
     border-radius:22px;
-    padding:30px;
-    min-height:160px;
+    padding:24px;
+    position:relative;
 }
 
-.close{
-    float:right;
-    font-size:28px;
-    cursor:pointer;
-    color:#aaa;
-}
-
-.close:hover{
+.close-btn{
+    position:absolute;
+    top:14px;
+    right:14px;
+    width:38px;
+    height:38px;
+    border-radius:10px;
+    background:#1c2134;
     color:white;
+    border:1px solid var(--border);
+    font-size:20px;
 }
 
-.course-header{
-    padding:20px;
-    border:1px solid #292933;
-    border-radius:16px;
-    background:#0b0b0f;
-    margin-top:15px;
+.modal-title{
+    padding-right:50px;
+    font-size:27px;
+    margin-bottom:7px;
+}
+
+.modal-description{
+    color:var(--muted);
+    line-height:1.6;
+    margin-bottom:20px;
+}
+
+/* =========================
+   CHAPTER LIST
+========================= */
+
+.chapter-list{
+    display:grid;
+    gap:10px;
 }
 
 .chapter{
-    padding:17px;
-    margin-top:10px;
-    border:1px solid #292933;
-    border-radius:13px;
-    background:#0b0b0f;
-    cursor:pointer;
-    transition:.2s;
-}
-
-.chapter:hover{
-    border-color:#a855f7;
-    background:#15121d;
-    transform:translateX(3px);
-}
-
-.chapter.completed{
-    border-color:#166534;
-}
-
-.lesson-box{
-    margin-top:20px;
-    padding:22px;
-    background:#0b0b0f;
-    border:1px solid #292933;
-    border-radius:16px;
-    line-height:1.8;
-}
-
-.lesson-box h3{
-    margin-bottom:10px;
-}
-
-.lesson-box p{
-    color:#c2c2ca;
-}
-
-.example{
-    margin-top:15px;
-    padding:17px;
-    background:#050507;
-    border:1px solid #22222c;
-    border-radius:12px;
-    overflow-x:auto;
-    color:#d8b4fe;
-    white-space:pre-wrap;
-    font-family:
-        "Courier New",
-        monospace;
-    line-height:1.6;
-    tab-size:4;
-}
-
-.tip{
-    margin-top:17px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    background:#151a2b;
+    border:1px solid var(--border);
     padding:15px;
-    border-radius:10px;
-    background:#211536;
-    color:#d8b4fe;
+    border-radius:13px;
+}
+
+.chapter-left{
+    display:flex;
+    align-items:center;
+    gap:11px;
+}
+
+.chapter-number{
+    width:32px;
+    height:32px;
+    border-radius:9px;
+    background:#27203f;
+    color:#c4b5fd;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    font-weight:bold;
+    flex-shrink:0;
+}
+
+.chapter-name{
+    font-size:14px;
+}
+
+.done{
+    color:var(--green);
+    font-weight:bold;
+    font-size:13px;
+}
+
+/* =========================
+   LESSON
+========================= */
+
+.lesson{
     line-height:1.7;
 }
 
-.key-points{
-    margin-top:20px;
-    padding:18px;
-    border:1px solid #292933;
+.lesson h2{
+    margin:25px 0 10px;
+    color:#c4b5fd;
+}
+
+.lesson h3{
+    margin:20px 0 8px;
+}
+
+.lesson p{
+    color:#c7ccdf;
+    margin-bottom:12px;
+}
+
+.lesson ul{
+    padding-left:22px;
+    color:#c7ccdf;
+    margin-bottom:15px;
+}
+
+.lesson li{
+    margin-bottom:6px;
+}
+
+.code-box{
+    margin:15px 0;
+    background:#080b14;
+    border:1px solid #2c334e;
     border-radius:13px;
-    background:#101017;
+    overflow:hidden;
 }
 
-.key-points li{
-    margin:8px 0;
-    color:#c7c7d0;
-    margin-left:20px;
+.code-header{
+    padding:9px 13px;
+    background:#151a2a;
+    color:#9da5c3;
+    font-size:12px;
+    border-bottom:1px solid #2c334e;
 }
 
-.lesson-question{
-    margin-top:25px;
-    font-size:19px;
+.code-content{
+    padding:15px;
+    white-space:pre-wrap;
+    overflow-x:auto;
+    color:#dbe4ff;
+    font-family:Consolas,monospace;
+    font-size:13px;
+    line-height:1.65;
+}
+
+.complete-btn{
+    width:100%;
+    margin-top:20px;
+    padding:14px;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(135deg,#7c3aed,#2563eb);
+    color:white;
     font-weight:bold;
+}
+
+/* =========================
+   QUIZ
+========================= */
+
+.quiz-question{
+    background:#151a2b;
+    border:1px solid var(--border);
+    border-radius:15px;
+    padding:20px;
+    margin-bottom:15px;
+}
+
+.question-number{
+    color:#a78bfa;
+    font-size:12px;
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+.question-text{
+    font-size:17px;
+    line-height:1.5;
+    margin-bottom:15px;
 }
 
 .option{
+    display:block;
     width:100%;
-    padding:14px;
-    margin:7px 0;
-    border:1px solid #30303a;
-    background:#17171d;
-    color:white;
-    border-radius:10px;
     text-align:left;
-    cursor:pointer;
-    transition:.2s;
+    background:#0e1220;
+    color:#ddd;
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:12px;
+    margin-top:8px;
 }
 
 .option:hover{
-    border-color:#a855f7;
-    background:#1c1724;
+    border-color:#7655c8;
 }
 
 .option.correct{
-    border-color:#22c55e;
-    background:#102417;
+    border-color:var(--green);
+    background:rgba(34,197,94,.1);
 }
 
 .option.wrong{
-    border-color:#ef4444;
-    background:#291215;
+    border-color:var(--red);
+    background:rgba(239,68,68,.1);
 }
 
-.result{
-    margin-top:18px;
-    padding:17px;
-    border-radius:12px;
-    background:#191922;
-    line-height:1.7;
+.quiz-result{
+    background:#151a2b;
+    border:1px solid var(--border);
+    border-radius:15px;
+    padding:25px;
+    text-align:center;
 }
 
-.quiz-top{
+.quiz-score{
+    font-size:40px;
+    font-weight:bold;
+    color:#a78bfa;
+}
+
+/* =========================
+   CHALLENGES
+========================= */
+
+.challenge-card{
+    background:#151a2b;
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:20px;
+    margin-bottom:14px;
+}
+
+.challenge-card h3{
+    margin-bottom:8px;
+}
+
+.challenge-card p{
+    color:#b7bdd3;
+    line-height:1.6;
+}
+
+.answer-input{
+    width:100%;
+    background:#090c16;
+    color:white;
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:12px;
+    margin-top:14px;
+    outline:none;
+}
+
+.answer-input:focus{
+    border-color:#7655c8;
+}
+
+.result-message{
+    margin-top:12px;
+    padding:11px;
+    border-radius:9px;
+    font-size:13px;
+}
+
+.success{
+    background:rgba(34,197,94,.1);
+    color:#86efac;
+}
+
+.failure{
+    background:rgba(239,68,68,.1);
+    color:#fca5a5;
+}
+
+/* =========================
+   CAREER
+========================= */
+
+.career-box{
+    background:linear-gradient(145deg,#171b30,#111525);
+    border:1px solid var(--border);
+    border-radius:17px;
+    padding:20px;
+}
+
+.career-prompts{
     display:flex;
-    justify-content:space-between;
-    gap:15px;
     flex-wrap:wrap;
-    padding:15px;
-    background:#0b0b0f;
-    border:1px solid #292933;
-    border-radius:12px;
+    gap:8px;
+    margin-bottom:15px;
 }
 
-.security-badge{
-    color:#4ade80;
+.prompt-btn{
+    background:#20253a;
+    color:#cdd2e7;
+    border:1px solid var(--border);
+    padding:8px 11px;
+    border-radius:9px;
     font-size:12px;
+}
+
+.career-input{
+    width:100%;
+    min-height:100px;
+    resize:vertical;
+    background:#090c16;
+    border:1px solid var(--border);
+    border-radius:12px;
+    color:white;
+    padding:13px;
+    outline:none;
+}
+
+.career-response{
+    margin-top:15px;
+    padding:16px;
+    background:#0a0e19;
+    border:1px solid var(--border);
+    border-radius:12px;
+    color:#cbd2e7;
+    line-height:1.7;
+    white-space:pre-wrap;
+}
+
+/* =========================
+   PROGRESS
+========================= */
+
+.progress-big{
+    text-align:center;
+    padding:25px;
+    background:#151a2b;
+    border:1px solid var(--border);
+    border-radius:18px;
+    margin-bottom:15px;
+}
+
+.progress-circle{
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    margin:0 auto 15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:conic-gradient(#8b5cf6 0deg,#8b5cf6 var(--progress),#272c42 var(--progress),#272c42 360deg);
+    position:relative;
+}
+
+.progress-circle::after{
+    content:"";
+    position:absolute;
+    width:118px;
+    height:118px;
+    background:#151a2b;
+    border-radius:50%;
+}
+
+.progress-percent{
+    position:relative;
+    z-index:2;
+    font-size:28px;
     font-weight:bold;
 }
 
-.warning{
-    margin-top:15px;
-    padding:13px;
-    border-radius:10px;
-    background:#261d0d;
-    color:#fbbf24;
-    font-size:13px;
-    line-height:1.5;
-}
-
-.quiz-question{
-    font-size:21px;
-    line-height:1.6;
-    margin:25px 0 15px;
-}
-
-.stats-grid{
+.progress-list{
     display:grid;
-    grid-template-columns:
-        repeat(2,1fr);
-    gap:12px;
-    margin-top:20px;
+    gap:10px;
 }
 
-.stat{
-    padding:18px;
-    border:1px solid #292933;
-    border-radius:15px;
-    background:#0b0b0f;
+.progress-item{
+    background:#151a2b;
+    border:1px solid var(--border);
+    padding:14px;
+    border-radius:12px;
+    display:flex;
+    justify-content:space-between;
 }
 
-.stat strong{
-    display:block;
-    font-size:25px;
-    color:#c084fc;
-    margin-top:5px;
+/* =========================
+   TOAST
+========================= */
+
+.toast{
+    position:fixed;
+    right:18px;
+    bottom:18px;
+    z-index:500;
+    background:#171c2e;
+    border:1px solid var(--border);
+    color:white;
+    padding:13px 17px;
+    border-radius:11px;
+    box-shadow:0 10px 35px rgba(0,0,0,.35);
+    transform:translateY(100px);
+    opacity:0;
+    transition:.25s;
 }
+
+.toast.show{
+    transform:translateY(0);
+    opacity:1;
+}
+
+/* =========================
+   LOADING
+========================= */
 
 .loading{
     text-align:center;
     padding:35px;
-    color:#aaa;
+    color:var(--muted);
 }
 
-.error-message{
-    color:#fb7185;
-    background:#251016;
-    padding:15px;
-    border-radius:10px;
-    margin-top:15px;
-    line-height:1.6;
+.spinner{
+    width:30px;
+    height:30px;
+    border:3px solid #30364e;
+    border-top-color:#8b5cf6;
+    border-radius:50%;
+    margin:0 auto 12px;
+    animation:spin .8s linear infinite;
 }
 
-textarea,
-input,
-select{
-    outline:none;
+@keyframes spin{
+    to{transform:rotate(360deg);}
 }
 
-textarea:focus,
-input:focus,
-select:focus{
-    border-color:#a855f7!important;
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:950px){
+    .course-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .feature-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
 }
-
-footer{
-    margin-top:70px;
-    padding:30px;
-    text-align:center;
-    border-top:1px solid #25252e;
-    color:#777;
-    font-size:13px;
-}
-
-
-/* =====================================================
-   CAREER ASSISTANT
-===================================================== */
-
-.ai-shell{
-    display:flex;
-    flex-direction:column;
-    gap:15px;
-}
-
-.ai-intro{
-    padding:18px;
-    border:1px solid #30283c;
-    border-radius:15px;
-    background:
-        linear-gradient(
-            135deg,
-            rgba(124,58,237,.16),
-            rgba(17,17,22,.9)
-        );
-}
-
-.ai-intro h3{
-    margin-bottom:8px;
-}
-
-.ai-intro p{
-    color:#aaa;
-    line-height:1.7;
-}
-
-.quick-prompts{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-}
-
-.quick-prompt{
-    padding:9px 12px;
-    border:1px solid #363642;
-    border-radius:20px;
-    background:#17171d;
-    color:#ddd;
-    cursor:pointer;
-    font-size:12px;
-}
-
-.quick-prompt:hover{
-    border-color:#a855f7;
-    color:#fff;
-}
-
-.chat-box{
-    max-height:390px;
-    overflow-y:auto;
-    padding:8px;
-    border:1px solid #292933;
-    border-radius:15px;
-    background:#09090d;
-}
-
-.chat-message{
-    display:flex;
-    margin:10px 0;
-}
-
-.chat-message.user{
-    justify-content:flex-end;
-}
-
-.chat-bubble{
-    max-width:88%;
-    padding:13px 15px;
-    border-radius:15px;
-    line-height:1.7;
-    white-space:pre-wrap;
-}
-
-.chat-message.ai .chat-bubble{
-    background:#191321;
-    border:1px solid #342545;
-    color:#ddd;
-}
-
-.chat-message.user .chat-bubble{
-    background:#6527b7;
-    color:white;
-}
-
-.ai-input-row{
-    display:flex;
-    gap:10px;
-}
-
-.ai-input{
-    flex:1;
-    min-width:0;
-    padding:14px;
-    border-radius:12px;
-    border:1px solid #33333d;
-    background:#08080c;
-    color:white;
-}
-
-.ai-send{
-    border:none;
-    padding:0 18px;
-    border-radius:12px;
-    background:linear-gradient(
-        90deg,
-        #7c3aed,
-        #a855f7
-    );
-    color:white;
-    font-weight:bold;
-    cursor:pointer;
-}
-
-
-/* =====================================================
-   COMPILER
-===================================================== */
-
-.compiler-toolbar{
-    display:grid;
-    grid-template-columns:
-        1fr 1fr;
-    gap:12px;
-    margin:15px 0;
-}
-
-.compiler-field label{
-    display:block;
-    color:#aaa;
-    font-size:12px;
-    margin-bottom:7px;
-}
-
-.compiler-field select,
-.compiler-field input{
-    width:100%;
-    padding:12px;
-    border-radius:10px;
-    border:1px solid #33333d;
-    background:#09090d;
-    color:white;
-}
-
-.compiler-editor{
-    width:100%;
-    min-height:330px;
-    background:#050507;
-    color:#d8b4fe;
-    border:1px solid #33333d;
-    border-radius:14px;
-    padding:17px;
-    font-family:
-        "Courier New",
-        monospace;
-    font-size:14px;
-    line-height:1.6;
-    resize:vertical;
-    tab-size:4;
-}
-
-.compiler-actions{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-}
-
-.compiler-output{
-    margin-top:18px;
-    padding:18px;
-    background:#050507;
-    border:1px solid #292933;
-    border-radius:14px;
-}
-
-.output-title{
-    color:#c084fc;
-    font-weight:bold;
-    margin-bottom:10px;
-}
-
-.output-pre{
-    white-space:pre-wrap;
-    overflow-x:auto;
-    font-family:
-        "Courier New",
-        monospace;
-    color:#d4d4dc;
-    line-height:1.6;
-}
-
-.success-text{
-    color:#4ade80;
-}
-
-.error-text{
-    color:#fb7185;
-}
-
-.info-text{
-    color:#fbbf24;
-}
-
 
 @media(max-width:600px){
+    .nav-inner{
+        min-height:64px;
+    }
 
-    header{
-        padding:18px;
+    .user-name{
+        display:none;
+    }
+
+    .logout-btn{
+        padding:8px 10px;
+        font-size:12px;
     }
 
     .container{
-        width:92%;
+        padding:15px 12px 45px;
     }
 
     .hero{
-        padding-top:45px;
+        padding-top:25px;
     }
 
-    .player-card{
-        flex-direction:column;
-    }
-
-    .progress{
-        width:100%;
-    }
-
-    .stats-grid{
+    .course-grid,
+    .feature-grid{
         grid-template-columns:1fr;
+    }
+
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .stat-card{
+        padding:15px;
     }
 
     .modal-box{
-        padding:20px;
-        margin:10px auto;
+        padding:18px;
+        border-radius:17px;
     }
 
-    .compiler-toolbar{
-        grid-template-columns:1fr;
+    .chapter{
+        align-items:flex-start;
     }
 
-    .ai-input-row{
-        flex-direction:column;
+    .chapter .secondary-btn{
+        padding:8px 10px;
+        font-size:12px;
     }
-
-    .ai-send{
-        padding:13px;
-    }
-
-    .chat-bubble{
-        max-width:94%;
-    }
-
 }
-
 </style>
-
 </head>
-
 
 <body>
 
+<!-- =========================
+     LOGIN SCREEN
+========================= -->
 
-<header>
+<div id="loginScreen">
 
-    <div class="logo">
-        ⚡ <span>CodeQuest</span> AI
-    </div>
+    <div class="login-card">
 
-    <div class="status">
-        ● ONLINE
-    </div>
+        <div class="logo">🚀</div>
 
-</header>
+        <h1>Code<span>Quest</span> AI</h1>
 
-
-<main class="container">
-
-
-<section class="hero">
-
-    <small>
-        LEARN • PRACTICE • PLAY • BUILD
-    </small>
-
-    <h1>
-        Become a
-        <span class="gradient">
-            Better Coder.
-        </span>
-    </h1>
-
-    <p>
-        Learn computer science from the fundamentals,
-        understand every concept step-by-step, practice
-        what you learn and build real programming skills.
-        CodeQuest turns learning into a guided coding journey.
-    </p>
-
-</section>
-
-
-<section class="player-card">
-
-    <div>
-
-        <div class="player-title">
-            YOUR CODING JOURNEY
-        </div>
-
-        <div
-            class="player-level"
-            id="levelText">
-
-            Level 1 — Code Explorer 🚀
-
-        </div>
-
-        <div
-            class="xp"
-            id="xpText">
-
-            ⭐ 0 XP
-
-        </div>
-
-    </div>
-
-
-    <div>
-
-        <div class="player-title">
-            NEXT LEVEL
-        </div>
-
-        <div class="progress">
-            <div id="progressBar"></div>
-        </div>
-
-        <div
-            class="player-title"
-            id="progressText">
-
-            0 / 100 XP
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<h2 class="section-title">
-    🎮 Practice Arena
-</h2>
-
-
-<section class="features">
-
-
-    <div
-        class="feature"
-        onclick="openQuiz()">
-
-        <div class="feature-icon">
-            🧠
-        </div>
-
-        <h3>
-            Quiz Arena
-        </h3>
-
-        <p>
-            Test your knowledge and earn XP.
+        <p class="login-subtitle">
+            Learn • Practice • Play • Build
+            <br>
+            Your interactive computer science learning journey.
         </p>
 
-    </div>
+        <button class="google-btn" onclick="loginWithGoogle()">
+            <img
+                class="google-icon"
+                src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                alt="Google"
+            >
+            Continue with Google
+        </button>
 
-
-    <div
-        class="feature"
-        onclick="openCodeChallenge()">
-
-        <div class="feature-icon">
-            💻
+        <div id="loginStatus" class="login-status">
+            Preparing secure login...
         </div>
 
-        <h3>
-            Code Challenge
-        </h3>
-
-        <p>
-            Predict program output.
-        </p>
-
     </div>
-
-
-    <div
-        class="feature"
-        onclick="openErrorFinder()">
-
-        <div class="feature-icon">
-            🔍
-        </div>
-
-        <h3>
-            Error Finder
-        </h3>
-
-        <p>
-            Find programming mistakes.
-        </p>
-
-    </div>
-
-
-    <div
-        class="feature"
-        onclick="careerAssistant()">
-
-        <div class="feature-icon">
-            🤖
-        </div>
-
-        <h3>
-            AI Career
-        </h3>
-
-        <p>
-            Ask about internships, jobs,
-            placements, software and hardware.
-        </p>
-
-    </div>
-
-
-    <div
-        class="feature"
-        onclick="compiler()">
-
-        <div class="feature-icon">
-            ▶️
-        </div>
-
-        <h3>
-            Online Compiler
-        </h3>
-
-        <p>
-            Write, run and debug programs.
-        </p>
-
-    </div>
-
-
-    <div
-        class="feature"
-        onclick="showProgress()">
-
-        <div class="feature-icon">
-            🏆
-        </div>
-
-        <h3>
-            My Progress
-        </h3>
-
-        <p>
-            Track your learning journey.
-        </p>
-
-    </div>
-
-
-</section>
-
-
-<h2 class="section-title">
-    📚 Learn Anything
-</h2>
-
-
-<section class="courses">
-
-{% for key, course in courses.items() %}
-
-<div class="course">
-
-    <div class="course-icon">
-        {{ course.icon }}
-    </div>
-
-    <h3>
-        {{ key }}
-    </h3>
-
-    <p>
-        {{ course.description }}
-    </p>
-
-    <span class="level">
-        {{ course.level }}
-    </span>
-
-    <br>
-
-    <button
-        type="button"
-        onclick='openCourse({{ key|tojson }})'>
-
-        START COURSE →
-
-    </button>
 
 </div>
 
-{% endfor %}
 
-</section>
+<!-- =========================
+     MAIN APP
+========================= -->
+
+<div id="app" class="hidden">
+
+    <nav class="navbar">
+
+        <div class="nav-inner">
+
+            <div class="brand">
+                <div class="brand-icon">🚀</div>
+                <span>CodeQuest AI</span>
+            </div>
+
+            <div class="user-area">
+
+                <img
+                    id="userPhoto"
+                    class="user-photo"
+                    src=""
+                    alt="User"
+                >
+
+                <span id="userName" class="user-name">
+                    Student
+                </span>
+
+                <button
+                    class="logout-btn"
+                    onclick="logout()"
+                >
+                    Logout
+                </button>
+
+            </div>
+
+        </div>
+
+    </nav>
 
 
-</main>
+    <main class="container">
+
+        <!-- HERO -->
+
+        <section class="hero">
+
+            <h1>
+                Welcome to
+                <span>CodeQuest AI</span>
+            </h1>
+
+            <p>
+                Learn computer science step by step, practice with
+                challenges, test your knowledge, build XP and track
+                your learning journey from one account.
+            </p>
+
+            <div class="hero-actions">
+
+                <button
+                    class="primary-btn"
+                    onclick="scrollToCourses()"
+                >
+                    🚀 Start Learning
+                </button>
+
+                <button
+                    class="secondary-btn"
+                    onclick="openFeature('progress')"
+                >
+                    📊 My Progress
+                </button>
+
+            </div>
+
+        </section>
 
 
-<footer>
+        <!-- STATS -->
 
-    CodeQuest AI • Learn today. Build tomorrow. 🚀
+        <section class="stats">
 
-</footer>
+            <div class="stat-card">
+                <div class="stat-icon">⚡</div>
+                <div id="xpValue" class="stat-value">0 XP</div>
+                <div class="stat-label">Experience</div>
+            </div>
 
+            <div class="stat-card">
+                <div class="stat-icon">🏆</div>
+                <div id="levelValue" class="stat-value">Level 1</div>
+                <div class="stat-label">Current Level</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📚</div>
+                <div id="chapterValue" class="stat-value">0</div>
+                <div class="stat-label">Chapters Completed</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div id="challengeValue" class="stat-value">0</div>
+                <div class="stat-label">Challenges Completed</div>
+            </div>
+
+        </section>
+
+
+        <!-- COURSES -->
+
+        <section id="coursesSection" class="section">
+
+            <div class="section-header">
+
+                <div>
+                    <h2 class="section-title">
+                        📚 Learning Paths
+                    </h2>
+
+                    <div class="section-subtitle">
+                        Explore the full syllabus and learn step by step.
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="course-grid">
+
+                {% for key, course in courses.items() %}
+
+                <div class="course-card">
+
+                    <div class="course-icon">
+                        {{ course.icon }}
+                    </div>
+
+                    <h3>
+                        {{ key }}
+                    </h3>
+
+                    <p>
+                        {{ course.description }}
+                    </p>
+
+                    <div class="course-meta">
+
+                        <span>
+                            {{ course.level }}
+                        </span>
+
+                        <span>
+                            {{ course.chapters|length }} Chapters
+                        </span>
+
+                    </div>
+
+                    <div class="progress-bar">
+
+                        <div
+                            id="course-progress-{{ loop.index }}"
+                            class="progress-fill"
+                        ></div>
+
+                    </div>
+
+                    <button
+                        class="primary-btn"
+                        style="width:100%;margin-top:14px;"
+                        onclick='openCourse({{ key|tojson }})'
+                    >
+                        Open Course →
+                    </button>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+
+        <!-- FEATURES -->
+
+        <section class="section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2 class="section-title">
+                        🎮 CodeQuest Arena
+                    </h2>
+
+                    <div class="section-subtitle">
+                        Practice, challenge yourself and improve your skills.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="feature-grid">
+
+                <div
+                    class="feature-card"
+                    onclick="openFeature('quiz')"
+                >
+                    <div class="feature-icon">🧠</div>
+                    <h3>Quiz Arena</h3>
+                    <p>
+                        Test your computer science knowledge
+                        and earn XP.
+                    </p>
+                </div>
+
+
+                <div
+                    class="feature-card"
+                    onclick="openFeature('challenge')"
+                >
+                    <div class="feature-icon">💻</div>
+                    <h3>Code Challenge</h3>
+                    <p>
+                        Predict program output and improve
+                        your programming logic.
+                    </p>
+                </div>
+
+
+                <div
+                    class="feature-card"
+                    onclick="openFeature('error')"
+                >
+                    <div class="feature-icon">🐞</div>
+                    <h3>Error Finder</h3>
+                    <p>
+                        Find programming mistakes and learn
+                        how to correct them.
+                    </p>
+                </div>
+
+
+                <div
+                    class="feature-card"
+                    onclick="openFeature('career')"
+                >
+                    <div class="feature-icon">🎓</div>
+                    <h3>Career Guide</h3>
+                    <p>
+                        Explore programming careers, skills
+                        and learning paths.
+                    </p>
+                </div>
+
+
+                <div
+                    class="feature-card"
+                    onclick="openFeature('progress')"
+                >
+                    <div class="feature-icon">📊</div>
+                    <h3>Progress</h3>
+                    <p>
+                        Track your XP, level, chapters,
+                        challenges and learning progress.
+                    </p>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- =========================
+     MODAL
+========================= -->
 
 <div
     id="modal"
-    class="modal">
+    class="modal hidden"
+    onclick="closeModalOutside(event)"
+>
 
     <div class="modal-box">
 
-        <span
-            class="close"
-            onclick="closeModal()">
-
+        <button
+            class="close-btn"
+            onclick="closeModal()"
+        >
             ×
-
-        </span>
+        </button>
 
         <div id="modalContent"></div>
 
@@ -1079,158 +1306,2214 @@ footer{
 </div>
 
 
+<!-- TOAST -->
+
+<div id="toast" class="toast"></div>
+
+
+<!-- FIREBASE -->
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+
+
 <script>
 
+/* =========================================================
+   CODEQUEST AI
+   Learn • Practice • Play • Build
+========================================================= */
 
-/* =====================================================
-   GLOBAL STATE
-===================================================== */
+let firebaseReady = false;
+let firebaseConfig = null;
+
+let auth = null;
+let db = null;
+let currentUser = null;
 
 let quizData = [];
-let codeData = [];
+let challengeData = [];
 let errorData = [];
 
-let currentQuizIndex = 0;
+let currentQuizAnswers = {};
 let currentQuizScore = 0;
-let currentQuizTotal = 0;
 
-let xp =
-    Number(
-        localStorage.getItem(
-            "codequest_xp"
-        ) || 0
-    );
+let progressData = {
+    xp: 0,
+    level: 1,
+    completedChapters: [],
+    completedChallenges: [],
+    quizScores: [],
+    totalQuizCorrect: 0,
+    totalQuizQuestions: 0
+};
+
+let saveTimer = null;
 
 
-let completedChapters = [];
+/* =========================================================
+   INITIALIZATION
+========================================================= */
 
-try{
+document.addEventListener("DOMContentLoaded", async () => {
 
-    completedChapters =
-        JSON.parse(
-            localStorage.getItem(
-                "codequest_chapters"
-            ) || "[]"
+    setLoginStatus("Loading CodeQuest AI...");
+
+    try {
+
+        const response = await fetch("/api/firebase-config");
+
+        if (!response.ok) {
+            throw new Error("Firebase configuration unavailable.");
+        }
+
+        const result = await response.json();
+
+        if (!result.configured) {
+
+            setLoginStatus(
+                "Firebase login is not configured yet. Add the Firebase environment variables in Render."
+            );
+
+            return;
+        }
+
+        firebaseConfig = result.config;
+
+        firebase.initializeApp(firebaseConfig);
+
+        auth = firebase.auth();
+        db = firebase.firestore();
+
+        firebaseReady = true;
+
+        auth.onAuthStateChanged(async user => {
+
+            if (user) {
+
+                currentUser = user;
+
+                await startUserSession();
+
+            } else {
+
+                currentUser = null;
+
+                document
+                    .getElementById("loginScreen")
+                    .classList.remove("hidden");
+
+                document
+                    .getElementById("app")
+                    .classList.add("hidden");
+
+                setLoginStatus("Sign in with Google to continue.");
+
+            }
+
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        setLoginStatus(
+            "Unable to initialize login. Check Firebase configuration."
         );
 
-    if(!Array.isArray(completedChapters)){
-        completedChapters=[];
     }
 
-}catch(e){
+});
 
-    completedChapters=[];
+
+/* =========================================================
+   GOOGLE LOGIN
+========================================================= */
+
+async function loginWithGoogle(){
+
+    if (!firebaseReady || !auth) {
+
+        showToast("Google login is not ready yet.");
+
+        return;
+    }
+
+    try {
+
+        setLoginStatus("Opening Google login...");
+
+        const provider =
+            new firebase.auth.GoogleAuthProvider();
+
+        provider.setCustomParameters({
+            prompt: "select_account"
+        });
+
+        /*
+         * Redirect is used because CodeQuest AI is designed
+         * to work well on Android/mobile browsers.
+         */
+
+        await auth.signInWithRedirect(provider);
+
+    } catch(error) {
+
+        console.error(error);
+
+        setLoginStatus(
+            "Google login failed. Please try again."
+        );
+
+        showToast("Google login failed.");
+
+    }
 
 }
 
 
-let solvedChallenges =
-    Number(
-        localStorage.getItem(
-            "codequest_challenges"
-        ) || 0
-    );
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+async function logout(){
+
+    if (!auth) return;
+
+    try {
+
+        await auth.signOut();
+
+        showToast("Logged out successfully.");
+
+    } catch(error) {
+
+        console.error(error);
+
+        showToast("Logout failed.");
+
+    }
+
+}
 
 
-/* =====================================================
+/* =========================================================
+   USER SESSION
+========================================================= */
+
+async function startUserSession(){
+
+    document
+        .getElementById("loginScreen")
+        .classList.add("hidden");
+
+    document
+        .getElementById("app")
+        .classList.remove("hidden");
+
+    const name =
+        currentUser.displayName ||
+        currentUser.email ||
+        "Student";
+
+    const photo =
+        currentUser.photoURL ||
+        "https://ui-avatars.com/api/?name=Student";
+
+    document.getElementById("userName").textContent = name;
+
+    document.getElementById("userPhoto").src = photo;
+
+    await loadUserProgress();
+
+    updateDashboard();
+
+    showToast("Welcome back, " + name.split(" ")[0] + "!");
+
+}
+
+
+/* =========================================================
+   FIRESTORE PROGRESS
+========================================================= */
+
+async function loadUserProgress(){
+
+    if (!currentUser || !db) return;
+
+    try {
+
+        const ref =
+            db.collection("users").doc(currentUser.uid);
+
+        const snapshot =
+            await ref.get();
+
+        if (snapshot.exists) {
+
+            const data = snapshot.data();
+
+            progressData = {
+                ...progressData,
+                ...data
+            };
+
+        } else {
+
+            await ref.set({
+
+                uid: currentUser.uid,
+
+                name:
+                    currentUser.displayName || "Student",
+
+                email:
+                    currentUser.email || "",
+
+                photoURL:
+                    currentUser.photoURL || "",
+
+                xp: 0,
+                level: 1,
+
+                completedChapters: [],
+                completedChallenges: [],
+
+                quizScores: [],
+
+                totalQuizCorrect: 0,
+                totalQuizQuestions: 0,
+
+                createdAt:
+                    firebase.firestore.FieldValue.serverTimestamp(),
+
+                updatedAt:
+                    firebase.firestore.FieldValue.serverTimestamp()
+
+            });
+
+        }
+
+        calculateLevel();
+
+    } catch(error) {
+
+        console.error("Progress load error:", error);
+
+        showToast(
+            "Could not load saved progress."
+        );
+
+    }
+
+}
+
+
+function saveProgress(){
+
+    if (!currentUser || !db) return;
+
+    clearTimeout(saveTimer);
+
+    saveTimer = setTimeout(async () => {
+
+        try {
+
+            await db
+                .collection("users")
+                .doc(currentUser.uid)
+                .set({
+
+                    uid: currentUser.uid,
+
+                    name:
+                        currentUser.displayName || "Student",
+
+                    email:
+                        currentUser.email || "",
+
+                    photoURL:
+                        currentUser.photoURL || "",
+
+                    xp: progressData.xp,
+
+                    level: progressData.level,
+
+                    completedChapters:
+                        progressData.completedChapters,
+
+                    completedChallenges:
+                        progressData.completedChallenges,
+
+                    quizScores:
+                        progressData.quizScores,
+
+                    totalQuizCorrect:
+                        progressData.totalQuizCorrect,
+
+                    totalQuizQuestions:
+                        progressData.totalQuizQuestions,
+
+                    updatedAt:
+                        firebase.firestore.FieldValue.serverTimestamp()
+
+                }, {
+                    merge:true
+                });
+
+        } catch(error) {
+
+            console.error(
+                "Progress save error:",
+                error
+            );
+
+        }
+
+    }, 700);
+
+}
+
+
+/* =========================================================
    XP SYSTEM
-===================================================== */
+========================================================= */
+
+function calculateLevel(){
+
+    const xp =
+        Number(progressData.xp || 0);
+
+    progressData.level =
+        Math.floor(xp / 100) + 1;
+
+}
+
 
 function addXP(amount){
 
-    xp += Number(amount);
+    progressData.xp =
+        Number(progressData.xp || 0) + amount;
 
-    localStorage.setItem(
-        "codequest_xp",
-        xp
+    calculateLevel();
+
+    updateDashboard();
+
+    saveProgress();
+
+    showToast("+" + amount + " XP ⚡");
+
+}
+
+
+function updateDashboard(){
+
+    calculateLevel();
+
+    document.getElementById("xpValue").textContent =
+        progressData.xp + " XP";
+
+    document.getElementById("levelValue").textContent =
+        "Level " + progressData.level;
+
+    document.getElementById("chapterValue").textContent =
+        progressData.completedChapters.length;
+
+    document.getElementById("challengeValue").textContent =
+        progressData.completedChallenges.length;
+
+    updateCourseProgress();
+
+}
+
+
+function updateCourseProgress(){
+
+    /*
+     * Course cards use a general progress calculation.
+     * Individual completed chapter names are stored globally.
+     */
+
+    const totalCompleted =
+        progressData.completedChapters.length;
+
+    const totalCourses =
+        {{ courses|length }};
+
+    const generalPercent =
+        Math.min(
+            100,
+            Math.round(
+                (totalCompleted /
+                Math.max(totalCourses,1)) * 10
+            )
+        );
+
+    for(
+        let i = 1;
+        i <= totalCourses;
+        i++
+    ){
+
+        const element =
+            document.getElementById(
+                "course-progress-" + i
+            );
+
+        if(element){
+
+            element.style.width =
+                generalPercent + "%";
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   COURSE
+========================================================= */
+
+async function openCourse(courseName){
+
+    openModal(
+        `<div class="loading">
+            <div class="spinner"></div>
+            Loading course...
+        </div>`
     );
 
-    updateProgress();
+    try {
+
+        const response =
+            await fetch(
+                "/api/course/" +
+                encodeURIComponent(courseName)
+            );
+
+        if(!response.ok){
+
+            throw new Error(
+                "Course request failed"
+            );
+
+        }
+
+        const course =
+            await response.json();
+
+        renderCourse(courseName, course);
+
+    } catch(error) {
+
+        console.error(error);
+
+        openModal(
+            `<h2 class="modal-title">Unable to load course</h2>
+             <p class="modal-description">
+                Please check your connection and try again.
+             </p>`
+        );
+
+    }
 
 }
 
 
-function updateProgress(){
+function renderCourse(courseName, course){
 
-    let level =
-        Math.floor(xp / 100) + 1;
+    const chapters =
+        course.chapters || [];
 
-    let currentXP =
-        xp % 100;
+    let html = `
 
+        <h2 class="modal-title">
+            ${escapeHTML(course.icon || "📚")}
+            ${escapeHTML(courseName)}
+        </h2>
 
-    document.getElementById(
-        "xpText"
-    ).textContent =
-        `⭐ ${xp} XP`;
+        <p class="modal-description">
+            ${escapeHTML(course.description || "")}
+        </p>
 
+        <div class="chapter-list">
+    `;
 
-    document.getElementById(
-        "levelText"
-    ).textContent =
-        `Level ${level} — ${getLevelName(level)} 🚀`;
+    chapters.forEach((chapter,index) => {
 
+        const completed =
+            progressData.completedChapters.includes(
+                courseName + "::" + chapter
+            );
 
-    document.getElementById(
-        "progressText"
-    ).textContent =
-        `${currentXP} / 100 XP`;
+        html += `
 
+            <div class="chapter">
 
-    document.getElementById(
-        "progressBar"
-    ).style.width =
-        `${currentXP}%`;
+                <div class="chapter-left">
+
+                    <div class="chapter-number">
+                        ${index + 1}
+                    </div>
+
+                    <div class="chapter-name">
+                        ${escapeHTML(chapter)}
+                    </div>
+
+                </div>
+
+                <div style="display:flex;align-items:center;gap:8px;">
+
+                    ${
+                        completed
+                        ? `<span class="done">✓ Done</span>`
+                        : ""
+                    }
+
+                    <button
+                        class="secondary-btn"
+                        onclick='openLesson(
+                            ${JSON.stringify(chapter)},
+                            ${JSON.stringify(courseName)}
+                        )'
+                    >
+                        ${completed ? "Review" : "Learn"}
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+
+    });
+
+    html += `</div>`;
+
+    openModal(html);
 
 }
 
 
-function getLevelName(level){
+/* =========================================================
+   LESSON
+========================================================= */
 
-    const names=[
-        "Code Explorer",
-        "Bug Hunter",
-        "Logic Builder",
-        "Code Warrior",
-        "Programmer",
-        "Code Master",
-        "Tech Creator",
-        "Cyber Builder",
-        "Software Engineer",
-        "Tech Architect"
-    ];
+async function openLesson(chapter,courseName){
+
+    openModal(
+        `<div class="loading">
+            <div class="spinner"></div>
+            Loading lesson...
+        </div>`
+    );
+
+    try {
+
+        const url =
+            "/api/lesson/" +
+            encodeURIComponent(chapter) +
+            "?course=" +
+            encodeURIComponent(courseName);
+
+        const response =
+            await fetch(url);
+
+        if(!response.ok){
+
+            throw new Error(
+                "Lesson request failed"
+            );
+
+        }
+
+        const lesson =
+            await response.json();
+
+        renderLesson(
+            chapter,
+            courseName,
+            lesson
+        );
+
+    } catch(error) {
+
+        console.error(error);
+
+        openModal(
+            `<h2 class="modal-title">
+                Lesson unavailable
+            </h2>
+            <p class="modal-description">
+                Please try again.
+            </p>`
+        );
+
+    }
+
+}
 
 
-    return names[
-        Math.min(
-            level-1,
-            names.length-1
+function renderLesson(
+    chapter,
+    courseName,
+    lesson
+){
+
+    const completedKey =
+        courseName + "::" + chapter;
+
+    const alreadyCompleted =
+        progressData.completedChapters.includes(
+            completedKey
+        );
+
+    let html = `
+
+        <h2 class="modal-title">
+            📖 ${escapeHTML(chapter)}
+        </h2>
+
+        <p class="modal-description">
+            ${escapeHTML(courseName)}
+        </p>
+
+        <div class="lesson">
+
+    `;
+
+
+    if(lesson.introduction){
+
+        html += `
+            <h2>Introduction</h2>
+            <p>
+                ${formatText(
+                    lesson.introduction
+                )}
+            </p>
+        `;
+
+    }
+
+
+    if(lesson.definition){
+
+        html += `
+            <h2>Definition</h2>
+            <p>
+                ${formatText(
+                    lesson.definition
+                )}
+            </p>
+        `;
+
+    }
+
+
+    if(lesson.explanation){
+
+        html += `
+            <h2>Explanation</h2>
+            <p>
+                ${formatText(
+                    lesson.explanation
+                )}
+            </p>
+        `;
+
+    }
+
+
+    if(lesson.points){
+
+        html += `
+            <h2>Key Points</h2>
+            <ul>
+        `;
+
+        lesson.points.forEach(point => {
+
+            html += `
+                <li>
+                    ${formatText(point)}
+                </li>
+            `;
+
+        });
+
+        html += `</ul>`;
+
+    }
+
+
+    if(lesson.example){
+
+        html += `
+            <h2>Example</h2>
+
+            <div class="code-box">
+
+                <div class="code-header">
+                    Example
+                </div>
+
+                <pre class="code-content"><code>${escapeHTML(
+                    lesson.example
+                )}</code></pre>
+
+            </div>
+        `;
+
+    }
+
+
+    if(lesson.important){
+
+        html += `
+            <h2>Remember</h2>
+            <p>
+                ${formatText(
+                    lesson.important
+                )}
+            </p>
+        `;
+
+    }
+
+
+    html += `</div>`;
+
+
+    if(!alreadyCompleted){
+
+        html += `
+
+            <button
+                class="complete-btn"
+                onclick='completeChapter(
+                    ${JSON.stringify(completedKey)}
+                )'
+            >
+                ✅ Mark Chapter Complete +20 XP
+            </button>
+
+        `;
+
+    }else{
+
+        html += `
+
+            <div
+                style="
+                    margin-top:20px;
+                    text-align:center;
+                    color:#86efac;
+                    padding:13px;
+                    background:rgba(34,197,94,.08);
+                    border-radius:10px;
+                "
+            >
+                ✓ Chapter completed
+            </div>
+
+        `;
+
+    }
+
+
+    openModal(html);
+
+}
+
+
+/* =========================================================
+   COMPLETE CHAPTER
+========================================================= */
+
+function completeChapter(key){
+
+    if(
+        progressData.completedChapters.includes(key)
+    ){
+
+        showToast("Chapter already completed.");
+
+        return;
+    }
+
+    progressData.completedChapters.push(key);
+
+    addXP(20);
+
+    updateDashboard();
+
+    saveProgress();
+
+    showToast(
+        "Chapter completed! +20 XP 🎉"
+    );
+
+    closeModal();
+
+}
+
+
+/* =========================================================
+   QUIZ ARENA
+========================================================= */
+
+async function loadQuiz(){
+
+    openModal(
+        `<div class="loading">
+            <div class="spinner"></div>
+            Loading Quiz Arena...
+        </div>`
+    );
+
+    try {
+
+        const response =
+            await fetch("/api/quiz");
+
+        if(!response.ok){
+
+            throw new Error(
+                "Quiz request failed"
+            );
+
+        }
+
+        quizData =
+            await response.json();
+
+        currentQuizAnswers = {};
+
+        renderQuiz();
+
+    } catch(error) {
+
+        console.error(error);
+
+        openModal(
+            `<h2 class="modal-title">
+                Quiz unavailable
+            </h2>
+            <p class="modal-description">
+                Please try again.
+            </p>`
+        );
+
+    }
+
+}
+
+
+function renderQuiz(){
+
+    if(!Array.isArray(quizData)){
+        quizData = [];
+    }
+
+    let html = `
+
+        <h2 class="modal-title">
+            🧠 Quiz Arena
+        </h2>
+
+        <p class="modal-description">
+            Answer the questions and earn XP.
+        </p>
+    `;
+
+
+    quizData.forEach((question,index) => {
+
+        html += `
+
+            <div class="quiz-question">
+
+                <div class="question-number">
+                    QUESTION ${index + 1}
+                </div>
+
+                <div class="question-text">
+                    ${escapeHTML(
+                        question.question || ""
+                    )}
+                </div>
+
+        `;
+
+
+        const options =
+            question.options || [];
+
+
+        options.forEach((option,optionIndex) => {
+
+            html += `
+
+                <button
+                    class="option"
+                    id="option-${index}-${optionIndex}"
+                    onclick="selectQuizAnswer(
+                        ${index},
+                        ${optionIndex}
+                    )"
+                >
+                    ${escapeHTML(option)}
+                </button>
+
+            `;
+
+        });
+
+
+        html += `</div>`;
+
+    });
+
+
+    html += `
+
+        <button
+            class="complete-btn"
+            onclick="submitQuiz()"
+        >
+            Submit Quiz
+        </button>
+
+    `;
+
+
+    openModal(html);
+
+}
+
+
+function selectQuizAnswer(
+    questionIndex,
+    optionIndex
+){
+
+    currentQuizAnswers[questionIndex] =
+        optionIndex;
+
+
+    const question =
+        quizData[questionIndex];
+
+    if(!question) return;
+
+
+    const options =
+        question.options || [];
+
+
+    options.forEach((_,index) => {
+
+        const button =
+            document.getElementById(
+                `option-${questionIndex}-${index}`
+            );
+
+        if(button){
+
+            button.style.borderColor =
+                index === optionIndex
+                ? "#8b5cf6"
+                : "";
+
+            button.style.background =
+                index === optionIndex
+                ? "rgba(139,92,246,.12)"
+                : "";
+
+        }
+
+    });
+
+}
+
+
+function submitQuiz(){
+
+    if(!quizData.length){
+
+        showToast("No quiz questions available.");
+
+        return;
+    }
+
+
+    let score = 0;
+
+
+    quizData.forEach((question,index) => {
+
+        const selected =
+            currentQuizAnswers[index];
+
+        const correct =
+            Number(question.answer);
+
+
+        if(selected === correct){
+
+            score++;
+
+        }
+
+    });
+
+
+    currentQuizScore = score;
+
+
+    const total =
+        quizData.length;
+
+
+    const percentage =
+        Math.round(
+            (score / total) * 100
+        );
+
+
+    progressData.quizScores.push({
+
+        score:score,
+
+        total:total,
+
+        percentage:percentage,
+
+        date:new Date().toISOString()
+
+    });
+
+
+    progressData.totalQuizCorrect += score;
+
+    progressData.totalQuizQuestions += total;
+
+
+    let xpEarned =
+        score * 10;
+
+
+    if(score === total){
+
+        xpEarned += 25;
+
+    }
+
+
+    addXP(xpEarned);
+
+    saveProgress();
+
+
+    let html = `
+
+        <div class="quiz-result">
+
+            <div style="font-size:45px;">
+                ${
+                    percentage >= 80
+                    ? "🏆"
+                    : percentage >= 50
+                    ? "🔥"
+                    : "📚"
+                }
+            </div>
+
+            <h2 style="margin:10px 0;">
+                Quiz Completed!
+            </h2>
+
+            <div class="quiz-score">
+                ${score}/${total}
+            </div>
+
+            <p style="color:#aab1c8;margin-top:8px;">
+                ${percentage}% correct
+            </p>
+
+            <p style="color:#86efac;margin-top:15px;">
+                +${xpEarned} XP
+            </p>
+
+        </div>
+
+        <h3 style="margin:25px 0 12px;">
+            Answers
+        </h3>
+    `;
+
+
+    quizData.forEach((question,index) => {
+
+        const selected =
+            currentQuizAnswers[index];
+
+        const correct =
+            Number(question.answer);
+
+        const isCorrect =
+            selected === correct;
+
+
+        html += `
+
+            <div class="challenge-card">
+
+                <strong>
+                    ${index + 1}.
+                    ${escapeHTML(
+                        question.question || ""
+                    )}
+                </strong>
+
+                <p style="margin-top:8px;">
+                    Your answer:
+                    ${
+                        selected !== undefined
+                        ? escapeHTML(
+                            question.options[selected]
+                        )
+                        : "Not answered"
+                    }
+                </p>
+
+                <p style="margin-top:5px;">
+                    Correct answer:
+                    ${escapeHTML(
+                        question.options[correct]
+                    )}
+                </p>
+
+                <div
+                    class="result-message
+                    ${isCorrect ? "success" : "failure"}"
+                >
+                    ${
+                        isCorrect
+                        ? "✓ Correct"
+                        : "✗ Incorrect"
+                    }
+                </div>
+
+            </div>
+
+        `;
+
+    });
+
+
+    openModal(html);
+
+}
+
+
+/* =========================================================
+   CODE CHALLENGE
+========================================================= */
+
+async function loadChallenges(){
+
+    openModal(
+        `<div class="loading">
+            <div class="spinner"></div>
+            Loading Code Challenges...
+        </div>`
+    );
+
+
+    try {
+
+        const response =
+            await fetch("/api/code-challenges");
+
+        if(!response.ok){
+
+            throw new Error(
+                "Challenge request failed"
+            );
+
+        }
+
+        challengeData =
+            await response.json();
+
+        renderChallenges();
+
+    } catch(error) {
+
+        console.error(error);
+
+        openModal(
+            `<h2 class="modal-title">
+                Code Challenge unavailable
+            </h2>`
+        );
+
+    }
+
+}
+
+
+function renderChallenges(){
+
+    let html = `
+
+        <h2 class="modal-title">
+            💻 Code Challenge
+        </h2>
+
+        <p class="modal-description">
+            Read the code carefully and predict its output.
+        </p>
+    `;
+
+
+    challengeData.forEach((challenge,index) => {
+
+        html += `
+
+            <div class="challenge-card">
+
+                <h3>
+                    Challenge ${index + 1}
+                </h3>
+
+                <p style="margin:10px 0;">
+                    ${escapeHTML(
+                        challenge.question ||
+                        challenge.description ||
+                        ""
+                    )}
+                </p>
+
+                ${
+                    challenge.code
+                    ? `
+                        <div class="code-box">
+
+                            <div class="code-header">
+                                Code
+                            </div>
+
+                            <pre class="code-content"><code>${escapeHTML(
+                                challenge.code
+                            )}</code></pre>
+
+                        </div>
+                    `
+                    : ""
+                }
+
+                <input
+                    class="answer-input"
+                    id="challenge-answer-${index}"
+                    placeholder="Enter the output..."
+                >
+
+                <button
+                    class="primary-btn"
+                    style="margin-top:10px;"
+                    onclick="
+                        checkChallenge(${index})
+                    "
+                >
+                    Check Answer
+                </button>
+
+                <div
+                    id="challenge-result-${index}"
+                ></div>
+
+            </div>
+
+        `;
+
+    });
+
+
+    openModal(html);
+
+}
+
+
+function checkChallenge(index){
+
+    const challenge =
+        challengeData[index];
+
+    if(!challenge) return;
+
+
+    const input =
+        document.getElementById(
+            `challenge-answer-${index}`
+        );
+
+
+    const result =
+        document.getElementById(
+            `challenge-result-${index}`
+        );
+
+
+    const userAnswer =
+        (input.value || "")
+        .trim()
+        .toLowerCase();
+
+
+    const correctAnswer =
+        String(
+            challenge.answer ??
+            challenge.output ??
+            ""
         )
-    ];
+        .trim()
+        .toLowerCase();
+
+
+    if(!userAnswer){
+
+        result.innerHTML =
+            `<div class="result-message failure">
+                Enter your answer first.
+            </div>`;
+
+        return;
+    }
+
+
+    if(userAnswer === correctAnswer){
+
+        const challengeId =
+            challenge.id ||
+            ("challenge-" + index);
+
+
+        if(
+            !progressData.completedChallenges.includes(
+                challengeId
+            )
+        ){
+
+            progressData.completedChallenges.push(
+                challengeId
+            );
+
+            addXP(30);
+
+            saveProgress();
+
+        }
+
+
+        result.innerHTML =
+            `<div class="result-message success">
+                ✓ Correct! Great job. +30 XP
+            </div>`;
+
+        updateDashboard();
+
+    }else{
+
+        result.innerHTML =
+            `<div class="result-message failure">
+                ✗ Not correct. Try again.
+            </div>`;
+
+    }
 
 }
 
 
-updateProgress();
+/* =========================================================
+   ERROR FINDER
+========================================================= */
+
+async function loadErrors(){
+
+    openModal(
+        `<div class="loading">
+            <div class="spinner"></div>
+            Loading Error Finder...
+        </div>`
+    );
 
 
-/* =====================================================
+    try {
+
+        const response =
+            await fetch("/api/error-finder");
+
+        if(!response.ok){
+
+            throw new Error(
+                "Error Finder request failed"
+            );
+
+        }
+
+        errorData =
+            await response.json();
+
+        renderErrors();
+
+    } catch(error) {
+
+        console.error(error);
+
+        openModal(
+            `<h2 class="modal-title">
+                Error Finder unavailable
+            </h2>`
+        );
+
+    }
+
+}
+
+
+function renderErrors(){
+
+    let html = `
+
+        <h2 class="modal-title">
+            🐞 Error Finder
+        </h2>
+
+        <p class="modal-description">
+            Find the mistake in each program.
+        </p>
+    `;
+
+
+    errorData.forEach((item,index) => {
+
+        html += `
+
+            <div class="challenge-card">
+
+                <h3>
+                    Problem ${index + 1}
+                </h3>
+
+                <div class="code-box">
+
+                    <div class="code-header">
+                        Find the error
+                    </div>
+
+                    <pre class="code-content"><code>${escapeHTML(
+                        item.code || ""
+                    )}</code></pre>
+
+                </div>
+
+                <input
+                    class="answer-input"
+                    id="error-answer-${index}"
+                    placeholder="What is the error?"
+                >
+
+                <button
+                    class="primary-btn"
+                    style="margin-top:10px;"
+                    onclick="
+                        checkError(${index})
+                    "
+                >
+                    Check
+                </button>
+
+                <div
+                    id="error-result-${index}"
+                ></div>
+
+            </div>
+
+        `;
+
+    });
+
+
+    openModal(html);
+
+}
+
+
+function checkError(index){
+
+    const item =
+        errorData[index];
+
+    if(!item) return;
+
+
+    const input =
+        document.getElementById(
+            `error-answer-${index}`
+        );
+
+
+    const result =
+        document.getElementById(
+            `error-result-${index}`
+        );
+
+
+    const userAnswer =
+        (input.value || "")
+        .trim()
+        .toLowerCase();
+
+
+    const correctAnswer =
+        String(
+            item.answer ||
+            item.error ||
+            ""
+        )
+        .trim()
+        .toLowerCase();
+
+
+    if(
+        userAnswer &&
+        correctAnswer &&
+        (
+            correctAnswer.includes(userAnswer) ||
+            userAnswer.includes(correctAnswer)
+        )
+    ){
+
+        result.innerHTML =
+            `<div class="result-message success">
+                ✓ Correct! +20 XP
+            </div>`;
+
+        const id =
+            item.id ||
+            ("error-" + index);
+
+
+        if(
+            !progressData.completedChallenges.includes(id)
+        ){
+
+            progressData.completedChallenges.push(id);
+
+            addXP(20);
+
+            saveProgress();
+
+        }
+
+        updateDashboard();
+
+    }else{
+
+        result.innerHTML =
+            `<div class="result-message failure">
+                ✗ Not correct. Read the code carefully and try again.
+            </div>`;
+
+    }
+
+}
+
+
+/* =========================================================
+   CAREER GUIDE
+========================================================= */
+
+function openCareer(){
+
+    const html = `
+
+        <h2 class="modal-title">
+            🎓 Career Guide
+        </h2>
+
+        <p class="modal-description">
+            Explore technology careers and the skills
+            you can build during your IT journey.
+        </p>
+
+        <div class="career-box">
+
+            <div class="career-prompts">
+
+                <button
+                    class="prompt-btn"
+                    onclick="
+                        setCareerQuestion(
+                            'What skills should I learn for software development?'
+                        )
+                    "
+                >
+                    Software Developer
+                </button>
+
+                <button
+                    class="prompt-btn"
+                    onclick="
+                        setCareerQuestion(
+                            'What should I learn to become a web developer?'
+                        )
+                    "
+                >
+                    Web Development
+                </button>
+
+                <button
+                    class="prompt-btn"
+                    onclick="
+                        setCareerQuestion(
+                            'What should I learn for cybersecurity?'
+                        )
+                    "
+                >
+                    Cybersecurity
+                </button>
+
+                <button
+                    class="prompt-btn"
+                    onclick="
+                        setCareerQuestion(
+                            'What should I learn for data science?'
+                        )
+                    "
+                >
+                    Data Science
+                </button>
+
+                <button
+                    class="prompt-btn"
+                    onclick="
+                        setCareerQuestion(
+                            'What should I learn for app development?'
+                        )
+                    "
+                >
+                    App Development
+                </button>
+
+            </div>
+
+
+            <textarea
+                id="careerQuestion"
+                class="career-input"
+                placeholder="Ask your career question..."
+            ></textarea>
+
+
+            <button
+                class="primary-btn"
+                style="margin-top:10px;width:100%;"
+                onclick="askCareer()"
+            >
+                Ask Career Guide
+            </button>
+
+
+            <div
+                id="careerResponse"
+                class="career-response hidden"
+            ></div>
+
+        </div>
+
+    `;
+
+    openModal(html);
+
+}
+
+
+function setCareerQuestion(question){
+
+    const input =
+        document.getElementById(
+            "careerQuestion"
+        );
+
+    if(input){
+
+        input.value = question;
+
+        input.focus();
+
+    }
+
+}
+
+
+async function askCareer(){
+
+    const input =
+        document.getElementById(
+            "careerQuestion"
+        );
+
+    const responseBox =
+        document.getElementById(
+            "careerResponse"
+        );
+
+
+    if(!input || !responseBox) return;
+
+
+    const question =
+        input.value.trim();
+
+
+    if(!question){
+
+        showToast(
+            "Enter a career question."
+        );
+
+        return;
+    }
+
+
+    responseBox.classList.remove("hidden");
+
+    responseBox.textContent =
+        "Career Guide is thinking...";
+
+
+    /*
+     * Uses the Flask career API if available.
+     * A local fallback keeps the feature usable
+     * if the endpoint is temporarily unavailable.
+     */
+
+    try {
+
+        const response =
+            await fetch("/api/career",{
+
+                method:"POST",
+
+                headers:{
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body:JSON.stringify({
+                    question:question
+                })
+
+            });
+
+
+        if(response.ok){
+
+            const data =
+                await response.json();
+
+            responseBox.textContent =
+                data.answer ||
+                data.response ||
+                "Career information is not available.";
+
+            return;
+
+        }
+
+    } catch(error){
+
+        console.log(
+            "Career API unavailable:",
+            error
+        );
+
+    }
+
+
+    responseBox.textContent =
+        localCareerGuide(question);
+
+}
+
+
+function localCareerGuide(question){
+
+    const q =
+        question.toLowerCase();
+
+
+    if(
+        q.includes("web") ||
+        q.includes("website")
+    ){
+
+        return `
+Web Development Path
+
+1. HTML
+2. CSS
+3. JavaScript
+4. Git & GitHub
+5. Frontend framework
+6. Backend development
+7. Database
+8. Deploy real projects
+
+Start with small websites and gradually build complete applications.
+        `.trim();
+
+    }
+
+
+    if(
+        q.includes("cyber") ||
+        q.includes("security")
+    ){
+
+        return `
+Cybersecurity Path
+
+1. Computer fundamentals
+2. Networking
+3. Linux
+4. Python
+5. Web security
+6. Authentication
+7. Cryptography basics
+8. Security testing
+
+Practice only in legal and controlled environments.
+        `.trim();
+
+    }
+
+
+    if(
+        q.includes("data") ||
+        q.includes("machine learning") ||
+        q.includes("ai")
+    ){
+
+        return `
+Data / AI Path
+
+1. Python
+2. Mathematics
+3. Statistics
+4. SQL
+5. Data structures
+6. Data analysis
+7. Machine learning
+8. Build practical projects
+        `.trim();
+
+    }
+
+
+    if(
+        q.includes("app") ||
+        q.includes("android")
+    ){
+
+        return `
+Application Development Path
+
+1. Programming fundamentals
+2. Java/Kotlin or another suitable language
+3. UI design
+4. APIs
+5. Databases
+6. Authentication
+7. Testing
+8. Publish and maintain projects
+        `.trim();
+
+    }
+
+
+    return `
+Software Development Path
+
+Start with:
+
+• Programming fundamentals
+• Python / C / C++
+• Data structures
+• Git and GitHub
+• Databases
+• Web or application development
+• APIs
+• Software projects
+
+The most useful way to learn is to combine concepts with small projects and gradually build larger applications.
+    `.trim();
+
+}
+
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+function openProgress(){
+
+    calculateLevel();
+
+
+    const totalXP =
+        progressData.xp;
+
+
+    const level =
+        progressData.level;
+
+
+    const nextLevelXP =
+        level * 100;
+
+
+    const levelProgress =
+        Math.min(
+            100,
+            Math.round(
+                (
+                    totalXP -
+                    ((level - 1) * 100)
+                ) / 100 * 100
+            )
+        );
+
+
+    const totalQuiz =
+        progressData.totalQuizQuestions;
+
+
+    const correctQuiz =
+        progressData.totalQuizCorrect;
+
+
+    const quizAccuracy =
+        totalQuiz
+        ? Math.round(
+            (correctQuiz / totalQuiz) * 100
+        )
+        : 0;
+
+
+    const html = `
+
+        <h2 class="modal-title">
+            📊 My Progress
+        </h2>
+
+        <p class="modal-description">
+            Your CodeQuest learning journey.
+        </p>
+
+
+        <div class="progress-big">
+
+            <div
+                class="progress-circle"
+                style="--progress:${levelProgress * 3.6}deg;"
+            >
+
+                <div class="progress-percent">
+                    ${levelProgress}%
+                </div>
+
+            </div>
+
+            <h3>
+                Level ${level}
+            </h3>
+
+            <p style="color:#9da5c3;margin-top:6px;">
+                ${totalXP} XP
+            </p>
+
+        </div>
+
+
+        <div class="stats">
+
+            <div class="stat-card">
+
+                <div class="stat-value">
+                    ${progressData.completedChapters.length}
+                </div>
+
+                <div class="stat-label">
+                    Chapters
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-value">
+                    ${progressData.completedChallenges.length}
+                </div>
+
+                <div class="stat-label">
+                    Challenges
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-value">
+                    ${progressData.quizScores.length}
+                </div>
+
+                <div class="stat-label">
+                    Quizzes
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-value">
+                    ${quizAccuracy}%
+                </div>
+
+                <div class="stat-label">
+                    Quiz Accuracy
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <h3 style="margin:25px 0 12px;">
+            🏆 Recent Quiz Scores
+        </h3>
+
+
+        <div class="progress-list">
+
+            ${
+                progressData.quizScores.length
+                ?
+                progressData.quizScores
+                    .slice(-5)
+                    .reverse()
+                    .map(item => `
+
+                        <div class="progress-item">
+
+                            <span>
+                                Quiz
+                            </span>
+
+                            <strong>
+                                ${item.score}/${item.total}
+                                (${item.percentage}%)
+                            </strong>
+
+                        </div>
+
+                    `)
+                    .join("")
+                :
+                `
+                    <div class="progress-item">
+                        <span>
+                            No quizzes completed yet.
+                        </span>
+                    </div>
+                `
+            }
+
+        </div>
+
+    `;
+
+
+    openModal(html);
+
+}
+
+
+/* =========================================================
+   FEATURES
+========================================================= */
+
+function openFeature(feature){
+
+    switch(feature){
+
+        case "quiz":
+            loadQuiz();
+            break;
+
+        case "challenge":
+            loadChallenges();
+            break;
+
+        case "error":
+            loadErrors();
+            break;
+
+        case "career":
+            openCareer();
+            break;
+
+        case "progress":
+            openProgress();
+            break;
+
+        default:
+            showToast(
+                "Feature coming soon."
+            );
+
+    }
+
+}
+
+
+/* =========================================================
    MODAL
-===================================================== */
+========================================================= */
 
-function showModal(content){
+function openModal(content){
 
     document.getElementById(
         "modalContent"
-    ).innerHTML=content;
+    ).innerHTML = content;
 
 
     document.getElementById(
         "modal"
-    ).style.display="block";
+    ).classList.remove("hidden");
 
 
-    document.body.style.overflow="hidden";
+    document.body.style.overflow =
+        "hidden";
 
 }
 
@@ -1239,3102 +3522,167 @@ function closeModal(){
 
     document.getElementById(
         "modal"
-    ).style.display="none";
+    ).classList.add("hidden");
 
 
-    document.body.style.overflow="";
-
-}
-
-
-/* =====================================================
-   COURSE SYSTEM
-===================================================== */
-
-async function openCourse(name){
-
-    showModal(`
-        <div class="loading">
-            📚 Loading complete learning path...
-        </div>
-    `);
-
-
-    try{
-
-        const response =
-            await fetch(
-                "/api/course/" +
-                encodeURIComponent(name),
-                {
-                    headers:{
-                        "Accept":
-                            "application/json"
-                    }
-                }
-            );
-
-
-        if(!response.ok){
-
-            throw new Error(
-                `Course API returned ${response.status}`
-            );
-
-        }
-
-
-        const course =
-            await response.json();
-
-
-        if(
-            !course ||
-            !Array.isArray(
-                course.chapters
-            )
-        ){
-
-            throw new Error(
-                "Invalid course data."
-            );
-
-        }
-
-
-        let completedCount =
-            course.chapters.filter(
-                chapter =>
-                    completedChapters.includes(
-                        name+"::"+chapter
-                    )
-            ).length;
-
-
-        let percentage =
-            course.chapters.length
-            ?
-            Math.round(
-                completedCount /
-                course.chapters.length *
-                100
-            )
-            :
-            0;
-
-
-        let html=`
-
-            <h2>
-                ${escapeHtml(
-                    course.icon || "📚"
-                )}
-
-                ${escapeHtml(name)}
-            </h2>
-
-
-            <p style="
-                color:#aaa;
-                margin-top:10px;
-                line-height:1.7;
-            ">
-
-                ${escapeHtml(
-                    course.description || ""
-                )}
-
-            </p>
-
-
-            <div class="course-header">
-
-                <strong>
-                    📈 Learning Progress
-                </strong>
-
-
-                <div style="
-                    margin-top:12px;
-                    height:8px;
-                    background:#27272f;
-                    border-radius:10px;
-                    overflow:hidden;
-                ">
-
-                    <div style="
-                        width:${percentage}%;
-                        height:100%;
-                        background:linear-gradient(
-                            90deg,
-                            #7c3aed,
-                            #ec4899
-                        );
-                    "></div>
-
-                </div>
-
-
-                <p style="
-                    color:#aaa;
-                    margin-top:9px;
-                    font-size:13px;
-                ">
-
-                    ${completedCount}
-                    /
-                    ${course.chapters.length}
-                    chapters completed
-
-                </p>
-
-            </div>
-
-
-            <h3 style="
-                margin-top:28px;
-                margin-bottom:12px;
-            ">
-
-                📖 Complete Learning Path
-
-            </h3>
-
-        `;
-
-
-        course.chapters.forEach(
-            (chapter,index)=>{
-
-                let completed =
-                    completedChapters.includes(
-                        name+"::"+chapter
-                    );
-
-
-                html+=`
-
-                    <div
-                        class="chapter ${
-                            completed
-                            ? "completed"
-                            : ""
-                        }"
-                        data-course="${escapeAttr(name)}"
-                        data-chapter="${escapeAttr(chapter)}">
-
-                        ${
-                            completed
-                            ? "✅"
-                            : `${index+1}.`
-                        }
-
-                        ${escapeHtml(chapter)}
-
-                        <span style="
-                            float:right;
-                            color:#a855f7;
-                        ">
-                            →
-                        </span>
-
-                    </div>
-
-                `;
-
-            }
-        );
-
-
-        showModal(html);
-
-
-        document
-            .querySelectorAll(".chapter")
-            .forEach(element=>{
-
-                element.addEventListener(
-                    "click",
-                    function(){
-
-                        startChapter(
-                            this.dataset.course,
-                            this.dataset.chapter
-                        );
-
-                    }
-                );
-
-            });
-
-
-    }catch(error){
-
-        console.error(error);
-
-
-        showModal(`
-
-            <h2>
-                ⚠️ Course Error
-            </h2>
-
-            <div class="error-message">
-
-                ${escapeHtml(
-                    error.message
-                )}
-
-            </div>
-
-        `);
-
-    }
-
-}
-
-
-/* =====================================================
-   LESSON SYSTEM
-===================================================== */
-
-async function startChapter(
-    courseName,
-    chapter
-){
-
-    showModal(`
-        <div class="loading">
-            📖 Preparing your lesson...
-        </div>
-    `);
-
-
-    try{
-
-        const response =
-            await fetch(
-                "/api/lesson/" +
-                encodeURIComponent(chapter),
-                {
-                    headers:{
-                        "Accept":
-                            "application/json"
-                    }
-                }
-            );
-
-
-        if(!response.ok){
-
-            throw new Error(
-                `Lesson API returned ${response.status}`
-            );
-
-        }
-
-
-        const lesson =
-            await response.json();
-
-
-        let key =
-            courseName+"::"+chapter;
-
-
-        let alreadyCompleted =
-            completedChapters.includes(
-                key
-            );
-
-
-        let html=`
-
-            <h2>
-                📖 ${escapeHtml(
-                    lesson.title || chapter
-                )}
-            </h2>
-
-
-            <div class="lesson-box">
-
-                <h3>
-                    🧠 Understand the Concept
-                </h3>
-
-
-                <p>
-                    ${escapeHtml(
-                        lesson.explanation ||
-                        "This chapter explains an important concept."
-                    )}
-                </p>
-
-
-                <h3 style="
-                    margin-top:25px;
-                ">
-
-                    💻 Simple Example
-
-                </h3>
-
-
-                <p style="
-                    color:#aaa;
-                    margin-bottom:10px;
-                ">
-
-                    First understand this small example.
-                    Look at each line and think about
-                    what the computer is doing.
-
-                </p>
-
-
-                <pre class="example">${
-                    formatCode(
-                        lesson.example || ""
-                    )
-                }</pre>
-
-
-                ${
-                    lesson.key_points &&
-                    Array.isArray(
-                        lesson.key_points
-                    )
-                    ?
-                    `
-                    <div class="key-points">
-
-                        <h3>
-                            📌 Key Points
-                        </h3>
-
-                        <ul>
-
-                            ${
-                                lesson.key_points
-                                .map(
-                                    point =>
-                                    `<li>
-                                        ${escapeHtml(point)}
-                                    </li>`
-                                )
-                                .join("")
-                            }
-
-                        </ul>
-
-                    </div>
-                    `
-                    :
-                    ""
-                }
-
-
-                <div class="tip">
-
-                    💡 <strong>
-                    Smart Tip:
-                    </strong>
-
-                    ${escapeHtml(
-                        lesson.tip ||
-                        "Practice this concept yourself."
-                    )}
-
-                </div>
-
-            </div>
-
-
-            <div class="lesson-question">
-
-                🧪 Quick Check
-
-                <p style="
-                    color:#aaa;
-                    font-size:15px;
-                    margin-top:10px;
-                    font-weight:normal;
-                ">
-
-                    Test what you just learned:
-
-                </p>
-
-
-                <p style="
-                    margin-top:12px;
-                    font-size:17px;
-                ">
-
-                    ${escapeHtml(
-                        lesson.question ||
-                        "What did you understand from this chapter?"
-                    )}
-
-                </p>
-
-            </div>
-
-
-            <div id="lessonOptions">
-
-        `;
-
-
-        if(
-            Array.isArray(
-                lesson.options
-            )
-        ){
-
-            lesson.options.forEach(
-                (option,index)=>{
-
-                    html+=`
-
-                        <button
-                            type="button"
-                            class="option lesson-option"
-                            data-index="${index}"
-                            data-answer="${lesson.answer}"
-                            data-key="${escapeAttr(key)}">
-
-                            ${String.fromCharCode(65+index)}.
-                            ${escapeHtml(option)}
-
-                        </button>
-
-                    `;
-
-                }
-            );
-
-        }
-
-
-        html+=`
-
-            </div>
-
-            <div id="lessonResult"></div>
-
-
-            ${
-                alreadyCompleted
-                ?
-                `
-                <div
-                    class="result"
-                    style="color:#4ade80">
-
-                    ✅ You have already completed
-                    this chapter.
-
-                </div>
-                `
-                :
-                ""
-            }
-
-        `;
-
-
-        showModal(html);
-
-
-        document
-            .querySelectorAll(
-                ".lesson-option"
-            )
-            .forEach(button=>{
-
-                button.addEventListener(
-                    "click",
-                    function(){
-
-                        checkLesson(
-                            Number(
-                                this.dataset.index
-                            ),
-                            Number(
-                                this.dataset.answer
-                            ),
-                            this.dataset.key
-                        );
-
-                    }
-                );
-
-            });
-
-
-    }catch(error){
-
-        console.error(error);
-
-
-        showModal(`
-
-            <h2>
-                ⚠️ Lesson Error
-            </h2>
-
-            <div class="error-message">
-
-                ${escapeHtml(
-                    error.message
-                )}
-
-            </div>
-
-        `);
-
-    }
-
-}
-
-
-function checkLesson(
-    selected,
-    correct,
-    key
-){
-
-    const result =
-        document.getElementById(
-            "lessonResult"
-        );
-
-
-    if(!result){
-        return;
-    }
-
-
-    document
-        .querySelectorAll(
-            ".lesson-option"
-        )
-        .forEach(button=>{
-            button.disabled=true;
-        });
-
-
-    if(selected===correct){
-
-        if(
-            !completedChapters.includes(
-                key
-            )
-        ){
-
-            completedChapters.push(key);
-
-
-            localStorage.setItem(
-                "codequest_chapters",
-                JSON.stringify(
-                    completedChapters
-                )
-            );
-
-
-            addXP(25);
-
-
-            result.innerHTML=`
-
-                <div
-                    class="result"
-                    style="color:#4ade80">
-
-                    🎉 <strong>Correct!</strong>
-
-                    <br><br>
-
-                    You understood this chapter.
-
-                    <br>
-
-                    <strong>
-                        +25 XP ⭐
-                    </strong>
-
-                    <br><br>
-
-                    Keep going.
-                    You're building your knowledge
-                    step-by-step. 🚀
-
-                </div>
-
-            `;
-
-        }else{
-
-            result.innerHTML=`
-
-                <div
-                    class="result"
-                    style="color:#4ade80">
-
-                    ✅ Correct!
-
-                    <br><br>
-
-                    Chapter already completed.
-
-                </div>
-
-            `;
-
-        }
-
-    }else{
-
-        result.innerHTML=`
-
-            <div
-                class="result"
-                style="color:#fb7185">
-
-                ❌ Not quite.
-
-                <br><br>
-
-                Go back through the explanation
-                and example carefully.
-
-                <br><br>
-
-                <button
-                    class="primary"
-                    onclick="startChapter(
-                        ${JSON.stringify(
-                            key.split("::")[0]
-                        )},
-                        ${JSON.stringify(
-                            key.split("::").slice(1).join("::")
-                        )}
-                    )">
-
-                    📖 REVIEW CHAPTER
-
-                </button>
-
-            </div>
-
-        `;
-
-    }
-
-}
-
-
-/* =====================================================
-   QUIZ
-===================================================== */
-
-async function openQuiz(){
-
-    showModal(`
-        <div class="loading">
-            🛡️ Initializing Secure Quiz...
-        </div>
-    `);
-
-
-    try{
-
-        if(!quizData.length){
-
-            const response =
-                await fetch(
-                    "/api/quiz",
-                    {
-                        headers:{
-                            "Accept":
-                                "application/json"
-                        }
-                    }
-                );
-
-
-            if(!response.ok){
-
-                throw new Error(
-                    `Quiz API returned ${response.status}`
-                );
-
-            }
-
-
-            quizData =
-                await response.json();
-
-
-            if(
-                !Array.isArray(quizData) ||
-                !quizData.length
-            ){
-
-                throw new Error(
-                    "No quiz questions available."
-                );
-
-            }
-
-        }
-
-
-        currentQuizIndex=0;
-
-        currentQuizScore=0;
-
-        currentQuizTotal=
-            Math.min(
-                quizData.length,
-                10
-            );
-
-
-        startSecureQuiz();
-
-
-    }catch(error){
-
-        console.error(error);
-
-
-        showModal(`
-
-            <h2>
-                ⚠️ Quiz Error
-            </h2>
-
-            <div class="error-message">
-
-                ${escapeHtml(
-                    error.message
-                )}
-
-            </div>
-
-
-            <button
-                class="primary"
-                onclick="openQuiz()">
-
-                TRY AGAIN
-
-            </button>
-
-        `);
-
-    }
-
-}
-
-
-function startSecureQuiz(){
-
-    activateQuizSecurity();
-
-
-    if(
-        currentQuizIndex>=
-        currentQuizTotal
-    ){
-
-        finishQuiz();
-
-        return;
-
-    }
-
-
-    let question =
-        quizData[
-            currentQuizIndex
-        ];
-
-
-    let html=`
-
-        <div class="quiz-top">
-
-            <strong>
-                🧠 Secure Quiz
-            </strong>
-
-            <span class="security-badge">
-                🛡️ EXAM MODE
-            </span>
-
-        </div>
-
-
-        <p style="
-            color:#aaa;
-            margin-top:12px;
-            font-size:13px;
-        ">
-
-            Question
-            ${currentQuizIndex+1}
-            of
-            ${currentQuizTotal}
-
-        </p>
-
-
-        <div class="warning">
-
-            ⚠️ Exam integrity mode is active.
-            Leaving the quiz or switching away
-            may terminate the attempt.
-
-        </div>
-
-
-        <div class="quiz-question">
-
-            ${escapeHtml(
-                question.question
-            )}
-
-        </div>
-
-
-        <div id="quizOptions">
-
-    `;
-
-
-    question.options.forEach(
-        (option,index)=>{
-
-            html+=`
-
-                <button
-                    type="button"
-                    class="option quiz-option"
-                    data-index="${index}">
-
-                    ${String.fromCharCode(65+index)}.
-                    ${escapeHtml(option)}
-
-                </button>
-
-            `;
-
-        }
-    );
-
-
-    html+=`
-
-        </div>
-
-        <div id="quizResult"></div>
-
-    `;
-
-
-    showModal(html);
-
-
-    document
-        .querySelectorAll(
-            ".quiz-option"
-        )
-        .forEach(button=>{
-
-            button.addEventListener(
-                "click",
-                function(){
-
-                    answerSecureQuiz(
-                        Number(
-                            this.dataset.index
-                        )
-                    );
-
-                }
-            );
-
-        });
-
-}
-
-
-function answerSecureQuiz(
-    selected
-){
-
-    let question =
-        quizData[
-            currentQuizIndex
-        ];
-
-
-    document
-        .querySelectorAll(
-            ".quiz-option"
-        )
-        .forEach(button=>{
-            button.disabled=true;
-        });
-
-
-    const result =
-        document.getElementById(
-            "quizResult"
-        );
-
-
-    if(selected===question.answer){
-
-        currentQuizScore++;
-
-
-        result.innerHTML=`
-
-            <div
-                class="result"
-                style="color:#4ade80">
-
-                ✅ Correct!
-
-                <br><br>
-
-                ${escapeHtml(
-                    question.explanation || ""
-                )}
-
-                <br><br>
-
-                <button
-                    class="primary"
-                    onclick="nextSecureQuestion()">
-
-                    NEXT QUESTION →
-
-                </button>
-
-            </div>
-
-        `;
-
-    }else{
-
-        result.innerHTML=`
-
-            <div
-                class="result"
-                style="color:#fb7185">
-
-                ❌ Incorrect
-
-                <br><br>
-
-                ${escapeHtml(
-                    question.explanation || ""
-                )}
-
-                <br><br>
-
-                <button
-                    class="primary"
-                    onclick="nextSecureQuestion()">
-
-                    NEXT QUESTION →
-
-                </button>
-
-            </div>
-
-        `;
-
-    }
-
-}
-
-
-function nextSecureQuestion(){
-
-    currentQuizIndex++;
-
-    startSecureQuiz();
-
-}
-
-
-function finishQuiz(){
-
-    deactivateQuizSecurity();
-
-
-    let percentage =
-        currentQuizTotal
-        ?
-        Math.round(
-            currentQuizScore /
-            currentQuizTotal *
-            100
-        )
-        :
-        0;
-
-
-    let earnedXP =
-        currentQuizScore * 10;
-
-
-    addXP(earnedXP);
-
-
-    showModal(`
-
-        <h2>
-            🏆 Quiz Complete
-        </h2>
-
-
-        <div class="stats-grid">
-
-            <div class="stat">
-
-                Score
-
-                <strong>
-                    ${currentQuizScore}/${currentQuizTotal}
-                </strong>
-
-            </div>
-
-
-            <div class="stat">
-
-                Accuracy
-
-                <strong>
-                    ${percentage}%
-                </strong>
-
-            </div>
-
-        </div>
-
-
-        <div
-            class="result"
-            style="color:#4ade80">
-
-            🎉 Test completed successfully!
-
-            <br><br>
-
-            +${earnedXP} XP ⭐
-
-        </div>
-
-
-        <button
-            class="primary"
-            onclick="openQuiz()">
-
-            TAKE ANOTHER QUIZ →
-
-        </button>
-
-    `);
-
-}
-
-
-/* =====================================================
-   QUIZ SECURITY
-===================================================== */
-
-let secureQuizActive=false;
-
-
-function activateQuizSecurity(){
-
-    secureQuizActive=true;
-
-}
-
-
-function deactivateQuizSecurity(){
-
-    secureQuizActive=false;
-
-}
-
-
-document.addEventListener(
-    "visibilitychange",
-    function(){
-
-        if(
-            document.hidden &&
-            secureQuizActive
-        ){
-
-            terminateSecureQuiz(
-                "The quiz was stopped because the page was left."
-            );
-
-        }
-
-    }
-);
-
-
-window.addEventListener(
-    "blur",
-    function(){
-
-        if(secureQuizActive){
-
-            terminateSecureQuiz(
-                "The quiz was stopped because the application lost focus."
-            );
-
-        }
-
-    }
-);
-
-
-function terminateSecureQuiz(reason){
-
-    if(!secureQuizActive){
-        return;
-    }
-
-
-    secureQuizActive=false;
-
-
-    showModal(`
-
-        <h2>
-            🛡️ Quiz Terminated
-        </h2>
-
-
-        <div
-            class="result"
-            style="color:#fb7185">
-
-            ⚠️ ${escapeHtml(reason)}
-
-            <br><br>
-
-            This attempt has been terminated
-            to protect exam integrity.
-
-        </div>
-
-
-        <button
-            class="primary"
-            onclick="openQuiz()">
-
-            START NEW ATTEMPT
-
-        </button>
-
-    `);
-
-}
-
-
-/* =====================================================
-   CODE CHALLENGE
-===================================================== */
-
-async function openCodeChallenge(){
-
-    showModal(`
-        <div class="loading">
-            💻 Loading Code Challenge...
-        </div>
-    `);
-
-
-    try{
-
-        if(!codeData.length){
-
-            const response=
-                await fetch(
-                    "/api/code-challenges"
-                );
-
-
-            if(!response.ok){
-
-                throw new Error(
-                    `API returned ${response.status}`
-                );
-
-            }
-
-
-            codeData=
-                await response.json();
-
-        }
-
-
-        showCodeChallenge();
-
-
-    }catch(error){
-
-        showModal(`
-
-            <h2>
-                ⚠️ Challenge Error
-            </h2>
-
-            <div class="error-message">
-
-                ${escapeHtml(
-                    error.message
-                )}
-
-            </div>
-
-        `);
-
-    }
-
-}
-
-
-function showCodeChallenge(){
-
-    let challenge=
-        codeData[
-            Math.floor(
-                Math.random()*
-                codeData.length
-            )
-        ];
-
-
-    let html=`
-
-        <h2>
-            💻 Code Challenge
-        </h2>
-
-
-        <p style="
-            color:#aaa;
-            margin:15px 0;
-        ">
-
-            ${escapeHtml(
-                challenge.question
-            )}
-
-        </p>
-
-
-        <pre class="example">${
-            formatCode(
-                challenge.code
-            )
-        }</pre>
-
-
-        <div id="codeOptions">
-
-    `;
-
-
-    challenge.options.forEach(
-        (option,index)=>{
-
-            html+=`
-
-                <button
-                    class="option code-option"
-                    data-index="${index}"
-                    data-answer="${challenge.answer}"
-                    data-explanation="${escapeAttr(
-                        challenge.explanation
-                    )}">
-
-                    ${String.fromCharCode(65+index)}.
-                    ${escapeHtml(option)}
-
-                </button>
-
-            `;
-
-        }
-    );
-
-
-    html+=`
-
-        </div>
-
-        <div id="codeResult"></div>
-
-    `;
-
-
-    showModal(html);
-
-
-    document
-        .querySelectorAll(
-            ".code-option"
-        )
-        .forEach(button=>{
-
-            button.addEventListener(
-                "click",
-                function(){
-
-                    checkCodeAnswer(
-                        Number(
-                            this.dataset.index
-                        ),
-                        Number(
-                            this.dataset.answer
-                        ),
-                        this.dataset.explanation
-                    );
-
-                }
-            );
-
-        });
-
-}
-
-
-function checkCodeAnswer(
-    selected,
-    correct,
-    explanation
-){
-
-    const result=
-        document.getElementById(
-            "codeResult"
-        );
-
-
-    if(!result)return;
-
-
-    document
-        .querySelectorAll(
-            ".code-option"
-        )
-        .forEach(button=>{
-            button.disabled=true;
-        });
-
-
-    if(selected===correct){
-
-        addXP(15);
-
-
-        solvedChallenges++;
-
-
-        localStorage.setItem(
-            "codequest_challenges",
-            solvedChallenges
-        );
-
-
-        result.innerHTML=`
-
-            <div
-                class="result"
-                style="color:#4ade80">
-
-                🧠 <strong>Correct!</strong>
-
-                <br><br>
-
-                +15 XP ⭐
-
-                <br><br>
-
-                ${escapeHtml(
-                    explanation
-                )}
-
-                <br><br>
-
-                <button
-                    class="primary"
-                    onclick="openCodeChallenge()">
-
-                    NEXT CHALLENGE →
-
-                </button>
-
-            </div>
-
-        `;
-
-    }else{
-
-        result.innerHTML=`
-
-            <div
-                class="result"
-                style="color:#fb7185">
-
-                ❌ Incorrect
-
-                <br><br>
-
-                ${escapeHtml(
-                    explanation
-                )}
-
-            </div>
-
-        `;
-
-    }
-
-}
-
-
-/* =====================================================
-   ERROR FINDER
-===================================================== */
-
-async function openErrorFinder(){
-
-    showModal(`
-        <div class="loading">
-            🔍 Loading Error Finder...
-        </div>
-    `);
-
-
-    try{
-
-        if(!errorData.length){
-
-            const response=
-                await fetch(
-                    "/api/error-finder"
-                );
-
-
-            if(!response.ok){
-
-                throw new Error(
-                    `API returned ${response.status}`
-                );
-
-            }
-
-
-            errorData=
-                await response.json();
-
-        }
-
-
-        showErrorChallenge();
-
-
-    }catch(error){
-
-        showModal(`
-
-            <h2>
-                ⚠️ Error Finder Error
-            </h2>
-
-            <div class="error-message">
-
-                ${escapeHtml(
-                    error.message
-                )}
-
-            </div>
-
-        `);
-
-    }
-
-}
-
-
-function showErrorChallenge(){
-
-    let challenge=
-        errorData[
-            Math.floor(
-                Math.random()*
-                errorData.length
-            )
-        ];
-
-
-    let html=`
-
-        <h2>
-            🔍 Error Finder
-        </h2>
-
-
-        <p style="
-            color:#aaa;
-            margin:15px 0;
-        ">
-
-            ${escapeHtml(
-                challenge.question
-            )}
-
-        </p>
-
-
-        <pre class="example">${
-            formatCode(
-                challenge.code
-            )
-        }</pre>
-
-
-        <div id="errorOptions">
-
-    `;
-
-
-    challenge.options.forEach(
-        (option,index)=>{
-
-            html+=`
-
-                <button
-                    class="option error-option"
-                    data-index="${index}"
-                    data-answer="${challenge.answer}"
-                    data-explanation="${escapeAttr(
-                        challenge.explanation
-                    )}">
-
-                    ${String.fromCharCode(65+index)}.
-                    ${escapeHtml(option)}
-
-                </button>
-
-            `;
-
-        }
-    );
-
-
-    html+=`
-
-        </div>
-
-        <div id="errorResult"></div>
-
-    `;
-
-
-    showModal(html);
-
-
-    document
-        .querySelectorAll(
-            ".error-option"
-        )
-        .forEach(button=>{
-
-            button.addEventListener(
-                "click",
-                function(){
-
-                    checkError(
-                        Number(
-                            this.dataset.index
-                        ),
-                        Number(
-                            this.dataset.answer
-                        ),
-                        this.dataset.explanation
-                    );
-
-                }
-            );
-
-        });
-
-}
-
-
-function checkError(
-    selected,
-    correct,
-    explanation
-){
-
-    const result=
-        document.getElementById(
-            "errorResult"
-        );
-
-
-    if(!result)return;
-
-
-    document
-        .querySelectorAll(
-            ".error-option"
-        )
-        .forEach(button=>{
-            button.disabled=true;
-        });
-
-
-    if(selected===correct){
-
-        addXP(20);
-
-
-        solvedChallenges++;
-
-
-        localStorage.setItem(
-            "codequest_challenges",
-            solvedChallenges
-        );
-
-
-        result.innerHTML=`
-
-            <div
-                class="result"
-                style="color:#4ade80">
-
-                🔥 <strong>ERROR FOUND!</strong>
-
-                <br><br>
-
-                +20 XP ⭐
-
-                <br><br>
-
-                ${escapeHtml(
-                    explanation
-                )}
-
-                <br><br>
-
-                <button
-                    class="primary"
-                    onclick="openErrorFinder()">
-
-                    NEXT ERROR →
-
-                </button>
-
-            </div>
-
-        `;
-
-    }else{
-
-        result.innerHTML=`
-
-            <div
-                class="result"
-                style="color:#fb7185">
-
-                ❌ Keep looking!
-
-                <br><br>
-
-                ${escapeHtml(
-                    explanation
-                )}
-
-            </div>
-
-        `;
-
-    }
-
-}
-
-
-/* =====================================================
-   AI CAREER ASSISTANT
-===================================================== */
-
-function careerAssistant(){
-
-    showModal(`
-
-        <div class="ai-shell">
-
-
-            <div class="ai-intro">
-
-                <h2>
-                    🤖 CodeQuest AI Career Assistant
-                </h2>
-
-                <p>
-                    Ask me about internships, placements,
-                    jobs, software, hardware, coding,
-                    projects, resumes, skills, interviews,
-                    career paths and more.
-                </p>
-
-            </div>
-
-
-            <div class="quick-prompts">
-
-                <button
-                    class="quick-prompt"
-                    onclick="useCareerPrompt(
-                        'How should I prepare for internships?'
-                    )">
-
-                    🎓 Internships
-
-                </button>
-
-
-                <button
-                    class="quick-prompt"
-                    onclick="useCareerPrompt(
-                        'How should I prepare for campus placements?'
-                    )">
-
-                    💼 Placements
-
-                </button>
-
-
-                <button
-                    class="quick-prompt"
-                    onclick="useCareerPrompt(
-                        'What skills do I need to become a software developer?'
-                    )">
-
-                    💻 Software Jobs
-
-                </button>
-
-
-                <button
-                    class="quick-prompt"
-                    onclick="useCareerPrompt(
-                        'What should I learn for hardware and computer systems?'
-                    )">
-
-                    🖥️ Hardware
-
-                </button>
-
-
-                <button
-                    class="quick-prompt"
-                    onclick="useCareerPrompt(
-                        'How can I build a strong resume as a student?'
-                    )">
-
-                    📄 Resume
-
-                </button>
-
-
-                <button
-                    class="quick-prompt"
-                    onclick="useCareerPrompt(
-                        'Give me a roadmap to get my first IT job.'
-                    )">
-
-                    🚀 First Job
-
-                </button>
-
-            </div>
-
-
-            <div
-                id="careerChat"
-                class="chat-box">
-
-                <div class="chat-message ai">
-
-                    <div class="chat-bubble">
-
-                        👋 Hi! I'm your CodeQuest
-                        Career Assistant.
-
-                        <br><br>
-
-                        You can ask me things like:
-
-                        <br><br>
-
-                        • How do I get an internship?
-                        <br>
-                        • What should I learn for placements?
-                        <br>
-                        • Which programming language should I learn?
-                        <br>
-                        • How do I build projects?
-                        <br>
-                        • What laptop is suitable for coding?
-                        <br>
-                        • How do software jobs work?
-                        <br>
-                        • What hardware skills are useful?
-                        <br>
-                        • How should I prepare for interviews?
-
-                        <br><br>
-
-                        Ask anything related to
-                        technology and career growth. 🚀
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="ai-input-row">
-
-                <input
-                    id="careerInput"
-                    class="ai-input"
-                    type="text"
-                    placeholder="Ask your career or technology question..."
-                    onkeydown="
-                        if(event.key==='Enter'){
-                            askCareerAI();
-                        }
-                    "
-                >
-
-
-                <button
-                    class="ai-send"
-                    onclick="askCareerAI()">
-
-                    ASK
-
-                </button>
-
-            </div>
-
-
-        </div>
-
-    `);
-
-}
-
-
-function useCareerPrompt(question){
-
-    const input =
-        document.getElementById(
-            "careerInput"
-        );
-
-
-    if(!input){
-        return;
-    }
-
-
-    input.value=question;
-
-    askCareerAI();
-
-}
-
-
-function addCareerMessage(
-    type,
-    text
-){
-
-    const chat =
-        document.getElementById(
-            "careerChat"
-        );
-
-
-    if(!chat){
-        return;
-    }
-
-
-    const wrapper =
-        document.createElement(
-            "div"
-        );
-
-
-    wrapper.className =
-        `chat-message ${type}`;
-
-
-    const bubble =
-        document.createElement(
-            "div"
-        );
-
-
-    bubble.className =
-        "chat-bubble";
-
-
-    bubble.textContent=text;
-
-
-    wrapper.appendChild(
-        bubble
-    );
-
-
-    chat.appendChild(
-        wrapper
-    );
-
-
-    chat.scrollTop =
-        chat.scrollHeight;
-
-}
-
-
-async function askCareerAI(){
-
-    const input =
-        document.getElementById(
-            "careerInput"
-        );
-
-
-    if(!input){
-        return;
-    }
-
-
-    const question =
-        input.value.trim();
-
-
-    if(!question){
-        return;
-    }
-
-
-    addCareerMessage(
-        "user",
-        question
-    );
-
-
-    input.value="";
-
-
-    addCareerMessage(
-        "ai",
-        "🤔 Thinking..."
-    );
-
-
-    const chat =
-        document.getElementById(
-            "careerChat"
-        );
-
-
-    const thinkingBubble =
-        chat.lastElementChild
-        ?.querySelector(
-            ".chat-bubble"
-        );
-
-
-    try{
-
-        const response =
-            await fetch(
-                "/api/career",
-                {
-                    method:"POST",
-
-                    headers:{
-                        "Content-Type":
-                            "application/json",
-
-                        "Accept":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify({
-                            question:question
-                        })
-                }
-            );
-
-
-        if(!response.ok){
-
-            throw new Error(
-                `Career API returned ${response.status}`
-            );
-
-        }
-
-
-        const data =
-            await response.json();
-
-
-        const answer =
-            data.answer ||
-            data.response ||
-            data.message ||
-            data.reply;
-
-
-        if(!answer){
-
-            throw new Error(
-                "The career assistant returned no answer."
-            );
-
-        }
-
-
-        if(thinkingBubble){
-
-            thinkingBubble.textContent=
-                answer;
-
-        }
-
-
-    }catch(error){
-
-        console.error(error);
-
-
-        const fallback =
-            localCareerAnswer(
-                question
-            );
-
-
-        if(thinkingBubble){
-
-            thinkingBubble.textContent=
-                fallback;
-
-        }
-
-    }
-
-}
-
-
-/* =====================================================
-   LOCAL CAREER BACKUP
-===================================================== */
-
-function localCareerAnswer(
-    question
-){
-
-    const q =
-        question.toLowerCase();
-
-
-    if(
-        q.includes("internship") ||
-        q.includes("intern")
-    ){
-
-        return `
-🎓 Internship Roadmap
-
-1. Learn one programming language properly.
-2. Learn Git and GitHub.
-3. Build 2–3 real projects.
-4. Put your projects on GitHub.
-5. Create a simple one-page resume.
-6. Practice basic coding and interview questions.
-7. Apply regularly instead of waiting for the perfect opportunity.
-
-For an IT student, projects + fundamentals + communication skills can make your profile much stronger.
-        `.trim();
-
-    }
-
-
-    if(
-        q.includes("placement") ||
-        q.includes("campus")
-    ){
-
-        return `
-💼 Placement Preparation
-
-Focus on these areas:
-
-• Programming fundamentals
-• DSA basics
-• OOP
-• DBMS
-• Operating Systems
-• Computer Networks
-• SQL
-• Git/GitHub
-• Aptitude
-• Communication
-• Technical interviews
-• HR interviews
-
-Start preparing early instead of trying to study everything during the final semester.
-        `.trim();
-
-    }
-
-
-    if(
-        q.includes("hardware") ||
-        q.includes("laptop") ||
-        q.includes("computer hardware")
-    ){
-
-        return `
-🖥️ Hardware Learning Path
-
-Start with:
-
-Computer components → CPU → RAM → Storage → Motherboard → GPU → Power supply → Operating system → Networking → Troubleshooting.
-
-For IT students, you don't necessarily need advanced electronics knowledge, but understanding how computers actually work will make software and system concepts easier.
-        `.trim();
-
-    }
-
-
-    if(
-        q.includes("resume") ||
-        q.includes("cv")
-    ){
-
-        return `
-📄 Student Resume
-
-Keep your resume simple and preferably one page.
-
-Include:
-
-• Name and contact
-• Education
-• Programming skills
-• Projects
-• Certifications
-• Internship/experience if available
-• GitHub
-• LinkedIn
-• Achievements
-
-Don't fill the resume with skills you cannot explain in an interview.
-        `.trim();
-
-    }
-
-
-    if(
-        q.includes("software") ||
-        q.includes("developer") ||
-        q.includes("coding")
-    ){
-
-        return `
-💻 Software Developer Roadmap
-
-Programming fundamentals
-→ Data Structures
-→ OOP
-→ Git/GitHub
-→ SQL
-→ APIs
-→ Projects
-→ Testing/debugging
-→ Internship
-→ Interview preparation
-
-Choose one main language first instead of jumping between many languages.
-        `.trim();
-
-    }
-
-
-    if(
-        q.includes("project") ||
-        q.includes("portfolio")
-    ){
-
-        return `
-🚀 Project Strategy
-
-Start with small projects and gradually increase complexity.
-
-Example:
-
-Calculator
-→ To-do app
-→ Student management system
-→ API-based application
-→ Full-stack project
-→ Real-world problem solving project.
-
-A good project should demonstrate what you learned and explain the problem it solves.
-        `.trim();
-
-    }
-
-
-    return `
-🤖 Here's how I would approach this:
-
-First understand the fundamentals, then practice with a small example, then build a project using the concept.
-
-If you're asking about a specific technology, career, internship, placement, software, hardware or programming problem, tell me the exact topic and I'll break it down step-by-step.
-
-For example:
-"How do I get my first internship?"
-"What should I learn for placements?"
-"Should I learn Python or Java?"
-"How does RAM work?"
-"How do I prepare for a software interview?"
-    `.trim();
-
-}
-
-
-/* =====================================================
-   ONLINE COMPILER
-===================================================== */
-
-function compiler(){
-
-    showModal(`
-
-        <h2>
-            ▶️ Online Compiler
-        </h2>
-
-
-        <p style="
-            color:#aaa;
-            margin:12px 0;
-            line-height:1.6;
-        ">
-
-            Write code, provide optional input,
-            run it and see the program output.
-
-        </p>
-
-
-        <div class="compiler-toolbar">
-
-
-            <div class="compiler-field">
-
-                <label>
-                    PROGRAMMING LANGUAGE
-                </label>
-
-                <select
-                    id="compilerLanguage"
-                    onchange="changeCompilerTemplate()">
-
-                    <option value="c">
-                        C
-                    </option>
-
-                    <option value="cpp">
-                        C++
-                    </option>
-
-                    <option value="python">
-                        Python
-                    </option>
-
-                    <option value="java">
-                        Java
-                    </option>
-
-                    <option value="javascript">
-                        JavaScript
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <div class="compiler-field">
-
-                <label>
-                    STANDARD INPUT
-                </label>
-
-                <input
-                    id="compilerInput"
-                    type="text"
-                    placeholder="Example: 10 20"
-                >
-
-            </div>
-
-
-        </div>
-
-
-        <textarea
-            id="codeEditor"
-            class="compiler-editor"
-            spellcheck="false"
-        ></textarea>
-
-
-        <div class="compiler-actions">
-
-            <button
-                class="primary"
-                onclick="runCompiler()">
-
-                ▶ RUN CODE
-
-            </button>
-
-
-            <button
-                class="secondary"
-                onclick="resetCompiler()">
-
-                ↻ RESET
-
-            </button>
-
-        </div>
-
-
-        <div id="compilerResult">
-
-            <div class="result">
-
-                💡 Choose a language, write your
-                program and press <strong>RUN CODE</strong>.
-
-            </div>
-
-        </div>
-
-    `);
-
-
-    changeCompilerTemplate();
-
-}
-
-
-function changeCompilerTemplate(){
-
-    const language =
-        document.getElementById(
-            "compilerLanguage"
-        );
-
-
-    const editor =
-        document.getElementById(
-            "codeEditor"
-        );
-
-
-    if(!language || !editor){
-        return;
-    }
-
-
-    const templates={
-
-        c:
-`#include <stdio.h>
-
-int main()
-{
-    printf("Hello World");
-    return 0;
-}`,
-
-        cpp:
-`#include <iostream>
-using namespace std;
-
-int main()
-{
-    cout << "Hello World";
-    return 0;
-}`,
-
-        python:
-`name = input()
-print("Hello", name)`,
-
-        java:
-`public class Main
-{
-    public static void main(String[] args)
-    {
-        System.out.println("Hello World");
-    }
-}`,
-
-        javascript:
-`const name = "World";
-console.log("Hello " + name);`
-
-    };
-
-
-    editor.value =
-        templates[
-            language.value
-        ] || "";
-
-}
-
-
-function resetCompiler(){
-
-    changeCompilerTemplate();
-
-
-    const input =
-        document.getElementById(
-            "compilerInput"
-        );
-
-
-    if(input){
-        input.value="";
-    }
-
-
-    const result =
-        document.getElementById(
-            "compilerResult"
-        );
-
-
-    if(result){
-
-        result.innerHTML=`
-
-            <div class="result">
-
-                💡 Editor reset successfully.
-
-            </div>
-
-        `;
-
-    }
-
-}
-
-
-async function runCompiler(){
-
-    const languageElement =
-        document.getElementById(
-            "compilerLanguage"
-        );
-
-
-    const editor =
-        document.getElementById(
-            "codeEditor"
-        );
-
-
-    const input =
-        document.getElementById(
-            "compilerInput"
-        );
-
-
-    const result =
-        document.getElementById(
-            "compilerResult"
-        );
-
-
-    if(
-        !languageElement ||
-        !editor ||
-        !input ||
-        !result
-    ){
-
-        return;
-
-    }
-
-
-    const language =
-        languageElement.value;
-
-
-    const code =
-        editor.value;
-
-
-    const stdin =
-        input.value;
-
-
-    if(!code.trim()){
-
-        result.innerHTML=`
-
-            <div
-                class="result"
-                style="color:#fbbf24">
-
-                ⚠️ Write some code first.
-
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-
-    result.innerHTML=`
-
-        <div class="loading">
-
-            ⚙️ Compiling and running your program...
-
-        </div>
-
-    `;
-
-
-    try{
-
-        const response =
-            await fetch(
-                "/api/compile",
-                {
-                    method:"POST",
-
-                    headers:{
-                        "Content-Type":
-                            "application/json",
-
-                        "Accept":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify({
-
-                            language:
-                                language,
-
-                            code:
-                                code,
-
-                            stdin:
-                                stdin
-
-                        })
-                }
-            );
-
-
-        let data={};
-
-
-        try{
-
-            data =
-                await response.json();
-
-        }catch(e){
-
-            data={};
-
-        }
-
-
-        if(!response.ok){
-
-            throw new Error(
-                data.message ||
-                data.error ||
-                `Compiler API returned ${response.status}`
-            );
-
-        }
-
-
-        renderCompilerResult(
-            data
-        );
-
-
-    }catch(error){
-
-        console.error(error);
-
-
-        result.innerHTML=`
-
-            <div
-                class="compiler-output">
-
-                <div
-                    class="output-title error-text">
-
-                    ❌ Compiler Error
-
-                </div>
-
-
-                <div class="output-pre">
-
-                    ${escapeHtml(
-                        error.message
-                    )}
-
-                </div>
-
-
-                <br>
-
-
-                <div
-                    class="info-text"
-                    style="line-height:1.6">
-
-                    The compiler endpoint could not
-                    complete the request.
-
-                    <br><br>
-
-                    Check that your latest
-                    <strong>app.py</strong> contains
-                    the <strong>/api/compile</strong>
-                    route.
-
-                </div>
-
-            </div>
-
-        `;
-
-    }
-
-}
-
-
-function renderCompilerResult(
-    data
-){
-
-    const result =
-        document.getElementById(
-            "compilerResult"
-        );
-
-
-    if(!result){
-        return;
-    }
-
-
-    const run =
-        data.run || {};
-
-
-    const compile =
-        data.compile || {};
-
-
-    const stdout =
-        data.stdout ??
-        run.stdout ??
-        run.output ??
+    document.body.style.overflow =
         "";
 
-
-    const stderr =
-        data.stderr ??
-        run.stderr ??
-        "";
+}
 
 
-    const compileError =
-        compile.stderr ||
-        compile.message ||
-        "";
+function closeModalOutside(event){
+
+    if(event.target.id === "modal"){
+
+        closeModal();
+
+    }
+
+}
 
 
-    const output =
-        stdout ||
-        stderr ||
-        compileError ||
-        data.output ||
-        data.message ||
-        "Program finished with no output.";
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function scrollToCourses(){
+
+    document
+        .getElementById("coursesSection")
+        .scrollIntoView({
+            behavior:"smooth"
+        });
+
+}
 
 
-    const success =
-        !stderr &&
-        !compileError &&
-        (
-            run.code === undefined ||
-            run.code === null ||
-            run.code === 0 ||
-            data.success === true
+/* =========================================================
+   TOAST
+========================================================= */
+
+function showToast(message){
+
+    const toast =
+        document.getElementById("toast");
+
+
+    toast.textContent =
+        message;
+
+
+    toast.classList.add("show");
+
+
+    setTimeout(() => {
+
+        toast.classList.remove("show");
+
+    },2500);
+
+}
+
+
+/* =========================================================
+   LOGIN STATUS
+========================================================= */
+
+function setLoginStatus(message){
+
+    const element =
+        document.getElementById(
+            "loginStatus"
         );
 
+    if(element){
 
-    result.innerHTML=`
+        element.textContent =
+            message;
 
-        <div class="compiler-output">
-
-
-            <div class="output-title ${
-                success
-                ? "success-text"
-                : "error-text"
-            }">
-
-                ${
-                    success
-                    ? "✅ Program Output"
-                    : "❌ Program Error"
-                }
-
-            </div>
-
-
-            <pre class="output-pre">${
-                escapeHtml(
-                    output
-                )
-            }</pre>
-
-
-            ${
-                run.code !== undefined &&
-                run.code !== null
-                ?
-                `
-                <div style="
-                    margin-top:12px;
-                    color:#777;
-                    font-size:12px;
-                ">
-
-                    Exit code:
-                    ${escapeHtml(
-                        run.code
-                    )}
-
-                </div>
-                `
-                :
-                ""
-            }
-
-
-        </div>
-
-    `;
+    }
 
 }
 
 
-/* =====================================================
-   PROGRESS
-===================================================== */
+/* =========================================================
+   TEXT HELPERS
+========================================================= */
 
-function showProgress(){
+function escapeHTML(value){
 
-    let level=
-        Math.floor(
-            xp/100
-        )+1;
-
-
-    showModal(`
-
-        <h2>
-            🏆 My Progress
-        </h2>
-
-
-        <div class="stats-grid">
-
-
-            <div class="stat">
-
-                ⭐ XP
-
-                <strong>
-                    ${xp}
-                </strong>
-
-            </div>
-
-
-            <div class="stat">
-
-                🎯 Level
-
-                <strong>
-                    ${level}
-                </strong>
-
-            </div>
-
-
-            <div class="stat">
-
-                📚 Chapters
-
-                <strong>
-                    ${completedChapters.length}
-                </strong>
-
-            </div>
-
-
-            <div class="stat">
-
-                🧠 Challenges
-
-                <strong>
-                    ${solvedChallenges}
-                </strong>
-
-            </div>
-
-
-        </div>
-
-
-        <div class="result">
-
-            Keep learning and completing
-            challenges to increase your XP! 🚀
-
-        </div>
-
-    `);
-
-}
-
-
-/* =====================================================
-   CODE FORMATTING
-===================================================== */
-
-function formatCode(text){
-
-    if(
-        text===null ||
-        text===undefined
-    ){
+    if(value === null ||
+       value === undefined){
 
         return "";
 
     }
 
 
-    let value =
-        String(text);
+    return String(value)
 
-
-    /*
-     * Fix examples coming from Python/JSON
-     * where newline characters may arrive
-     * as literal \n text.
-     */
-
-    value =
-        value
-        .replace(/\\r\\n/g,"\n")
-        .replace(/\\n/g,"\n")
-        .replace(/\\r/g,"\n")
-        .replace(/\\t/g,"\t");
-
-
-    return escapeHtml(
-        value
-    );
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
 
 }
 
 
-/* =====================================================
-   SECURITY HELPERS
-===================================================== */
+function formatText(value){
 
-function escapeHtml(text){
-
-    if(
-        text===null ||
-        text===undefined
-    ){
+    if(value === null ||
+       value === undefined){
 
         return "";
 
     }
 
 
-    return String(text)
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+    return escapeHTML(value)
+        .replace(/\n/g,"<br>");
 
 }
 
 
-function escapeAttr(text){
-
-    return escapeHtml(
-        text
-    );
-
-}
-
-
-/* =====================================================
-   MODAL CONTROLS
-===================================================== */
-
-document
-    .getElementById(
-        "modal"
-    )
-    .addEventListener(
-        "click",
-        function(event){
-
-            if(
-                event.target===this
-            ){
-
-                if(
-                    secureQuizActive
-                ){
-
-                    terminateSecureQuiz(
-                        "The quiz was terminated because the exam window was closed."
-                    );
-
-                }else{
-
-                    closeModal();
-
-                }
-
-            }
-
-        }
-    );
-
+/* =========================================================
+   KEYBOARD
+========================================================= */
 
 document.addEventListener(
     "keydown",
-    function(event){
+    event => {
 
         if(
-            event.key==="Escape"
+            event.key === "Escape" &&
+            !document
+                .getElementById("modal")
+                .classList
+                .contains("hidden")
         ){
 
-            if(
-                secureQuizActive
-            ){
+            closeModal();
 
-                terminateSecureQuiz(
-                    "The quiz was terminated because the exam window was closed."
-                );
+        }
 
-            }else{
+    }
+);
 
-                closeModal();
 
-            }
+/* =========================================================
+   PAGE VISIBILITY
+========================================================= */
+
+document.addEventListener(
+    "visibilitychange",
+    () => {
+
+        if(
+            document.visibilityState === "visible" &&
+            currentUser
+        ){
+
+            updateDashboard();
 
         }
 
