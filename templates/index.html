@@ -124,6 +124,12 @@ button{
     box-shadow:0 8px 25px rgba(255,255,255,.12);
 }
 
+.google-btn:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+    transform:none;
+}
+
 .google-icon{
     width:22px;
     height:22px;
@@ -133,6 +139,7 @@ button{
     margin-top:16px;
     color:var(--muted);
     font-size:13px;
+    line-height:1.5;
 }
 
 /* =========================
@@ -409,7 +416,7 @@ button{
 }
 
 /* =========================
-   FEATURE CARDS
+   FEATURES
 ========================= */
 
 .feature-grid{
@@ -500,7 +507,7 @@ button{
 }
 
 /* =========================
-   CHAPTER LIST
+   CHAPTER
 ========================= */
 
 .chapter-list{
@@ -659,16 +666,6 @@ button{
     border-color:#7655c8;
 }
 
-.option.correct{
-    border-color:var(--green);
-    background:rgba(34,197,94,.1);
-}
-
-.option.wrong{
-    border-color:var(--red);
-    background:rgba(239,68,68,.1);
-}
-
 .quiz-result{
     background:#151a2b;
     border:1px solid var(--border);
@@ -807,7 +804,12 @@ button{
     display:flex;
     align-items:center;
     justify-content:center;
-    background:conic-gradient(#8b5cf6 0deg,#8b5cf6 var(--progress),#272c42 var(--progress),#272c42 360deg);
+    background:conic-gradient(
+        #8b5cf6 0deg,
+        #8b5cf6 var(--progress),
+        #272c42 var(--progress),
+        #272c42 360deg
+    );
     position:relative;
 }
 
@@ -887,7 +889,9 @@ button{
 }
 
 @keyframes spin{
-    to{transform:rotate(360deg);}
+    to{
+        transform:rotate(360deg);
+    }
 }
 
 /* =========================
@@ -895,6 +899,7 @@ button{
 ========================= */
 
 @media(max-width:950px){
+
     .course-grid{
         grid-template-columns:repeat(2,1fr);
     }
@@ -906,9 +911,11 @@ button{
     .stats{
         grid-template-columns:repeat(2,1fr);
     }
+
 }
 
 @media(max-width:600px){
+
     .nav-inner{
         min-height:64px;
     }
@@ -956,15 +963,16 @@ button{
         padding:8px 10px;
         font-size:12px;
     }
+
 }
 </style>
 </head>
 
 <body>
 
-<!-- =========================
+<!-- =====================================================
      LOGIN SCREEN
-========================= -->
+===================================================== -->
 
 <div id="loginScreen">
 
@@ -972,7 +980,9 @@ button{
 
         <div class="logo">🚀</div>
 
-        <h1>Code<span>Quest</span> AI</h1>
+        <h1>
+            Code<span>Quest</span> AI
+        </h1>
 
         <p class="login-subtitle">
             Learn • Practice • Play • Build
@@ -980,16 +990,28 @@ button{
             Your interactive computer science learning journey.
         </p>
 
-        <button class="google-btn" onclick="loginWithGoogle()">
+        <button
+            id="googleLoginButton"
+            class="google-btn"
+            onclick="loginWithGoogle()"
+        >
+
             <img
                 class="google-icon"
                 src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
                 alt="Google"
             >
-            Continue with Google
+
+            <span id="googleButtonText">
+                Continue with Google
+            </span>
+
         </button>
 
-        <div id="loginStatus" class="login-status">
+        <div
+            id="loginStatus"
+            class="login-status"
+        >
             Preparing secure login...
         </div>
 
@@ -998,20 +1020,31 @@ button{
 </div>
 
 
-<!-- =========================
+<!-- =====================================================
      MAIN APP
-========================= -->
+===================================================== -->
 
-<div id="app" class="hidden">
+<div
+    id="app"
+    class="hidden"
+>
 
     <nav class="navbar">
 
         <div class="nav-inner">
 
             <div class="brand">
-                <div class="brand-icon">🚀</div>
-                <span>CodeQuest AI</span>
+
+                <div class="brand-icon">
+                    🚀
+                </div>
+
+                <span>
+                    CodeQuest AI
+                </span>
+
             </div>
+
 
             <div class="user-area">
 
@@ -1022,7 +1055,10 @@ button{
                     alt="User"
                 >
 
-                <span id="userName" class="user-name">
+                <span
+                    id="userName"
+                    class="user-name"
+                >
                     Student
                 </span>
 
@@ -1052,9 +1088,10 @@ button{
             </h1>
 
             <p>
-                Learn computer science step by step, practice with
-                challenges, test your knowledge, build XP and track
-                your learning journey from one account.
+                Learn computer science step by step,
+                practice with challenges, test your knowledge,
+                build XP and track your learning journey
+                from one account.
             </p>
 
             <div class="hero-actions">
@@ -1083,27 +1120,82 @@ button{
         <section class="stats">
 
             <div class="stat-card">
-                <div class="stat-icon">⚡</div>
-                <div id="xpValue" class="stat-value">0 XP</div>
-                <div class="stat-label">Experience</div>
+
+                <div class="stat-icon">
+                    ⚡
+                </div>
+
+                <div
+                    id="xpValue"
+                    class="stat-value"
+                >
+                    0 XP
+                </div>
+
+                <div class="stat-label">
+                    Experience
+                </div>
+
             </div>
 
-            <div class="stat-card">
-                <div class="stat-icon">🏆</div>
-                <div id="levelValue" class="stat-value">Level 1</div>
-                <div class="stat-label">Current Level</div>
-            </div>
 
             <div class="stat-card">
-                <div class="stat-icon">📚</div>
-                <div id="chapterValue" class="stat-value">0</div>
-                <div class="stat-label">Chapters Completed</div>
+
+                <div class="stat-icon">
+                    🏆
+                </div>
+
+                <div
+                    id="levelValue"
+                    class="stat-value"
+                >
+                    Level 1
+                </div>
+
+                <div class="stat-label">
+                    Current Level
+                </div>
+
             </div>
 
+
             <div class="stat-card">
-                <div class="stat-icon">🎯</div>
-                <div id="challengeValue" class="stat-value">0</div>
-                <div class="stat-label">Challenges Completed</div>
+
+                <div class="stat-icon">
+                    📚
+                </div>
+
+                <div
+                    id="chapterValue"
+                    class="stat-value"
+                >
+                    0
+                </div>
+
+                <div class="stat-label">
+                    Chapters Completed
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🎯
+                </div>
+
+                <div
+                    id="challengeValue"
+                    class="stat-value"
+                >
+                    0
+                </div>
+
+                <div class="stat-label">
+                    Challenges Completed
+                </div>
+
             </div>
 
         </section>
@@ -1111,11 +1203,15 @@ button{
 
         <!-- COURSES -->
 
-        <section id="coursesSection" class="section">
+        <section
+            id="coursesSection"
+            class="section"
+        >
 
             <div class="section-header">
 
                 <div>
+
                     <h2 class="section-title">
                         📚 Learning Paths
                     </h2>
@@ -1123,6 +1219,7 @@ button{
                     <div class="section-subtitle">
                         Explore the full syllabus and learn step by step.
                     </div>
+
                 </div>
 
             </div>
@@ -1153,10 +1250,12 @@ button{
                         </span>
 
                         <span>
-                            {{ course.chapters|length }} Chapters
+                            {{ course.chapters|length }}
+                            Chapters
                         </span>
 
                     </div>
+
 
                     <div class="progress-bar">
 
@@ -1166,6 +1265,7 @@ button{
                         ></div>
 
                     </div>
+
 
                     <button
                         class="primary-btn"
@@ -1211,12 +1311,20 @@ button{
                     class="feature-card"
                     onclick="openFeature('quiz')"
                 >
-                    <div class="feature-icon">🧠</div>
-                    <h3>Quiz Arena</h3>
+
+                    <div class="feature-icon">
+                        🧠
+                    </div>
+
+                    <h3>
+                        Quiz Arena
+                    </h3>
+
                     <p>
                         Test your computer science knowledge
                         and earn XP.
                     </p>
+
                 </div>
 
 
@@ -1224,12 +1332,20 @@ button{
                     class="feature-card"
                     onclick="openFeature('challenge')"
                 >
-                    <div class="feature-icon">💻</div>
-                    <h3>Code Challenge</h3>
+
+                    <div class="feature-icon">
+                        💻
+                    </div>
+
+                    <h3>
+                        Code Challenge
+                    </h3>
+
                     <p>
                         Predict program output and improve
                         your programming logic.
                     </p>
+
                 </div>
 
 
@@ -1237,12 +1353,20 @@ button{
                     class="feature-card"
                     onclick="openFeature('error')"
                 >
-                    <div class="feature-icon">🐞</div>
-                    <h3>Error Finder</h3>
+
+                    <div class="feature-icon">
+                        🐞
+                    </div>
+
+                    <h3>
+                        Error Finder
+                    </h3>
+
                     <p>
                         Find programming mistakes and learn
                         how to correct them.
                     </p>
+
                 </div>
 
 
@@ -1250,12 +1374,20 @@ button{
                     class="feature-card"
                     onclick="openFeature('career')"
                 >
-                    <div class="feature-icon">🎓</div>
-                    <h3>Career Guide</h3>
+
+                    <div class="feature-icon">
+                        🎓
+                    </div>
+
+                    <h3>
+                        Career Guide
+                    </h3>
+
                     <p>
-                        Explore programming careers, skills
+                        Explore technology careers, skills
                         and learning paths.
                     </p>
+
                 </div>
 
 
@@ -1263,12 +1395,20 @@ button{
                     class="feature-card"
                     onclick="openFeature('progress')"
                 >
-                    <div class="feature-icon">📊</div>
-                    <h3>Progress</h3>
+
+                    <div class="feature-icon">
+                        📊
+                    </div>
+
+                    <h3>
+                        Progress
+                    </h3>
+
                     <p>
                         Track your XP, level, chapters,
                         challenges and learning progress.
                     </p>
+
                 </div>
 
             </div>
@@ -1280,9 +1420,9 @@ button{
 </div>
 
 
-<!-- =========================
+<!-- =====================================================
      MODAL
-========================= -->
+===================================================== -->
 
 <div
     id="modal"
@@ -1308,13 +1448,20 @@ button{
 
 <!-- TOAST -->
 
-<div id="toast" class="toast"></div>
+<div
+    id="toast"
+    class="toast"
+></div>
 
 
-<!-- FIREBASE -->
+<!-- =====================================================
+     FIREBASE SDK
+===================================================== -->
 
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 
 
@@ -1322,31 +1469,45 @@ button{
 
 /* =========================================================
    CODEQUEST AI
-   Learn • Practice • Play • Build
+   Firebase Authentication + Firestore
 ========================================================= */
 
 let firebaseReady = false;
+
 let firebaseConfig = null;
 
 let auth = null;
+
 let db = null;
+
 let currentUser = null;
 
 let quizData = [];
+
 let challengeData = [];
+
 let errorData = [];
 
 let currentQuizAnswers = {};
+
 let currentQuizScore = 0;
 
 let progressData = {
+
     xp: 0,
+
     level: 1,
+
     completedChapters: [],
+
     completedChallenges: [],
+
     quizScores: [],
+
     totalQuizCorrect: 0,
+
     totalQuizQuestions: 0
+
 };
 
 let saveTimer = null;
@@ -1356,75 +1517,222 @@ let saveTimer = null;
    INITIALIZATION
 ========================================================= */
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener(
+    "DOMContentLoaded",
+    initializeApp
+);
 
-    setLoginStatus("Loading CodeQuest AI...");
 
-    try {
+async function initializeApp(){
 
-        const response = await fetch("/api/firebase-config");
+    setLoginStatus(
+        "Connecting to secure login..."
+    );
 
-        if (!response.ok) {
-            throw new Error("Firebase configuration unavailable.");
+    try{
+
+        const response =
+            await fetch(
+                "/api/firebase-config",
+                {
+                    method:"GET",
+                    cache:"no-store"
+                }
+            );
+
+
+        if(!response.ok){
+
+            throw new Error(
+                "Firebase configuration endpoint returned " +
+                response.status
+            );
+
         }
 
-        const result = await response.json();
 
-        if (!result.configured) {
+        const result =
+            await response.json();
+
+
+        if(
+            !result ||
+            !result.configured ||
+            !result.config
+        ){
 
             setLoginStatus(
-                "Firebase login is not configured yet. Add the Firebase environment variables in Render."
+                "Firebase is not configured correctly on the server."
             );
 
             return;
+
         }
 
-        firebaseConfig = result.config;
 
-        firebase.initializeApp(firebaseConfig);
+        firebaseConfig =
+            result.config;
 
-        auth = firebase.auth();
-        db = firebase.firestore();
+
+        /*
+         * Initialize Firebase only once.
+         */
+
+        if(!firebase.apps.length){
+
+            firebase.initializeApp(
+                firebaseConfig
+            );
+
+        }
+
+
+        auth =
+            firebase.auth();
+
+
+        db =
+            firebase.firestore();
+
 
         firebaseReady = true;
 
-        auth.onAuthStateChanged(async user => {
 
-            if (user) {
+        setLoginStatus(
+            "Secure login ready."
+        );
 
-                currentUser = user;
 
-                await startUserSession();
+        /*
+         * IMPORTANT:
+         * Process the Google redirect result.
+         *
+         * When the user chooses their Google account,
+         * Google sends the browser back to this page.
+         * This function checks that returned result.
+         */
 
-            } else {
+        try{
 
-                currentUser = null;
+            const redirectResult =
+                await auth.getRedirectResult();
 
-                document
-                    .getElementById("loginScreen")
-                    .classList.remove("hidden");
 
-                document
-                    .getElementById("app")
-                    .classList.add("hidden");
+            if(
+                redirectResult &&
+                redirectResult.user
+            ){
 
-                setLoginStatus("Sign in with Google to continue.");
+                console.log(
+                    "Google redirect login successful:",
+                    redirectResult.user.uid
+                );
 
             }
 
-        });
+        }catch(error){
 
-    } catch (error) {
+            console.error(
+                "Google redirect result error:",
+                error
+            );
 
-        console.error(error);
+
+            handleFirebaseLoginError(
+                error
+            );
+
+        }
+
+
+        /*
+         * This listener is the main source of truth.
+         * It runs when the user is logged in or logged out.
+         */
+
+        auth.onAuthStateChanged(
+            async user => {
+
+                console.log(
+                    "Auth state:",
+                    user
+                        ? user.email
+                        : "signed out"
+                );
+
+
+                if(user){
+
+                    currentUser =
+                        user;
+
+
+                    await startUserSession();
+
+
+                }else{
+
+                    currentUser =
+                        null;
+
+
+                    document
+                        .getElementById(
+                            "loginScreen"
+                        )
+                        .classList.remove(
+                            "hidden"
+                        );
+
+
+                    document
+                        .getElementById(
+                            "app"
+                        )
+                        .classList.add(
+                            "hidden"
+                        );
+
+
+                    const button =
+                        document.getElementById(
+                            "googleLoginButton"
+                        );
+
+
+                    if(button){
+
+                        button.disabled =
+                            false;
+
+                    }
+
+
+                    setLoginStatus(
+                        "Sign in with Google to continue."
+                    );
+
+                }
+
+            }
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "Firebase initialization error:",
+            error
+        );
+
 
         setLoginStatus(
-            "Unable to initialize login. Check Firebase configuration."
+            "Unable to initialize login. Check the Firebase configuration."
         );
 
     }
 
-});
+}
 
 
 /* =========================================================
@@ -1433,42 +1741,202 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function loginWithGoogle(){
 
-    if (!firebaseReady || !auth) {
+    if(
+        !firebaseReady ||
+        !auth
+    ){
 
-        showToast("Google login is not ready yet.");
+        showToast(
+            "Google login is not ready yet."
+        );
 
         return;
+
     }
 
-    try {
 
-        setLoginStatus("Opening Google login...");
+    const button =
+        document.getElementById(
+            "googleLoginButton"
+        );
+
+
+    const buttonText =
+        document.getElementById(
+            "googleButtonText"
+        );
+
+
+    try{
+
+        if(button){
+
+            button.disabled =
+                true;
+
+        }
+
+
+        if(buttonText){
+
+            buttonText.textContent =
+                "Opening Google...";
+        }
+
+
+        setLoginStatus(
+            "Choose your Google account..."
+        );
+
 
         const provider =
             new firebase.auth.GoogleAuthProvider();
 
-        provider.setCustomParameters({
-            prompt: "select_account"
-        });
 
-        /*
-         * Redirect is used because CodeQuest AI is designed
-         * to work well on Android/mobile browsers.
-         */
-
-        await auth.signInWithRedirect(provider);
-
-    } catch(error) {
-
-        console.error(error);
-
-        setLoginStatus(
-            "Google login failed. Please try again."
+        provider.addScope(
+            "profile"
         );
 
-        showToast("Google login failed.");
+        provider.addScope(
+            "email"
+        );
+
+
+        provider.setCustomParameters({
+
+            prompt:"select_account"
+
+        });
+
+
+        /*
+         * Redirect is reliable on mobile browsers.
+         */
+
+        await auth.signInWithRedirect(
+            provider
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "Google login error:",
+            error
+        );
+
+
+        if(button){
+
+            button.disabled =
+                false;
+
+        }
+
+
+        if(buttonText){
+
+            buttonText.textContent =
+                "Continue with Google";
+
+        }
+
+
+        handleFirebaseLoginError(
+            error
+        );
 
     }
+
+}
+
+
+/* =========================================================
+   FIREBASE ERROR HANDLER
+========================================================= */
+
+function handleFirebaseLoginError(error){
+
+    console.error(
+        "Firebase error:",
+        error
+    );
+
+
+    const code =
+        error &&
+        error.code
+        ? error.code
+        : "";
+
+
+    let message =
+        "Google login failed. Please try again.";
+
+
+    if(
+        code ===
+        "auth/unauthorized-domain"
+    ){
+
+        message =
+            "This website domain is not authorized in Firebase.";
+
+    }
+    else if(
+        code ===
+        "auth/popup-blocked"
+    ){
+
+        message =
+            "Google login was blocked by the browser.";
+
+    }
+    else if(
+        code ===
+        "auth/network-request-failed"
+    ){
+
+        message =
+            "Network error. Check your internet connection.";
+
+    }
+    else if(
+        code ===
+        "auth/operation-not-allowed"
+    ){
+
+        message =
+            "Google Sign-In is not enabled in Firebase.";
+
+    }
+    else if(
+        code ===
+        "auth/account-exists-with-different-credential"
+    ){
+
+        message =
+            "This account already exists with another sign-in method.";
+
+    }
+    else if(
+        code
+    ){
+
+        message =
+            "Google login error: " + code;
+
+    }
+
+
+    setLoginStatus(
+        message
+    );
+
+
+    showToast(
+        message
+    );
 
 }
 
@@ -1479,19 +1947,38 @@ async function loginWithGoogle(){
 
 async function logout(){
 
-    if (!auth) return;
+    if(!auth){
 
-    try {
+        return;
+
+    }
+
+
+    try{
 
         await auth.signOut();
 
-        showToast("Logged out successfully.");
 
-    } catch(error) {
+        currentUser =
+            null;
 
-        console.error(error);
 
-        showToast("Logout failed.");
+        showToast(
+            "Logged out successfully."
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "Logout error:",
+            error
+        );
+
+
+        showToast(
+            "Logout failed."
+        );
 
     }
 
@@ -1504,32 +1991,69 @@ async function logout(){
 
 async function startUserSession(){
 
-    document
-        .getElementById("loginScreen")
-        .classList.add("hidden");
+    if(!currentUser){
+
+        return;
+
+    }
+
 
     document
-        .getElementById("app")
-        .classList.remove("hidden");
+        .getElementById(
+            "loginScreen"
+        )
+        .classList.add(
+            "hidden"
+        );
+
+
+    document
+        .getElementById(
+            "app"
+        )
+        .classList.remove(
+            "hidden"
+        );
+
 
     const name =
         currentUser.displayName ||
         currentUser.email ||
         "Student";
 
+
     const photo =
         currentUser.photoURL ||
         "https://ui-avatars.com/api/?name=Student";
 
-    document.getElementById("userName").textContent = name;
 
-    document.getElementById("userPhoto").src = photo;
+    document
+        .getElementById(
+            "userName"
+        )
+        .textContent =
+        name;
+
+
+    document
+        .getElementById(
+            "userPhoto"
+        )
+        .src =
+        photo;
+
 
     await loadUserProgress();
 
+
     updateDashboard();
 
-    showToast("Welcome back, " + name.split(" ")[0] + "!");
+
+    showToast(
+        "Welcome back, " +
+        name.split(" ")[0] +
+        "! 👋"
+    );
 
 }
 
@@ -1540,66 +2064,131 @@ async function startUserSession(){
 
 async function loadUserProgress(){
 
-    if (!currentUser || !db) return;
+    if(
+        !currentUser ||
+        !db
+    ){
 
-    try {
+        return;
+
+    }
+
+
+    try{
 
         const ref =
-            db.collection("users").doc(currentUser.uid);
+            db
+            .collection("users")
+            .doc(
+                currentUser.uid
+            );
+
 
         const snapshot =
             await ref.get();
 
-        if (snapshot.exists) {
 
-            const data = snapshot.data();
+        if(snapshot.exists){
+
+            const data =
+                snapshot.data();
+
 
             progressData = {
+
                 ...progressData,
+
                 ...data
+
             };
 
-        } else {
+
+            /*
+             * Protect against old/malformed data.
+             */
+
+            progressData.completedChapters =
+                Array.isArray(
+                    progressData.completedChapters
+                )
+                ? progressData.completedChapters
+                : [];
+
+
+            progressData.completedChallenges =
+                Array.isArray(
+                    progressData.completedChallenges
+                )
+                ? progressData.completedChallenges
+                : [];
+
+
+            progressData.quizScores =
+                Array.isArray(
+                    progressData.quizScores
+                )
+                ? progressData.quizScores
+                : [];
+
+
+        }else{
 
             await ref.set({
 
-                uid: currentUser.uid,
+                uid:
+                    currentUser.uid,
 
                 name:
-                    currentUser.displayName || "Student",
+                    currentUser.displayName ||
+                    "Student",
 
                 email:
-                    currentUser.email || "",
+                    currentUser.email ||
+                    "",
 
                 photoURL:
-                    currentUser.photoURL || "",
+                    currentUser.photoURL ||
+                    "",
 
-                xp: 0,
-                level: 1,
+                xp:0,
 
-                completedChapters: [],
-                completedChallenges: [],
+                level:1,
 
-                quizScores: [],
+                completedChapters:[],
 
-                totalQuizCorrect: 0,
-                totalQuizQuestions: 0,
+                completedChallenges:[],
+
+                quizScores:[],
+
+                totalQuizCorrect:0,
+
+                totalQuizQuestions:0,
 
                 createdAt:
-                    firebase.firestore.FieldValue.serverTimestamp(),
+                    firebase.firestore
+                    .FieldValue
+                    .serverTimestamp(),
 
                 updatedAt:
-                    firebase.firestore.FieldValue.serverTimestamp()
+                    firebase.firestore
+                    .FieldValue
+                    .serverTimestamp()
 
             });
 
         }
 
+
         calculateLevel();
 
-    } catch(error) {
 
-        console.error("Progress load error:", error);
+    }catch(error){
+
+        console.error(
+            "Progress load error:",
+            error
+        );
+
 
         showToast(
             "Could not load saved progress."
@@ -1612,81 +2201,120 @@ async function loadUserProgress(){
 
 function saveProgress(){
 
-    if (!currentUser || !db) return;
+    if(
+        !currentUser ||
+        !db
+    ){
 
-    clearTimeout(saveTimer);
+        return;
 
-    saveTimer = setTimeout(async () => {
+    }
 
-        try {
 
-            await db
-                .collection("users")
-                .doc(currentUser.uid)
-                .set({
+    clearTimeout(
+        saveTimer
+    );
 
-                    uid: currentUser.uid,
 
-                    name:
-                        currentUser.displayName || "Student",
+    saveTimer =
+        setTimeout(
+            async () => {
 
-                    email:
-                        currentUser.email || "",
+                try{
 
-                    photoURL:
-                        currentUser.photoURL || "",
+                    await db
+                        .collection("users")
+                        .doc(
+                            currentUser.uid
+                        )
+                        .set({
 
-                    xp: progressData.xp,
+                            uid:
+                                currentUser.uid,
 
-                    level: progressData.level,
+                            name:
+                                currentUser.displayName ||
+                                "Student",
 
-                    completedChapters:
-                        progressData.completedChapters,
+                            email:
+                                currentUser.email ||
+                                "",
 
-                    completedChallenges:
-                        progressData.completedChallenges,
+                            photoURL:
+                                currentUser.photoURL ||
+                                "",
 
-                    quizScores:
-                        progressData.quizScores,
+                            xp:
+                                Number(
+                                    progressData.xp || 0
+                                ),
 
-                    totalQuizCorrect:
-                        progressData.totalQuizCorrect,
+                            level:
+                                Number(
+                                    progressData.level || 1
+                                ),
 
-                    totalQuizQuestions:
-                        progressData.totalQuizQuestions,
+                            completedChapters:
+                                progressData.completedChapters,
 
-                    updatedAt:
-                        firebase.firestore.FieldValue.serverTimestamp()
+                            completedChallenges:
+                                progressData.completedChallenges,
 
-                }, {
-                    merge:true
-                });
+                            quizScores:
+                                progressData.quizScores,
 
-        } catch(error) {
+                            totalQuizCorrect:
+                                Number(
+                                    progressData.totalQuizCorrect || 0
+                                ),
 
-            console.error(
-                "Progress save error:",
-                error
-            );
+                            totalQuizQuestions:
+                                Number(
+                                    progressData.totalQuizQuestions || 0
+                                ),
 
-        }
+                            updatedAt:
+                                firebase.firestore
+                                .FieldValue
+                                .serverTimestamp()
 
-    }, 700);
+                        },{
+                            merge:true
+                        });
+
+
+                }catch(error){
+
+                    console.error(
+                        "Progress save error:",
+                        error
+                    );
+
+                }
+
+            },
+            700
+        );
 
 }
 
 
 /* =========================================================
-   XP SYSTEM
+   XP
 ========================================================= */
 
 function calculateLevel(){
 
     const xp =
-        Number(progressData.xp || 0);
+        Number(
+            progressData.xp || 0
+        );
+
 
     progressData.level =
-        Math.floor(xp / 100) + 1;
+        Math.floor(
+            xp / 100
+        ) + 1;
 
 }
 
@@ -1694,15 +2322,26 @@ function calculateLevel(){
 function addXP(amount){
 
     progressData.xp =
-        Number(progressData.xp || 0) + amount;
+        Number(
+            progressData.xp || 0
+        ) +
+        Number(amount || 0);
+
 
     calculateLevel();
 
+
     updateDashboard();
+
 
     saveProgress();
 
-    showToast("+" + amount + " XP ⚡");
+
+    showToast(
+        "+" +
+        amount +
+        " XP ⚡"
+    );
 
 }
 
@@ -1711,17 +2350,44 @@ function updateDashboard(){
 
     calculateLevel();
 
-    document.getElementById("xpValue").textContent =
-        progressData.xp + " XP";
 
-    document.getElementById("levelValue").textContent =
-        "Level " + progressData.level;
+    document
+        .getElementById(
+            "xpValue"
+        )
+        .textContent =
+        progressData.xp +
+        " XP";
 
-    document.getElementById("chapterValue").textContent =
-        progressData.completedChapters.length;
 
-    document.getElementById("challengeValue").textContent =
-        progressData.completedChallenges.length;
+    document
+        .getElementById(
+            "levelValue"
+        )
+        .textContent =
+        "Level " +
+        progressData.level;
+
+
+    document
+        .getElementById(
+            "chapterValue"
+        )
+        .textContent =
+        progressData
+        .completedChapters
+        .length;
+
+
+    document
+        .getElementById(
+            "challengeValue"
+        )
+        .textContent =
+        progressData
+        .completedChallenges
+        .length;
+
 
     updateCourseProgress();
 
@@ -1730,25 +2396,35 @@ function updateDashboard(){
 
 function updateCourseProgress(){
 
-    /*
-     * Course cards use a general progress calculation.
-     * Individual completed chapter names are stored globally.
-     */
-
     const totalCompleted =
-        progressData.completedChapters.length;
+        progressData
+        .completedChapters
+        .length;
+
 
     const totalCourses =
         {{ courses|length }};
 
+
     const generalPercent =
         Math.min(
+
             100,
+
             Math.round(
-                (totalCompleted /
-                Math.max(totalCourses,1)) * 10
+
+                (
+                    totalCompleted /
+                    Math.max(
+                        totalCourses,
+                        1
+                    )
+                ) * 10
+
             )
+
         );
+
 
     for(
         let i = 1;
@@ -1761,10 +2437,12 @@ function updateCourseProgress(){
                 "course-progress-" + i
             );
 
+
         if(element){
 
             element.style.width =
-                generalPercent + "%";
+                generalPercent +
+                "%";
 
         }
 
@@ -1779,20 +2457,29 @@ function updateCourseProgress(){
 
 async function openCourse(courseName){
 
-    openModal(
-        `<div class="loading">
-            <div class="spinner"></div>
-            Loading course...
-        </div>`
-    );
+    openModal(`
 
-    try {
+        <div class="loading">
+
+            <div class="spinner"></div>
+
+            Loading course...
+
+        </div>
+
+    `);
+
+
+    try{
 
         const response =
             await fetch(
                 "/api/course/" +
-                encodeURIComponent(courseName)
+                encodeURIComponent(
+                    courseName
+                )
             );
+
 
         if(!response.ok){
 
@@ -1802,97 +2489,156 @@ async function openCourse(courseName){
 
         }
 
+
         const course =
             await response.json();
 
-        renderCourse(courseName, course);
 
-    } catch(error) {
+        renderCourse(
+            courseName,
+            course
+        );
+
+
+    }catch(error){
 
         console.error(error);
 
-        openModal(
-            `<h2 class="modal-title">Unable to load course</h2>
-             <p class="modal-description">
+
+        openModal(`
+
+            <h2 class="modal-title">
+                Unable to load course
+            </h2>
+
+            <p class="modal-description">
                 Please check your connection and try again.
-             </p>`
-        );
+            </p>
+
+        `);
 
     }
 
 }
 
 
-function renderCourse(courseName, course){
+function renderCourse(
+    courseName,
+    course
+){
 
     const chapters =
         course.chapters || [];
 
+
     let html = `
 
         <h2 class="modal-title">
-            ${escapeHTML(course.icon || "📚")}
-            ${escapeHTML(courseName)}
+
+            ${escapeHTML(
+                course.icon || "📚"
+            )}
+
+            ${escapeHTML(
+                courseName
+            )}
+
         </h2>
 
         <p class="modal-description">
-            ${escapeHTML(course.description || "")}
+
+            ${escapeHTML(
+                course.description || ""
+            )}
+
         </p>
 
         <div class="chapter-list">
+
     `;
 
-    chapters.forEach((chapter,index) => {
 
-        const completed =
-            progressData.completedChapters.includes(
-                courseName + "::" + chapter
-            );
+    chapters.forEach(
+        (chapter,index) => {
 
-        html += `
+            const completed =
+                progressData
+                .completedChapters
+                .includes(
+                    courseName +
+                    "::" +
+                    chapter
+                );
 
-            <div class="chapter">
 
-                <div class="chapter-left">
+            html += `
 
-                    <div class="chapter-number">
-                        ${index + 1}
+                <div class="chapter">
+
+                    <div class="chapter-left">
+
+                        <div class="chapter-number">
+                            ${index + 1}
+                        </div>
+
+                        <div class="chapter-name">
+                            ${escapeHTML(
+                                chapter
+                            )}
+                        </div>
+
                     </div>
 
-                    <div class="chapter-name">
-                        ${escapeHTML(chapter)}
-                    </div>
-
-                </div>
-
-                <div style="display:flex;align-items:center;gap:8px;">
-
-                    ${
-                        completed
-                        ? `<span class="done">✓ Done</span>`
-                        : ""
-                    }
-
-                    <button
-                        class="secondary-btn"
-                        onclick='openLesson(
-                            ${JSON.stringify(chapter)},
-                            ${JSON.stringify(courseName)}
-                        )'
+                    <div
+                        style="
+                            display:flex;
+                            align-items:center;
+                            gap:8px;
+                        "
                     >
-                        ${completed ? "Review" : "Learn"}
-                    </button>
+
+                        ${
+                            completed
+                            ?
+                            `<span class="done">
+                                ✓ Done
+                            </span>`
+                            :
+                            ""
+                        }
+
+                        <button
+                            class="secondary-btn"
+                            onclick='openLesson(
+                                ${JSON.stringify(chapter)},
+                                ${JSON.stringify(courseName)}
+                            )'
+                        >
+                            ${
+                                completed
+                                ? "Review"
+                                : "Learn"
+                            }
+                        </button>
+
+                    </div>
 
                 </div>
 
-            </div>
-        `;
+            `;
 
-    });
+        }
+    );
 
-    html += `</div>`;
 
-    openModal(html);
+    html += `
+        </div>
+    `;
+
+
+    openModal(
+        html
+    );
 
 }
 
@@ -1901,25 +2647,40 @@ function renderCourse(courseName, course){
    LESSON
 ========================================================= */
 
-async function openLesson(chapter,courseName){
+async function openLesson(
+    chapter,
+    courseName
+){
 
-    openModal(
-        `<div class="loading">
+    openModal(`
+
+        <div class="loading">
+
             <div class="spinner"></div>
-            Loading lesson...
-        </div>`
-    );
 
-    try {
+            Loading lesson...
+
+        </div>
+
+    `);
+
+
+    try{
 
         const url =
             "/api/lesson/" +
-            encodeURIComponent(chapter) +
+            encodeURIComponent(
+                chapter
+            ) +
             "?course=" +
-            encodeURIComponent(courseName);
+            encodeURIComponent(
+                courseName
+            );
+
 
         const response =
             await fetch(url);
+
 
         if(!response.ok){
 
@@ -1929,8 +2690,10 @@ async function openLesson(chapter,courseName){
 
         }
 
+
         const lesson =
             await response.json();
+
 
         renderLesson(
             chapter,
@@ -1938,18 +2701,23 @@ async function openLesson(chapter,courseName){
             lesson
         );
 
-    } catch(error) {
+
+    }catch(error){
 
         console.error(error);
 
-        openModal(
-            `<h2 class="modal-title">
+
+        openModal(`
+
+            <h2 class="modal-title">
                 Lesson unavailable
             </h2>
+
             <p class="modal-description">
                 Please try again.
-            </p>`
-        );
+            </p>
+
+        `);
 
     }
 
@@ -1963,12 +2731,18 @@ function renderLesson(
 ){
 
     const completedKey =
-        courseName + "::" + chapter;
+        courseName +
+        "::" +
+        chapter;
+
 
     const alreadyCompleted =
-        progressData.completedChapters.includes(
+        progressData
+        .completedChapters
+        .includes(
             completedKey
         );
+
 
     let html = `
 
@@ -1988,12 +2762,17 @@ function renderLesson(
     if(lesson.introduction){
 
         html += `
-            <h2>Introduction</h2>
+
+            <h2>
+                Introduction
+            </h2>
+
             <p>
                 ${formatText(
                     lesson.introduction
                 )}
             </p>
+
         `;
 
     }
@@ -2002,12 +2781,17 @@ function renderLesson(
     if(lesson.definition){
 
         html += `
-            <h2>Definition</h2>
+
+            <h2>
+                Definition
+            </h2>
+
             <p>
                 ${formatText(
                     lesson.definition
                 )}
             </p>
+
         `;
 
     }
@@ -2016,35 +2800,57 @@ function renderLesson(
     if(lesson.explanation){
 
         html += `
-            <h2>Explanation</h2>
+
+            <h2>
+                Explanation
+            </h2>
+
             <p>
                 ${formatText(
                     lesson.explanation
                 )}
             </p>
+
         `;
 
     }
 
 
-    if(lesson.points){
+    if(
+        Array.isArray(
+            lesson.points
+        )
+    ){
 
         html += `
-            <h2>Key Points</h2>
+
+            <h2>
+                Key Points
+            </h2>
+
             <ul>
+
         `;
 
-        lesson.points.forEach(point => {
 
-            html += `
-                <li>
-                    ${formatText(point)}
-                </li>
-            `;
+        lesson.points.forEach(
+            point => {
 
-        });
+                html += `
 
-        html += `</ul>`;
+                    <li>
+                        ${formatText(point)}
+                    </li>
+
+                `;
+
+            }
+        );
+
+
+        html += `
+            </ul>
+        `;
 
     }
 
@@ -2052,7 +2858,10 @@ function renderLesson(
     if(lesson.example){
 
         html += `
-            <h2>Example</h2>
+
+            <h2>
+                Example
+            </h2>
 
             <div class="code-box">
 
@@ -2065,6 +2874,7 @@ function renderLesson(
                 )}</code></pre>
 
             </div>
+
         `;
 
     }
@@ -2073,18 +2883,25 @@ function renderLesson(
     if(lesson.important){
 
         html += `
-            <h2>Remember</h2>
+
+            <h2>
+                Remember
+            </h2>
+
             <p>
                 ${formatText(
                     lesson.important
                 )}
             </p>
+
         `;
 
     }
 
 
-    html += `</div>`;
+    html += `
+        </div>
+    `;
 
 
     if(!alreadyCompleted){
@@ -2124,7 +2941,9 @@ function renderLesson(
     }
 
 
-    openModal(html);
+    openModal(
+        html
+    );
 
 }
 
@@ -2136,25 +2955,38 @@ function renderLesson(
 function completeChapter(key){
 
     if(
-        progressData.completedChapters.includes(key)
+        progressData
+        .completedChapters
+        .includes(key)
     ){
 
-        showToast("Chapter already completed.");
+        showToast(
+            "Chapter already completed."
+        );
 
         return;
+
     }
 
-    progressData.completedChapters.push(key);
+
+    progressData
+        .completedChapters
+        .push(key);
+
 
     addXP(20);
 
+
     updateDashboard();
+
 
     saveProgress();
 
+
     showToast(
-        "Chapter completed! +20 XP 🎉"
+        "Chapter completed! 🎉"
     );
+
 
     closeModal();
 
@@ -2162,22 +2994,31 @@ function completeChapter(key){
 
 
 /* =========================================================
-   QUIZ ARENA
+   QUIZ
 ========================================================= */
 
 async function loadQuiz(){
 
-    openModal(
-        `<div class="loading">
-            <div class="spinner"></div>
-            Loading Quiz Arena...
-        </div>`
-    );
+    openModal(`
 
-    try {
+        <div class="loading">
+
+            <div class="spinner"></div>
+
+            Loading Quiz Arena...
+
+        </div>
+
+    `);
+
+
+    try{
 
         const response =
-            await fetch("/api/quiz");
+            await fetch(
+                "/api/quiz"
+            );
+
 
         if(!response.ok){
 
@@ -2187,25 +3028,33 @@ async function loadQuiz(){
 
         }
 
+
         quizData =
             await response.json();
 
+
         currentQuizAnswers = {};
+
 
         renderQuiz();
 
-    } catch(error) {
+
+    }catch(error){
 
         console.error(error);
 
-        openModal(
-            `<h2 class="modal-title">
+
+        openModal(`
+
+            <h2 class="modal-title">
                 Quiz unavailable
             </h2>
+
             <p class="modal-description">
                 Please try again.
-            </p>`
-        );
+            </p>
+
+        `);
 
     }
 
@@ -2214,9 +3063,16 @@ async function loadQuiz(){
 
 function renderQuiz(){
 
-    if(!Array.isArray(quizData)){
+    if(
+        !Array.isArray(
+            quizData
+        )
+    ){
+
         quizData = [];
+
     }
+
 
     let html = `
 
@@ -2227,55 +3083,62 @@ function renderQuiz(){
         <p class="modal-description">
             Answer the questions and earn XP.
         </p>
+
     `;
 
 
-    quizData.forEach((question,index) => {
-
-        html += `
-
-            <div class="quiz-question">
-
-                <div class="question-number">
-                    QUESTION ${index + 1}
-                </div>
-
-                <div class="question-text">
-                    ${escapeHTML(
-                        question.question || ""
-                    )}
-                </div>
-
-        `;
-
-
-        const options =
-            question.options || [];
-
-
-        options.forEach((option,optionIndex) => {
+    quizData.forEach(
+        (question,index) => {
 
             html += `
 
-                <button
-                    class="option"
-                    id="option-${index}-${optionIndex}"
-                    onclick="selectQuizAnswer(
-                        ${index},
-                        ${optionIndex}
-                    )"
-                >
-                    ${escapeHTML(option)}
-                </button>
+                <div class="quiz-question">
+
+                    <div class="question-number">
+                        QUESTION ${index + 1}
+                    </div>
+
+                    <div class="question-text">
+                        ${escapeHTML(
+                            question.question || ""
+                        )}
+                    </div>
 
             `;
 
-        });
+
+            const options =
+                question.options || [];
 
 
-        html += `</div>`;
+            options.forEach(
+                (option,optionIndex) => {
 
-    });
+                    html += `
+
+                        <button
+                            class="option"
+                            id="option-${index}-${optionIndex}"
+                            onclick="selectQuizAnswer(
+                                ${index},
+                                ${optionIndex}
+                            )"
+                        >
+                            ${escapeHTML(option)}
+                        </button>
+
+                    `;
+
+                }
+            );
+
+
+            html += `
+                </div>
+            `;
+
+        }
+    );
 
 
     html += `
@@ -2290,7 +3153,9 @@ function renderQuiz(){
     `;
 
 
-    openModal(html);
+    openModal(
+        html
+    );
 
 }
 
@@ -2300,42 +3165,55 @@ function selectQuizAnswer(
     optionIndex
 ){
 
-    currentQuizAnswers[questionIndex] =
+    currentQuizAnswers[
+        questionIndex
+    ] =
         optionIndex;
 
 
     const question =
-        quizData[questionIndex];
+        quizData[
+            questionIndex
+        ];
 
-    if(!question) return;
+
+    if(!question){
+
+        return;
+
+    }
 
 
     const options =
         question.options || [];
 
 
-    options.forEach((_,index) => {
+    options.forEach(
+        (_,index) => {
 
-        const button =
-            document.getElementById(
-                `option-${questionIndex}-${index}`
-            );
+            const button =
+                document.getElementById(
+                    `option-${questionIndex}-${index}`
+                );
 
-        if(button){
 
-            button.style.borderColor =
-                index === optionIndex
-                ? "#8b5cf6"
-                : "";
+            if(button){
 
-            button.style.background =
-                index === optionIndex
-                ? "rgba(139,92,246,.12)"
-                : "";
+                button.style.borderColor =
+                    index === optionIndex
+                    ? "#8b5cf6"
+                    : "";
+
+
+                button.style.background =
+                    index === optionIndex
+                    ? "rgba(139,92,246,.12)"
+                    : "";
+
+            }
 
         }
-
-    });
+    );
 
 }
 
@@ -2344,34 +3222,45 @@ function submitQuiz(){
 
     if(!quizData.length){
 
-        showToast("No quiz questions available.");
+        showToast(
+            "No quiz questions available."
+        );
 
         return;
+
     }
 
 
     let score = 0;
 
 
-    quizData.forEach((question,index) => {
+    quizData.forEach(
+        (question,index) => {
 
-        const selected =
-            currentQuizAnswers[index];
-
-        const correct =
-            Number(question.answer);
+            const selected =
+                currentQuizAnswers[index];
 
 
-        if(selected === correct){
+            const correct =
+                Number(
+                    question.answer
+                );
 
-            score++;
+
+            if(
+                selected === correct
+            ){
+
+                score++;
+
+            }
 
         }
+    );
 
-    });
 
-
-    currentQuizScore = score;
+    currentQuizScore =
+        score;
 
 
     const total =
@@ -2384,22 +3273,29 @@ function submitQuiz(){
         );
 
 
-    progressData.quizScores.push({
+    progressData
+        .quizScores
+        .push({
 
-        score:score,
+            score:score,
 
-        total:total,
+            total:total,
 
-        percentage:percentage,
+            percentage:percentage,
 
-        date:new Date().toISOString()
+            date:
+                new Date()
+                .toISOString()
 
-    });
+        });
 
 
-    progressData.totalQuizCorrect += score;
+    progressData.totalQuizCorrect +=
+        score;
 
-    progressData.totalQuizQuestions += total;
+
+    progressData.totalQuizQuestions +=
+        total;
 
 
     let xpEarned =
@@ -2413,7 +3309,10 @@ function submitQuiz(){
     }
 
 
-    addXP(xpEarned);
+    addXP(
+        xpEarned
+    );
+
 
     saveProgress();
 
@@ -2423,6 +3322,7 @@ function submitQuiz(){
         <div class="quiz-result">
 
             <div style="font-size:45px;">
+
                 ${
                     percentage >= 80
                     ? "🏆"
@@ -2430,6 +3330,7 @@ function submitQuiz(){
                     ? "🔥"
                     : "📚"
                 }
+
             </div>
 
             <h2 style="margin:10px 0;">
@@ -2453,69 +3354,94 @@ function submitQuiz(){
         <h3 style="margin:25px 0 12px;">
             Answers
         </h3>
+
     `;
 
 
-    quizData.forEach((question,index) => {
+    quizData.forEach(
+        (question,index) => {
 
-        const selected =
-            currentQuizAnswers[index];
-
-        const correct =
-            Number(question.answer);
-
-        const isCorrect =
-            selected === correct;
+            const selected =
+                currentQuizAnswers[index];
 
 
-        html += `
+            const correct =
+                Number(
+                    question.answer
+                );
 
-            <div class="challenge-card">
 
-                <strong>
-                    ${index + 1}.
-                    ${escapeHTML(
-                        question.question || ""
-                    )}
-                </strong>
+            const isCorrect =
+                selected === correct;
 
-                <p style="margin-top:8px;">
-                    Your answer:
-                    ${
-                        selected !== undefined
-                        ? escapeHTML(
-                            question.options[selected]
-                        )
-                        : "Not answered"
-                    }
-                </p>
 
-                <p style="margin-top:5px;">
-                    Correct answer:
-                    ${escapeHTML(
-                        question.options[correct]
-                    )}
-                </p>
+            html += `
 
-                <div
-                    class="result-message
-                    ${isCorrect ? "success" : "failure"}"
-                >
-                    ${
-                        isCorrect
-                        ? "✓ Correct"
-                        : "✗ Incorrect"
-                    }
+                <div class="challenge-card">
+
+                    <strong>
+                        ${index + 1}.
+                        ${escapeHTML(
+                            question.question || ""
+                        )}
+                    </strong>
+
+                    <p style="margin-top:8px;">
+
+                        Your answer:
+
+                        ${
+                            selected !== undefined
+                            ?
+                            escapeHTML(
+                                question.options[
+                                    selected
+                                ]
+                            )
+                            :
+                            "Not answered"
+                        }
+
+                    </p>
+
+                    <p style="margin-top:5px;">
+
+                        Correct answer:
+
+                        ${escapeHTML(
+                            question.options[
+                                correct
+                            ]
+                        )}
+
+                    </p>
+
+                    <div
+                        class="result-message
+                        ${isCorrect
+                            ? "success"
+                            : "failure"}"
+                    >
+
+                        ${
+                            isCorrect
+                            ? "✓ Correct"
+                            : "✗ Incorrect"
+                        }
+
+                    </div>
+
                 </div>
 
-            </div>
+            `;
 
-        `;
+        }
+    );
 
-    });
 
-
-    openModal(html);
+    openModal(
+        html
+    );
 
 }
 
@@ -2526,18 +3452,26 @@ function submitQuiz(){
 
 async function loadChallenges(){
 
-    openModal(
-        `<div class="loading">
+    openModal(`
+
+        <div class="loading">
+
             <div class="spinner"></div>
+
             Loading Code Challenges...
-        </div>`
-    );
+
+        </div>
+
+    `);
 
 
-    try {
+    try{
 
         const response =
-            await fetch("/api/code-challenges");
+            await fetch(
+                "/api/code-challenges"
+            );
+
 
         if(!response.ok){
 
@@ -2547,20 +3481,26 @@ async function loadChallenges(){
 
         }
 
+
         challengeData =
             await response.json();
 
+
         renderChallenges();
 
-    } catch(error) {
+
+    }catch(error){
 
         console.error(error);
 
-        openModal(
-            `<h2 class="modal-title">
+
+        openModal(`
+
+            <h2 class="modal-title">
                 Code Challenge unavailable
-            </h2>`
-        );
+            </h2>
+
+        `);
 
     }
 
@@ -2578,73 +3518,87 @@ function renderChallenges(){
         <p class="modal-description">
             Read the code carefully and predict its output.
         </p>
+
     `;
 
 
-    challengeData.forEach((challenge,index) => {
+    challengeData.forEach(
+        (challenge,index) => {
 
-        html += `
+            html += `
 
-            <div class="challenge-card">
+                <div class="challenge-card">
 
-                <h3>
-                    Challenge ${index + 1}
-                </h3>
+                    <h3>
+                        Challenge ${index + 1}
+                    </h3>
 
-                <p style="margin:10px 0;">
-                    ${escapeHTML(
-                        challenge.question ||
-                        challenge.description ||
-                        ""
-                    )}
-                </p>
+                    <p style="margin:10px 0;">
 
-                ${
-                    challenge.code
-                    ? `
-                        <div class="code-box">
+                        ${escapeHTML(
+                            challenge.question ||
+                            challenge.description ||
+                            ""
+                        )}
 
-                            <div class="code-header">
-                                Code
+                    </p>
+
+                    ${
+                        challenge.code
+                        ?
+                        `
+
+                            <div class="code-box">
+
+                                <div class="code-header">
+                                    Code
+                                </div>
+
+                                <pre class="code-content"><code>${escapeHTML(
+                                    challenge.code
+                                )}</code></pre>
+
                             </div>
 
-                            <pre class="code-content"><code>${escapeHTML(
-                                challenge.code
-                            )}</code></pre>
-
-                        </div>
-                    `
-                    : ""
-                }
-
-                <input
-                    class="answer-input"
-                    id="challenge-answer-${index}"
-                    placeholder="Enter the output..."
-                >
-
-                <button
-                    class="primary-btn"
-                    style="margin-top:10px;"
-                    onclick="
-                        checkChallenge(${index})
-                    "
-                >
-                    Check Answer
-                </button>
-
-                <div
-                    id="challenge-result-${index}"
-                ></div>
-
-            </div>
-
-        `;
-
-    });
+                        `
+                        :
+                        ""
+                    }
 
 
-    openModal(html);
+                    <input
+                        class="answer-input"
+                        id="challenge-answer-${index}"
+                        placeholder="Enter the output..."
+                    >
+
+
+                    <button
+                        class="primary-btn"
+                        style="margin-top:10px;"
+                        onclick="
+                            checkChallenge(${index})
+                        "
+                    >
+                        Check Answer
+                    </button>
+
+
+                    <div
+                        id="challenge-result-${index}"
+                    ></div>
+
+                </div>
+
+            `;
+
+        }
+    );
+
+
+    openModal(
+        html
+    );
 
 }
 
@@ -2654,7 +3608,12 @@ function checkChallenge(index){
     const challenge =
         challengeData[index];
 
-    if(!challenge) return;
+
+    if(!challenge){
+
+        return;
+
+    }
 
 
     const input =
@@ -2687,16 +3646,23 @@ function checkChallenge(index){
 
     if(!userAnswer){
 
-        result.innerHTML =
-            `<div class="result-message failure">
+        result.innerHTML = `
+
+            <div class="result-message failure">
                 Enter your answer first.
-            </div>`;
+            </div>
+
+        `;
 
         return;
+
     }
 
 
-    if(userAnswer === correctAnswer){
+    if(
+        userAnswer ===
+        correctAnswer
+    ){
 
         const challengeId =
             challenge.id ||
@@ -2704,35 +3670,49 @@ function checkChallenge(index){
 
 
         if(
-            !progressData.completedChallenges.includes(
+            !progressData
+            .completedChallenges
+            .includes(
                 challengeId
             )
         ){
 
-            progressData.completedChallenges.push(
-                challengeId
-            );
+            progressData
+                .completedChallenges
+                .push(
+                    challengeId
+                );
+
 
             addXP(30);
+
 
             saveProgress();
 
         }
 
 
-        result.innerHTML =
-            `<div class="result-message success">
+        result.innerHTML = `
+
+            <div class="result-message success">
                 ✓ Correct! Great job. +30 XP
-            </div>`;
+            </div>
+
+        `;
+
 
         updateDashboard();
 
+
     }else{
 
-        result.innerHTML =
-            `<div class="result-message failure">
+        result.innerHTML = `
+
+            <div class="result-message failure">
                 ✗ Not correct. Try again.
-            </div>`;
+            </div>
+
+        `;
 
     }
 
@@ -2745,18 +3725,26 @@ function checkChallenge(index){
 
 async function loadErrors(){
 
-    openModal(
-        `<div class="loading">
+    openModal(`
+
+        <div class="loading">
+
             <div class="spinner"></div>
+
             Loading Error Finder...
-        </div>`
-    );
+
+        </div>
+
+    `);
 
 
-    try {
+    try{
 
         const response =
-            await fetch("/api/error-finder");
+            await fetch(
+                "/api/error-finder"
+            );
+
 
         if(!response.ok){
 
@@ -2766,20 +3754,26 @@ async function loadErrors(){
 
         }
 
+
         errorData =
             await response.json();
 
+
         renderErrors();
 
-    } catch(error) {
+
+    }catch(error){
 
         console.error(error);
 
-        openModal(
-            `<h2 class="modal-title">
+
+        openModal(`
+
+            <h2 class="modal-title">
                 Error Finder unavailable
-            </h2>`
-        );
+            </h2>
+
+        `);
 
     }
 
@@ -2797,59 +3791,67 @@ function renderErrors(){
         <p class="modal-description">
             Find the mistake in each program.
         </p>
+
     `;
 
 
-    errorData.forEach((item,index) => {
+    errorData.forEach(
+        (item,index) => {
 
-        html += `
+            html += `
 
-            <div class="challenge-card">
+                <div class="challenge-card">
 
-                <h3>
-                    Problem ${index + 1}
-                </h3>
+                    <h3>
+                        Problem ${index + 1}
+                    </h3>
 
-                <div class="code-box">
+                    <div class="code-box">
 
-                    <div class="code-header">
-                        Find the error
+                        <div class="code-header">
+                            Find the error
+                        </div>
+
+                        <pre class="code-content"><code>${escapeHTML(
+                            item.code || ""
+                        )}</code></pre>
+
                     </div>
 
-                    <pre class="code-content"><code>${escapeHTML(
-                        item.code || ""
-                    )}</code></pre>
+
+                    <input
+                        class="answer-input"
+                        id="error-answer-${index}"
+                        placeholder="What is the error?"
+                    >
+
+
+                    <button
+                        class="primary-btn"
+                        style="margin-top:10px;"
+                        onclick="
+                            checkError(${index})
+                        "
+                    >
+                        Check
+                    </button>
+
+
+                    <div
+                        id="error-result-${index}"
+                    ></div>
 
                 </div>
 
-                <input
-                    class="answer-input"
-                    id="error-answer-${index}"
-                    placeholder="What is the error?"
-                >
+            `;
 
-                <button
-                    class="primary-btn"
-                    style="margin-top:10px;"
-                    onclick="
-                        checkError(${index})
-                    "
-                >
-                    Check
-                </button>
-
-                <div
-                    id="error-result-${index}"
-                ></div>
-
-            </div>
-
-        `;
-
-    });
+        }
+    );
 
 
-    openModal(html);
+    openModal(
+        html
+    );
 
 }
 
@@ -2859,7 +3861,12 @@ function checkError(index){
     const item =
         errorData[index];
 
-    if(!item) return;
+
+    if(!item){
+
+        return;
+
+    }
 
 
     const input =
@@ -2894,15 +3901,23 @@ function checkError(index){
         userAnswer &&
         correctAnswer &&
         (
-            correctAnswer.includes(userAnswer) ||
-            userAnswer.includes(correctAnswer)
+            correctAnswer.includes(
+                userAnswer
+            ) ||
+            userAnswer.includes(
+                correctAnswer
+            )
         )
     ){
 
-        result.innerHTML =
-            `<div class="result-message success">
+        result.innerHTML = `
+
+            <div class="result-message success">
                 ✓ Correct! +20 XP
-            </div>`;
+            </div>
+
+        `;
+
 
         const id =
             item.id ||
@@ -2910,25 +3925,36 @@ function checkError(index){
 
 
         if(
-            !progressData.completedChallenges.includes(id)
+            !progressData
+            .completedChallenges
+            .includes(id)
         ){
 
-            progressData.completedChallenges.push(id);
+            progressData
+                .completedChallenges
+                .push(id);
+
 
             addXP(20);
+
 
             saveProgress();
 
         }
 
+
         updateDashboard();
+
 
     }else{
 
-        result.innerHTML =
-            `<div class="result-message failure">
+        result.innerHTML = `
+
+            <div class="result-message failure">
                 ✗ Not correct. Read the code carefully and try again.
-            </div>`;
+            </div>
+
+        `;
 
     }
 
@@ -2952,6 +3978,7 @@ function openCareer(){
             you can build during your IT journey.
         </p>
 
+
         <div class="career-box">
 
             <div class="career-prompts">
@@ -2967,6 +3994,7 @@ function openCareer(){
                     Software Developer
                 </button>
 
+
                 <button
                     class="prompt-btn"
                     onclick="
@@ -2977,6 +4005,7 @@ function openCareer(){
                 >
                     Web Development
                 </button>
+
 
                 <button
                     class="prompt-btn"
@@ -2989,6 +4018,7 @@ function openCareer(){
                     Cybersecurity
                 </button>
 
+
                 <button
                     class="prompt-btn"
                     onclick="
@@ -2999,6 +4029,7 @@ function openCareer(){
                 >
                     Data Science
                 </button>
+
 
                 <button
                     class="prompt-btn"
@@ -3039,21 +4070,29 @@ function openCareer(){
 
     `;
 
-    openModal(html);
+
+    openModal(
+        html
+    );
 
 }
 
 
-function setCareerQuestion(question){
+function setCareerQuestion(
+    question
+){
 
     const input =
         document.getElementById(
             "careerQuestion"
         );
 
+
     if(input){
 
-        input.value = question;
+        input.value =
+            question;
+
 
         input.focus();
 
@@ -3069,13 +4108,21 @@ async function askCareer(){
             "careerQuestion"
         );
 
+
     const responseBox =
         document.getElementById(
             "careerResponse"
         );
 
 
-    if(!input || !responseBox) return;
+    if(
+        !input ||
+        !responseBox
+    ){
+
+        return;
+
+    }
 
 
     const question =
@@ -3089,38 +4136,42 @@ async function askCareer(){
         );
 
         return;
+
     }
 
 
-    responseBox.classList.remove("hidden");
+    responseBox
+        .classList
+        .remove(
+            "hidden"
+        );
+
 
     responseBox.textContent =
         "Career Guide is thinking...";
 
 
-    /*
-     * Uses the Flask career API if available.
-     * A local fallback keeps the feature usable
-     * if the endpoint is temporarily unavailable.
-     */
-
-    try {
+    try{
 
         const response =
-            await fetch("/api/career",{
+            await fetch(
+                "/api/career",
+                {
 
-                method:"POST",
+                    method:"POST",
 
-                headers:{
-                    "Content-Type":
-                        "application/json"
-                },
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
 
-                body:JSON.stringify({
-                    question:question
-                })
+                    body:
+                        JSON.stringify({
+                            question:question
+                        })
 
-            });
+                }
+            );
 
 
         if(response.ok){
@@ -3128,16 +4179,18 @@ async function askCareer(){
             const data =
                 await response.json();
 
+
             responseBox.textContent =
                 data.answer ||
                 data.response ||
                 "Career information is not available.";
 
+
             return;
 
         }
 
-    } catch(error){
+    }catch(error){
 
         console.log(
             "Career API unavailable:",
@@ -3148,12 +4201,16 @@ async function askCareer(){
 
 
     responseBox.textContent =
-        localCareerGuide(question);
+        localCareerGuide(
+            question
+        );
 
 }
 
 
-function localCareerGuide(question){
+function localCareerGuide(
+    question
+){
 
     const q =
         question.toLowerCase();
@@ -3278,43 +4335,71 @@ function openProgress(){
 
 
     const totalXP =
-        progressData.xp;
+        Number(
+            progressData.xp || 0
+        );
 
 
     const level =
-        progressData.level;
-
-
-    const nextLevelXP =
-        level * 100;
+        Number(
+            progressData.level || 1
+        );
 
 
     const levelProgress =
         Math.min(
+
             100,
-            Math.round(
-                (
-                    totalXP -
-                    ((level - 1) * 100)
-                ) / 100 * 100
+
+            Math.max(
+
+                0,
+
+                Math.round(
+
+                    (
+                        totalXP -
+                        (
+                            (level - 1) *
+                            100
+                        )
+                    )
+                    /
+                    100
+                    *
+                    100
+
+                )
+
             )
+
         );
 
 
     const totalQuiz =
-        progressData.totalQuizQuestions;
+        Number(
+            progressData.totalQuizQuestions || 0
+        );
 
 
     const correctQuiz =
-        progressData.totalQuizCorrect;
+        Number(
+            progressData.totalQuizCorrect || 0
+        );
 
 
     const quizAccuracy =
         totalQuiz
-        ? Math.round(
-            (correctQuiz / totalQuiz) * 100
+        ?
+        Math.round(
+            (
+                correctQuiz /
+                totalQuiz
+            ) *
+            100
         )
-        : 0;
+        :
+        0;
 
 
     const html = `
@@ -3332,7 +4417,10 @@ function openProgress(){
 
             <div
                 class="progress-circle"
-                style="--progress:${levelProgress * 3.6}deg;"
+                style="
+                    --progress:
+                    ${levelProgress * 3.6}deg;
+                "
             >
 
                 <div class="progress-percent">
@@ -3341,11 +4429,18 @@ function openProgress(){
 
             </div>
 
+
             <h3>
                 Level ${level}
             </h3>
 
-            <p style="color:#9da5c3;margin-top:6px;">
+
+            <p
+                style="
+                    color:#9da5c3;
+                    margin-top:6px;
+                "
+            >
                 ${totalXP} XP
             </p>
 
@@ -3357,7 +4452,11 @@ function openProgress(){
             <div class="stat-card">
 
                 <div class="stat-value">
-                    ${progressData.completedChapters.length}
+                    ${
+                        progressData
+                        .completedChapters
+                        .length
+                    }
                 </div>
 
                 <div class="stat-label">
@@ -3370,7 +4469,11 @@ function openProgress(){
             <div class="stat-card">
 
                 <div class="stat-value">
-                    ${progressData.completedChallenges.length}
+                    ${
+                        progressData
+                        .completedChallenges
+                        .length
+                    }
                 </div>
 
                 <div class="stat-label">
@@ -3383,7 +4486,11 @@ function openProgress(){
             <div class="stat-card">
 
                 <div class="stat-value">
-                    ${progressData.quizScores.length}
+                    ${
+                        progressData
+                        .quizScores
+                        .length
+                    }
                 </div>
 
                 <div class="stat-label">
@@ -3416,12 +4523,17 @@ function openProgress(){
         <div class="progress-list">
 
             ${
-                progressData.quizScores.length
+                progressData
+                .quizScores
+                .length
                 ?
-                progressData.quizScores
-                    .slice(-5)
-                    .reverse()
-                    .map(item => `
+
+                progressData
+                .quizScores
+                .slice(-5)
+                .reverse()
+                .map(
+                    item => `
 
                         <div class="progress-item">
 
@@ -3436,16 +4548,24 @@ function openProgress(){
 
                         </div>
 
-                    `)
-                    .join("")
+                    `
+                )
+                .join("")
+
                 :
+
                 `
+
                     <div class="progress-item">
+
                         <span>
                             No quizzes completed yet.
                         </span>
+
                     </div>
+
                 `
+
             }
 
         </div>
@@ -3453,7 +4573,9 @@ function openProgress(){
     `;
 
 
-    openModal(html);
+    openModal(
+        html
+    );
 
 }
 
@@ -3462,31 +4584,49 @@ function openProgress(){
    FEATURES
 ========================================================= */
 
-function openFeature(feature){
+function openFeature(
+    feature
+){
 
     switch(feature){
 
         case "quiz":
+
             loadQuiz();
+
             break;
+
 
         case "challenge":
+
             loadChallenges();
+
             break;
+
 
         case "error":
+
             loadErrors();
+
             break;
+
 
         case "career":
+
             openCareer();
+
             break;
+
 
         case "progress":
+
             openProgress();
+
             break;
 
+
         default:
+
             showToast(
                 "Feature coming soon."
             );
@@ -3500,16 +4640,26 @@ function openFeature(feature){
    MODAL
 ========================================================= */
 
-function openModal(content){
+function openModal(
+    content
+){
 
-    document.getElementById(
-        "modalContent"
-    ).innerHTML = content;
+    document
+        .getElementById(
+            "modalContent"
+        )
+        .innerHTML =
+        content;
 
 
-    document.getElementById(
-        "modal"
-    ).classList.remove("hidden");
+    document
+        .getElementById(
+            "modal"
+        )
+        .classList
+        .remove(
+            "hidden"
+        );
 
 
     document.body.style.overflow =
@@ -3520,9 +4670,14 @@ function openModal(content){
 
 function closeModal(){
 
-    document.getElementById(
-        "modal"
-    ).classList.add("hidden");
+    document
+        .getElementById(
+            "modal"
+        )
+        .classList
+        .add(
+            "hidden"
+        );
 
 
     document.body.style.overflow =
@@ -3531,9 +4686,14 @@ function closeModal(){
 }
 
 
-function closeModalOutside(event){
+function closeModalOutside(
+    event
+){
 
-    if(event.target.id === "modal"){
+    if(
+        event.target.id ===
+        "modal"
+    ){
 
         closeModal();
 
@@ -3549,7 +4709,9 @@ function closeModalOutside(event){
 function scrollToCourses(){
 
     document
-        .getElementById("coursesSection")
+        .getElementById(
+            "coursesSection"
+        )
         .scrollIntoView({
             behavior:"smooth"
         });
@@ -3561,24 +4723,35 @@ function scrollToCourses(){
    TOAST
 ========================================================= */
 
-function showToast(message){
+function showToast(
+    message
+){
 
     const toast =
-        document.getElementById("toast");
+        document.getElementById(
+            "toast"
+        );
 
 
     toast.textContent =
         message;
 
 
-    toast.classList.add("show");
+    toast.classList.add(
+        "show"
+    );
 
 
-    setTimeout(() => {
+    setTimeout(
+        () => {
 
-        toast.classList.remove("show");
+            toast.classList.remove(
+                "show"
+            );
 
-    },2500);
+        },
+        2500
+    );
 
 }
 
@@ -3587,12 +4760,15 @@ function showToast(message){
    LOGIN STATUS
 ========================================================= */
 
-function setLoginStatus(message){
+function setLoginStatus(
+    message
+){
 
     const element =
         document.getElementById(
             "loginStatus"
         );
+
 
     if(element){
 
@@ -3608,10 +4784,14 @@ function setLoginStatus(message){
    TEXT HELPERS
 ========================================================= */
 
-function escapeHTML(value){
+function escapeHTML(
+    value
+){
 
-    if(value === null ||
-       value === undefined){
+    if(
+        value === null ||
+        value === undefined
+    ){
 
         return "";
 
@@ -3620,27 +4800,55 @@ function escapeHTML(value){
 
     return String(value)
 
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 
 }
 
 
-function formatText(value){
+function formatText(
+    value
+){
 
-    if(value === null ||
-       value === undefined){
+    if(
+        value === null ||
+        value === undefined
+    ){
 
         return "";
 
     }
 
 
-    return escapeHTML(value)
-        .replace(/\n/g,"<br>");
+    return escapeHTML(
+        value
+    )
+    .replace(
+        /\n/g,
+        "<br>"
+    );
 
 }
 
@@ -3656,9 +4864,13 @@ document.addEventListener(
         if(
             event.key === "Escape" &&
             !document
-                .getElementById("modal")
+                .getElementById(
+                    "modal"
+                )
                 .classList
-                .contains("hidden")
+                .contains(
+                    "hidden"
+                )
         ){
 
             closeModal();
@@ -3678,7 +4890,8 @@ document.addEventListener(
     () => {
 
         if(
-            document.visibilityState === "visible" &&
+            document.visibilityState ===
+            "visible" &&
             currentUser
         ){
 
