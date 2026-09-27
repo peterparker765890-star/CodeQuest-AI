@@ -21,6 +21,12 @@ app.config["SECRET_KEY"] = os.environ.get(
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
+# Render uses HTTPS in production.
+app.config["SESSION_COOKIE_SECURE"] = (
+    os.environ.get("FLASK_ENV") == "production"
+)
+
+
 # =========================================================
 # COURSE DATABASE
 # =========================================================
@@ -785,18 +791,8 @@ courses = {
 # =========================================================
 
 def create_lesson(chapter, course_name):
-    """
-    Creates a beginner-friendly lesson for every chapter.
-
-    The system can later be expanded with individually written
-    lessons for specific chapters.
-    """
 
     lower = chapter.lower()
-
-    # -----------------------------------------------------
-    # SPECIAL LESSONS
-    # -----------------------------------------------------
 
     special = {
 
@@ -810,9 +806,10 @@ def create_lesson(chapter, course_name):
                 "Even a smartphone is essentially a specialized computer."
             ),
             "example": (
-                "Suppose you enter 10 + 20 into a calculator application. "
-                "The numbers are the input, the CPU performs the calculation, "
-                "and the answer 30 becomes the output."
+                'number1 = 10\n'
+                'number2 = 20\n'
+                'result = number1 + number2\n'
+                'print(result)'
             ),
             "tip": "Remember the basic cycle: Input → Processing → Output → Storage.",
             "mistake": "Do not think that a computer only means a desktop PC. Phones, tablets and many embedded devices are computers too.",
@@ -826,13 +823,12 @@ def create_lesson(chapter, course_name):
                 "Programming is the process of creating instructions that "
                 "a computer can follow to perform a task. A programmer first "
                 "understands a problem, designs a solution, writes code, "
-                "tests it and fixes mistakes. Programming is not simply "
-                "typing code; it is mainly about logical problem solving."
+                "tests it and fixes mistakes. Programming is mainly about "
+                "logical problem solving."
             ),
             "example": (
-                "If you want a program to calculate a student's average, "
-                "you can design steps to accept marks, add them, divide by "
-                "the number of subjects and display the result."
+                'name = "Joe"\n'
+                'print("Hello", name)'
             ),
             "tip": "Good programming starts with understanding the problem before writing code.",
             "mistake": "Do not memorize code without understanding what each instruction does.",
@@ -851,15 +847,15 @@ def create_lesson(chapter, course_name):
                 "An algorithm is a clear, ordered set of steps used to solve "
                 "a problem or complete a task. Algorithms are important because "
                 "they allow us to plan a solution before converting it into "
-                "programming code. A good algorithm should be understandable "
-                "and should eventually produce the expected result."
+                "programming code."
             ),
             "example": (
-                "To find the largest of two numbers: "
-                "1. Read the first number. "
-                "2. Read the second number. "
-                "3. Compare them. "
-                "4. Display the larger number."
+                'a = 10\n'
+                'b = 20\n'
+                'if a > b:\n'
+                '    print(a)\n'
+                'else:\n'
+                '    print(b)'
             ),
             "tip": "Algorithm = step-by-step method for solving a problem.",
             "mistake": "An algorithm is not a programming language. It is a method for solving a problem.",
@@ -877,14 +873,11 @@ def create_lesson(chapter, course_name):
             "explanation": (
                 "A variable is a named location used by a program to store "
                 "a value. The value can represent information such as a name, "
-                "age, mark or calculation result. Variables make programs "
-                "flexible because the stored value can usually be changed "
-                "during execution."
+                "age, mark or calculation result."
             ),
             "example": (
-                "In Python, `age = 18` creates a variable named age and stores "
-                "the value 18. Later the program can use age in calculations "
-                "or comparisons."
+                'age = 18\n'
+                'print(age)'
             ),
             "tip": "Think of a variable as a labelled box containing a value.",
             "mistake": "The variable name and the value stored inside it are not the same thing.",
@@ -902,19 +895,17 @@ def create_lesson(chapter, course_name):
             "explanation": (
                 "C is a general-purpose programming language created by "
                 "Dennis Ritchie at Bell Labs. It became extremely important "
-                "for system programming and influenced many later languages. "
-                "C teaches programmers how variables, memory, functions, "
-                "conditions, loops and pointers work at a relatively low level."
+                "for system programming and influenced many later languages."
             ),
             "example": (
-                '#include <stdio.h>\\n\\n'
-                'int main() {\\n'
-                '    printf("Hello World");\\n'
-                '    return 0;\\n'
+                '#include <stdio.h>\n\n'
+                'int main() {\n'
+                '    printf("Hello World");\n'
+                '    return 0;\n'
                 '}'
             ),
             "tip": "Most basic C programs begin execution from main().",
-            "mistake": "Remember that C is case-sensitive. `main` and `Main` are different names.",
+            "mistake": "Remember that C is case-sensitive. main and Main are different names.",
             "question": "Who developed the C programming language?",
             "options": [
                 "James Gosling",
@@ -929,16 +920,15 @@ def create_lesson(chapter, course_name):
             "explanation": (
                 "Python is a high-level, general-purpose programming language "
                 "designed with an emphasis on readability. It is used in web "
-                "development, automation, data analysis, artificial intelligence, "
-                "education, scripting and many other areas. Its relatively simple "
-                "syntax makes it a popular first programming language."
+                "development, automation, data analysis, artificial intelligence "
+                "and many other areas."
             ),
             "example": (
-                'name = "Joe"\\n'
+                'name = "Joe"\n'
                 'print(name)'
             ),
             "tip": "Python focuses on readable code and uses indentation to organize blocks.",
-            "mistake": "Do not ignore indentation in Python. It can change the meaning of your program.",
+            "mistake": "Do not ignore indentation in Python.",
             "question": "Which language is known for readable and beginner-friendly syntax?",
             "options": [
                 "Machine Code",
@@ -953,20 +943,18 @@ def create_lesson(chapter, course_name):
             "explanation": (
                 "C++ is a general-purpose programming language developed by "
                 "Bjarne Stroustrup. It builds upon many concepts from C and "
-                "adds powerful features including classes, objects, inheritance "
-                "and polymorphism. C++ is widely used in software, games, "
-                "systems programming and performance-sensitive applications."
+                "adds classes, objects, inheritance and polymorphism."
             ),
             "example": (
-                '#include <iostream>\\n'
-                'using namespace std;\\n\\n'
-                'int main() {\\n'
-                '    cout << "Hello";\\n'
-                '    return 0;\\n'
+                '#include <iostream>\n'
+                'using namespace std;\n\n'
+                'int main() {\n'
+                '    cout << "Hello";\n'
+                '    return 0;\n'
                 '}'
             ),
             "tip": "C++ supports both procedural and object-oriented programming.",
-            "mistake": "C++ is not simply 'C with a different name'; it adds many important programming features.",
+            "mistake": "C++ is not simply C with a different name.",
             "question": "Which language is C++ closely related to?",
             "options": ["C", "HTML", "SQL", "CSS"],
             "answer": 0
@@ -976,14 +964,15 @@ def create_lesson(chapter, course_name):
             "explanation": (
                 "Object-oriented programming, commonly called OOP, is a way "
                 "of designing software around objects that contain data and "
-                "behaviour. Instead of thinking only about individual functions, "
-                "OOP lets us model real-world or logical entities as objects. "
-                "Important OOP concepts include encapsulation, inheritance, "
-                "polymorphism and abstraction."
+                "behaviour. Important OOP concepts include encapsulation, "
+                "inheritance, polymorphism and abstraction."
             ),
             "example": (
-                "A Student object could contain data such as name and age, "
-                "along with behaviours such as displayDetails() or calculateMark()."
+                'class Student:\n'
+                '    def __init__(self, name):\n'
+                '        self.name = name\n\n'
+                'student = Student("Joe")\n'
+                'print(student.name)'
             ),
             "tip": "OOP helps organize large programs into reusable components.",
             "mistake": "An object is an instance of a class; the two terms are related but not identical.",
@@ -1000,13 +989,10 @@ def create_lesson(chapter, course_name):
         "What is HTML?": {
             "explanation": (
                 "HTML stands for HyperText Markup Language. It is used to "
-                "define the structure and meaning of content on a web page. "
-                "HTML can describe headings, paragraphs, links, images, forms, "
-                "tables and many other elements. CSS is normally used for visual "
-                "styling while JavaScript adds behaviour."
+                "define the structure and meaning of content on a web page."
             ),
             "example": (
-                '<h1>Welcome to CodeQuest</h1>\\n'
+                '<h1>Welcome to CodeQuest</h1>\n'
                 '<p>Learn programming step by step.</p>'
             ),
             "tip": "HTML describes structure; CSS handles presentation; JavaScript handles behaviour.",
@@ -1024,14 +1010,12 @@ def create_lesson(chapter, course_name):
         "What is CSS?": {
             "explanation": (
                 "CSS stands for Cascading Style Sheets. It controls how HTML "
-                "content looks on a web page. CSS can control colors, fonts, "
-                "spacing, borders, layouts, animations and responsive designs. "
-                "Separating structure from presentation makes websites easier "
-                "to maintain."
+                "content looks on a web page. CSS controls colors, fonts, "
+                "spacing, borders, layouts, animations and responsive designs."
             ),
             "example": (
-                'h1 {\\n'
-                '    font-size: 40px;\\n'
+                'h1 {\n'
+                '    font-size: 40px;\n'
                 '}'
             ),
             "tip": "HTML builds the structure; CSS makes that structure look good.",
@@ -1050,14 +1034,11 @@ def create_lesson(chapter, course_name):
             "explanation": (
                 "Cybersecurity is the practice of protecting computers, networks, "
                 "applications, systems and information from unauthorized access, "
-                "damage, disruption or misuse. Security is not only about hacking. "
-                "It also includes prevention, detection, response, recovery and "
-                "responsible user behaviour."
+                "damage, disruption or misuse."
             ),
             "example": (
-                "Using a strong password, enabling multi-factor authentication, "
-                "keeping software updated and recognizing phishing messages are "
-                "simple examples of cybersecurity practices."
+                'password = "StrongPassword123!"\n'
+                'print("Use multi-factor authentication")'
             ),
             "tip": "Security is a process, not a single application or tool.",
             "mistake": "Never assume that antivirus software alone can protect an entire system.",
@@ -1074,17 +1055,16 @@ def create_lesson(chapter, course_name):
         "What is a Database?": {
             "explanation": (
                 "A database is an organized collection of information that can "
-                "be stored, searched, updated and managed efficiently. Modern "
-                "applications use databases for information such as users, "
-                "products, marks, orders and messages. Database systems provide "
-                "ways to control and retrieve this information."
+                "be stored, searched, updated and managed efficiently."
             ),
             "example": (
-                "A college application might have a Students table containing "
-                "student ID, name, department and year."
+                'CREATE TABLE Students (\n'
+                '    id INT,\n'
+                '    name VARCHAR(50)\n'
+                ');'
             ),
             "tip": "Database = organized information that software can manage.",
-            "mistake": "A database is more than just a plain text file; database systems provide structured ways to manage data.",
+            "mistake": "A database is more than just a plain text file.",
             "question": "What is a database?",
             "options": [
                 "An organized collection of information",
@@ -1097,124 +1077,157 @@ def create_lesson(chapter, course_name):
     }
 
     if chapter in special:
+
         data = special[chapter].copy()
+
     else:
-        # -------------------------------------------------
-        # SMART FALLBACK LESSON
-        # -------------------------------------------------
 
         topic = chapter
 
         if "Loop" in chapter:
+
             concept = (
                 f"{topic} is related to repetition in programming. "
                 "Loops allow a program to execute a block of instructions "
                 "multiple times instead of writing the same instructions repeatedly."
             )
+
             example = (
-                "Imagine printing numbers from 1 to 5. Instead of writing "
-                "five separate print statements, a loop can repeat the printing operation."
+                'for i in range(1, 6):\n'
+                '    print(i)'
             )
 
         elif "Function" in chapter or "Method" in chapter:
+
             concept = (
                 f"{topic} helps organize reusable behaviour in a program. "
-                "Instead of placing every instruction in one large block, "
-                "developers can separate related operations into reusable units."
+                "Developers can separate related operations into reusable units."
             )
+
             example = (
-                "A program could have a function named calculateTotal() that "
-                "receives values, performs a calculation and returns the result."
+                'def calculate_total(a, b):\n'
+                '    return a + b\n\n'
+                'print(calculate_total(10, 20))'
             )
 
         elif "Array" in chapter or "List" in chapter:
+
             concept = (
                 f"{topic} deals with storing multiple related values. "
                 "Collections are useful when a program needs to work with "
-                "many values rather than creating a separate variable for every value."
+                "many values."
             )
+
             example = (
-                "Instead of creating mark1, mark2, mark3 and mark4 separately, "
-                "a collection can store all the marks together."
+                'marks = [80, 75, 90]\n'
+                'print(marks[0])'
             )
 
         elif "Class" in chapter or "Object" in chapter:
+
             concept = (
                 f"{topic} is an important object-oriented programming concept. "
-                "OOP allows software to represent data and behaviour in organized "
-                "units that can be reused and maintained."
-            )
-            example = (
-                "A Student class could contain a student's name and age and "
-                "methods that display or process student information."
+                "OOP allows software to represent data and behaviour in organized units."
             )
 
-        elif "Security" in lower or "Cyber" in lower or "Phishing" in lower:
+            example = (
+                'class Student:\n'
+                '    pass\n\n'
+                'student = Student()'
+            )
+
+        elif (
+            "Security" in lower
+            or "Cyber" in lower
+            or "Phishing" in lower
+        ):
+
             concept = (
                 f"{topic} is an important cybersecurity concept. "
                 "Understanding this topic helps users and developers recognize "
-                "risks and design safer systems. Security requires understanding "
-                "both how systems work and how they can be misused."
-            )
-            example = (
-                "A practical example is identifying a suspicious message before "
-                "clicking its link and checking whether the website and sender are trustworthy."
+                "risks and design safer systems."
             )
 
-        elif "Network" in chapter or "Internet" in chapter or "HTTP" in chapter:
+            example = (
+                'message = "You won a prize! Click here!"\n'
+                'print("Check the message before clicking")'
+            )
+
+        elif (
+            "Network" in chapter
+            or "Internet" in chapter
+            or "HTTP" in chapter
+        ):
+
             concept = (
                 f"{topic} is part of computer networking. "
                 "Networking concepts explain how devices communicate, "
-                "how information travels and how different services work together."
-            )
-            example = (
-                "When you open a website, your device communicates with remote "
-                "systems using several networking technologies before the page appears."
+                "how information travels and how services work together."
             )
 
-        elif "Database" in chapter or "SQL" in chapter or "Table" in chapter:
+            example = (
+                'url = "https://example.com"\n'
+                'print(url)'
+            )
+
+        elif (
+            "Database" in chapter
+            or "SQL" in chapter
+            or "Table" in chapter
+        ):
+
             concept = (
                 f"{topic} is related to data management. "
-                "Applications need organized data so information can be stored, "
-                "searched, changed and protected efficiently."
+                "Applications need organized data so information can be "
+                "stored, searched, changed and protected efficiently."
             )
+
             example = (
-                "A student management system may store student names, IDs, "
-                "departments and marks in related database tables."
+                'SELECT name\n'
+                'FROM Students;'
             )
 
         elif "Git" in chapter or "GitHub" in chapter:
+
             concept = (
                 f"{topic} is part of version control and software collaboration. "
-                "Developers use version-control tools to track changes, experiment "
-                "safely and collaborate on projects."
+                "Developers use version-control tools to track changes and "
+                "collaborate on projects."
             )
+
             example = (
-                "A developer can commit a working version of an application, "
-                "make changes later and return to an earlier version if necessary."
+                'git add .\n'
+                'git commit -m "Initial commit"'
             )
 
         else:
+
             concept = (
                 f"{topic} is an important part of {course_name}. "
                 "Learning this topic gives you another building block for "
                 "understanding how computers, software and technology work. "
                 "The goal is not just to memorize the definition, but to "
-                "understand what the concept does, why it is useful and where "
-                "you may encounter it in real applications."
+                "understand what the concept does, why it is useful and "
+                "where you may encounter it in real applications."
             )
 
+            # Real executable-looking example instead of paragraph text.
             example = (
-                f"Think about {topic} in a real-world situation. "
-                "A beginner can understand the concept more easily by connecting "
-                "the technical idea to something familiar before writing code."
+                'topic = "' + topic + '"\n'
+                'print(topic)'
             )
 
         data = {
             "explanation": concept,
             "example": example,
-            "tip": f"Understand the purpose of {topic} before trying to memorize its definition.",
-            "mistake": "Do not memorize the topic without understanding what problem it solves.",
+            "tip": (
+                f"Understand the purpose of {topic} "
+                "before trying to memorize its definition."
+            ),
+            "mistake": (
+                "Do not memorize the topic without understanding "
+                "what problem it solves."
+            ),
             "question": f"Which statement best describes {topic}?",
             "options": [
                 f"It is an important concept related to {course_name}",
@@ -1579,17 +1592,33 @@ def add_security_headers(response):
 
     response.headers["X-Frame-Options"] = "DENY"
 
-    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Referrer-Policy"] = (
+        "strict-origin-when-cross-origin"
+    )
 
     response.headers["Permissions-Policy"] = (
         "camera=(), microphone=(), geolocation=()"
     )
 
     response.headers["Content-Security-Policy"] = (
-        "default-src 'self' 'unsafe-inline'; "
-        "img-src 'self' data:; "
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline' "
+        "https://www.gstatic.com "
+        "https://apis.google.com; "
+        "style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data: https:; "
         "font-src 'self' data:; "
-        "connect-src 'self'; "
+        "connect-src 'self' "
+        "https://*.googleapis.com "
+        "https://*.firebaseio.com "
+        "https://*.firebaseapp.com "
+        "https://identitytoolkit.googleapis.com "
+        "https://securetoken.googleapis.com; "
+        "frame-src "
+        "https://*.firebaseapp.com "
+        "https://accounts.google.com; "
+        "object-src 'none'; "
+        "base-uri 'self'; "
         "frame-ancestors 'none';"
     )
 
@@ -1624,9 +1653,12 @@ def status():
             "Quiz Arena",
             "Code Challenges",
             "Error Finder",
+            "Career Guide",
             "Protected Test Engine",
             "Server Side Test Validation",
             "Progress Tracking",
+            "Google Authentication Ready",
+            "Firestore Progress Ready",
             "Security Headers"
         ]
     })
@@ -1754,6 +1786,121 @@ def get_error_challenges():
 
 
 # =========================================================
+# CAREER GUIDE
+# =========================================================
+
+@app.route("/api/career", methods=["POST"])
+def career_guide():
+
+    data = request.get_json(
+        silent=True
+    ) or {}
+
+    question = str(
+        data.get(
+            "question",
+            ""
+        )
+    ).strip()
+
+    if not question:
+
+        return jsonify({
+            "answer": "Please ask me a career-related question."
+        }), 400
+
+    q = question.lower()
+
+    if "internship" in q:
+
+        answer = (
+            "To prepare for internships, build strong programming basics, "
+            "complete 2–3 practical projects, learn Git and GitHub, create "
+            "a clean resume and practice coding questions. Start applying "
+            "while you continue learning."
+        )
+
+    elif "placement" in q or "campus" in q:
+
+        answer = (
+            "For campus placements, focus on programming fundamentals, "
+            "data structures, SQL, communication skills, aptitude and "
+            "interview preparation. Keep your projects and GitHub profile ready."
+        )
+
+    elif "resume" in q or "cv" in q:
+
+        answer = (
+            "Keep your resume simple and preferably one page as a student. "
+            "Include education, technical skills, projects, certifications "
+            "and relevant achievements. For projects, explain what you built "
+            "and what technologies you used."
+        )
+
+    elif (
+        "hardware" in q
+        or "laptop" in q
+        or "computer" in q
+    ):
+
+        answer = (
+            "For computer hardware and systems, learn CPU, RAM, storage, "
+            "motherboard, operating systems, networking and basic troubleshooting. "
+            "For software development, also learn a programming language and Git."
+        )
+
+    elif (
+        "software" in q
+        or "developer" in q
+        or "coding" in q
+        or "programming" in q
+    ):
+
+        answer = (
+            "A software developer should build strong programming logic, "
+            "learn data structures, databases, Git/GitHub, APIs and software "
+            "development practices. Then choose a specialization such as "
+            "web, mobile, backend, AI or cybersecurity."
+        )
+
+    elif (
+        "project" in q
+        or "portfolio" in q
+    ):
+
+        answer = (
+            "Build projects that solve real problems instead of only making "
+            "tutorial projects. Start with small applications and gradually "
+            "add databases, authentication, APIs and deployment. Put your "
+            "best projects on GitHub."
+        )
+
+    elif (
+        "roadmap" in q
+        or "job" in q
+    ):
+
+        answer = (
+            "A simple IT roadmap is: Programming Fundamentals → C/Python → "
+            "Data Structures → SQL → Git/GitHub → Web or another specialization "
+            "→ Projects → Resume → Internship and Placement preparation."
+        )
+
+    else:
+
+        answer = (
+            "Start by strengthening programming fundamentals, problem solving, "
+            "Git/GitHub and SQL. Then build practical projects and choose a "
+            "specialization that interests you. Consistent practice is more "
+            "useful than trying to learn everything at once."
+        )
+
+    return jsonify({
+        "answer": answer
+    })
+
+
+# =========================================================
 # PROTECTED TEST SYSTEM
 # =========================================================
 
@@ -1767,7 +1914,9 @@ def test_required(function):
     @wraps(function)
     def wrapper(*args, **kwargs):
 
-        test = session.get("secure_test")
+        test = session.get(
+            "secure_test"
+        )
 
         if not test:
 
@@ -1786,15 +1935,24 @@ def test_required(function):
                 "error": "Test time has expired."
             }), 403
 
-        return function(*args, **kwargs)
+        return function(
+            *args,
+            **kwargs
+        )
 
     return wrapper
 
 
-@app.route("/api/test/start", methods=["POST"])
+# =========================================================
+# START SECURE TEST
+# =========================================================
+
+@app.route(
+    "/api/test/start",
+    methods=["POST"]
+)
 def start_secure_test():
 
-    # Prevent multiple simultaneous test sessions.
     if session.get("secure_test"):
 
         existing = session["secure_test"]
@@ -1823,12 +1981,14 @@ def start_secure_test():
             "options": question["options"]
         })
 
+    now = time.time()
+
     test_id = secrets.token_urlsafe(24)
 
     session["secure_test"] = {
         "id": test_id,
-        "started_at": time.time(),
-        "expires_at": time.time() + TEST_DURATION,
+        "started_at": now,
+        "expires_at": now + TEST_DURATION,
         "questions": [
             question["id"]
             for question in questions
@@ -1903,6 +2063,29 @@ def submit_test_answer():
             "error": "Question does not belong to this test."
         }), 400
 
+    # Prevent invalid option indexes.
+    question = next(
+        (
+            q for q in quiz_questions
+            if q["id"] == question_id
+        ),
+        None
+    )
+
+    if question is None:
+
+        return jsonify({
+            "error": "Question not found."
+        }), 400
+
+    if selected < 0 or selected >= len(
+        question["options"]
+    ):
+
+        return jsonify({
+            "error": "Invalid option."
+        }), 400
+
     test["answers"][question_id] = selected
 
     session.modified = True
@@ -1943,7 +2126,6 @@ def test_violation():
 
     violations = test["violations"]
 
-    # After repeated violations, terminate the test.
     if violations >= 3:
 
         session.pop(
@@ -1993,13 +2175,22 @@ def finish_secure_test():
         "answers"
     ]
 
-    for question in quiz_questions:
+    question_lookup = {
+        question["id"]: question
+        for question in quiz_questions
+    }
 
-        if question["id"] not in test["questions"]:
+    for question_id in test["questions"]:
+
+        question = question_lookup.get(
+            question_id
+        )
+
+        if not question:
             continue
 
         selected = submitted_answers.get(
-            question["id"]
+            question_id
         )
 
         if selected == question["answer"]:
@@ -2097,10 +2288,11 @@ def test_status():
 def progress():
 
     return jsonify({
-        "server_tracking": True,
+        "server_tracking": False,
+        "storage": "Firebase Firestore",
         "message": (
-            "Client-side XP can be combined with "
-            "server-side accounts in the next upgrade."
+            "Account progress is designed to be stored "
+            "in the user's Google account through Firebase."
         )
     })
 
@@ -2114,7 +2306,8 @@ def health():
 
     return jsonify({
         "status": "healthy",
-        "service": "CodeQuest AI"
+        "service": "CodeQuest AI",
+        "version": "0.5"
     })
 
 
@@ -2139,7 +2332,7 @@ def server_error(error):
 
 
 # =========================================================
-# LOCAL DEVELOPMENT
+# LOCAL DEVELOPMENT / RENDER
 # =========================================================
 
 if __name__ == "__main__":
