@@ -2,678 +2,631 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CodeQuest AI</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
 
 body{
-font-family:Arial,Helvetica,sans-serif;
-min-height:100vh;
-color:#fff;
-background:
-radial-gradient(circle at 10% 10%,#241052 0%,transparent 30%),
-radial-gradient(circle at 90% 20%,#102b62 0%,transparent 30%),
-radial-gradient(circle at 50% 100%,#21103d 0%,transparent 35%),
-#080b16;
+    font-family:Arial,Helvetica,sans-serif;
+    min-height:100vh;
+    color:#fff;
+    background:
+        radial-gradient(circle at top right,#35136b 0%,transparent 32%),
+        radial-gradient(circle at bottom left,#102c63 0%,transparent 35%),
+        #080b16;
 }
 
 button{font-family:inherit}
 .hidden{display:none!important}
 
 .navbar{
-position:sticky;
-top:0;
-z-index:1000;
-width:100%;
-padding:15px 6%;
-display:flex;
-justify-content:space-between;
-align-items:center;
-background:rgba(8,11,22,.9);
-backdrop-filter:blur(16px);
-border-bottom:1px solid rgba(255,255,255,.08)
+    position:sticky;
+    top:0;
+    z-index:1000;
+    width:100%;
+    padding:15px 6%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:rgba(8,11,22,.88);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid rgba(255,255,255,.08);
 }
 
-.logo{font-size:22px;font-weight:bold}
+.logo{
+    font-size:22px;
+    font-weight:bold;
+}
+
 .logo span{color:#9b6cff}
 
-.nav-right{display:flex;align-items:center;gap:10px}
+.nav-right{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
 
 .google-btn{
-border:0;background:#fff;color:#222;
-padding:10px 15px;border-radius:9px;
-font-weight:bold;cursor:pointer;
-display:flex;align-items:center;gap:8px
+    border:0;
+    background:#fff;
+    color:#222;
+    padding:10px 15px;
+    border-radius:9px;
+    font-weight:bold;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:8px;
 }
 
 .google-icon{width:18px}
 
-.user-box{display:none;align-items:center;gap:9px}
-
-.user-photo{
-width:36px;height:36px;border-radius:50%;
-border:2px solid #9b6cff
+.user-box{
+    display:none;
+    align-items:center;
+    gap:9px;
 }
 
-.user-name{font-size:14px;font-weight:bold}
+.user-photo{
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    border:2px solid #9b6cff;
+}
+
+.user-name{
+    font-size:14px;
+    font-weight:bold;
+}
 
 .logout-btn{
-border:1px solid rgba(255,255,255,.15);
-background:rgba(255,255,255,.06);
-color:#fff;padding:8px 12px;
-border-radius:8px;cursor:pointer
+    border:1px solid rgba(255,255,255,.15);
+    background:rgba(255,255,255,.06);
+    color:#fff;
+    padding:8px 12px;
+    border-radius:8px;
+    cursor:pointer;
 }
 
 .hero{
-min-height:65vh;
-display:flex;
-justify-content:center;
-align-items:center;
-text-align:center;
-padding:70px 20px
+    min-height:65vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:70px 20px;
 }
 
-.hero-content{max-width:900px}
+.hero-content{max-width:850px}
 
 .badge{
-display:inline-block;
-padding:9px 17px;
-border-radius:30px;
-background:rgba(155,108,255,.12);
-border:1px solid rgba(155,108,255,.3);
-color:#cdbdff;
-margin-bottom:20px;
-font-size:13px
+    display:inline-block;
+    padding:8px 15px;
+    border-radius:30px;
+    background:rgba(155,108,255,.12);
+    border:1px solid rgba(155,108,255,.3);
+    color:#c6b2ff;
+    margin-bottom:20px;
+    font-size:13px;
 }
 
 .hero h1{
-font-size:clamp(42px,8vw,76px);
-line-height:1.05;
-margin-bottom:20px
+    font-size:clamp(42px,8vw,76px);
+    line-height:1.05;
+    margin-bottom:20px;
 }
 
-.hero h1 span{
-color:#9b6cff;
-text-shadow:0 0 30px rgba(155,108,255,.35)
-}
+.hero h1 span{color:#9b6cff}
 
 .hero p{
-color:#b8bbc9;
-line-height:1.7;
-font-size:17px
+    color:#b8bbc9;
+    line-height:1.7;
+    font-size:17px;
 }
 
 .primary-btn{
-margin-top:28px;
-padding:14px 25px;
-border:0;
-border-radius:11px;
-color:#fff;
-background:linear-gradient(135deg,#9b6cff,#5d32d8);
-font-weight:bold;
-cursor:pointer;
-box-shadow:0 10px 35px rgba(110,70,220,.25);
-transition:.2s
+    margin-top:28px;
+    padding:14px 25px;
+    border:0;
+    border-radius:11px;
+    color:white;
+    background:linear-gradient(135deg,#8f5cff,#6134d9);
+    font-weight:bold;
+    cursor:pointer;
+    box-shadow:0 10px 35px rgba(110,70,220,.25);
 }
 
-.primary-btn:hover{transform:translateY(-2px);box-shadow:0 15px 40px rgba(110,70,220,.4)}
+.primary-btn:hover{
+    transform:translateY(-2px);
+}
 
 .features{
-padding:35px 6% 65px;
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
-gap:18px
+    padding:35px 6% 65px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+    gap:18px;
+}
+
+.card,
+.course-card,
+.stat,
+.sidebar,
+.lesson,
+.quiz-box,
+.career-card,
+.progress-box,
+.achievement{
+    background:rgba(255,255,255,.045);
+    border:1px solid rgba(255,255,255,.08);
 }
 
 .card{
-padding:24px;
-border-radius:17px;
-background:rgba(255,255,255,.045);
-border:1px solid rgba(255,255,255,.08);
-transition:.2s
+    padding:24px;
+    border-radius:17px;
 }
 
-.card:hover{
-transform:translateY(-5px);
-border-color:#7650d9;
-box-shadow:0 10px 30px rgba(90,50,180,.15)
+.card-icon{
+    font-size:30px;
+    margin-bottom:14px;
 }
 
-.card-icon{font-size:30px;margin-bottom:14px}
 .card h3{margin-bottom:9px}
-.card p{color:#aeb1bf;line-height:1.6;font-size:14px}
+
+.card p{
+    color:#aeb1bf;
+    line-height:1.6;
+    font-size:14px;
+}
 
 #app{
-display:none;
-padding:25px 6% 70px
+    display:none;
+    padding:25px 6% 70px;
 }
 
 .app-layout{
-display:grid;
-grid-template-columns:220px 1fr;
-gap:22px
+    display:grid;
+    grid-template-columns:220px 1fr;
+    gap:22px;
 }
 
 .sidebar{
-position:sticky;
-top:85px;
-height:max-content;
-padding:15px;
-background:rgba(255,255,255,.045);
-border:1px solid rgba(255,255,255,.08);
-border-radius:17px
+    position:sticky;
+    top:85px;
+    height:max-content;
+    padding:15px;
+    border-radius:17px;
 }
 
 .side-btn{
-width:100%;
-padding:12px;
-margin-bottom:6px;
-text-align:left;
-border:0;
-border-radius:9px;
-background:transparent;
-color:#c8cad5;
-cursor:pointer;
-transition:.2s
+    width:100%;
+    padding:12px;
+    margin-bottom:6px;
+    text-align:left;
+    border:0;
+    border-radius:9px;
+    background:transparent;
+    color:#c8cad5;
+    cursor:pointer;
 }
 
 .side-btn:hover,
 .side-btn.active{
-background:linear-gradient(90deg,rgba(143,92,255,.22),rgba(143,92,255,.07));
-color:#fff;
-box-shadow:inset 3px 0 #9b6cff
+    background:rgba(143,92,255,.18);
+    color:#fff;
 }
 
 .content{min-width:0}
 
 .page{display:none}
+
 .page.active{display:block}
 
 .page-title{
-font-size:32px;
-margin-bottom:7px
+    font-size:32px;
+    margin-bottom:7px;
 }
 
 .page-subtitle{
-color:#aeb1bf;
-margin-bottom:25px;
-line-height:1.6
+    color:#aeb1bf;
+    margin-bottom:25px;
 }
 
 .stats{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:14px;
-margin-bottom:25px
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+    margin-bottom:25px;
 }
 
 .stat{
-padding:18px;
-background:rgba(255,255,255,.045);
-border:1px solid rgba(255,255,255,.08);
-border-radius:14px;
-transition:.2s
-}
-
-.stat:hover{
-border-color:#7650d9;
-transform:translateY(-2px)
+    padding:18px;
+    border-radius:14px;
 }
 
 .stat-number{
-font-size:27px;
-font-weight:bold;
-margin-bottom:5px;
-color:#fff
+    font-size:27px;
+    font-weight:bold;
+    margin-bottom:5px;
 }
 
 .stat-label{
-color:#9296a8;
-font-size:13px
+    color:#9296a8;
+    font-size:13px;
 }
 
 .course-grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:17px
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:17px;
 }
 
 .course-card{
-padding:22px;
-border-radius:16px;
-background:rgba(255,255,255,.045);
-border:1px solid rgba(255,255,255,.08);
-transition:.2s;
-position:relative;
-overflow:hidden
-}
-
-.course-card:before{
-content:"";
-position:absolute;
-top:0;
-left:0;
-right:0;
-height:2px;
-background:linear-gradient(90deg,#8f5cff,#4c8cff);
-opacity:.7
+    padding:22px;
+    border-radius:16px;
+    transition:.2s;
 }
 
 .course-card:hover{
-transform:translateY(-5px);
-border-color:#7650d9;
-box-shadow:0 12px 35px rgba(100,60,200,.15)
+    transform:translateY(-4px);
+    border-color:#7650d9;
 }
 
-.course-icon{font-size:35px;margin-bottom:12px}
+.course-icon{
+    font-size:35px;
+    margin-bottom:12px;
+}
+
 .course-card h3{margin-bottom:8px}
+
 .course-card p{
-color:#aeb1bf;
-font-size:13px;
-line-height:1.55
+    color:#aeb1bf;
+    font-size:13px;
+    line-height:1.55;
 }
 
 .course-meta{
-display:flex;
-justify-content:space-between;
-margin-top:15px;
-color:#9b6cff;
-font-size:12px
+    display:flex;
+    justify-content:space-between;
+    margin-top:15px;
+    color:#9b6cff;
+    font-size:12px;
 }
 
 .course-btn{
-width:100%;
-margin-top:15px;
-padding:10px;
-border:0;
-border-radius:8px;
-background:#713fe0;
-color:#fff;
-font-weight:bold;
-cursor:pointer
+    width:100%;
+    margin-top:15px;
+    padding:10px;
+    border:0;
+    border-radius:8px;
+    background:#713fe0;
+    color:#fff;
+    font-weight:bold;
+    cursor:pointer;
 }
 
-.course-btn:hover{background:#8757f0}
-
-.syllabus{display:grid;gap:12px}
+.syllabus{
+    display:grid;
+    gap:12px;
+    margin-top:20px;
+}
 
 .module{
-background:rgba(255,255,255,.045);
-border:1px solid rgba(255,255,255,.08);
-border-radius:13px;
-overflow:hidden
+    background:rgba(255,255,255,.045);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:13px;
+    overflow:hidden;
 }
 
 .module-head{
-padding:16px;
-cursor:pointer;
-display:flex;
-justify-content:space-between;
-align-items:center
+    padding:16px;
+    cursor:pointer;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 }
-
-.module-head:hover{background:rgba(255,255,255,.04)}
 
 .module-body{
-display:none;
-padding:0 16px 16px
+    display:none;
+    padding:0 16px 16px;
 }
 
-.module.open .module-body{display:block}
+.module.open .module-body{
+    display:block;
+}
 
 .chapter{
-padding:10px;
-margin-top:7px;
-border-radius:8px;
-background:rgba(255,255,255,.035);
-color:#c6c8d2;
-cursor:pointer
+    padding:12px;
+    margin-top:7px;
+    border-radius:8px;
+    background:rgba(255,255,255,.035);
+    color:#c6c8d2;
+    cursor:pointer;
 }
 
-.chapter:hover{background:rgba(143,92,255,.15)}
+.chapter:hover{
+    background:rgba(143,92,255,.15);
+}
 
 .lesson{
-background:rgba(255,255,255,.045);
-border:1px solid rgba(255,255,255,.08);
-border-radius:17px;
-padding:25px;
-margin-top:18px
+    border-radius:17px;
+    padding:28px;
 }
 
-.lesson h2{margin-bottom:15px}
+.lesson h2{
+    font-size:30px;
+    margin-bottom:12px;
+}
+
 .lesson h3{
-margin-top:22px;
-margin-bottom:10px;
-color:#dcd4ff
+    margin-top:25px;
+    margin-bottom:10px;
+    color:#d8ccff;
 }
 
 .lesson p{
-color:#c0c2ce;
-line-height:1.8;
-margin-bottom:15px
+    color:#c0c2ce;
+    line-height:1.8;
+    margin-bottom:15px;
 }
 
-.lesson ul{
-padding-left:22px;
-color:#c0c2ce;
-line-height:1.9;
-margin-bottom:15px
+.lesson-list{
+    padding-left:22px;
+    color:#c0c2ce;
+    line-height:1.9;
 }
 
-.lesson-tag{
-display:inline-block;
-padding:6px 10px;
-background:rgba(143,92,255,.13);
-color:#bfa8ff;
-border-radius:20px;
-font-size:12px;
-margin-bottom:14px
+.lesson-info{
+    padding:18px;
+    margin:18px 0;
+    border-left:4px solid #9b6cff;
+    background:rgba(155,108,255,.08);
+    border-radius:8px;
 }
 
 .code{
-background:#05060b;
-padding:18px;
-border-radius:10px;
-overflow:auto;
-margin:18px 0;
-border:1px solid rgba(255,255,255,.08)
+    background:#05060b;
+    padding:18px;
+    border-radius:10px;
+    overflow:auto;
+    margin:18px 0;
+    border:1px solid rgba(255,255,255,.08);
 }
 
 .code pre{
-color:#ddd;
-line-height:1.6;
-white-space:pre-wrap
+    color:#ddd;
+    line-height:1.6;
+    white-space:pre-wrap;
 }
 
 .lesson-quiz{
-margin-top:25px;
-padding:20px;
-border-radius:14px;
-background:rgba(143,92,255,.07);
-border:1px solid rgba(143,92,255,.2)
+    margin-top:25px;
+    padding:20px;
+    background:rgba(155,108,255,.06);
+    border:1px solid rgba(155,108,255,.2);
+    border-radius:14px;
 }
 
 .lesson-option{
-width:100%;
-padding:12px;
-margin-top:8px;
-text-align:left;
-border:1px solid rgba(255,255,255,.1);
-border-radius:9px;
-background:rgba(255,255,255,.04);
-color:#fff;
-cursor:pointer
+    width:100%;
+    padding:12px;
+    margin-top:9px;
+    text-align:left;
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:8px;
+    background:rgba(255,255,255,.04);
+    color:white;
+    cursor:pointer;
 }
 
 .lesson-option:hover{
-background:rgba(143,92,255,.15)
+    background:rgba(143,92,255,.15);
 }
 
 .lesson-actions{
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-margin-top:20px
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:20px;
 }
 
 .secondary-btn{
-padding:10px 16px;
-border:1px solid rgba(255,255,255,.13);
-background:rgba(255,255,255,.05);
-color:#fff;
-border-radius:9px;
-cursor:pointer
+    padding:10px 16px;
+    border:1px solid rgba(255,255,255,.13);
+    background:rgba(255,255,255,.05);
+    color:#fff;
+    border-radius:9px;
+    cursor:pointer;
 }
 
 .quiz-box{
-max-width:800px;
-background:rgba(255,255,255,.045);
-border:1px solid rgba(255,255,255,.08);
-padding:25px;
-border-radius:17px
+    max-width:800px;
+    padding:25px;
+    border-radius:17px;
 }
 
 .quiz-progress{
-color:#9b6cff;
-font-size:13px;
-margin-bottom:15px
-}
-
-.quiz-score{
-display:inline-block;
-padding:6px 10px;
-background:rgba(59,212,138,.1);
-color:#3bd48a;
-border-radius:20px;
-font-size:12px;
-margin-bottom:15px
+    color:#9b6cff;
+    font-size:13px;
+    margin-bottom:15px;
 }
 
 .question{
-font-size:20px;
-line-height:1.5;
-margin-bottom:20px
+    font-size:20px;
+    line-height:1.5;
+    margin-bottom:20px;
 }
 
 .option{
-width:100%;
-padding:13px;
-margin-bottom:10px;
-text-align:left;
-border:1px solid rgba(255,255,255,.1);
-border-radius:9px;
-background:rgba(255,255,255,.04);
-color:#fff;
-cursor:pointer;
-transition:.15s
+    width:100%;
+    padding:13px;
+    margin-bottom:10px;
+    text-align:left;
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:9px;
+    background:rgba(255,255,255,.04);
+    color:#fff;
+    cursor:pointer;
 }
 
 .option:hover{
-background:rgba(143,92,255,.15);
-transform:translateX(2px)
+    background:rgba(143,92,255,.15);
 }
+
+.correct{border-color:#3bd48a!important}
+.wrong{border-color:#ff5964!important}
 
 .quiz-result{
-padding:30px;
-text-align:center
+    text-align:center;
 }
 
-.quiz-result h1{
-font-size:50px;
-color:#9b6cff
+.bug-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:18px;
+}
+
+.bug-card{
+    padding:20px;
+    border-radius:15px;
+    background:rgba(255,255,255,.045);
+    border:1px solid rgba(255,255,255,.08);
 }
 
 .career-grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:16px
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:16px;
 }
 
 .career-card{
-padding:22px;
-border-radius:16px;
-background:rgba(255,255,255,.045);
-border:1px solid rgba(255,255,255,.08);
-transition:.2s
-}
-
-.career-card:hover{
-transform:translateY(-4px);
-border-color:#7650d9
+    padding:22px;
+    border-radius:16px;
 }
 
 .career-card h3{margin-bottom:10px}
+
 .career-card p{
-color:#adb0bd;
-line-height:1.6;
-font-size:14px
+    color:#adb0bd;
+    line-height:1.7;
+    font-size:14px;
 }
 
 .career-card ul{
-padding-left:18px;
-margin-top:12px;
-color:#c5c7d2;
-line-height:1.8;
-font-size:13px
+    padding-left:18px;
+    margin-top:12px;
+    color:#c5c7d2;
+    line-height:1.8;
+    font-size:13px;
 }
 
 .qa-box{
-margin-top:20px;
-padding:20px;
-background:rgba(255,255,255,.045);
-border:1px solid rgba(255,255,255,.08);
-border-radius:15px
+    margin-top:20px;
+    padding:20px;
+    background:rgba(255,255,255,.045);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:15px;
 }
 
 .qa-input{
-width:100%;
-padding:12px;
-margin:10px 0;
-border-radius:8px;
-border:1px solid rgba(255,255,255,.12);
-background:#101321;
-color:#fff
-}
-
-.career-detail{
-margin-top:20px;
-padding:24px;
-border-radius:16px;
-background:rgba(255,255,255,.04);
-border:1px solid rgba(255,255,255,.08);
-line-height:1.8;
-color:#c0c2ce
-}
-
-.career-detail h3{
-color:#fff;
-margin:20px 0 8px
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border-radius:8px;
+    border:1px solid rgba(255,255,255,.12);
+    background:#101321;
+    color:white;
 }
 
 .progress-box{
-padding:20px;
-margin-bottom:15px;
-background:rgba(255,255,255,.045);
-border:1px solid rgba(255,255,255,.08);
-border-radius:15px
+    padding:20px;
+    margin-bottom:15px;
+    border-radius:15px;
 }
 
 .progress-bar{
-width:100%;
-height:10px;
-margin-top:12px;
-background:#1a1d2a;
-border-radius:20px;
-overflow:hidden
+    width:100%;
+    height:10px;
+    margin-top:12px;
+    background:#1a1d2a;
+    border-radius:20px;
+    overflow:hidden;
 }
 
 .progress-fill{
-height:100%;
-width:0%;
-background:linear-gradient(90deg,#8f5cff,#b47cff);
-transition:width .5s
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,#8f5cff,#b47cff);
 }
 
 .achievement-grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-gap:15px
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:15px;
 }
 
 .achievement{
-padding:20px;
-text-align:center;
-border-radius:14px;
-background:rgba(255,255,255,.045);
-border:1px solid rgba(255,255,255,.08)
+    padding:20px;
+    text-align:center;
+    border-radius:14px;
 }
 
 .achievement .emoji{
-font-size:35px;
-margin-bottom:10px
+    font-size:35px;
+    margin-bottom:10px;
 }
 
 .locked{opacity:.4}
 
-.bug-grid{
-display:grid;
-gap:18px
-}
-
-.bug-card{
-padding:22px;
-background:rgba(255,255,255,.045);
-border:1px solid rgba(255,255,255,.08);
-border-radius:16px
-}
-
-.bug-card h3{margin-bottom:10px}
-
-.bug-result{
-margin-top:15px;
-line-height:1.6
-}
-
-.path-box{
-margin-top:20px;
-padding:20px;
-background:rgba(255,255,255,.04);
-border:1px solid rgba(255,255,255,.08);
-border-radius:15px
-}
-
-.path-step{
-display:flex;
-align-items:center;
-gap:10px;
-padding:12px;
-margin:7px 0;
-background:rgba(255,255,255,.035);
-border-radius:9px
-}
-
 footer{
-text-align:center;
-padding:35px;
-color:#737789;
-font-size:13px
+    text-align:center;
+    padding:35px;
+    color:#737789;
+    font-size:13px;
 }
 
 @media(max-width:850px){
-.app-layout{grid-template-columns:1fr}
-.sidebar{
-position:static;
-display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:5px
-}
-.side-btn{margin:0}
-.stats{grid-template-columns:repeat(2,1fr)}
+    .app-layout{grid-template-columns:1fr}
+
+    .sidebar{
+        position:static;
+        display:grid;
+        grid-template-columns:repeat(2,1fr);
+        gap:5px;
+    }
+
+    .side-btn{margin:0}
+
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
 }
 
 @media(max-width:600px){
-.navbar{padding:14px 5%}
-.user-name{display:none}
-.hero{padding:50px 20px}
-.features,#app{
-padding-left:5%;
-padding-right:5%
-}
-.stats{grid-template-columns:repeat(2,1fr)}
-.sidebar{grid-template-columns:1fr 1fr}
-.lesson{padding:18px}
+    .navbar{padding:14px 5%}
+
+    .user-name{display:none}
+
+    .hero{padding:50px 20px}
+
+    .features,#app{
+        padding-left:5%;
+        padding-right:5%;
+    }
+
+    .sidebar{
+        grid-template-columns:1fr 1fr;
+    }
 }
 </style>
 </head>
 
 <body>
-
-<!-- =====================================================
-     NAVBAR
-     FIREBASE LOGIN SECTION — DO NOT CHANGE
-     ===================================================== -->
 
 <nav class="navbar">
 
@@ -710,9 +663,7 @@ alt="User">
 <button
 class="logout-btn"
 onclick="logout()">
-
 Logout
-
 </button>
 
 </div>
@@ -720,15 +671,12 @@ Logout
 </div>
 </nav>
 
-
-<!-- HOME -->
-
 <section id="homePage" class="hero">
 
 <div class="hero-content">
 
 <div class="badge">
-🚀 LEARN • PRACTICE • PLAY • BUILD
+🚀 Learn • Practice • Play • Build
 </div>
 
 <h1>
@@ -737,65 +685,46 @@ Welcome to <span>CodeQuest AI</span>
 
 <p>
 Your A-to-Z computer science learning platform.
-Start from computer basics and progress through
-programming, development, databases, cybersecurity,
-cloud, AI and career preparation.
+Learn concepts, study real programs, solve quizzes,
+find bugs and build projects.
 </p>
 
 <button
 class="primary-btn"
 onclick="startLearning()">
-
 Start Learning →
-
 </button>
 
 </div>
 </section>
-
 
 <section id="features" class="features">
 
 <div class="card">
 <div class="card-icon">📚</div>
 <h3>Learn</h3>
-<p>
-Detailed lessons, real examples and practical
-programs from beginner to advanced topics.
-</p>
+<p>Follow a structured path from computer basics to advanced technology.</p>
 </div>
 
 <div class="card">
-<div class="card-icon">🧠</div>
+<div class="card-icon">💻</div>
 <h3>Practice</h3>
-<p>
-Quizzes, Bug Hunter challenges and lesson questions
-help you test what you learn.
-</p>
+<p>Study real examples and practice through interactive questions.</p>
 </div>
 
 <div class="card">
 <div class="card-icon">🎮</div>
 <h3>Play</h3>
-<p>
-Earn XP, increase your level, maintain your streak
-and unlock achievements.
-</p>
+<p>Earn XP, unlock levels, complete challenges and achievements.</p>
 </div>
 
 <div class="card">
 <div class="card-icon">🎓</div>
 <h3>Career Guide</h3>
-<p>
-Explore internships, placements, jobs, skills,
-projects and technical interview preparation.
-</p>
+<p>Understand internships, placements, jobs, skills and career paths.</p>
 </div>
 
 </section>
-
-
-<!-- APPLICATION -->
 
 <section id="app">
 
@@ -845,21 +774,14 @@ onclick="showPage('achievements',this)">
 
 </aside>
 
-
 <main class="content">
-
-
-<!-- DASHBOARD -->
 
 <section id="dashboard" class="page active">
 
-<h1 class="page-title">
-🚀 Your Dashboard
-</h1>
+<h1 class="page-title">🚀 Your Dashboard</h1>
 
 <p class="page-subtitle">
-Welcome back, learner. Continue your journey from
-learning fundamentals to building real-world skills.
+Your journey from beginner to job-ready developer.
 </p>
 
 <div class="stats">
@@ -891,12 +813,8 @@ learning fundamentals to building real-world skills.
 <div class="course-card">
 <div class="course-icon">📚</div>
 <h3>Continue Learning</h3>
-<p>
-Explore your complete A-to-Z computer science
-curriculum.
-</p>
-<button class="course-btn"
-onclick="showPage('learn')">
+<p>Continue your structured A-to-Z computer science journey.</p>
+<button class="course-btn" onclick="showPage('learn')">
 Continue
 </button>
 </div>
@@ -904,199 +822,181 @@ Continue
 <div class="course-card">
 <div class="course-icon">🧠</div>
 <h3>Quiz Arena</h3>
-<p>
-Answer fresh questions and earn XP.
-</p>
-<button class="course-btn"
-onclick="showPage('quiz')">
+<p>Challenge yourself with computer science questions.</p>
+<button class="course-btn" onclick="showPage('quiz')">
 Take Quiz
-</button>
-</div>
-
-<div class="course-card">
-<div class="course-icon">🐞</div>
-<h3>Bug Hunter</h3>
-<p>
-Find programming mistakes and train your debugging
-skills.
-</p>
-<button class="course-btn"
-onclick="showPage('bug')">
-Hunt Bugs
 </button>
 </div>
 
 <div class="course-card">
 <div class="course-icon">🎓</div>
 <h3>Career Guide</h3>
-<p>
-Prepare yourself for internships, placements and
-future software jobs.
-</p>
-<button class="course-btn"
-onclick="showPage('career')">
+<p>Explore internship, placement and job preparation.</p>
+<button class="course-btn" onclick="showPage('career')">
 Explore
 </button>
 </div>
 
 </div>
+
 </section>
-
-
-<!-- LEARN -->
 
 <section id="learn" class="page">
 
-<h1 class="page-title">
-📚 A-Z Learning Roadmap
-</h1>
+<h1 class="page-title">📚 A-Z Learning Path</h1>
 
 <p class="page-subtitle">
-Start from the fundamentals and gradually build
-professional computer science skills.
+Study every important area of computer science step by step.
 </p>
 
 <div id="courseGrid" class="course-grid"></div>
 
 </section>
 
-
-<!-- LESSON -->
-
 <section id="lessonPage" class="page">
 
-<button class="secondary-btn"
-onclick="showPage('learn')">
+<button class="secondary-btn" onclick="showPage('learn')">
 ← Back to Courses
 </button>
+
+<br><br>
 
 <div id="lessonContainer"></div>
 
 </section>
 
-
-<!-- QUIZ -->
-
 <section id="quiz" class="page">
 
-<h1 class="page-title">
-🧠 Quiz Arena
-</h1>
+<h1 class="page-title">🧠 Quiz Arena</h1>
 
 <p class="page-subtitle">
-Every question moves forward after you answer it.
-Build your score and earn XP.
+Every answer moves you forward. Answered questions will not return in the same quiz session.
 </p>
 
 <div id="quizContainer"></div>
 
 </section>
 
-
-<!-- BUG HUNTER -->
-
 <section id="bug" class="page">
 
-<h1 class="page-title">
-🐞 Bug Hunter
-</h1>
+<h1 class="page-title">🐞 Bug Hunter</h1>
 
 <p class="page-subtitle">
-Find the bug, think like a developer and earn XP.
+Find bugs, understand errors and earn XP.
 </p>
 
 <div id="bugContainer" class="bug-grid"></div>
 
 </section>
 
-
-<!-- CAREER -->
-
 <section id="career" class="page">
 
-<h1 class="page-title">
-🎓 Career Guide
-</h1>
+<h1 class="page-title">🎓 Career Guide</h1>
 
 <p class="page-subtitle">
-Understand technology careers from beginner learning
-through internship, placement and professional growth.
+Understand what to learn for internships, placements and real jobs.
 </p>
 
 <div class="career-grid">
 
 <div class="career-card">
 <h3>💻 Software Developer</h3>
-<p>Build applications, backend systems and software products.</p>
+<p>
+Software developers design, build, test and maintain applications.
+A strong foundation in programming and problem solving is essential.
+</p>
 <ul>
-<li>Programming</li>
-<li>DSA</li>
+<li>C / C++ / Java / Python</li>
+<li>Data Structures & Algorithms</li>
 <li>OOP</li>
-<li>Git/GitHub</li>
-<li>SQL</li>
+<li>SQL and databases</li>
+<li>Git and GitHub</li>
+<li>Software engineering</li>
 <li>Projects</li>
 </ul>
 </div>
 
 <div class="career-card">
 <h3>🌐 Web Developer</h3>
-<p>Create websites and full-stack web applications.</p>
+<p>
+Web developers create websites and web applications. A learner normally
+progresses from frontend fundamentals toward backend and full-stack development.
+</p>
 <ul>
 <li>HTML</li>
 <li>CSS</li>
 <li>JavaScript</li>
-<li>Frontend</li>
+<li>Frontend frameworks</li>
 <li>Backend</li>
-<li>Databases</li>
+<li>REST APIs</li>
+<li>SQL</li>
+<li>Git/GitHub</li>
 </ul>
 </div>
 
 <div class="career-card">
 <h3>📱 App Developer</h3>
-<p>Build Android and mobile applications.</p>
+<p>
+Application developers create mobile applications and learn how interfaces,
+APIs, authentication, databases and deployment work together.
+</p>
 <ul>
-<li>Java/Kotlin</li>
-<li>UI</li>
+<li>Java / Kotlin</li>
+<li>Android fundamentals</li>
+<li>UI development</li>
 <li>APIs</li>
 <li>Firebase</li>
 <li>Databases</li>
-<li>Deployment</li>
+<li>App projects</li>
 </ul>
 </div>
 
 <div class="career-card">
 <h3>🤖 AI / ML Engineer</h3>
-<p>Develop systems using machine learning and AI techniques.</p>
+<p>
+AI and machine learning roles combine programming, mathematics, data and
+machine learning techniques to create systems that learn from data.
+</p>
 <ul>
 <li>Python</li>
-<li>Mathematics</li>
-<li>Data</li>
-<li>Machine Learning</li>
-<li>Deep Learning</li>
-<li>AI Projects</li>
+<li>Statistics</li>
+<li>Linear algebra basics</li>
+<li>Data processing</li>
+<li>Machine learning</li>
+<li>Neural networks</li>
+<li>Generative AI</li>
 </ul>
 </div>
 
 <div class="career-card">
 <h3>🔐 Cybersecurity</h3>
-<p>Learn how systems, applications and networks are protected.</p>
+<p>
+Cybersecurity professionals help protect applications, systems, networks
+and information. Start with computing and networking fundamentals before
+specializing.
+</p>
 <ul>
+<li>Computer fundamentals</li>
 <li>Networking</li>
 <li>Linux</li>
-<li>Security</li>
-<li>Web Security</li>
-<li>Secure Coding</li>
-<li>Ethical Practices</li>
+<li>Authentication</li>
+<li>Encryption</li>
+<li>Web security</li>
+<li>Secure coding</li>
 </ul>
 </div>
 
 <div class="career-card">
 <h3>☁️ Cloud / DevOps</h3>
-<p>Deploy, automate and maintain software systems.</p>
+<p>
+Cloud and DevOps work involves deploying applications, automating workflows,
+managing infrastructure and monitoring systems.
+</p>
 <ul>
 <li>Linux</li>
+<li>Networking</li>
 <li>Git</li>
-<li>Cloud</li>
+<li>Cloud fundamentals</li>
 <li>Docker</li>
 <li>CI/CD</li>
 <li>Monitoring</li>
@@ -1109,14 +1009,14 @@ through internship, placement and professional growth.
 
 <h3>💬 Career Q&A</h3>
 
-<p style="color:#aeb1bf;margin-top:8px">
-Ask about a career and CodeQuest will show a learning path.
+<p style="color:#aeb1bf;margin-top:8px;">
+Ask about internships, placements, jobs or a technology career.
 </p>
 
 <input
 id="careerQuestion"
 class="qa-input"
-placeholder="Example: How should I prepare for a software developer internship?">
+placeholder="Example: What should I learn for a software developer internship?">
 
 <button
 class="primary-btn"
@@ -1125,23 +1025,21 @@ onclick="careerAnswer()">
 Get Guidance
 </button>
 
-<div id="careerAnswer"></div>
+<p
+id="careerAnswer"
+style="margin-top:18px;color:#c9cbd5;line-height:1.8;">
+</p>
 
 </div>
 
 </section>
 
-
-<!-- PROJECTS -->
-
 <section id="projects" class="page">
 
-<h1 class="page-title">
-🚀 Project Arena
-</h1>
+<h1 class="page-title">🚀 Projects</h1>
 
 <p class="page-subtitle">
-Build projects as you progress through CodeQuest.
+Build projects as you progress through the learning path.
 </p>
 
 <div class="course-grid">
@@ -1149,54 +1047,49 @@ Build projects as you progress through CodeQuest.
 <div class="course-card">
 <div class="course-icon">🧮</div>
 <h3>Calculator</h3>
-<p>Practice variables, operators, functions and UI logic.</p>
+<p>Practice variables, conditions, functions and user interfaces.</p>
 </div>
 
 <div class="course-card">
 <div class="course-icon">📝</div>
 <h3>Student Task Manager</h3>
-<p>Manage assignments, tasks and deadlines.</p>
+<p>Build a practical application for assignments and deadlines.</p>
 </div>
 
 <div class="course-card">
 <div class="course-icon">🌦️</div>
-<h3>Weather App</h3>
-<p>Learn APIs and display real-time information.</p>
+<h3>Weather Application</h3>
+<p>Learn APIs, JSON and application development.</p>
 </div>
 
 <div class="course-card">
 <div class="course-icon">📚</div>
 <h3>Student Learning App</h3>
-<p>Build a complete educational application.</p>
+<p>Combine UI, authentication and database concepts.</p>
 </div>
 
 <div class="course-card">
 <div class="course-icon">🤖</div>
 <h3>AI Assistant</h3>
-<p>Learn how applications can interact with AI systems.</p>
+<p>Explore AI-powered application concepts.</p>
 </div>
 
 <div class="course-card">
 <div class="course-icon">🚀</div>
 <h3>Final Capstone</h3>
-<p>Combine programming, databases, development and deployment.</p>
+<p>Combine your skills into a complete real-world project.</p>
 </div>
 
 </div>
 
 </section>
 
-
-<!-- PROGRESS -->
-
 <section id="progress" class="page">
 
-<h1 class="page-title">
-📈 Your Progress
-</h1>
+<h1 class="page-title">📈 Your Progress</h1>
 
 <p class="page-subtitle">
-Track your journey from beginner to job-ready.
+Track your learning journey.
 </p>
 
 <div class="progress-box">
@@ -1207,8 +1100,7 @@ Track your journey from beginner to job-ready.
 <div id="overallProgress" class="progress-fill"></div>
 </div>
 
-<p id="progressText"
-style="color:#aeb1bf;margin-top:10px">
+<p id="progressText" style="color:#aeb1bf;margin-top:10px;">
 0% completed
 </p>
 
@@ -1218,8 +1110,7 @@ style="color:#aeb1bf;margin-top:10px">
 
 <h3>🔥 Learning Streak</h3>
 
-<p id="streakText"
-style="color:#aeb1bf;margin-top:8px">
+<p id="streakText" style="color:#aeb1bf;margin-top:8px;">
 Start learning today!
 </p>
 
@@ -1227,17 +1118,12 @@ Start learning today!
 
 </section>
 
-
-<!-- ACHIEVEMENTS -->
-
 <section id="achievements" class="page">
 
-<h1 class="page-title">
-🏆 Achievements
-</h1>
+<h1 class="page-title">🏆 Achievements</h1>
 
 <p class="page-subtitle">
-Keep learning and unlock your badges.
+Unlock achievements as you learn and practice.
 </p>
 
 <div class="achievement-grid">
@@ -1251,7 +1137,7 @@ Keep learning and unlock your badges.
 <div id="achievement2" class="achievement locked">
 <div class="emoji">🧠</div>
 <h3>Quiz Starter</h3>
-<p>Earn 100 XP.</p>
+<p>Complete your first quiz.</p>
 </div>
 
 <div id="achievement3" class="achievement locked">
@@ -1269,7 +1155,7 @@ Keep learning and unlock your badges.
 <div id="achievement5" class="achievement locked">
 <div class="emoji">🎓</div>
 <h3>Career Explorer</h3>
-<p>Explore the Career Guide.</p>
+<p>Explore Career Guide.</p>
 </div>
 
 </div>
@@ -1280,16 +1166,9 @@ Keep learning and unlock your badges.
 </div>
 </section>
 
-
 <footer>
 © 2026 CodeQuest AI • Learn. Practice. Play. Build.
 </footer>
-
-
-<!-- =====================================================
-     FIREBASE LOGIN
-     DO NOT CHANGE THIS LOGIN LOGIC
-     ===================================================== -->
 
 <script type="module">
 
@@ -1308,7 +1187,9 @@ onAuthStateChanged
 from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
 
-/* FIREBASE CONFIG */
+/* =====================================================
+   FIREBASE LOGIN
+   ===================================================== */
 
 const firebaseConfig = {
 
@@ -1334,7 +1215,6 @@ measurementId:
 "G-ETRG49NSKC"
 };
 
-
 const app =
 initializeApp(firebaseConfig);
 
@@ -1344,11 +1224,9 @@ getAuth(app);
 const provider =
 new GoogleAuthProvider();
 
-
 provider.setCustomParameters({
 prompt:"select_account"
 });
-
 
 const loginButton =
 document.getElementById("googleLoginBtn");
@@ -1362,8 +1240,6 @@ document.getElementById("userPhoto");
 const userName =
 document.getElementById("userName");
 
-
-/* GOOGLE LOGIN */
 
 window.loginWithGoogle =
 async function(){
@@ -1391,19 +1267,14 @@ error.message
 };
 
 
-/* AUTH STATE */
-
 onAuthStateChanged(
 auth,
 (user)=>{
 
 if(user){
 
-loginButton.style.display =
-"none";
-
-userBox.style.display =
-"flex";
+loginButton.style.display="none";
+userBox.style.display="flex";
 
 userPhoto.src =
 user.photoURL ||
@@ -1415,22 +1286,15 @@ user.email ||
 "User";
 
 }
-
 else{
 
-loginButton.style.display =
-"flex";
-
-userBox.style.display =
-"none";
+loginButton.style.display="flex";
+userBox.style.display="none";
 
 }
 
-}
-);
+});
 
-
-/* LOGOUT */
 
 window.logout =
 async function(){
@@ -1442,7 +1306,6 @@ await signOut(auth);
 showHome();
 
 }
-
 catch(error){
 
 console.error(error);
@@ -1467,179 +1330,43 @@ const courseData = [
 id:"basics",
 icon:"💻",
 title:"Computer Basics",
-description:"Build your foundation from zero.",
+description:"Understand computers from the ground up.",
 level:"Beginner",
 chapters:[
-{
-title:"What is a Computer?",
-about:"Understand what a computer is and how it solves problems.",
-details:"A computer is an electronic system that accepts input, processes data according to instructions, stores information and produces output. Understanding this basic cycle helps you understand every technology that comes later.",
-points:[
-"Input provides information to the computer.",
-"CPU processes instructions.",
-"Memory holds working information.",
-"Storage keeps information for later use.",
-"Output presents the result."
-],
-code:`name = input("Enter your name: ")
-print("Welcome to CodeQuest,", name)`,
-quiz:{
-q:"What is the main purpose of a CPU?",
-options:[
-"Store files permanently",
-"Process instructions and data",
-"Display images",
-"Connect a keyboard"
-],
-answer:1
-}
+"Introduction to Computers",
+"Hardware and Software",
+"CPU and Processing",
+"RAM and Storage",
+"Input and Output Devices",
+"Operating Systems",
+"Files and Folders",
+"Applications and Utilities",
+"Internet Basics",
+"Computer Networks",
+"Cyber Safety",
+"Troubleshooting Basics"
+]
 },
-{
-title:"Hardware and Software",
-about:"Understand the difference between physical components and programs.",
-details:"Hardware refers to physical computer components such as CPU, RAM, keyboard, monitor and storage devices. Software consists of programs and instructions that tell hardware what to do. A computer system needs both to perform useful tasks.",
-points:[
-"Hardware can be physically touched.",
-"Software consists of programs and instructions.",
-"Operating systems are system software.",
-"Applications are software designed for specific tasks."
-],
-code:`print("Hardware needs software")
-print("Software runs using hardware")`,
-quiz:{
-q:"Which one is hardware?",
-options:["Windows","Python","Keyboard","Google Chrome"],
-answer:2
-}
-},
-{
-title:"CPU and Memory",
-about:"Learn how processors and memory work together.",
-details:"The CPU executes instructions and performs calculations. RAM provides temporary working memory for programs while they are running. Storage such as SSDs keeps data even after the computer is turned off.",
-points:[
-"CPU executes instructions.",
-"RAM is temporary working memory.",
-"RAM is volatile.",
-"SSD and HDD provide persistent storage.",
-"Modern CPUs can contain multiple cores."
-],
-code:`a = 10
-b = 20
-result = a + b
-print(result)`,
-quiz:{
-q:"Which is mainly used as temporary working memory?",
-options:["SSD","HDD","RAM","DVD"],
-answer:2
-}
-},
-{
-title:"Input and Output Devices",
-about:"Learn how users communicate with computers.",
-details:"Input devices send information to a computer. Examples include keyboards, mice, microphones, cameras and scanners. Output devices present processed information, including monitors, speakers and printers.",
-points:[
-"Keyboard is an input device.",
-"Mouse is an input device.",
-"Monitor is an output device.",
-"Speakers produce audio output.",
-"Some devices can perform both input and output."
-],
-code:`name = input("Enter your name: ")
-print("Hello", name)`,
-quiz:{
-q:"Which is an output device?",
-options:["Keyboard","Mouse","Monitor","Scanner"],
-answer:2
-}
-},
-{
-title:"Operating Systems",
-about:"Understand the role of operating systems.",
-details:"An operating system manages hardware resources and provides services for applications. Windows, Linux, macOS, Android and iOS are examples of operating systems.",
-points:[
-"OS manages hardware resources.",
-"OS manages files.",
-"OS provides a platform for applications.",
-"OS manages processes and memory.",
-"Users interact with computers through the OS."
-],
-code:`print("The operating system manages computer resources.")`,
-quiz:{
-q:"Which is an operating system?",
-options:["Python","Windows","HTML","SQL"],
-answer:1
-}
-},
-{
-title:"Files and Folders",
-about:"Learn how digital information is organized.",
-details:"Files contain information while folders provide a way to organize files. Understanding file names, extensions, paths and permissions is important for everyday computer use and software development.",
-points:[
-"Files store information.",
-"Folders organize files.",
-"Extensions often indicate file types.",
-"Paths identify file locations.",
-"Permissions control access."
-],
-code:`filename = "notes.txt"
-print("Working with:", filename)`,
-quiz:{
-q:"What is mainly used to organize files?",
-options:["CPU","Folder","RAM","Monitor"],
-answer:1
-}
-},
-{
-title:"Internet Basics",
-about:"Understand how computers communicate through the internet.",
-details:"The internet is a global network of connected devices. Websites and applications communicate using networking protocols. DNS helps translate domain names into IP addresses, while HTTP and HTTPS are commonly used for web communication.",
-points:[
-"Internet connects networks worldwide.",
-"IP addresses identify devices or interfaces.",
-"DNS maps domain names to addresses.",
-"HTTP is used for web communication.",
-"HTTPS adds encryption to HTTP communication."
-],
-code:`print("Open a browser and visit a website.")`,
-quiz:{
-q:"What does DNS help with?",
-options:[
-"Managing RAM",
-"Translating domain names",
-"Printing documents",
-"Compiling C"
-],
-answer:1
-}
-},
-{
-title:"Computer Security Basics",
-about:"Learn the basic principles of protecting computers.",
-details:"Computer security involves protecting systems and information from unauthorized access, malicious software and other threats. Good practices include strong passwords, updates, backups and cautious handling of links and files.",
-points:[
-"Use strong unique passwords.",
-"Keep software updated.",
-"Use trusted applications.",
-"Back up important data.",
-"Be careful with suspicious links and files."
-],
-code:`password = input("Enter password: ")
 
-if len(password) >= 8:
-    print("Password length is acceptable")
-else:
-    print("Password is too short")`,
-quiz:{
-q:"Which is a good security practice?",
-options:[
-"Reuse one password everywhere",
-"Disable updates",
-"Use strong unique passwords",
-"Share passwords"
-],
-answer:2
-}
-}
+{
+id:"office",
+icon:"📄",
+title:"Office & Productivity",
+description:"Learn essential productivity software.",
+level:"Beginner",
+chapters:[
+"Microsoft Word Basics",
+"Document Formatting",
+"Tables and Images",
+"Headers and Footers",
+"Excel Basics",
+"Formulas and Functions",
+"Charts and Data",
+"Sorting and Filtering",
+"PowerPoint Basics",
+"Presentation Design",
+"Professional Email",
+"Digital Productivity"
 ]
 },
 
@@ -1650,391 +1377,22 @@ title:"C Programming",
 description:"Build strong programming fundamentals.",
 level:"Beginner",
 chapters:[
-{
-title:"Introduction to C",
-about:"Start programming with C.",
-details:"C is a general-purpose programming language that provides strong programming fundamentals and control over system resources. It introduces concepts such as variables, operators, conditions, loops, arrays, functions and pointers.",
-points:[
-"C is compiled.",
-"Programs commonly start from main().",
-"Statements generally end with semicolons.",
-"C is case-sensitive."
-],
-code:`#include <stdio.h>
-
-int main()
-{
-    printf("Hello World");
-    return 0;
-}`,
-quiz:{
-q:"Which function normally begins a C program?",
-options:["start()","main()","run()","execute()"],
-answer:1
-}
-},
-{
-title:"Variables and Data Types",
-about:"Learn how C stores different kinds of values.",
-details:"Variables represent named memory locations. C provides data types such as int, float, double and char. Choosing the correct type helps the program represent information correctly.",
-points:[
-"int stores whole numbers.",
-"float stores decimal values.",
-"char stores a character.",
-"Variables have names and values."
-],
-code:`#include <stdio.h>
-
-int main()
-{
-    int age = 18;
-    float mark = 87.5;
-    char grade = 'A';
-
-    printf("%d\\n", age);
-    printf("%.1f\\n", mark);
-    printf("%c\\n", grade);
-
-    return 0;
-}`,
-quiz:{
-q:"Which type stores whole numbers?",
-options:["char","int","float","double"],
-answer:1
-}
-},
-{
-title:"Input and Output",
-about:"Learn how C programs communicate with users.",
-details:"C provides functions such as printf() for output and scanf() for formatted input. These functions allow a program to interact with users.",
-points:[
-"printf() displays output.",
-"scanf() accepts formatted input.",
-"%d is commonly used for int.",
-"%f is commonly used for float."
-],
-code:`#include <stdio.h>
-
-int main()
-{
-    int age;
-
-    printf("Enter age: ");
-    scanf("%d", &age);
-
-    printf("Age = %d", age);
-
-    return 0;
-}`,
-quiz:{
-q:"Which function is commonly used for output in C?",
-options:["input()","printf()","display()","show()"],
-answer:1
-}
-},
-{
-title:"If Else",
-about:"Learn decision making.",
-details:"Conditional statements allow a program to execute different instructions depending on whether a condition is true or false.",
-points:[
-"if checks a condition.",
-"else handles another case.",
-"else if supports multiple conditions.",
-"Conditions use comparison operators."
-],
-code:`#include <stdio.h>
-
-int main()
-{
-    int mark = 75;
-
-    if(mark >= 50)
-        printf("Pass");
-    else
-        printf("Fail");
-
-    return 0;
-}`,
-quiz:{
-q:"Which keyword handles the alternative branch?",
-options:["other","else","otherwise","default"],
-answer:1
-}
-},
-{
-title:"Loops",
-about:"Learn how to repeat instructions.",
-details:"Loops are used when a program needs to execute a block of code repeatedly. C provides for, while and do-while loops.",
-points:[
-"for is useful for counted repetition.",
-"while checks before repeating.",
-"do-while executes at least once.",
-"Loops reduce repeated code."
-],
-code:`#include <stdio.h>
-
-int main()
-{
-    for(int i=1;i<=5;i++)
-    {
-        printf("%d\\n", i);
-    }
-
-    return 0;
-}`,
-quiz:{
-q:"Which loop is commonly used when the number of repetitions is known?",
-options:["for","switch","if","struct"],
-answer:0
-}
-},
-{
-title:"Arrays",
-about:"Learn how to store multiple values.",
-details:"An array stores multiple values of the same data type in a contiguous collection. Elements are accessed using indexes, normally beginning from zero.",
-points:[
-"Arrays store multiple values.",
-"Indexes commonly start at zero.",
-"All elements normally share a type.",
-"Arrays are useful for collections of data."
-],
-code:`#include <stdio.h>
-
-int main()
-{
-    int marks[3] = {80,90,75};
-
-    printf("%d", marks[0]);
-
-    return 0;
-}`,
-quiz:{
-q:"What is the first index of a normal C array?",
-options:["0","1","-1","10"],
-answer:0
-}
-},
-{
-title:"Functions",
-about:"Learn how to divide programs into reusable blocks.",
-details:"Functions allow programmers to organize code into smaller reusable units. They can receive parameters and return values.",
-points:[
-"Functions improve code organization.",
-"Functions can accept parameters.",
-"Functions can return values.",
-"Functions reduce repeated code."
-],
-code:`#include <stdio.h>
-
-int add(int a,int b)
-{
-    return a+b;
-}
-
-int main()
-{
-    printf("%d", add(10,20));
-    return 0;
-}`,
-quiz:{
-q:"Why are functions useful?",
-options:[
-"Only for printing",
-"Code reuse and organization",
-"Only for loops",
-"Only for variables"
-],
-answer:1
-}
-},
-{
-title:"Pointers",
-about:"Understand one of C's most important concepts.",
-details:"A pointer stores the memory address of another variable. Pointers are important for dynamic memory, arrays, functions and system-level programming.",
-points:[
-"& obtains an address.",
-"* can access the value through a pointer.",
-"Pointers store addresses.",
-"Pointers require careful handling."
-],
-code:`#include <stdio.h>
-
-int main()
-{
-    int x = 10;
-    int *p = &x;
-
-    printf("%d", *p);
-
-    return 0;
-}`,
-quiz:{
-q:"What does a pointer normally store?",
-options:[
-"A memory address",
-"A file",
-"A loop",
-"A keyword"
-],
-answer:0
-}
-}
-]
-},
-
-{
-id:"python",
-icon:"🐍",
-title:"Python Programming",
-description:"Learn Python from beginner to practical development.",
-level:"Beginner",
-chapters:[
-{
-title:"Python Introduction",
-about:"Start programming with Python.",
-details:"Python is a high-level programming language known for readable syntax and a large ecosystem. It is used in automation, web development, data science, AI, scripting and many other areas.",
-points:[
-"Python syntax is designed to be readable.",
-"Python supports multiple programming styles.",
-"Python has a large library ecosystem.",
-"Python is widely used in AI and automation."
-],
-code:`name = "CodeQuest AI"
-print("Welcome to", name)`,
-quiz:{
-q:"Which language is widely used in AI and machine learning?",
-options:["Python","HTML","CSS","XML"],
-answer:0
-}
-},
-{
-title:"Variables and Data Types",
-about:"Learn how Python stores values.",
-details:"Python variables refer to objects and do not require traditional type declarations. Common types include integers, floating-point numbers, strings and Boolean values.",
-points:[
-"int represents integers.",
-"float represents decimal values.",
-"str represents text.",
-"bool represents True or False."
-],
-code:`name = "Joe"
-age = 18
-mark = 87.5
-passed = True
-
-print(name)
-print(age)
-print(mark)
-print(passed)`,
-quiz:{
-q:"Which type represents text in Python?",
-options:["int","float","str","bool"],
-answer:2
-}
-},
-{
-title:"Conditions",
-about:"Learn decision making in Python.",
-details:"Python uses if, elif and else to control which instructions execute based on conditions.",
-points:[
-"if checks a condition.",
-"elif checks another condition.",
-"else handles the remaining case.",
-"Indentation defines code blocks."
-],
-code:`mark = 75
-
-if mark >= 50:
-    print("Pass")
-else:
-    print("Fail")`,
-quiz:{
-q:"Which keyword checks a condition?",
-options:["if","check","when","condition"],
-answer:0
-}
-},
-{
-title:"Loops",
-about:"Learn repetition in Python.",
-details:"Python provides for and while loops. A for loop is commonly used to iterate over sequences, while while repeats while a condition remains true.",
-points:[
-"for iterates over items.",
-"while repeats based on a condition.",
-"range() generates number sequences.",
-"Loops automate repeated work."
-],
-code:`for i in range(1,6):
-    print(i)`,
-quiz:{
-q:"Which function commonly generates a sequence of numbers?",
-options:["numbers()","range()","sequence()","loop()"],
-answer:1
-}
-},
-{
-title:"Lists",
-about:"Learn Python's most commonly used collection type.",
-details:"A list stores multiple values in an ordered and mutable collection. Lists can contain different objects and provide operations such as append, remove and indexing.",
-points:[
-"Lists are ordered.",
-"Lists are mutable.",
-"Indexes normally start at zero.",
-"append() adds an item."
-],
-code:`students = ["Arun","Joe","Priya"]
-
-students.append("Kavin")
-
-print(students)`,
-quiz:{
-q:"Which method adds an item to a Python list?",
-options:["add()","append()","insertItem()","pushItem()"],
-answer:1
-}
-},
-{
-title:"Functions",
-about:"Create reusable Python code.",
-details:"Functions group related instructions into reusable blocks. They can receive arguments and return results.",
-points:[
-"def defines a function.",
-"Parameters receive values.",
-"return sends a result back.",
-"Functions improve reuse."
-],
-code:`def add(a,b):
-    return a+b
-
-result = add(10,20)
-print(result)`,
-quiz:{
-q:"Which keyword defines a Python function?",
-options:["function","def","fun","define"],
-answer:1
-}
-},
-{
-title:"Exception Handling",
-about:"Learn how programs can handle runtime errors.",
-details:"Errors can occur while a program runs. Python provides try, except, else and finally to handle exceptional situations more safely.",
-points:[
-"try contains risky code.",
-"except handles an exception.",
-"finally can run cleanup code.",
-"Error handling improves reliability."
-],
-code:`try:
-    number = int(input("Enter number: "))
-    print(10 / number)
-except ZeroDivisionError:
-    print("Cannot divide by zero")`,
-quiz:{
-q:"Which block handles an exception?",
-options:["try","except","error","catch"],
-answer:1
-}
-}
+"Introduction to C",
+"Program Structure",
+"Variables and Data Types",
+"Input and Output",
+"Operators",
+"Conditional Statements",
+"Switch Statement",
+"For Loop",
+"While Loop",
+"Do While Loop",
+"Arrays",
+"Strings",
+"Functions",
+"Pointers",
+"Structures",
+"File Handling"
 ]
 },
 
@@ -2042,148 +1400,51 @@ answer:1
 id:"cpp",
 icon:"💠",
 title:"C++ Programming",
-description:"Learn modern programming and object-oriented concepts.",
+description:"Learn C++ and object-oriented programming.",
 level:"Intermediate",
 chapters:[
-{
-title:"C++ Basics",
-about:"Begin programming with C++.",
-details:"C++ extends the ideas of C and adds powerful features such as classes, objects, templates and the Standard Template Library.",
-points:[
-"C++ supports procedural programming.",
-"C++ supports object-oriented programming.",
-"iostream provides common input/output facilities.",
-"main() is the usual entry point."
-],
-code:`#include <iostream>
-using namespace std;
-
-int main()
-{
-    cout << "Hello World";
-    return 0;
-}`,
-quiz:{
-q:"Which object is commonly used for output in C++?",
-options:["printf","cout","print","output"],
-answer:1
-}
+"C++ Introduction",
+"Variables and Data Types",
+"Functions",
+"Arrays and Strings",
+"References",
+"Classes and Objects",
+"Constructors",
+"Destructors",
+"Inheritance",
+"Polymorphism",
+"Encapsulation",
+"Abstraction",
+"Virtual Functions",
+"Templates",
+"STL"
+]
 },
+
 {
-title:"Classes and Objects",
-about:"Understand the foundation of object-oriented programming.",
-details:"A class defines a blueprint containing data and behaviour. An object is an instance of a class.",
-points:[
-"Class is a blueprint.",
-"Object is an instance.",
-"Methods define behaviour.",
-"Data members store state."
-],
-code:`#include <iostream>
-using namespace std;
-
-class Student
-{
-public:
-    string name;
-
-    void show()
-    {
-        cout << name;
-    }
-};
-
-int main()
-{
-    Student s;
-    s.name = "Joe";
-    s.show();
-
-    return 0;
-}`,
-quiz:{
-q:"What is an object?",
-options:[
-"A class blueprint",
-"An instance of a class",
-"A compiler",
-"A variable type only"
-],
-answer:1
-}
-},
-{
-title:"Inheritance",
-about:"Learn how classes can derive features from other classes.",
-details:"Inheritance allows one class to acquire properties and behaviour from another class. It supports code reuse and hierarchical relationships.",
-points:[
-"Base class provides features.",
-"Derived class inherits features.",
-"Inheritance supports reuse.",
-"C++ supports multiple inheritance."
-],
-code:`#include <iostream>
-using namespace std;
-
-class Animal
-{
-public:
-    void eat()
-    {
-        cout << "Eating";
-    }
-};
-
-class Dog : public Animal
-{
-};
-
-int main()
-{
-    Dog d;
-    d.eat();
-    return 0;
-}`,
-quiz:{
-q:"Inheritance mainly supports:",
-options:[
-"Code reuse",
-"File storage",
-"Database queries",
-"Network routing"
-],
-answer:0
-}
-},
-{
-title:"STL",
-about:"Learn useful C++ standard library containers and algorithms.",
-details:"The Standard Template Library provides containers, iterators and algorithms that reduce the amount of code needed to solve common programming problems.",
-points:[
-"vector stores dynamic sequences.",
-"stack follows LIFO.",
-"queue follows FIFO.",
-"STL provides algorithms."
-],
-code:`#include <iostream>
-#include <vector>
-using namespace std;
-
-int main()
-{
-    vector<int> numbers = {10,20,30};
-
-    for(int n : numbers)
-        cout << n << " ";
-
-    return 0;
-}`,
-quiz:{
-q:"Which STL container is commonly used for a dynamic array?",
-options:["vector","stack","queue","map"],
-answer:0
-}
-}
+id:"python",
+icon:"🐍",
+title:"Python Programming",
+description:"Learn Python from fundamentals to projects.",
+level:"Beginner",
+chapters:[
+"Python Introduction",
+"Variables",
+"Data Types",
+"Operators",
+"Conditions",
+"For Loops",
+"While Loops",
+"Lists",
+"Tuples",
+"Sets",
+"Dictionaries",
+"Functions",
+"Modules",
+"File Handling",
+"Exception Handling",
+"Object Oriented Python",
+"Python Projects"
 ]
 },
 
@@ -2194,99 +1455,22 @@ title:"Java Programming",
 description:"Learn Java and object-oriented programming.",
 level:"Intermediate",
 chapters:[
-{
-title:"Java Basics",
-about:"Start programming with Java.",
-details:"Java is a widely used object-oriented programming language. Java programs are compiled into bytecode that can run on systems supporting the Java Virtual Machine.",
-points:[
-"Java is object-oriented.",
-"Java uses classes.",
-"main() is the standard entry point.",
-"System.out.println() prints output."
-],
-code:`class Main {
-    public static void main(String[] args) {
-        System.out.println("Hello World");
-    }
-}`,
-quiz:{
-q:"Which method is normally the entry point of a Java application?",
-options:["start()","main()","run()","begin()"],
-answer:1
-}
-},
-{
-title:"Classes and Objects",
-about:"Understand object-oriented programming in Java.",
-details:"Java applications are commonly organized around classes and objects. A class describes data and behaviour, while objects are created from classes.",
-points:[
-"Class defines structure.",
-"Object is an instance.",
-"Methods define behaviour.",
-"Constructors initialize objects."
-],
-code:`class Student {
-
-    String name;
-
-    Student(String name) {
-        this.name = name;
-    }
-
-    void show() {
-        System.out.println(name);
-    }
-}
-
-class Main {
-
-    public static void main(String[] args) {
-
-        Student s = new Student("Joe");
-        s.show();
-
-    }
-}`,
-quiz:{
-q:"A Java object is:",
-options:[
-"An instance of a class",
-"A compiler",
-"A package",
-"A loop"
-],
-answer:0
-}
-},
-{
-title:"Exception Handling",
-about:"Handle runtime problems in Java.",
-details:"Java provides try, catch and finally for handling exceptions. Proper exception handling helps applications respond to unexpected conditions without abruptly terminating.",
-points:[
-"try contains risky code.",
-"catch handles exceptions.",
-"finally can execute cleanup.",
-"Java has checked and unchecked exceptions."
-],
-code:`class Main {
-
-    public static void main(String[] args) {
-
-        try {
-            int x = 10 / 0;
-        }
-        catch(ArithmeticException e) {
-            System.out.println("Cannot divide by zero");
-        }
-
-    }
-}`,
-quiz:{
-q:"Which block handles an exception?",
-options:["try","catch","error","handle"],
-answer:1
-}
-}
+"Java Introduction",
+"Variables",
+"Data Types",
+"Operators",
+"Conditions",
+"Loops",
+"Arrays",
+"Methods",
+"Classes",
+"Objects",
+"Constructors",
+"Inheritance",
+"Interfaces",
+"Exception Handling",
+"Collections",
+"Java Projects"
 ]
 },
 
@@ -2294,134 +1478,25 @@ answer:1
 id:"dsa",
 icon:"🧠",
 title:"Data Structures & Algorithms",
-description:"Build problem-solving and technical interview skills.",
+description:"Develop problem-solving and technical interview skills.",
 level:"Intermediate",
 chapters:[
-{
-title:"Algorithm Basics",
-about:"Learn how to design step-by-step solutions.",
-details:"An algorithm is a finite sequence of clear steps for solving a problem. Good algorithms should be correct, understandable and reasonably efficient.",
-points:[
-"Algorithms solve problems.",
-"Steps should be clear.",
-"Algorithms should terminate.",
-"Efficiency matters for large inputs."
-],
-code:`numbers = [10,25,7,40]
-
-largest = numbers[0]
-
-for n in numbers:
-    if n > largest:
-        largest = n
-
-print(largest)`,
-quiz:{
-q:"An algorithm is:",
-options:[
-"A physical device",
-"A step-by-step solution",
-"A database",
-"A programming language"
-],
-answer:1
-}
-},
-{
-title:"Time Complexity",
-about:"Measure how algorithms scale.",
-details:"Time complexity describes how an algorithm's running work changes as the input grows. Big-O notation is commonly used to discuss upper-bound growth.",
-points:[
-"O(1) is constant.",
-"O(log n) is logarithmic.",
-"O(n) is linear.",
-"O(n²) is quadratic."
-],
-code:`numbers = [1,2,3,4,5]
-
-for n in numbers:
-    print(n)`,
-quiz:{
-q:"Processing every element once is commonly:",
-options:["O(1)","O(log n)","O(n)","O(n²)"],
-answer:2
-}
-},
-{
-title:"Stack",
-about:"Learn the LIFO data structure.",
-details:"A stack follows Last In, First Out. The most recently inserted element is the first one removed. Stacks are used in function calls, undo operations and expression processing.",
-points:[
-"Stack follows LIFO.",
-"push adds an item.",
-"pop removes the top item.",
-"peek examines the top."
-],
-code:`stack = []
-
-stack.append("A")
-stack.append("B")
-
-print(stack.pop())`,
-quiz:{
-q:"Which principle does a stack follow?",
-options:["FIFO","LIFO","Random","Priority only"],
-answer:1
-}
-},
-{
-title:"Queue",
-about:"Learn the FIFO data structure.",
-details:"A queue follows First In, First Out. The first item inserted is the first item removed. Queues are useful in scheduling and task processing.",
-points:[
-"Queue follows FIFO.",
-"Items enter from one end.",
-"Items leave from another end.",
-"Queues are useful for scheduling."
-],
-code:`from collections import deque
-
-queue = deque()
-
-queue.append("A")
-queue.append("B")
-
-print(queue.popleft())`,
-quiz:{
-q:"Which principle does a queue follow?",
-options:["LIFO","FIFO","Random","Reverse only"],
-answer:1
-}
-},
-{
-title:"Searching",
-about:"Learn how programs locate information.",
-details:"Searching algorithms find a target value within a collection. Linear search checks items one by one, while binary search repeatedly divides a sorted search space.",
-points:[
-"Linear search can work on unsorted data.",
-"Binary search requires sorted data.",
-"Binary search can be O(log n).",
-"Choosing the right search method matters."
-],
-code:`numbers = [10,20,30,40,50]
-
-target = 30
-
-for n in numbers:
-    if n == target:
-        print("Found")
-        break`,
-quiz:{
-q:"Binary search normally requires:",
-options:[
-"Unsorted data",
-"Sorted data",
-"No data",
-"Only strings"
-],
-answer:1
-}
-}
+"Algorithm Fundamentals",
+"Flowcharts and Pseudocode",
+"Time Complexity",
+"Space Complexity",
+"Arrays",
+"Linked Lists",
+"Stacks",
+"Queues",
+"Recursion",
+"Searching",
+"Sorting",
+"Trees",
+"Binary Search Trees",
+"Graphs",
+"Hashing",
+"Problem Solving"
 ]
 },
 
@@ -2432,109 +1507,22 @@ title:"SQL & Databases",
 description:"Learn how applications store and manage data.",
 level:"Intermediate",
 chapters:[
-{
-title:"Database Basics",
-about:"Understand why databases are needed.",
-details:"Applications need reliable ways to store and retrieve information. Databases provide structured storage and tools for querying, updating and managing data.",
-points:[
-"Databases store information.",
-"Tables organize relational data.",
-"Rows represent records.",
-"Columns represent attributes."
-],
-code:`CREATE TABLE students (
-    id INT,
-    name VARCHAR(50),
-    mark INT
-);`,
-quiz:{
-q:"What does a database primarily store?",
-options:["Only programs","Organized data","Only images","Only passwords"],
-answer:1
-}
-},
-{
-title:"SELECT",
-about:"Learn how to retrieve data.",
-details:"SELECT is one of the most important SQL commands. It retrieves columns and rows from database tables.",
-points:[
-"SELECT retrieves data.",
-"FROM identifies the table.",
-"* means all selected columns.",
-"Queries can include conditions."
-],
-code:`SELECT name, mark
-FROM students;`,
-quiz:{
-q:"Which SQL command retrieves data?",
-options:["SELECT","GET","READ","FETCH"],
-answer:0
-}
-},
-{
-title:"INSERT",
-about:"Learn how to add records.",
-details:"INSERT INTO adds new records to a table. Values should correspond to the selected columns.",
-points:[
-"INSERT adds data.",
-"VALUES supplies the record.",
-"Columns can be specified explicitly.",
-"Data types must be compatible."
-],
-code:`INSERT INTO students
-(id,name,mark)
-VALUES
-(1,'Joe',85);`,
-quiz:{
-q:"Which command adds a new record?",
-options:["ADD","INSERT","CREATE","PUT"],
-answer:1
-}
-},
-{
-title:"UPDATE and DELETE",
-about:"Modify and remove existing data.",
-details:"UPDATE changes existing records, while DELETE removes records. Conditions such as WHERE are extremely important to prevent unintended changes.",
-points:[
-"UPDATE modifies data.",
-"DELETE removes records.",
-"WHERE limits affected rows.",
-"Always verify conditions carefully."
-],
-code:`UPDATE students
-SET mark = 90
-WHERE id = 1;`,
-quiz:{
-q:"Which clause is important for limiting UPDATE or DELETE?",
-options:["ORDER BY","WHERE","GROUP","LIMITER"],
-answer:1
-}
-},
-{
-title:"Joins",
-about:"Combine information from multiple tables.",
-details:"Relational databases often divide information across tables. JOIN operations allow related records from multiple tables to be queried together.",
-points:[
-"INNER JOIN returns matching records.",
-"LEFT JOIN keeps records from the left table.",
-"Joins use related columns.",
-"Keys commonly connect tables."
-],
-code:`SELECT students.name, courses.course_name
-FROM students
-JOIN courses
-ON students.course_id = courses.id;`,
-quiz:{
-q:"Why are JOINs used?",
-options:[
-"To combine related data",
-"To delete databases",
-"To create HTML",
-"To compile code"
-],
-answer:0
-}
-}
+"Database Fundamentals",
+"Relational Databases",
+"SQL Introduction",
+"SELECT",
+"WHERE",
+"ORDER BY",
+"INSERT",
+"UPDATE",
+"DELETE",
+"Aggregate Functions",
+"GROUP BY",
+"Joins",
+"Primary Keys",
+"Foreign Keys",
+"Normalization",
+"Database Projects"
 ]
 },
 
@@ -2545,112 +1533,22 @@ title:"Web Development",
 description:"Build modern websites and web applications.",
 level:"Intermediate",
 chapters:[
-{
-title:"HTML",
-about:"Learn the structure of webpages.",
-details:"HTML defines the structure and meaning of webpage content. Developers use elements for headings, paragraphs, links, images, forms, tables and other content.",
-points:[
-"HTML structures content.",
-"Elements are represented with tags.",
-"HTML forms collect user input.",
-"Semantic HTML improves structure."
-],
-code:`<!DOCTYPE html>
-<html>
-<body>
-
-<h1>CodeQuest AI</h1>
-<p>Learn programming.</p>
-
-<button>Start</button>
-
-</body>
-</html>`,
-quiz:{
-q:"HTML is mainly used for:",
-options:[
-"Webpage structure",
-"Database storage",
-"Machine learning",
-"Network routing"
-],
-answer:0
-}
-},
-{
-title:"CSS",
-about:"Learn webpage styling.",
-details:"CSS controls presentation including colors, typography, spacing, layouts, animations and responsive design.",
-points:[
-"CSS styles HTML.",
-"Flexbox helps with layouts.",
-"Grid helps create structured layouts.",
-"Media queries support responsive design."
-],
-code:`body {
-    background: #080b16;
-    color: white;
-}
-
-h1 {
-    color: #9b6cff;
-}`,
-quiz:{
-q:"Which technology styles HTML?",
-options:["CSS","SQL","C","Python"],
-answer:0
-}
-},
-{
-title:"JavaScript",
-about:"Add logic and interactivity to websites.",
-details:"JavaScript allows webpages to respond to user actions, manipulate HTML, communicate with APIs and implement application logic.",
-points:[
-"JavaScript runs in browsers.",
-"DOM allows webpage manipulation.",
-"Events respond to user actions.",
-"JavaScript can communicate with APIs."
-],
-code:`const button = document.querySelector("button");
-
-button.addEventListener("click", () => {
-    alert("Hello CodeQuest!");
-});`,
-quiz:{
-q:"JavaScript is commonly used for:",
-options:[
-"Web interactivity",
-"CPU manufacturing",
-"Hard disk repair",
-"Only database storage"
-],
-answer:0
-}
-},
-{
-title:"APIs",
-about:"Learn how applications communicate.",
-details:"An API provides a defined way for software systems to communicate. Web applications commonly use HTTP APIs to request or send data.",
-points:[
-"API means Application Programming Interface.",
-"APIs allow systems to communicate.",
-"REST APIs commonly use HTTP.",
-"JSON is frequently used for data exchange."
-],
-code:`fetch("/api/hello")
-    .then(response => response.json())
-    .then(data => console.log(data));`,
-quiz:{
-q:"What does API stand for?",
-options:[
-"Application Programming Interface",
-"Application Process Internet",
-"Advanced Program Input",
-"Application Protocol Integration"
-],
-answer:0
-}
-}
+"How the Web Works",
+"HTML Introduction",
+"HTML Elements",
+"Forms",
+"CSS Introduction",
+"Selectors",
+"Layouts",
+"Flexbox",
+"Responsive Design",
+"JavaScript Introduction",
+"Variables and Functions",
+"DOM",
+"Events",
+"APIs",
+"JSON",
+"Frontend Projects"
 ]
 },
 
@@ -2658,104 +1556,23 @@ answer:0
 id:"app",
 icon:"📱",
 title:"App Development",
-description:"Understand how mobile applications are built.",
+description:"Understand how mobile applications are developed.",
 level:"Intermediate",
 chapters:[
-{
-title:"Mobile App Concepts",
-about:"Understand the structure of mobile applications.",
-details:"Mobile applications combine user interfaces, application logic, device capabilities and often backend services. A production application requires planning, development, testing and deployment.",
-points:[
-"Apps contain UI and logic.",
-"Apps may communicate with APIs.",
-"Apps can use local databases.",
-"Authentication may connect to cloud services."
-],
-code:`class Main {
-    public static void main(String[] args) {
-        System.out.println("Mobile App Started");
-    }
-}`,
-quiz:{
-q:"A mobile application normally contains:",
-options:[
-"Only a logo",
-"UI and application logic",
-"Only a database",
-"Only HTML"
-],
-answer:1
-}
-},
-{
-title:"UI Design",
-about:"Learn how users interact with applications.",
-details:"Good UI design makes applications understandable and easy to use. Layout, typography, navigation, feedback and accessibility all affect the user experience.",
-points:[
-"Keep navigation understandable.",
-"Provide feedback after actions.",
-"Use consistent visual patterns.",
-"Design for different screen sizes."
-],
-code:`TextView title = findViewById(R.id.title);
-title.setText("Welcome to CodeQuest");`,
-quiz:{
-q:"UI mainly refers to:",
-options:[
-"User Interface",
-"Universal Internet",
-"User Input only",
-"Utility Integration"
-],
-answer:0
-}
-},
-{
-title:"Firebase",
-about:"Learn how cloud services can support applications.",
-details:"Firebase provides services that can help developers build applications, including authentication, databases, hosting, analytics and other backend capabilities.",
-points:[
-"Firebase provides cloud services.",
-"Authentication can manage users.",
-"Databases can store application data.",
-"Firebase can simplify backend development."
-],
-code:`console.log("Firebase can provide backend services.");`,
-quiz:{
-q:"Firebase can provide:",
-options:[
+"Mobile App Fundamentals",
+"UI and UX Basics",
+"Android Fundamentals",
+"Java and Kotlin Concepts",
+"Layouts",
+"Activities",
+"APIs",
+"JSON",
+"Firebase",
 "Authentication",
-"Only CSS",
-"Only C compilation",
-"Only hardware"
-],
-answer:0
-}
-},
-{
-title:"APIs and Authentication",
-about:"Understand application communication and user identity.",
-details:"Applications frequently communicate with backend services through APIs. Authentication verifies a user's identity, while authorization determines what that user is allowed to access.",
-points:[
-"Authentication identifies users.",
-"Authorization controls permissions.",
-"APIs connect application components.",
-"Credentials should be protected."
-],
-code:`fetch("/api/user")
-    .then(response => response.json())
-    .then(user => console.log(user));`,
-quiz:{
-q:"Authentication primarily answers:",
-options:[
-"Who are you?",
-"How fast is CPU?",
-"What color is the UI?",
-"Where is the database?"
-],
-answer:0
-}
-}
+"Databases",
+"Notifications",
+"App Testing",
+"App Deployment"
 ]
 },
 
@@ -2763,115 +1580,24 @@ answer:0
 id:"software",
 icon:"🧩",
 title:"Software Engineering",
-description:"Learn how professional software is planned and maintained.",
+description:"Understand how professional software is developed.",
 level:"Intermediate",
 chapters:[
-{
-title:"Software Development Life Cycle",
-about:"Understand the stages of software development.",
-details:"Software projects commonly move through activities such as requirements, planning, design, implementation, testing, deployment and maintenance.",
-points:[
-"Requirements identify what is needed.",
-"Design describes how the system will work.",
-"Development creates the software.",
-"Testing checks correctness.",
-"Maintenance continues after release."
-],
-code:`Requirement
-    ↓
-Design
-    ↓
-Development
-    ↓
-Testing
-    ↓
-Deployment
-    ↓
-Maintenance`,
-quiz:{
-q:"Which stage checks whether software works correctly?",
-options:["Testing","Design","Planning","Marketing"],
-answer:0
-}
-},
-{
-title:"Git and GitHub",
-about:"Learn version control and collaboration.",
-details:"Git tracks changes in source code. Platforms such as GitHub allow repositories to be hosted and shared, making collaboration and project history easier.",
-points:[
-"Git is version control.",
-"Repositories contain project history.",
-"Commits record changes.",
-"Branches support parallel development."
-],
-code:`git init
-git add .
-git commit -m "Initial commit"
-git status`,
-quiz:{
-q:"What is Git mainly used for?",
-options:[
-"Version control",
-"Video editing",
-"Database hosting only",
-"CPU control"
-],
-answer:0
-}
-},
-{
-title:"Testing",
-about:"Learn why software needs testing.",
-details:"Testing helps discover defects and verify expected behaviour. Different types include unit, integration, system and acceptance testing.",
-points:[
-"Testing finds defects.",
-"Unit tests test small components.",
-"Integration tests check interactions.",
-"Automated tests can be repeated."
-],
-code:`def add(a,b):
-    return a+b
-
-assert add(2,3) == 5`,
-quiz:{
-q:"What is the main purpose of software testing?",
-options:[
-"Find defects and verify behaviour",
-"Increase monitor size",
-"Replace databases",
-"Create passwords"
-],
-answer:0
-}
-},
-{
-title:"Debugging",
-about:"Learn how developers find and fix problems.",
-details:"Debugging is the process of identifying the cause of incorrect behaviour and correcting it. Developers use logs, debuggers, tests and careful reasoning.",
-points:[
-"Reproduce the problem.",
-"Identify the cause.",
-"Apply a controlled fix.",
-"Test the fix.",
-"Check for side effects."
-],
-code:`number = 10
-
-# Bug:
-# print(number / 0)
-
-print("Debugging means finding the cause of a problem.")`,
-quiz:{
-q:"Debugging means:",
-options:[
-"Finding and fixing software problems",
-"Creating a database",
-"Designing a logo",
-"Installing RAM"
-],
-answer:0
-}
-}
+"Software Engineering Introduction",
+"SDLC",
+"Requirements",
+"System Design",
+"Architecture",
+"Git",
+"GitHub",
+"Version Control",
+"Testing",
+"Debugging",
+"Documentation",
+"Agile",
+"Team Development",
+"Code Reviews",
+"Project Management"
 ]
 },
 
@@ -2882,94 +1608,20 @@ title:"Computer Networking",
 description:"Understand how computers communicate.",
 level:"Intermediate",
 chapters:[
-{
-title:"Network Basics",
-about:"Learn the fundamentals of computer networks.",
-details:"A network allows devices to communicate and share resources. Networks can range from small local networks to the global internet.",
-points:[
-"Devices communicate through networks.",
-"Networks can share resources.",
-"Protocols define communication rules.",
-"Networks require addressing."
-],
-code:`print("Computer A communicates with Computer B")`,
-quiz:{
-q:"What does a computer network allow?",
-options:[
-"Devices to communicate",
-"Only printing",
-"Only gaming",
-"Only storage"
-],
-answer:0
-}
-},
-{
-title:"IP Addresses",
-about:"Understand network addressing.",
-details:"An IP address identifies a network interface using an addressing scheme. IPv4 uses 32-bit addresses while IPv6 uses 128-bit addresses.",
-points:[
-"IPv4 uses 32 bits.",
-"IPv6 uses 128 bits.",
-"Addresses help route network traffic.",
-"Private and public addresses have different uses."
-],
-code:`print("Example IPv4: 192.168.1.10")`,
-quiz:{
-q:"What is an IP address used for?",
-options:[
-"Network addressing",
-"CPU cooling",
-"File compression",
-"Screen brightness"
-],
-answer:0
-}
-},
-{
-title:"DNS",
-about:"Understand how domain names work.",
-details:"Humans prefer names such as example.com, while networks communicate using addresses. DNS translates domain names into IP addresses and supports other records.",
-points:[
-"DNS means Domain Name System.",
-"DNS resolves domain names.",
-"DNS uses distributed infrastructure.",
-"Web browsing commonly depends on DNS."
-],
-code:`print("example.com -> DNS -> IP address")`,
-quiz:{
-q:"What does DNS primarily do?",
-options:[
-"Translate domain names",
-"Store RAM",
-"Compile Python",
-"Design websites"
-],
-answer:0
-}
-},
-{
-title:"HTTP and HTTPS",
-about:"Understand web communication protocols.",
-details:"HTTP is an application-layer protocol used for web communication. HTTPS uses TLS to protect communication between a client and server.",
-points:[
-"HTTP transfers web requests and responses.",
-"HTTPS protects communication with TLS.",
-"Browsers commonly use HTTPS.",
-"Secure communication is important for sensitive information."
-],
-code:`https://example.com`,
-quiz:{
-q:"What does HTTPS provide compared with plain HTTP?",
-options:[
-"Encrypted transport protection",
-"More RAM",
-"Faster CPU",
-"Free storage"
-],
-answer:0
-}
-}
+"Networking Fundamentals",
+"LAN and WAN",
+"Network Topologies",
+"IP Addresses",
+"MAC Addresses",
+"DNS",
+"DHCP",
+"HTTP and HTTPS",
+"TCP and UDP",
+"Ports",
+"Routers",
+"Switches",
+"Firewalls",
+"Network Troubleshooting"
 ]
 },
 
@@ -2977,99 +1629,22 @@ answer:0
 id:"cyber",
 icon:"🔐",
 title:"Cybersecurity",
-description:"Learn defensive security fundamentals.",
+description:"Learn the foundations of digital security.",
 level:"Advanced",
 chapters:[
-{
-title:"Security Fundamentals",
-about:"Understand the purpose of cybersecurity.",
-details:"Cybersecurity protects systems, applications, networks and information from unauthorized access, disruption and misuse.",
-points:[
-"Confidentiality protects information.",
-"Integrity protects correctness.",
-"Availability ensures systems remain usable.",
-"Security requires multiple layers."
-],
-code:`print("Protect confidentiality, integrity and availability.")`,
-quiz:{
-q:"Which is part of the CIA security triad?",
-options:["Confidentiality","Compression","Compilation","Calculation"],
-answer:0
-}
-},
-{
-title:"Authentication",
-about:"Learn how systems verify identity.",
-details:"Authentication determines whether a user is who they claim to be. Passwords, security keys and multi-factor authentication are examples of authentication mechanisms.",
-points:[
-"Authentication verifies identity.",
-"MFA adds additional verification.",
-"Passwords should be protected.",
-"Sessions should be handled securely."
-],
-code:`username = input("Username: ")
-print("Authentication required for:", username)`,
-quiz:{
-q:"Authentication verifies:",
-options:[
-"User identity",
-"CPU speed",
-"File size",
-"Screen resolution"
-],
-answer:0
-}
-},
-{
-title:"Encryption Basics",
-about:"Understand how encryption protects information.",
-details:"Encryption transforms readable information into protected data using cryptographic techniques. Authorized parties can use appropriate keys to recover the information.",
-points:[
-"Encryption protects confidentiality.",
-"Keys are important to cryptographic systems.",
-"HTTPS uses cryptographic protection.",
-"Passwords should generally be stored using secure password hashing rather than reversible encryption."
-],
-code:`print("Sensitive data should be protected using appropriate cryptography.")`,
-quiz:{
-q:"Encryption is mainly used to protect:",
-options:[
-"Confidentiality",
-"Screen size",
-"Keyboard speed",
-"CPU temperature"
-],
-answer:0
-}
-},
-{
-title:"Secure Coding",
-about:"Learn how developers reduce security risks.",
-details:"Secure coding means considering security while writing software. Developers should validate input, protect credentials, use safe APIs, manage permissions and keep dependencies updated.",
-points:[
-"Validate input.",
-"Protect secrets.",
-"Use secure authentication.",
-"Keep dependencies updated.",
-"Avoid trusting unvalidated user input."
-],
-code:`username = input("Username: ")
-
-if username.isalnum():
-    print("Input format accepted")
-else:
-    print("Invalid input")`,
-quiz:{
-q:"What is an important secure coding practice?",
-options:[
-"Trust every input",
-"Validate input",
-"Expose passwords",
-"Disable updates"
-],
-answer:1
-}
-}
+"Cybersecurity Introduction",
+"Threats and Vulnerabilities",
+"Authentication",
+"Passwords",
+"Encryption",
+"Network Security",
+"Web Security",
+"Malware Awareness",
+"Phishing Awareness",
+"Secure Coding",
+"Access Control",
+"Security Best Practices",
+"Ethical Security"
 ]
 },
 
@@ -3077,115 +1652,22 @@ answer:1
 id:"cloud",
 icon:"☁️",
 title:"Cloud & DevOps",
-description:"Learn deployment, automation and modern infrastructure concepts.",
+description:"Learn deployment and modern development practices.",
 level:"Advanced",
 chapters:[
-{
-title:"Cloud Computing",
-about:"Understand cloud services.",
-details:"Cloud computing provides computing resources such as servers, storage, databases and networking through remote infrastructure. Developers can provision resources according to application needs.",
-points:[
-"Cloud provides computing resources.",
-"Resources can be provisioned on demand.",
-"Cloud platforms provide many managed services.",
-"Applications can be deployed globally."
-],
-code:`User
-  ↓
-Internet
-  ↓
-Cloud Server
-  ↓
-Application
-  ↓
-Database`,
-quiz:{
-q:"Cloud computing commonly provides:",
-options:[
-"Computing resources over a network",
-"Only keyboards",
-"Only offline files",
-"Only programming languages"
-],
-answer:0
-}
-},
-{
-title:"Linux Basics",
-about:"Learn the operating system environment widely used in servers.",
-details:"Linux is a family of open-source operating systems widely used in servers, development environments, cloud infrastructure and embedded systems.",
-points:[
-"Linux is open source.",
-"Linux provides a command-line interface.",
-"Linux is widely used on servers.",
-"Permissions are an important concept."
-],
-code:`pwd
-ls
-cd projects
-mkdir codequest`,
-quiz:{
-q:"Linux is widely used for:",
-options:[
-"Servers and development",
-"Only photo editing",
-"Only gaming",
-"Only spreadsheets"
-],
-answer:0
-}
-},
-{
-title:"CI/CD",
-about:"Understand automated software delivery.",
-details:"Continuous Integration and Continuous Delivery/Deployment practices automate parts of building, testing and delivering software. This helps teams release changes more consistently.",
-points:[
-"CI integrates changes frequently.",
-"Automated tests can run during pipelines.",
-"CD automates delivery or deployment.",
-"Automation reduces repetitive manual work."
-],
-code:`Code
- ↓
-Build
- ↓
-Test
- ↓
-Deploy`,
-quiz:{
-q:"CI/CD is mainly related to:",
-options:[
-"Software build, testing and delivery",
-"Keyboard design",
-"Computer repair",
-"Image editing"
-],
-answer:0
-}
-},
-{
-title:"Docker Concepts",
-about:"Understand application containers.",
-details:"Docker packages applications and their dependencies into containers. Containers provide a consistent environment across development and deployment systems.",
-points:[
-"Containers package applications.",
-"Images define container environments.",
-"Containers are lightweight compared with full virtual machines.",
-"Docker is widely used in modern development."
-],
-code:`docker build -t codequest .
-docker run codequest`,
-quiz:{
-q:"What do containers help provide?",
-options:[
-"Consistent application environments",
-"More keyboard keys",
-"Only database tables",
-"Only HTML styling"
-],
-answer:0
-}
-}
+"Cloud Computing",
+"Cloud Service Models",
+"Virtual Machines",
+"Cloud Storage",
+"Linux Basics",
+"Git",
+"CI/CD",
+"Containers",
+"Docker",
+"Deployment",
+"Environment Variables",
+"Monitoring",
+"DevOps Projects"
 ]
 },
 
@@ -3193,411 +1675,440 @@ answer:0
 id:"ai",
 icon:"🤖",
 title:"AI & Machine Learning",
-description:"Explore AI, machine learning and modern intelligent applications.",
+description:"Explore artificial intelligence and machine learning.",
 level:"Advanced",
 chapters:[
-{
-title:"Introduction to AI",
-about:"Understand artificial intelligence.",
-details:"Artificial Intelligence is a broad field involving systems that perform tasks involving capabilities such as pattern recognition, prediction, language processing and decision support.",
-points:[
-"AI is a broad field.",
-"Machine learning is part of AI.",
-"AI systems can process data and recognize patterns.",
-"Generative AI can produce new content."
-],
-code:`print("AI applications can analyze data and generate predictions.")`,
-quiz:{
-q:"AI is broadly concerned with:",
-options:[
-"Systems performing intelligent tasks",
-"Only hardware repair",
-"Only webpage styling",
-"Only database storage"
-],
-answer:0
-}
-},
-{
-title:"Python for AI",
-about:"Learn why Python is popular in AI.",
-details:"Python provides libraries for numerical computing, data processing, machine learning and deep learning. Its ecosystem makes experimentation and development easier.",
-points:[
-"Python has a large AI ecosystem.",
-"NumPy supports numerical computing.",
-"pandas supports data analysis.",
-"Scikit-learn supports machine learning."
-],
-code:`numbers = [10,20,30]
-
-average = sum(numbers) / len(numbers)
-
-print("Average:", average)`,
-quiz:{
-q:"Which language is heavily used in AI development?",
-options:["Python","HTML","CSS","SQL only"],
-answer:0
-}
-},
-{
-title:"Machine Learning",
-about:"Understand learning from data.",
-details:"Machine learning algorithms learn patterns from examples. During training, a model learns from data and can later make predictions or decisions on new inputs.",
-points:[
-"Models learn from data.",
-"Training produces a learned model.",
-"Predictions can be made on new data.",
-"Data quality affects results."
-],
-code:`from sklearn.tree import DecisionTreeClassifier
-
-X = [[0],[1],[2],[3]]
-y = [0,0,1,1]
-
-model = DecisionTreeClassifier()
-model.fit(X,y)
-
-print(model.predict([[2]]))`,
-quiz:{
-q:"Machine learning models primarily learn from:",
-options:["Data","Keyboard","Monitor","Printer"],
-answer:0
-}
-},
-{
-title:"Generative AI",
-about:"Understand modern AI systems that generate content.",
-details:"Generative AI systems can produce text, images, audio, code and other content based on learned patterns. Large language models are one important category of generative AI systems.",
-points:[
-"Generative AI produces content.",
-"Language models work with text.",
-"Prompts provide instructions or context.",
-"AI outputs should be reviewed for accuracy."
-],
-code:`prompt = "Explain Python in simple words"
-
-print("AI receives:", prompt)`,
-quiz:{
-q:"Generative AI is designed to:",
-options:[
-"Generate new content",
-"Only store files",
-"Only manage RAM",
-"Only route packets"
-],
-answer:0
-}
-},
-{
-title:"AI Projects",
-about:"Learn how to turn AI concepts into applications.",
-details:"AI projects combine programming, data, model selection, evaluation and application development. Good projects should solve a meaningful problem and clearly explain how the system works.",
-points:[
-"Choose a useful problem.",
-"Collect or prepare data when needed.",
-"Select an appropriate model.",
-"Evaluate results.",
-"Build an interface around the solution."
-],
-code:`problem = "Student learning assistant"
-
-print("Project:", problem)
-print("Goal: help students learn effectively")`,
-quiz:{
-q:"A useful AI project should begin with:",
-options:[
-"A meaningful problem",
-"A random model",
-"A logo only",
-"A password"
-],
-answer:0
-}
-}
+"AI Introduction",
+"Python for AI",
+"Data Fundamentals",
+"Statistics Basics",
+"Machine Learning",
+"Training Data",
+"Supervised Learning",
+"Unsupervised Learning",
+"Regression",
+"Classification",
+"Neural Networks",
+"Generative AI",
+"AI Applications",
+"AI Projects"
 ]
-
 }
+
 ];
 
 
 /* =====================================================
-   QUIZ QUESTIONS
+   LESSON DATABASE
    ===================================================== */
 
-const quizQuestions = [
+const lessonData = {
 
-{
-q:"What does CPU stand for?",
-options:[
-"Central Processing Unit",
-"Computer Personal Unit",
-"Central Program Utility",
-"Control Processing User"
+"Introduction to C":{
+about:"C is a foundational programming language used to understand how programs work close to the computer. Learning C helps students understand variables, memory, functions, arrays, pointers and structured programming.",
+explanation:"A C program is made from instructions that the computer executes in a particular order. Before writing complex applications, a learner should understand how a program starts, how statements are written, how data is stored and how output is produced. C is especially useful because many programming concepts become very clear when learned at a lower level.",
+important:[
+"Every C program normally has a main() function.",
+"Statements usually end with a semicolon.",
+"Header files provide declarations for library functionality.",
+"The compiler converts C source code into executable machine code."
 ],
-answer:0
+program:`#include <stdio.h>
+
+int main()
+{
+    printf("Hello, CodeQuest!");
+
+    return 0;
+}`,
+quiz:{
+q:"Which function is the starting point of a typical C program?",
+options:["start()","main()","begin()","run()"],
+answer:1
+}
 },
 
+"Variables":{
+about:"A variable is a named location used by a program to store a value. Variables allow programs to work with changing information.",
+explanation:"Instead of writing a value directly everywhere in a program, we can store it inside a variable and use that variable later. In C, a variable has a data type such as int, float or char. The type tells the compiler what kind of data the variable is intended to hold.",
+important:[
+"Variables should have meaningful names.",
+"The data type determines the kind of value stored.",
+"A variable can be assigned a new value.",
+"Initialization gives a variable its first value."
+],
+program:`#include <stdio.h>
+
+int main()
 {
-q:"Which memory is temporary working memory?",
-options:["SSD","HDD","RAM","DVD"],
+    int age = 18;
+    float mark = 85.5;
+
+    printf("Age = %d\\n", age);
+    printf("Mark = %.1f", mark);
+
+    return 0;
+}`,
+quiz:{
+q:"Which keyword is commonly used to declare an integer variable in C?",
+options:["number","int","integer","num"],
+answer:1
+}
+},
+
+"Python Introduction":{
+about:"Python is a high-level programming language known for readable syntax and a large ecosystem of libraries. It is widely used for automation, web development, data work and AI-related applications.",
+explanation:"Python allows beginners to focus on programming logic without needing to write a large amount of syntax. A Python program is normally executed by the Python interpreter. Python uses indentation to represent blocks of code, making formatting an important part of the language.",
+important:[
+"Python uses indentation to define code blocks.",
+"Python variables do not require explicit type declarations.",
+"Python is commonly used for scripting and automation.",
+"Python has a large collection of libraries."
+],
+program:`name = "CodeQuest"
+
+print("Hello", name)
+
+age = 18
+print("Age:", age)`,
+quiz:{
+q:"Which function displays output in Python?",
+options:["display()","echo()","print()","output()"],
 answer:2
+}
 },
 
-{
-q:"Which language is widely used in AI?",
-options:["Python","HTML","CSS","XML"],
-answer:0
-},
+"HTML Introduction":{
+about:"HTML stands for HyperText Markup Language. It provides the structure of web pages.",
+explanation:"HTML describes the elements that appear on a webpage. Headings, paragraphs, images, links, lists, forms and many other elements are represented using HTML tags. HTML itself is not a programming language; it is a markup language used to structure content.",
+important:[
+"HTML provides webpage structure.",
+"HTML documents normally contain html, head and body sections.",
+"Elements are represented using tags.",
+"CSS is used to style HTML and JavaScript adds behavior."
+],
+program:`<!DOCTYPE html>
+<html>
+<head>
+    <title>CodeQuest</title>
+</head>
 
-{
-q:"Which symbol starts a Python comment?",
-options:["//","#","/*","<!--"],
-answer:1
-},
-
-{
-q:"Which data structure follows LIFO?",
-options:["Queue","Stack","Tree","Graph"],
-answer:1
-},
-
-{
-q:"Which data structure follows FIFO?",
-options:["Stack","Queue","Tree","Graph"],
-answer:1
-},
-
-{
-q:"Which SQL command retrieves data?",
-options:["GET","SELECT","FETCHALL","READ"],
-answer:1
-},
-
-{
-q:"Which technology styles HTML?",
-options:["CSS","SQL","C","Git"],
-answer:0
-},
-
-{
-q:"What does API stand for?",
+<body>
+    <h1>Hello World</h1>
+    <p>My first webpage.</p>
+</body>
+</html>`,
+quiz:{
+q:"What does HTML mainly provide?",
 options:[
-"Application Programming Interface",
-"Application Process Internet",
-"Advanced Program Input",
-"Application Protocol Integration"
+"Webpage structure",
+"Database storage",
+"Operating system",
+"Network routing"
 ],
 answer:0
+}
 },
 
-{
-q:"Which is a version-control system?",
-options:["Git","Excel","HTML","CSS"],
-answer:0
-},
-
-{
-q:"Which language commonly uses printf()?",
-options:["C","HTML","SQL","CSS"],
-answer:0
-},
-
-{
-q:"Which protocol secures web communication with TLS?",
-options:["HTTP","HTTPS","FTP","SMTP"],
-answer:1
-},
-
-{
-q:"What does SQL stand for?",
-options:[
-"Structured Query Language",
-"Simple Question Language",
-"System Query Logic",
-"Structured Question List"
+"CSS Introduction":{
+about:"CSS stands for Cascading Style Sheets. It is used to control the appearance and layout of webpages.",
+explanation:"HTML creates the structure of a webpage, while CSS controls how that structure looks. CSS can change colors, fonts, spacing, borders, sizes, positioning and responsive layouts. Modern websites commonly separate structure from styling so that the same style rules can be reused.",
+important:[
+"CSS controls presentation.",
+"Selectors choose HTML elements.",
+"Properties define visual behavior.",
+"CSS can create responsive layouts."
 ],
-answer:0
+program:`<!DOCTYPE html>
+<html>
+<head>
+
+<style>
+h1 {
+    color: purple;
+}
+
+p {
+    font-size: 18px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>CodeQuest AI</h1>
+<p>Learn Web Development.</p>
+
+</body>
+</html>`,
+quiz:{
+q:"What is CSS mainly used for?",
+options:[
+"Database management",
+"Webpage styling",
+"Compiling C programs",
+"Creating IP addresses"
+],
+answer:1
+}
 },
 
-{
-q:"Which device is an output device?",
-options:["Keyboard","Mouse","Monitor","Scanner"],
+"JavaScript Introduction":{
+about:"JavaScript is a programming language commonly used to add interaction and dynamic behavior to webpages.",
+explanation:"JavaScript can respond to user actions, change webpage content, validate forms, communicate with servers and build complex browser applications. It works together with HTML and CSS to create interactive web experiences.",
+important:[
+"JavaScript adds behavior to webpages.",
+"JavaScript can manipulate the DOM.",
+"It can respond to events such as clicks.",
+"It can communicate with APIs."
+],
+program:`<!DOCTYPE html>
+<html>
+
+<body>
+
+<button onclick="sayHello()">
+Click Me
+</button>
+
+<script>
+function sayHello() {
+    alert("Hello CodeQuest!");
+}
+</script>
+
+</body>
+</html>`,
+quiz:{
+q:"Which language is commonly used to add interaction to webpages?",
+options:["HTML","CSS","JavaScript","SQL"],
 answer:2
+}
 },
 
-{
-q:"Which keyword defines a Python function?",
-options:["function","def","fun","define"],
-answer:1
-},
-
-{
-q:"What does DNS primarily do?",
-options:[
-"Translate domain names",
-"Manage RAM",
-"Compile code",
-"Design websites"
+"SQL Introduction":{
+about:"SQL is a language used to communicate with relational databases.",
+explanation:"Applications need a way to store and retrieve information. SQL allows developers to create queries that retrieve records, insert new data, modify existing information and delete records. Understanding SQL is important for backend development and many software applications.",
+important:[
+"SELECT retrieves data.",
+"INSERT adds data.",
+"UPDATE modifies data.",
+"DELETE removes data."
 ],
+program:`CREATE TABLE students (
+    id INT,
+    name VARCHAR(50)
+);
+
+INSERT INTO students
+VALUES (1, 'Joe');
+
+SELECT * FROM students;`,
+quiz:{
+q:"Which SQL command retrieves records?",
+options:["SELECT","OPEN","READ","GET"],
 answer:0
+}
 },
 
-{
-q:"Which language is commonly used for Android development?",
-options:["Kotlin","HTML","SQL","CSS"],
-answer:0
-},
-
-{
-q:"What does Git primarily provide?",
-options:[
-"Version control",
-"Image editing",
-"Hardware acceleration",
-"Database storage"
+"Classes and Objects":{
+about:"Classes and objects are central concepts of object-oriented programming. A class describes the structure and behavior, while an object is an instance created from that class.",
+explanation:"Object-oriented programming helps organize larger programs around objects. A class can contain data and methods. Objects created from that class can have their own values while sharing the same structure and behavior.",
+important:[
+"A class acts as a blueprint.",
+"An object is an instance of a class.",
+"Methods define behavior.",
+"Objects can contain their own data."
 ],
-answer:0
-},
+program:`class Student {
 
-{
-q:"Which principle does a queue follow?",
-options:["LIFO","FIFO","Random","Priority only"],
-answer:1
-},
+    String name;
 
-{
-q:"Which principle does a stack follow?",
-options:["FIFO","LIFO","Random","Priority only"],
-answer:1
-},
+    void showName() {
+        System.out.println(name);
+    }
+}
 
-{
-q:"What does HTTPS add to HTTP?",
+public class Main {
+
+    public static void main(String[] args) {
+
+        Student s = new Student();
+
+        s.name = "Joe";
+        s.showName();
+    }
+}`,
+quiz:{
+q:"What is an object?",
 options:[
-"TLS-based protection",
-"More RAM",
-"CPU cores",
-"Disk space"
-],
-answer:0
-},
-
-{
-q:"What is an algorithm?",
-options:[
-"A step-by-step solution",
-"A computer component",
-"A database",
-"A programming language"
-],
-answer:0
-},
-
-{
-q:"Which is commonly O(n)?",
-options:[
-"Processing every element once",
-"Accessing one known element",
-"Binary search",
-"Constant calculation"
-],
-answer:0
-},
-
-{
-q:"What is an object in OOP?",
-options:[
+"A blueprint",
 "An instance of a class",
 "A compiler",
-"A database",
-"A loop"
+"A database"
 ],
-answer:0
+answer:1
+}
 },
 
-{
-q:"What is authentication used for?",
-options:[
-"Verifying identity",
-"Changing screen size",
-"Formatting storage",
-"Compiling code"
+"Functions":{
+about:"A function is a reusable block of code designed to perform a particular task.",
+explanation:"Functions reduce repetition and make programs easier to understand and maintain. Instead of writing the same instructions multiple times, a function can be defined once and called whenever needed. Functions may receive parameters and may return a value.",
+important:[
+"Functions improve code reuse.",
+"Parameters allow data to be passed into functions.",
+"A return statement can send a value back.",
+"Functions help divide large programs into smaller parts."
 ],
-answer:0
-},
+program:`def add(a, b):
+    return a + b
 
-{
-q:"What is encryption primarily used to protect?",
+result = add(10, 20)
+
+print(result)`,
+quiz:{
+q:"Why are functions useful?",
 options:[
-"Confidentiality",
-"CPU speed",
-"Screen resolution",
-"Keyboard layout"
-],
-answer:0
-},
-
-{
-q:"What does cloud computing provide?",
-options:[
-"Computing resources through networks",
-"Only keyboards",
-"Only offline storage",
-"Only programming languages"
-],
-answer:0
-},
-
-{
-q:"What does Docker commonly provide?",
-options:[
-"Containerized application environments",
-"Database tables",
-"HTML styling",
-"CPU hardware"
-],
-answer:0
-},
-
-{
-q:"Machine learning primarily learns patterns from:",
-options:["Data","Keyboard","Monitor","Printer"],
-answer:0
-},
-
-{
-q:"What is generative AI designed to do?",
-options:[
-"Generate content",
-"Only store data",
-"Only manage RAM",
-"Only route packets"
+"To make code reusable",
+"To delete variables",
+"To replace the operating system",
+"To create hardware"
 ],
 answer:0
 }
 
-];
+}
 
-
-let currentQuiz=0;
-let quizScore=0;
-let quizAnswered=false;
+};
 
 
 /* =====================================================
-   START LEARNING
+   DEFAULT LESSON GENERATOR
+   ===================================================== */
+
+function generateLesson(course,chapter){
+
+if(lessonData[chapter]){
+return lessonData[chapter];
+}
+
+let program=`// ${chapter}
+
+function main() {
+    // Study the concept
+    // and practice it with your own example.
+}`;
+
+let language="programming";
+
+if(course.id==="python"){
+program=`# ${chapter}
+
+print("Learning ${chapter}")
+
+# Practice the concept here`;
+language="Python";
+}
+
+else if(course.id==="c"){
+program=`#include <stdio.h>
+
+int main()
+{
+    printf("Learning ${chapter}");
+
+    return 0;
+}`;
+language="C";
+}
+
+else if(course.id==="cpp"){
+program=`#include <iostream>
+using namespace std;
+
+int main()
+{
+    cout << "Learning ${chapter}";
+
+    return 0;
+}`;
+language="C++";
+}
+
+else if(course.id==="java"){
+program=`class Main {
+
+    public static void main(String[] args) {
+
+        System.out.println("Learning ${chapter}");
+
+    }
+}`;
+language="Java";
+}
+
+else if(course.id==="sql"){
+program=`SELECT *
+FROM students;`;
+language="SQL";
+}
+
+else if(course.id==="web"){
+program=`<!DOCTYPE html>
+<html>
+
+<body>
+
+<h1>${chapter}</h1>
+<p>Practice this concept.</p>
+
+</body>
+</html>`;
+language="HTML";
+}
+
+return {
+
+about:`${chapter} is an important part of the ${course.title} learning path. This lesson introduces the concept and shows how it connects with practical ${language} development.`,
+
+explanation:`In this lesson, you will study ${chapter} step by step. The goal is not simply to memorize a definition. You should understand what the concept does, why developers use it, how it behaves inside a real program and where it can be useful in practical projects. After understanding the explanation, study the sample program carefully and identify each important line. Then try changing the example yourself and observe the result.`,
+
+important:[
+`Understand the basic purpose of ${chapter}.`,
+`Learn the important syntax and terminology.`,
+`Practice the concept with a small program.`,
+`Connect the concept with real software development.`
+],
+
+program:program,
+
+quiz:{
+q:`Which statement best describes ${chapter}?`,
+options:[
+"It is an important programming or computer science concept.",
+"It is a type of computer hardware.",
+"It is only used for typing documents.",
+"It is a network cable."
+],
+answer:0
+}
+
+};
+
+}
+
+
+/* =====================================================
+   NAVIGATION
    ===================================================== */
 
 window.startLearning=function(){
 
-const user=auth.currentUser;
-
-if(!user){
+if(!auth.currentUser){
 
 alert("Please login with Google first.");
-
 loginWithGoogle();
-
 return;
 
 }
@@ -3610,11 +2121,6 @@ showPage("dashboard");
 
 };
 
-
-/* =====================================================
-   PAGE NAVIGATION
-   ===================================================== */
-
 window.showPage=function(pageId,button){
 
 document.querySelectorAll(".page")
@@ -3622,33 +2128,26 @@ document.querySelectorAll(".page")
 
 const page=document.getElementById(pageId);
 
-if(page) page.classList.add("active");
+if(page){
+page.classList.add("active");
+}
 
 document.querySelectorAll(".side-btn")
 .forEach(b=>b.classList.remove("active"));
 
-if(button) button.classList.add("active");
+if(button){
+button.classList.add("active");
+}
 
 if(pageId==="learn") renderCourses();
 
-if(pageId==="quiz"){
-
-/*
- Do NOT restart the quiz every time the user
- touches Quiz Arena.
-*/
-if(!quizSessionStarted){
-startQuiz();
-}
-}
+if(pageId==="quiz") startQuiz();
 
 if(pageId==="bug") renderBugs();
 
 if(pageId==="progress") updateProgress();
 
 if(pageId==="achievements") updateAchievements();
-
-if(pageId==="career") markCareerExplored();
 
 window.scrollTo(0,0);
 
@@ -3673,7 +2172,9 @@ card.className="course-card";
 
 card.innerHTML=`
 
-<div class="course-icon">${course.icon}</div>
+<div class="course-icon">
+${course.icon}
+</div>
 
 <h3>${course.title}</h3>
 
@@ -3687,11 +2188,8 @@ card.innerHTML=`
 <button
 class="course-btn"
 onclick="openCourse('${course.id}')">
-
-View Course →
-
+View Course
 </button>
-
 `;
 
 grid.appendChild(card);
@@ -3702,7 +2200,7 @@ grid.appendChild(card);
 
 
 /* =====================================================
-   COURSE SYLLABUS
+   COURSE
    ===================================================== */
 
 window.openCourse=function(id){
@@ -3717,26 +2215,20 @@ let html=`
 
 <div class="lesson">
 
-<div class="lesson-tag">
-${course.level} • ${course.chapters.length} Lessons
-</div>
-
-<h2>
-${course.icon} ${course.title}
-</h2>
+<h2>${course.icon} ${course.title}</h2>
 
 <p>
 ${course.description}
 </p>
 
-<h3>📚 Course Structure</h3>
+<div class="lesson-info">
+<b>🎯 Course Goal</b><br><br>
+Complete these lessons in order. Study the explanation,
+understand the sample program, answer the lesson question
+and then mark the lesson complete to earn XP.
+</div>
 
-<p>
-This course takes you step by step from fundamentals
-to practical understanding. Every lesson contains a
-detailed explanation, important points, a working
-example and a lesson quiz.
-</p>
+<h3>📚 Course Syllabus</h3>
 
 <div class="syllabus">
 `;
@@ -3752,7 +2244,7 @@ class="module-head"
 onclick="toggleModule(this)">
 
 <span>
-${index+1}. ${chapter.title}
+${index+1}. ${chapter}
 </span>
 
 <span>+</span>
@@ -3765,14 +2257,13 @@ ${index+1}. ${chapter.title}
 class="chapter"
 onclick="openChapter('${course.id}',${index})">
 
-📖 Study ${chapter.title}
+📖 Study Lesson
 
 </div>
 
 </div>
 
 </div>
-
 `;
 
 });
@@ -3803,7 +2294,7 @@ element.parentElement.classList.toggle("open");
 
 
 /* =====================================================
-   LESSON
+   OPEN CHAPTER
    ===================================================== */
 
 window.openChapter=function(courseId,index){
@@ -3814,84 +2305,90 @@ if(!course)return;
 
 const chapter=course.chapters[index];
 
+const lesson=generateLesson(course,chapter);
+
 const container=document.getElementById("lessonContainer");
-
-const quiz=chapter.quiz;
-
-const options=quiz.options.map(
-(option,i)=>`
-
-<button
-class="lesson-option"
-onclick="answerLessonQuiz(
-'${courseId}',
-${index},
-${i}
-)">
-
-${String.fromCharCode(65+i)}. ${escapeHtml(option)}
-
-</button>
-
-`
-).join("");
 
 container.innerHTML=`
 
 <div class="lesson">
 
-<div class="lesson-tag">
-${course.icon} ${course.title}
-</div>
+<button
+class="secondary-btn"
+onclick="openCourse('${courseId}')">
+← Back to Syllabus
+</button>
 
-<h2>
-${chapter.title}
+<h2 style="margin-top:25px">
+${course.icon} ${chapter}
 </h2>
 
-<h3>📌 About This Lesson</h3>
+<div class="lesson-info">
 
-<p>
-${chapter.about}
-</p>
+<b>📘 About this lesson</b>
+
+<br><br>
+
+${lesson.about}
+
+</div>
 
 <h3>📖 Detailed Explanation</h3>
 
 <p>
-${chapter.details}
+${lesson.explanation}
 </p>
 
 <h3>⭐ Important Points</h3>
 
-<ul>
-${chapter.points.map(p=>`<li>${p}</li>`).join("")}
+<ul class="lesson-list">
+
+${lesson.important
+.map(x=>`<li>${x}</li>`)
+.join("")}
+
 </ul>
 
 <h3>💻 Sample Program</h3>
 
 <p>
-Study this example carefully. Try to understand what
-each line does before moving to the quiz.
+Study the following example carefully.
+Try changing values and running the program yourself.
 </p>
 
 <div class="code">
-<pre>${escapeHtml(chapter.code)}</pre>
+<pre>${escapeHtml(lesson.program)}</pre>
 </div>
+
+<h3>🧠 Lesson Quiz</h3>
 
 <div class="lesson-quiz">
 
-<h3 style="margin-top:0">
-🧠 Lesson Quiz
-</h3>
-
 <p>
-${quiz.q}
+<b>${lesson.quiz.q}</b>
 </p>
 
 <div id="lessonQuizOptions">
-${options}
+
+${lesson.quiz.options
+.map((option,i)=>`
+
+<button
+class="lesson-option"
+onclick="answerLessonQuiz('${courseId}',${index},${i})">
+
+${String.fromCharCode(65+i)}.
+${option}
+
+</button>
+
+`)
+.join("")}
+
 </div>
 
-<p id="lessonQuizResult"
+<p
+id="lessonQuizResult"
 style="margin-top:15px">
 </p>
 
@@ -3905,14 +2402,6 @@ style="margin-top:0"
 onclick="completeChapter('${courseId}',${index})">
 
 ✅ Mark Lesson Complete +20 XP
-
-</button>
-
-<button
-class="secondary-btn"
-onclick="openCourse('${courseId}')">
-
-← Course Syllabus
 
 </button>
 
@@ -3933,29 +2422,28 @@ window.scrollTo(0,0);
 window.answerLessonQuiz=function(courseId,index,selected){
 
 const course=courseData.find(c=>c.id===courseId);
-const quiz=course.chapters[index].quiz;
+
+const chapter=course.chapters[index];
+
+const lesson=generateLesson(course,chapter);
 
 const result=document.getElementById("lessonQuizResult");
-const buttons=document.querySelectorAll(".lesson-option");
 
-buttons.forEach(b=>b.disabled=true);
+if(selected===lesson.quiz.answer){
 
-if(selected===quiz.answer){
-
-result.innerHTML=
-"✅ Correct! Great job. You understood this lesson.";
-
-result.style.color="#3bd48a";
+result.innerHTML="✅ Correct! Excellent work. +5 XP";
 
 addXP(5);
+
+document
+.querySelectorAll(".lesson-option")
+.forEach(b=>b.disabled=true);
 
 }
 else{
 
 result.innerHTML=
-"❌ Not quite. Review the explanation and sample program.";
-
-result.style.color="#ff6874";
+"❌ Not quite. Read the explanation again and try once more.";
 
 }
 
@@ -3968,7 +2456,8 @@ result.style.color="#ff6874";
 
 window.completeChapter=function(courseId,index){
 
-let completed=JSON.parse(
+let completed=
+JSON.parse(
 localStorage.getItem("cq_completed")||"[]"
 );
 
@@ -4000,41 +2489,282 @@ updateStats();
 
 
 /* =====================================================
-   QUIZ SESSION
+   QUIZ DATA
    ===================================================== */
 
-/*
- IMPORTANT FIX:
+const quizQuestions=[
 
- The previous version called startQuiz()
- every time showPage("quiz") was used.
+{
+q:"What does CPU stand for?",
+options:[
+"Central Processing Unit",
+"Computer Personal Unit",
+"Central Program Utility",
+"Control Processing User"
+],
+answer:0
+},
 
- That caused the quiz to restart and show the
- same first question again.
+{
+q:"Which language is widely known for readable beginner-friendly syntax?",
+options:["Python","Assembly","Machine Code","Binary"],
+answer:0
+},
 
- Now the quiz only starts when there is no active
- quiz session.
-*/
+{
+q:"Which symbol starts a comment in Python?",
+options:["//","#","/*","<!--"],
+answer:1
+},
 
-let quizSessionStarted=false;
+{
+q:"Which data structure follows LIFO?",
+options:["Queue","Stack","Tree","Graph"],
+answer:1
+},
+
+{
+q:"Which SQL command retrieves data?",
+options:["GET","SELECT","FETCH","READ"],
+answer:1
+},
+
+{
+q:"HTML is mainly used for:",
+options:[
+"Webpage structure",
+"Database storage",
+"Operating systems",
+"Network routing"
+],
+answer:0
+},
+
+{
+q:"Which technology styles HTML pages?",
+options:["CSS","SQL","C","Git"],
+answer:0
+},
+
+{
+q:"What does API stand for?",
+options:[
+"Application Programming Interface",
+"Application Process Internet",
+"Advanced Program Input",
+"Application Protocol Integration"
+],
+answer:0
+},
+
+{
+q:"Which is a version control system?",
+options:["Git","Excel","HTML","CSS"],
+answer:0
+},
+
+{
+q:"Which language commonly uses printf()?",
+options:["C","HTML","SQL","CSS"],
+answer:0
+},
+
+{
+q:"Which protocol is commonly used for secure web communication?",
+options:["HTTP","HTTPS","FTP","SMTP"],
+answer:1
+},
+
+{
+q:"Which structure follows FIFO?",
+options:["Stack","Queue","Tree","Graph"],
+answer:1
+},
+
+{
+q:"What does SQL stand for?",
+options:[
+"Structured Query Language",
+"Simple Question Language",
+"System Query Logic",
+"Structured Question List"
+],
+answer:0
+},
+
+{
+q:"Which language is widely used in AI and machine learning?",
+options:["Python","HTML","CSS","XML"],
+answer:0
+},
+
+{
+q:"What does RAM provide?",
+options:[
+"Temporary working memory",
+"Permanent internet",
+"Power supply",
+"Network address"
+],
+answer:0
+},
+
+{
+q:"Which keyword defines a function in Python?",
+options:["function","def","fun","define"],
+answer:1
+},
+
+{
+q:"Which HTML tag creates a hyperlink?",
+options:["<link>","<a>","<href>","<url>"],
+answer:1
+},
+
+{
+q:"Which CSS property changes text color?",
+options:["font","text-color","color","foreground"],
+answer:2
+},
+
+{
+q:"Which JavaScript method commonly selects an element by ID?",
+options:[
+"getElementById()",
+"selectId()",
+"findId()",
+"queryId()"
+],
+answer:0
+},
+
+{
+q:"Which data structure uses nodes connected by links?",
+options:["Array","Linked List","Integer","String"],
+answer:1
+},
+
+{
+q:"What is Git mainly used for?",
+options:[
+"Version control",
+"Image editing",
+"Database hosting",
+"Video playback"
+],
+answer:0
+},
+
+{
+q:"Which SQL command adds a new record?",
+options:["ADD","INSERT","CREATE","PUSH"],
+answer:1
+},
+
+{
+q:"What is an object in OOP?",
+options:[
+"An instance of a class",
+"A compiler",
+"A database",
+"A loop"
+],
+answer:0
+},
+
+{
+q:"Which device forwards packets between networks?",
+options:["Monitor","Router","Keyboard","Printer"],
+answer:1
+},
+
+{
+q:"What does HTTPS provide compared with HTTP?",
+options:[
+"Encrypted communication",
+"More storage",
+"Faster CPU",
+"More RAM"
+],
+answer:0
+},
+
+{
+q:"Which technology is commonly used for containers?",
+options:["Docker","Excel","PowerPoint","Photoshop"],
+answer:0
+},
+
+{
+q:"Which field is focused on systems that learn from data?",
+options:[
+"Machine Learning",
+"Word Processing",
+"Networking Cable Design",
+"Desktop Publishing"
+],
+answer:0
+},
+
+{
+q:"What is an algorithm?",
+options:[
+"A step-by-step procedure for solving a problem",
+"A computer monitor",
+"A programming language",
+"A database table"
+],
+answer:0
+},
+
+{
+q:"Which one is a relational database system?",
+options:["MySQL","HTML","CSS","Git"],
+answer:0
+},
+
+{
+q:"Which concept means hiding internal implementation details?",
+options:[
+"Abstraction",
+"Compilation",
+"Iteration",
+"Indexing"
+],
+answer:0
+}
+
+];
+
+
+/* =====================================================
+   NON-REPEATING QUIZ SYSTEM
+   ===================================================== */
+
+let quizPool=[];
+let currentQuizIndex=0;
+let quizScore=0;
 
 function startQuiz(){
 
-currentQuiz=0;
 quizScore=0;
-quizAnswered=false;
-quizSessionStarted=true;
+
+quizPool=
+quizQuestions
+.map((q,index)=>index)
+.sort(()=>Math.random()-0.5);
+
+currentQuizIndex=0;
 
 renderQuiz();
 
 }
 
-
 function renderQuiz(){
 
 const container=document.getElementById("quizContainer");
 
-if(currentQuiz>=quizQuestions.length){
+if(currentQuizIndex>=quizPool.length){
 
 container.innerHTML=`
 
@@ -4044,81 +2774,77 @@ container.innerHTML=`
 
 <br>
 
-<h1>
-${quizScore}/${quizQuestions.length}
-</h1>
+<h1>${quizScore}/${quizPool.length}</h1>
 
 <br>
 
 <p>
-You earned
-<b>${quizScore*10} XP</b>
+You earned <b>${quizScore*10} XP</b>
 </p>
 
 <button
 class="primary-btn"
-onclick="restartQuiz()">
+onclick="startQuiz()">
 
 🔄 Start New Quiz
 
 </button>
 
 </div>
-
 `;
 
 addXP(quizScore*10);
-
-quizSessionStarted=false;
 
 return;
 
 }
 
-const q=quizQuestions[currentQuiz];
+const q=quizQuestions[quizPool[currentQuizIndex]];
 
-container.innerHTML=`
+let html=`
 
 <div class="quiz-box">
 
 <div class="quiz-progress">
-Question ${currentQuiz+1} / ${quizQuestions.length}
-</div>
-
-<div class="quiz-score">
-⭐ Score: ${quizScore}
+Question ${currentQuizIndex+1} / ${quizPool.length}
 </div>
 
 <div class="question">
 ${q.q}
 </div>
+`;
 
-${q.options.map((option,index)=>`
+q.options.forEach((option,index)=>{
+
+html+=`
 
 <button
 class="option"
 onclick="answerQuiz(${index})">
 
 ${String.fromCharCode(65+index)}.
-${escapeHtml(option)}
+${option}
 
 </button>
+`;
 
-`).join("")}
+});
+
+html+=`
 
 </div>
 `;
 
-}
+container.innerHTML=html;
 
+}
 
 window.answerQuiz=function(index){
 
-if(quizAnswered)return;
-
-quizAnswered=true;
-
-const q=quizQuestions[currentQuiz];
+const q=
+quizQuestions[
+quizPool[currentQuizIndex]
+];
 
 if(index===q.answer){
 
@@ -4130,28 +2856,14 @@ alert("✅ Correct! +10 XP");
 else{
 
 alert(
-"❌ Incorrect. The correct answer was: "+
-q.options[q.answer]
+"❌ Incorrect. The next question will appear."
 );
 
 }
 
-/*
- Move immediately to the NEXT question.
- The current question is never rendered again.
-*/
-
-currentQuiz++;
-quizAnswered=false;
+currentQuizIndex++;
 
 renderQuiz();
-
-};
-
-
-window.restartQuiz=function(){
-
-startQuiz();
 
 };
 
@@ -4163,80 +2875,64 @@ startQuiz();
 const bugChallenges=[
 
 {
-title:"Python Missing Parenthesis",
+title:"🐞 Missing Parenthesis",
 code:`name = "CodeQuest"
 print(name`,
 options:[
 "Variable is wrong",
 "Closing parenthesis is missing",
 "Python cannot print strings",
-"Quotes are invalid"
+"Quotes are not allowed"
 ],
-answer:1
+answer:1,
+explanation:"The print() function needs a closing parenthesis."
 },
 
 {
-title:"Python Indentation Bug",
-code:`age = 18
-
-if age >= 18:
-print("Adult")`,
+title:"🐞 Wrong Assignment",
+code:`age == 18
+print(age)`,
 options:[
-"age cannot be 18",
-"print needs indentation",
-"if cannot compare numbers",
-"Python has no if statement"
+"Use = for assignment",
+"Python cannot store numbers",
+"print is invalid",
+"age must be a string"
 ],
-answer:1
+answer:0,
+explanation:"A single = assigns a value. == compares two values."
 },
 
 {
-title:"C Semicolon Bug",
+title:"🐞 Missing Colon",
+code:`if age >= 18
+    print("Adult")`,
+options:[
+"Missing colon after condition",
+"if cannot compare numbers",
+"print is invalid",
+"age must be text"
+],
+answer:0,
+explanation:"Python requires a colon after the if condition."
+},
+
+{
+title:"🐞 C Syntax Error",
 code:`#include <stdio.h>
 
 int main()
 {
-    int x = 10
-    printf("%d", x);
-
+    printf("Hello")
     return 0;
 }`,
 options:[
-"int declaration needs ;",
-"printf is invalid",
-"x cannot be 10",
-"main cannot return"
+"Missing semicolon",
+"printf cannot print text",
+"main is invalid",
+"return cannot be used"
 ],
-answer:0
-},
-
-{
-title:"JavaScript Assignment Bug",
-code:`let age = 18;
-
-if(age = 20){
-    console.log("Adult");
-}`,
-options:[
-"age cannot be a number",
-"Assignment is used instead of comparison",
-"console.log is invalid",
-"let is not allowed"
-],
-answer:1
-},
-
-{
-title:"Python Variable Name Bug",
-code:`student-name = "Joe"
-print(student-name)`,
-options:[
-"Hyphen cannot be used like this in a variable name",
-"Strings are invalid",
-"print is invalid",
-"Variables cannot contain text"
-],
-answer:0
+answer:0,
+explanation:"The printf statement needs a semicolon."
 }
 
 ];
@@ -4255,7 +2951,7 @@ card.className="bug-card";
 
 card.innerHTML=`
 
-<h3>🐞 Bug #${index+1} — ${bug.title}</h3>
+<h3>${bug.title}</h3>
 
 <div class="code">
 <pre>${escapeHtml(bug.code)}</pre>
@@ -4265,10 +2961,10 @@ ${bug.options.map((option,i)=>`
 
 <button
 class="option"
-onclick="bugAnswer(${index},${i},this)">
+onclick="answerBug(${index},${i},this)">
 
 ${String.fromCharCode(65+i)}.
-${escapeHtml(option)}
+${option}
 
 </button>
 
@@ -4276,7 +2972,7 @@ ${escapeHtml(option)}
 
 <p
 id="bugResult${index}"
-class="bug-result">
+style="margin-top:15px;color:#c9cbd5;">
 </p>
 
 `;
@@ -4287,37 +2983,31 @@ container.appendChild(card);
 
 }
 
-
-window.bugAnswer=function(bugIndex,selected,button){
+window.answerBug=function(bugIndex,selected,button){
 
 const bug=bugChallenges[bugIndex];
 
-const result=document.getElementById(
+const result=
+document.getElementById(
 "bugResult"+bugIndex
 );
-
-const buttons=
-button.parentElement.querySelectorAll(".option");
-
-buttons.forEach(b=>b.disabled=true);
 
 if(selected===bug.answer){
 
 result.innerHTML=
-"✅ Correct! You found the bug. +25 XP";
-
-result.style.color="#3bd48a";
+"✅ Correct! "+bug.explanation+" +25 XP";
 
 addXP(25);
+
+button.classList.add("correct");
 
 }
 else{
 
 result.innerHTML=
-"❌ Not quite. The correct answer is: "+
-bug.options[bug.answer];
+"❌ Not quite. Study the code carefully.";
 
-result.style.color="#ff6874";
+button.classList.add("wrong");
 
 }
 
@@ -4330,34 +3020,36 @@ result.style.color="#ff6874";
 
 function addXP(amount){
 
-let xp=Number(
+let xp=
+Number(
 localStorage.getItem("cq_xp")||0
 );
 
 xp+=amount;
 
-localStorage.setItem("cq_xp",xp);
+localStorage.setItem(
+"cq_xp",
+xp
+);
 
 updateStats();
 
 }
 
-
-/* =====================================================
-   STATS
-   ===================================================== */
-
 function updateStats(){
 
-const xp=Number(
+const xp=
+Number(
 localStorage.getItem("cq_xp")||0
 );
 
-const completed=JSON.parse(
+const completed=
+JSON.parse(
 localStorage.getItem("cq_completed")||"[]"
 );
 
-const level=Math.floor(xp/100)+1;
+const level=
+Math.floor(xp/100)+1;
 
 document.getElementById("xpValue").textContent=xp;
 
@@ -4378,38 +3070,35 @@ localStorage.getItem("cq_streak")||0;
 
 function updateProgress(){
 
-const completed=JSON.parse(
+const completed=
+JSON.parse(
 localStorage.getItem("cq_completed")||"[]"
 );
 
-const total=courseData.reduce(
-(sum,c)=>sum+c.chapters.length,0
+const total=
+courseData.reduce(
+(sum,c)=>sum+c.chapters.length,
+0
 );
 
-const percentage=Math.min(
+const percentage=
+Math.min(
 100,
 Math.round(completed.length/total*100)
 );
 
-document.getElementById(
-"overallProgress"
-).style.width=percentage+"%";
+document.getElementById("overallProgress")
+.style.width=percentage+"%";
 
-document.getElementById(
-"progressText"
-).textContent=
+document.getElementById("progressText")
+.textContent=
 percentage+"% completed";
 
-const streak=Number(
-localStorage.getItem("cq_streak")||0
-);
-
-document.getElementById(
-"streakText"
-).textContent=
-streak>0
-?`🔥 You are currently on a ${streak}-day streak!`
-:"Start learning today!";
+document.getElementById("streakText")
+.textContent=
+"🔥 Current streak: "+
+(localStorage.getItem("cq_streak")||0)+
+" day(s)";
 
 updateStats();
 
@@ -4422,37 +3111,39 @@ updateStats();
 
 function updateAchievements(){
 
-const completed=JSON.parse(
+const completed=
+JSON.parse(
 localStorage.getItem("cq_completed")||"[]"
 );
 
-const xp=Number(
+const xp=
+Number(
 localStorage.getItem("cq_xp")||0
 );
 
-const streak=Number(
-localStorage.getItem("cq_streak")||0
-);
+if(completed.length>0){
 
-if(completed.length>0)
-document.getElementById("achievement1")
+document
+.getElementById("achievement1")
 .classList.remove("locked");
 
-if(xp>=100)
-document.getElementById("achievement2")
+}
+
+if(xp>=100){
+
+document
+.getElementById("achievement2")
 .classList.remove("locked");
 
-if(streak>=3)
-document.getElementById("achievement3")
+}
+
+if(Number(localStorage.getItem("cq_streak")||0)>=3){
+
+document
+.getElementById("achievement3")
 .classList.remove("locked");
 
-if(localStorage.getItem("cq_project_explored")==="true")
-document.getElementById("achievement4")
-.classList.remove("locked");
-
-if(localStorage.getItem("cq_career_explored")==="true")
-document.getElementById("achievement5")
-.classList.remove("locked");
+}
 
 }
 
@@ -4463,340 +3154,107 @@ document.getElementById("achievement5")
 
 window.careerAnswer=function(){
 
-const input=document.getElementById("careerQuestion");
+const input=
+document.getElementById("careerQuestion");
 
-const answer=document.getElementById("careerAnswer");
+const answer=
+document.getElementById("careerAnswer");
 
-const question=input.value.toLowerCase();
+const question=
+input.value.toLowerCase();
 
-let html="";
+if(
+question.includes("intern") ||
+question.includes("internship")
+){
 
-if(question.includes("intern")||
-question.includes("internship")){
-
-html=`
-
-<div class="career-detail">
-
-<h3>🎯 Internship Preparation Roadmap</h3>
-
-<p>
-For an internship, focus on building fundamentals
-and demonstrating that you can actually create things.
-</p>
-
-<h3>1. Programming</h3>
-
-<p>
-Learn at least one programming language properly.
-Python, C++, Java and JavaScript are common choices
-depending on the role.
-</p>
-
-<h3>2. DSA</h3>
-
-<p>
-Learn arrays, strings, searching, sorting, linked lists,
-stacks, queues, recursion and basic complexity.
-</p>
-
-<h3>3. Git & GitHub</h3>
-
-<p>
-Create repositories for your projects. Learn commits,
-branches, README files and basic collaboration.
-</p>
-
-<h3>4. Projects</h3>
-
-<p>
-Build projects that demonstrate what you know instead
-of only collecting certificates.
-</p>
-
-<h3>5. Resume</h3>
-
-<p>
-Keep your resume clear. Highlight skills, projects,
-education, achievements and relevant experience.
-</p>
-
-<h3>6. Interview Preparation</h3>
-
-<p>
-Practice programming questions, basic CS concepts,
-project explanations and communication.
-</p>
-
-</div>
-`;
+answer.innerHTML=
+"🎯 <b>Internship preparation:</b><br><br>"+
+"Start with programming fundamentals, Git/GitHub, basic DSA and one or two practical projects. "+
+"Create a clean GitHub profile, document your projects and practice explaining what you built. "+
+"For technical internships, also prepare basic problem-solving questions and fundamentals related to the role.";
 
 }
+
 else if(
-question.includes("placement")||
+question.includes("placement") ||
 question.includes("campus")
 ){
 
-html=`
-
-<div class="career-detail">
-
-<h3>🎓 Placement Preparation Roadmap</h3>
-
-<p>
-Placement preparation usually requires a combination of
-programming, problem solving, computer science fundamentals,
-projects and interview preparation.
-</p>
-
-<h3>Programming</h3>
-
-<p>
-Be comfortable writing programs without depending entirely
-on copy-paste solutions.
-</p>
-
-<h3>DSA</h3>
-
-<p>
-Study arrays, strings, linked lists, stacks, queues,
-trees, graphs, sorting, searching and recursion.
-</p>
-
-<h3>Core CS Subjects</h3>
-
-<p>
-Study DBMS, SQL, Operating Systems, Computer Networks,
-OOP and software engineering fundamentals.
-</p>
-
-<h3>Aptitude</h3>
-
-<p>
-Practice quantitative aptitude, logical reasoning and
-basic verbal ability when required by recruitment tests.
-</p>
-
-<h3>Technical Interview</h3>
-
-<p>
-Be able to explain your projects, programming decisions,
-database design and the technologies you used.
-</p>
-
-<h3>HR / Communication</h3>
-
-<p>
-Practice introducing yourself, explaining your projects
-and discussing your learning experience clearly.
-</p>
-
-</div>
-`;
+answer.innerHTML=
+"🎓 <b>Placement preparation:</b><br><br>"+
+"Build strong programming fundamentals first. Then study DSA, OOP, DBMS, SQL, operating systems, computer networks and software engineering basics. "+
+"Practice coding problems regularly, prepare your resume and be able to explain your projects clearly. "+
+"Communication and interview practice are also useful parts of preparation.";
 
 }
-else if(
-question.includes("software")||
-question.includes("developer")
-){
 
-html=`
-
-<div class="career-detail">
-
-<h3>💻 Software Developer Roadmap</h3>
-
-<div class="path-box">
-
-<div class="path-step">1️⃣ Computer Fundamentals</div>
-<div class="path-step">2️⃣ Programming</div>
-<div class="path-step">3️⃣ OOP</div>
-<div class="path-step">4️⃣ DSA</div>
-<div class="path-step">5️⃣ SQL + DBMS</div>
-<div class="path-step">6️⃣ Git + GitHub</div>
-<div class="path-step">7️⃣ Development</div>
-<div class="path-step">8️⃣ Projects</div>
-<div class="path-step">9️⃣ Internship Preparation</div>
-<div class="path-step">🔟 Placement + Interview Preparation</div>
-
-</div>
-
-<h3>Projects to Build</h3>
-
-<p>
-Start with small applications such as calculators and
-task managers, then move to APIs, databases, authentication,
-full-stack applications and a larger capstone project.
-</p>
-
-</div>
-`;
-
-}
 else if(
 question.includes("web")
 ){
 
-html=`
-
-<div class="career-detail">
-
-<h3>🌐 Web Development Roadmap</h3>
-
-<div class="path-box">
-
-<div class="path-step">1️⃣ HTML</div>
-<div class="path-step">2️⃣ CSS</div>
-<div class="path-step">3️⃣ Responsive Design</div>
-<div class="path-step">4️⃣ JavaScript</div>
-<div class="path-step">5️⃣ DOM + Events</div>
-<div class="path-step">6️⃣ APIs</div>
-<div class="path-step">7️⃣ Frontend Framework</div>
-<div class="path-step">8️⃣ Backend</div>
-<div class="path-step">9️⃣ SQL / Database</div>
-<div class="path-step">🔟 Full Projects</div>
-
-</div>
-
-</div>
-`;
+answer.innerHTML=
+"🌐 <b>Web Developer path:</b><br><br>"+
+"HTML → CSS → JavaScript → DOM → APIs → Git/GitHub → Backend → SQL → Authentication → Deployment → Projects.<br><br>"+
+"For internships, build several small projects and at least one complete web application.";
 
 }
+
 else if(
-question.includes("ai")||
+question.includes("ai") ||
 question.includes("machine learning")
 ){
 
-html=`
-
-<div class="career-detail">
-
-<h3>🤖 AI / ML Roadmap</h3>
-
-<div class="path-box">
-
-<div class="path-step">1️⃣ Python</div>
-<div class="path-step">2️⃣ Mathematics</div>
-<div class="path-step">3️⃣ NumPy</div>
-<div class="path-step">4️⃣ pandas</div>
-<div class="path-step">5️⃣ Data Analysis</div>
-<div class="path-step">6️⃣ Machine Learning</div>
-<div class="path-step">7️⃣ Model Evaluation</div>
-<div class="path-step">8️⃣ Deep Learning</div>
-<div class="path-step">9️⃣ Generative AI</div>
-<div class="path-step">🔟 AI Projects</div>
-
-</div>
-
-</div>
-`;
+answer.innerHTML=
+"🤖 <b>AI/ML path:</b><br><br>"+
+"Python → Mathematics → Statistics → Data Processing → Machine Learning → Model Evaluation → Neural Networks → Generative AI → Projects.<br><br>"+
+"Build practical projects and learn how to explain the data, model and results.";
 
 }
+
+else if(
+question.includes("app")
+){
+
+answer.innerHTML=
+"📱 <b>App Development path:</b><br><br>"+
+"Programming → UI → Android fundamentals → APIs → Firebase/Database → Authentication → Testing → Deployment → Projects.";
+
+}
+
 else if(
 question.includes("cyber")
 ){
 
-html=`
-
-<div class="career-detail">
-
-<h3>🔐 Cybersecurity Roadmap</h3>
-
-<div class="path-box">
-
-<div class="path-step">1️⃣ Computer Fundamentals</div>
-<div class="path-step">2️⃣ Networking</div>
-<div class="path-step">3️⃣ Linux</div>
-<div class="path-step">4️⃣ Security Fundamentals</div>
-<div class="path-step">5️⃣ Authentication</div>
-<div class="path-step">6️⃣ Cryptography Basics</div>
-<div class="path-step">7️⃣ Web Security</div>
-<div class="path-step">8️⃣ Secure Coding</div>
-<div class="path-step">9️⃣ Security Projects</div>
-
-</div>
-
-<p>
-Always practice cybersecurity ethically and only on systems
-you are authorized to test.
-</p>
-
-</div>
-`;
+answer.innerHTML=
+"🔐 <b>Cybersecurity path:</b><br><br>"+
+"Computer Basics → Networking → Linux → Security Fundamentals → Authentication → Encryption → Web Security → Secure Coding → Ethical Security.";
 
 }
+
+else if(
+question.includes("software") ||
+question.includes("developer")
+){
+
+answer.innerHTML=
+"💻 <b>Software Developer path:</b><br><br>"+
+"Programming → OOP → DSA → SQL → Git/GitHub → Software Engineering → Testing → Debugging → Projects → Interview Preparation.";
+
+}
+
 else{
 
-html=`
-
-<div class="career-detail">
-
-<h3>🎓 General Technology Career Roadmap</h3>
-
-<p>
-Start with computer fundamentals and programming.
-Then learn problem solving, data structures, databases,
-software development and Git.
-</p>
-
-<p>
-After building a foundation, choose a specialization such
-as web development, app development, AI/ML, cybersecurity,
-cloud/DevOps or software engineering.
-</p>
-
-<p>
-Build projects throughout your learning journey. Then
-prepare your resume, portfolio, internships, technical
-interviews and placement-related skills.
-</p>
-
-</div>
-`;
+answer.innerHTML=
+"🎓 <b>General roadmap:</b><br><br>"+
+"Start with computer fundamentals → programming → DSA → SQL → Git/GitHub → development → projects → resume → internship preparation → placement/job preparation. "+
+"Choose a specialization after building a strong foundation.";
 
 }
-
-answer.innerHTML=html;
 
 addXP(5);
 
 };
-
-
-/* =====================================================
-   CAREER ACHIEVEMENT
-   ===================================================== */
-
-function markCareerExplored(){
-
-localStorage.setItem(
-"cq_career_explored",
-"true"
-);
-
-updateAchievements();
-
-}
-
-
-/* =====================================================
-   PROJECT ACHIEVEMENT
-   ===================================================== */
-
-document.addEventListener("click",function(e){
-
-if(e.target.closest("#projects")){
-
-localStorage.setItem(
-"cq_project_explored",
-"true"
-);
-
-updateAchievements();
-
-}
-
-});
 
 
 /* =====================================================
@@ -4811,8 +3269,6 @@ document.getElementById("homePage").style.display="flex";
 
 document.getElementById("features").style.display="grid";
 
-quizSessionStarted=false;
-
 }
 
 
@@ -4822,17 +3278,13 @@ quizSessionStarted=false;
 
 function escapeHtml(text){
 
-return String(text)
+return text
 .replace(/&/g,"&amp;")
 .replace(/</g,"&lt;")
-.replace(/>/g,"&gt;")
-.replace(/"/g,"&quot;")
-.replace(/'/g,"&#039;");
+.replace(/>/g,"&gt;");
 
 }
 
-
-/* INITIAL */
 
 updateStats();
 
