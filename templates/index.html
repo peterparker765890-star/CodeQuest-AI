@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,32 +18,24 @@
 
 body {
     font-family: Arial, Helvetica, sans-serif;
-
     background:
         radial-gradient(circle at top right, #25104d 0%, transparent 35%),
         radial-gradient(circle at bottom left, #101b3d 0%, transparent 35%),
         #07070b;
-
     color: white;
     min-height: 100vh;
 }
 
 header {
     padding: 20px 7%;
-
     display: flex;
     justify-content: space-between;
     align-items: center;
-
     border-bottom: 1px solid #25252e;
-
     position: sticky;
     top: 0;
-
-    background: rgba(7,7,11,.9);
-
+    background: rgba(7,7,11,.92);
     backdrop-filter: blur(15px);
-
     z-index: 10;
 }
 
@@ -89,8 +82,8 @@ header {
         #ec4899,
         #6366f1
     );
-
     -webkit-background-clip: text;
+    background-clip: text;
     color: transparent;
 }
 
@@ -104,17 +97,14 @@ header {
 .player-card {
     margin: 30px 0;
     padding: 24px;
-
     border: 1px solid #2a2a35;
     border-radius: 22px;
-
     background:
         linear-gradient(
             135deg,
             rgba(168,85,247,.16),
             rgba(30,30,40,.6)
         );
-
     display: flex;
     justify-content: space-between;
     gap: 20px;
@@ -134,31 +124,26 @@ header {
 
 .xp {
     color: #c084fc;
+    margin-top: 5px;
 }
 
 .progress {
     width: 230px;
     height: 8px;
-
     background: #27272f;
-
     border-radius: 10px;
-
     margin-top: 12px;
-
     overflow: hidden;
 }
 
 .progress div {
     height: 100%;
     width: 0%;
-
     background: linear-gradient(
         90deg,
         #a855f7,
         #ec4899
     );
-
     transition: width .4s;
 }
 
@@ -169,23 +154,17 @@ header {
 
 .features {
     display: grid;
-
     grid-template-columns:
         repeat(auto-fit, minmax(180px, 1fr));
-
     gap: 15px;
 }
 
 .feature {
     padding: 22px;
-
     border: 1px solid #292933;
     border-radius: 18px;
-
     background: #111116;
-
     cursor: pointer;
-
     transition: .2s;
 }
 
@@ -211,22 +190,16 @@ header {
 
 .courses {
     display: grid;
-
     grid-template-columns:
         repeat(auto-fit, minmax(250px, 1fr));
-
     gap: 18px;
 }
 
 .course {
     border: 1px solid #292933;
-
     border-radius: 20px;
-
     padding: 22px;
-
     background: rgba(17,17,22,.92);
-
     transition: .2s;
 }
 
@@ -251,17 +224,11 @@ header {
 
 .level {
     display: inline-block;
-
     margin-top: 12px;
-
     padding: 5px 9px;
-
     border-radius: 20px;
-
     background: #211536;
-
     color: #c084fc;
-
     font-size: 11px;
 }
 
@@ -272,23 +239,16 @@ button {
 .course button,
 .primary {
     border: none;
-
     margin-top: 18px;
-
     padding: 11px 16px;
-
     border-radius: 10px;
-
     background: linear-gradient(
         90deg,
         #7c3aed,
         #a855f7
     );
-
     color: white;
-
     font-weight: bold;
-
     cursor: pointer;
 }
 
@@ -300,43 +260,28 @@ button {
 
 .modal {
     display: none;
-
     position: fixed;
-
     inset: 0;
-
     background: rgba(0,0,0,.78);
-
     z-index: 100;
-
     padding: 20px;
-
     overflow-y: auto;
 }
 
 .modal-box {
     max-width: 750px;
-
     margin: 30px auto;
-
     background: #111116;
-
     border: 1px solid #343442;
-
     border-radius: 22px;
-
     padding: 28px;
-
     min-height: 150px;
 }
 
 .close {
     float: right;
-
     font-size: 28px;
-
     cursor: pointer;
-
     color: #aaa;
 }
 
@@ -346,37 +291,25 @@ button {
 
 .chapter {
     padding: 16px;
-
     margin-top: 9px;
-
     border: 1px solid #292933;
-
     border-radius: 12px;
-
     background: #0b0b0f;
-
     cursor: pointer;
-
     transition: .2s;
 }
 
 .chapter:hover {
     border-color: #a855f7;
-
     background: #15121d;
 }
 
 .lesson-box {
     margin-top: 22px;
-
     padding: 20px;
-
     background: #0b0b0f;
-
     border: 1px solid #292933;
-
     border-radius: 15px;
-
     line-height: 1.7;
 }
 
@@ -390,131 +323,111 @@ button {
 
 .example {
     margin-top: 15px;
-
     padding: 16px;
-
     background: #050507;
-
     border-radius: 12px;
-
     overflow-x: auto;
-
     color: #d8b4fe;
-
     white-space: pre-wrap;
-
     font-family: monospace;
 }
 
 .tip {
     margin-top: 15px;
-
     padding: 14px;
-
     border-radius: 10px;
-
     background: #211536;
-
     color: #d8b4fe;
 }
 
 .quiz-question {
     font-size: 20px;
-
     margin: 20px 0;
 }
 
 .option {
     width: 100%;
-
     padding: 14px;
-
     margin: 7px 0;
-
     border: 1px solid #30303a;
-
     background: #17171d;
-
     color: white;
-
     border-radius: 10px;
-
     text-align: left;
-
     cursor: pointer;
-
     transition: .2s;
 }
 
 .option:hover {
     border-color: #a855f7;
-
     background: #1c1724;
 }
 
 .result {
     margin-top: 18px;
-
     padding: 15px;
-
     border-radius: 12px;
-
     background: #191922;
-
     line-height: 1.6;
 }
 
 .lesson-question {
     margin-top: 22px;
-
     font-size: 18px;
-
     font-weight: bold;
 }
 
 .stats-grid {
     display: grid;
-
     grid-template-columns:
         repeat(2, 1fr);
-
     gap: 12px;
-
     margin-top: 20px;
 }
 
 .stat {
     padding: 18px;
-
     border: 1px solid #292933;
-
     border-radius: 15px;
-
     background: #0b0b0f;
 }
 
 .stat strong {
     display: block;
-
     font-size: 25px;
-
     color: #c084fc;
-
     margin-top: 5px;
+}
+
+textarea {
+    outline: none;
+}
+
+textarea:focus {
+    border-color: #a855f7 !important;
 }
 
 footer {
     margin-top: 70px;
-
     padding: 30px;
-
     text-align: center;
-
     border-top: 1px solid #25252e;
-
     color: #777;
-
     font-size: 13px;
+}
+
+.loading {
+    text-align: center;
+    padding: 30px;
+    color: #aaa;
+}
+
+.error-message {
+    color: #fb7185;
+    background: #251016;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 15px;
 }
 
 @media(max-width:600px) {
@@ -618,6 +531,7 @@ footer {
         </div>
 
     </div>
+
 
     <div>
 
@@ -840,7 +754,7 @@ footer {
 <script>
 
 /* =====================================================
-   STATE
+   GLOBAL STATE
 ===================================================== */
 
 let quizData = [];
@@ -866,18 +780,18 @@ try {
         completedChapters = [];
     }
 
-} catch (error) {
+} catch (e) {
 
     completedChapters = [];
 
 }
 
-let solvedChallenges =
-    Number(
-        localStorage.getItem(
-            "codequest_challenges"
-        ) || 0
-    );
+
+let solvedChallenges = Number(
+    localStorage.getItem(
+        "codequest_challenges"
+    ) || 0
+);
 
 
 /* =====================================================
@@ -907,17 +821,17 @@ function updateProgress() {
 
     document.getElementById(
         "xpText"
-    ).innerHTML =
+    ).textContent =
         `⭐ ${xp} XP`;
 
     document.getElementById(
         "levelText"
-    ).innerHTML =
+    ).textContent =
         `Level ${level} — ${getLevelName(level)} 🚀`;
 
     document.getElementById(
         "progressText"
-    ).innerHTML =
+    ).textContent =
         `${currentXP} / 100 XP`;
 
     document.getElementById(
@@ -957,13 +871,15 @@ updateProgress();
 
 function showModal(content) {
 
-    document.getElementById(
-        "modalContent"
-    ).innerHTML = content;
+    const modal =
+        document.getElementById("modal");
 
-    document.getElementById(
-        "modal"
-    ).style.display = "block";
+    const modalContent =
+        document.getElementById("modalContent");
+
+    modalContent.innerHTML = content;
+
+    modal.style.display = "block";
 
     document.body.style.overflow = "hidden";
 }
@@ -980,17 +896,20 @@ function closeModal() {
 
 
 /* =====================================================
-   COURSES
+   COURSE
 ===================================================== */
 
 async function openCourse(name) {
 
     showModal(`
-        <h2>📚 ${escapeHtml(name)}</h2>
 
-        <div class="result">
-            ⏳ Loading course...
+        <div class="loading">
+
+            📚 Loading
+            <strong>${escapeHtml(name)}</strong>...
+
         </div>
+
     `);
 
     try {
@@ -998,14 +917,19 @@ async function openCourse(name) {
         const response =
             await fetch(
                 "/api/course/" +
-                encodeURIComponent(name)
+                encodeURIComponent(name),
+                {
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                }
             );
 
         if (!response.ok) {
 
             throw new Error(
-                "Course API returned HTTP " +
-                response.status
+                `Server returned ${response.status}`
             );
 
         }
@@ -1024,6 +948,7 @@ async function openCourse(name) {
 
         }
 
+
         let completedCount =
             course.chapters.filter(
                 chapter =>
@@ -1032,19 +957,18 @@ async function openCourse(name) {
                     )
             ).length;
 
+
         let html = `
 
             <h2>
-                ${escapeHtml(
-                    course.icon || "📚"
-                )}
-
+                ${escapeHtml(course.icon || "📚")}
                 ${escapeHtml(name)}
             </h2>
 
             <p style="
                 color:#aaa;
                 margin-top:10px;
+                line-height:1.6;
             ">
                 ${escapeHtml(
                     course.description || ""
@@ -1054,18 +978,20 @@ async function openCourse(name) {
             <div class="result">
 
                 📚 Chapters:
-                ${course.chapters.length}
+                <strong>
+                    ${course.chapters.length}
+                </strong>
 
                 <br>
 
                 ✅ Completed:
-                ${completedCount}
+                <strong>
+                    ${completedCount}
+                </strong>
 
             </div>
 
-            <h3 style="
-                margin-top:25px;
-            ">
+            <h3 style="margin-top:25px;">
                 📖 Learning Path
             </h3>
 
@@ -1080,14 +1006,13 @@ async function openCourse(name) {
                         name + "::" + chapter
                     );
 
+
                 html += `
 
                     <div
                         class="chapter"
-                        onclick='startChapter(
-                            ${JSON.stringify(name)},
-                            ${JSON.stringify(chapter)}
-                        )'>
+                        data-course="${escapeAttr(name)}"
+                        data-chapter="${escapeAttr(chapter)}">
 
                         ${
                             completed
@@ -1114,10 +1039,36 @@ async function openCourse(name) {
 
         showModal(html);
 
+
+        /*
+         * IMPORTANT:
+         * Event listeners are attached AFTER
+         * the chapter HTML has been inserted.
+         */
+
+        document
+            .querySelectorAll(".chapter")
+            .forEach(chapterElement => {
+
+                chapterElement.addEventListener(
+                    "click",
+                    function() {
+
+                        startChapter(
+                            this.dataset.course,
+                            this.dataset.chapter
+                        );
+
+                    }
+                );
+
+            });
+
+
     } catch (error) {
 
         console.error(
-            "Course loading error:",
+            "Course error:",
             error
         );
 
@@ -1127,38 +1078,33 @@ async function openCourse(name) {
                 ⚠️ Course Error
             </h2>
 
-            <div
-                class="result"
-                style="color:#fb7185;">
+            <p style="
+                color:#aaa;
+                margin-top:15px;
+                line-height:1.6;
+            ">
+                We couldn't load this course.
+            </p>
 
-                The course could not be loaded.
+            <div class="error-message">
 
-            </div>
-
-            <div class="lesson-box">
-
-                <p>
-                    Make sure your Flask backend
-                    has this route:
-                </p>
-
-                <div class="example">
-GET /api/course/&lt;course_name&gt;
-                </div>
-
-                <p style="
-                    margin-top:15px;
-                ">
-                    Server error:
-                    ${escapeHtml(error.message)}
-                </p>
+                ${escapeHtml(
+                    error.message
+                )}
 
             </div>
+
+            <button
+                class="primary"
+                onclick="closeModal()">
+
+                CLOSE
+
+            </button>
 
         `);
 
     }
-
 }
 
 
@@ -1173,44 +1119,44 @@ async function startChapter(
 
     showModal(`
 
-        <h2>
-            📖 ${escapeHtml(chapter)}
-        </h2>
-
-        <div class="result">
-            ⏳ Loading lesson...
+        <div class="loading">
+            📖 Loading lesson...
         </div>
 
     `);
+
 
     try {
 
         const response =
             await fetch(
                 "/api/lesson/" +
-                encodeURIComponent(chapter)
+                encodeURIComponent(chapter),
+                {
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                }
             );
+
 
         if (!response.ok) {
 
             throw new Error(
-                "Lesson API returned HTTP " +
-                response.status
+                `Lesson returned ${response.status}`
             );
 
         }
+
 
         const lesson =
             await response.json();
 
-        if (!lesson) {
-            throw new Error(
-                "Empty lesson data"
-            );
-        }
 
         let key =
             courseName + "::" + chapter;
+
 
         let alreadyCompleted =
             completedChapters.includes(key);
@@ -1232,19 +1178,17 @@ async function startChapter(
 
                 <p>
                     ${escapeHtml(
-                        lesson.explanation || ""
+                        lesson.explanation
                     )}
                 </p>
 
-                <h3 style="
-                    margin-top:20px;
-                ">
+                <h3 style="margin-top:20px;">
                     💻 Example
                 </h3>
 
                 <div class="example">
                     ${escapeHtml(
-                        lesson.example || ""
+                        lesson.example
                     )}
                 </div>
 
@@ -1252,7 +1196,7 @@ async function startChapter(
 
                     💡 Tip:
                     ${escapeHtml(
-                        lesson.tip || ""
+                        lesson.tip
                     )}
 
                 </div>
@@ -1270,9 +1214,11 @@ async function startChapter(
                     margin-top:10px;
                     font-weight:normal;
                 ">
+
                     ${escapeHtml(
-                        lesson.question || ""
+                        lesson.question
                     )}
+
                 </p>
 
             </div>
@@ -1282,40 +1228,29 @@ async function startChapter(
         `;
 
 
-        if (
-            Array.isArray(
-                lesson.options
-            )
-        ) {
+        lesson.options.forEach(
+            (option, index) => {
 
-            lesson.options.forEach(
-                (option, index) => {
+                html += `
 
-                    html += `
+                    <button
+                        type="button"
+                        class="option lesson-option"
+                        data-index="${index}"
+                        data-answer="${lesson.answer}"
+                        data-key="${escapeAttr(key)}">
 
-                        <button
-                            type="button"
-                            class="option"
-                            onclick="checkLesson(
-                                ${index},
-                                ${Number(lesson.answer)},
-                                ${JSON.stringify(key)}
-                            )">
+                        ${String.fromCharCode(
+                            65 + index
+                        )}.
+                        ${escapeHtml(option)}
 
-                            ${String.fromCharCode(
-                                65 + index
-                            )}.
+                    </button>
 
-                            ${escapeHtml(option)}
+                `;
 
-                        </button>
-
-                    `;
-
-                }
-            );
-
-        }
+            }
+        );
 
 
         html += `
@@ -1334,7 +1269,7 @@ async function startChapter(
                         ✅ Chapter already completed.
 
                     </div>
-                `
+                  `
                 : ""
             }
 
@@ -1343,45 +1278,60 @@ async function startChapter(
 
         showModal(html);
 
+
+        document
+            .querySelectorAll(".lesson-option")
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    function() {
+
+                        checkLesson(
+                            Number(
+                                this.dataset.index
+                            ),
+                            Number(
+                                this.dataset.answer
+                            ),
+                            this.dataset.key
+                        );
+
+                    }
+                );
+
+            });
+
+
     } catch (error) {
 
         console.error(
-            "Lesson loading error:",
+            "Lesson error:",
             error
         );
 
         showModal(`
 
             <h2>
-                ⚠️ Lesson Error
+                ⚠️ Lesson unavailable
             </h2>
 
-            <div
-                class="result"
-                style="color:#fb7185">
-
+            <p style="
+                color:#aaa;
+                margin-top:15px;
+            ">
                 This lesson could not be loaded.
+            </p>
 
-            </div>
-
-            <div class="lesson-box">
-
-                <div class="example">
-GET /api/lesson/&lt;chapter&gt;
-                </div>
-
-                <p style="
-                    margin-top:15px;
-                ">
-                    ${escapeHtml(error.message)}
-                </p>
-
+            <div class="error-message">
+                ${escapeHtml(
+                    error.message
+                )}
             </div>
 
         `);
 
     }
-
 }
 
 
@@ -1396,7 +1346,10 @@ function checkLesson(
             "lessonResult"
         );
 
-    if (!result) return;
+
+    if (!result) {
+        return;
+    }
 
 
     if (selected === correct) {
@@ -1413,6 +1366,7 @@ function checkLesson(
             );
 
             addXP(25);
+
 
             result.innerHTML = `
 
@@ -1474,7 +1428,6 @@ function checkLesson(
         `;
 
     }
-
 }
 
 
@@ -1486,15 +1439,14 @@ async function openQuiz() {
 
     showModal(`
 
-        <h2>
-            🧠 Quiz Arena
-        </h2>
+        <div class="loading">
 
-        <div class="result">
-            ⏳ Loading quiz...
+            🧠 Loading Quiz Arena...
+
         </div>
 
     `);
+
 
     try {
 
@@ -1502,20 +1454,28 @@ async function openQuiz() {
 
             const response =
                 await fetch(
-                    "/api/quiz"
+                    "/api/quiz",
+                    {
+                        method: "GET",
+                        headers: {
+                            "Accept": "application/json"
+                        }
+                    }
                 );
+
 
             if (!response.ok) {
 
                 throw new Error(
-                    "Quiz API returned HTTP " +
-                    response.status
+                    `Quiz API returned ${response.status}`
                 );
 
             }
 
+
             quizData =
                 await response.json();
+
 
             if (
                 !Array.isArray(quizData) ||
@@ -1523,14 +1483,16 @@ async function openQuiz() {
             ) {
 
                 throw new Error(
-                    "Quiz data is empty"
+                    "No quiz questions found."
                 );
 
             }
 
         }
 
+
         showQuizQuestion();
+
 
     } catch (error) {
 
@@ -1539,55 +1501,40 @@ async function openQuiz() {
             error
         );
 
+
         showModal(`
 
             <h2>
-                ⚠️ Quiz Error
+                ⚠️ Quiz unavailable
             </h2>
 
-            <div
-                class="result"
-                style="color:#fb7185">
+            <p style="
+                color:#aaa;
+                margin-top:15px;
+            ">
+                The quiz could not connect to the
+                Flask backend.
+            </p>
 
-                The quiz could not be loaded.
+            <div class="error-message">
 
-            </div>
-
-            <div class="lesson-box">
-
-                <p>
-                    Your frontend is requesting:
-                </p>
-
-                <div class="example">
-GET /api/quiz
-                </div>
-
-                <p style="
-                    margin-top:15px;
-                ">
-                    ${escapeHtml(
-                        error.message
-                    )}
-                </p>
+                ${escapeHtml(
+                    error.message
+                )}
 
             </div>
 
         `);
 
     }
-
 }
 
 
 function showQuizQuestion() {
 
     if (!quizData.length) {
-
         openQuiz();
-
         return;
-
     }
 
 
@@ -1598,6 +1545,7 @@ function showQuizQuestion() {
                 quizData.length
             )
         ];
+
 
     let html = `
 
@@ -1613,52 +1561,72 @@ function showQuizQuestion() {
 
         </div>
 
+        <div id="quizOptions">
+
     `;
 
 
-    if (
-        Array.isArray(
-            question.options
-        )
-    ) {
+    question.options.forEach(
+        (option, index) => {
 
-        question.options.forEach(
-            (option, index) => {
+            html += `
 
-                html += `
+                <button
+                    type="button"
+                    class="option quiz-option"
+                    data-index="${index}"
+                    data-answer="${question.answer}"
+                    data-explanation="${escapeAttr(
+                        question.explanation
+                    )}">
 
-                    <button
-                        type="button"
-                        class="option"
-                        onclick="checkQuiz(
-                            ${index},
-                            ${Number(question.answer)},
-                            ${JSON.stringify(
-                                question.explanation || ""
-                            )}
-                        )">
+                    ${String.fromCharCode(
+                        65 + index
+                    )}.
+                    ${escapeHtml(option)}
 
-                        ${String.fromCharCode(
-                            65 + index
-                        )}.
+                </button>
 
-                        ${escapeHtml(option)}
+            `;
 
-                    </button>
-
-                `;
-
-            }
-        );
-
-    }
+        }
+    );
 
 
     html += `
+
+        </div>
+
         <div id="quizResult"></div>
+
     `;
 
+
     showModal(html);
+
+
+    document
+        .querySelectorAll(".quiz-option")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                function() {
+
+                    checkQuiz(
+                        Number(
+                            this.dataset.index
+                        ),
+                        Number(
+                            this.dataset.answer
+                        ),
+                        this.dataset.explanation
+                    );
+
+                }
+            );
+
+        });
 
 }
 
@@ -1674,12 +1642,16 @@ function checkQuiz(
             "quizResult"
         );
 
-    if (!result) return;
+
+    if (!result) {
+        return;
+    }
 
 
     if (selected === correct) {
 
         addXP(10);
+
 
         result.innerHTML = `
 
@@ -1746,7 +1718,6 @@ function checkQuiz(
         `;
 
     }
-
 }
 
 
@@ -1758,15 +1729,14 @@ async function openCodeChallenge() {
 
     showModal(`
 
-        <h2>
-            💻 Code Challenge
-        </h2>
+        <div class="loading">
 
-        <div class="result">
-            ⏳ Loading challenge...
+            💻 Loading Code Challenge...
+
         </div>
 
     `);
+
 
     try {
 
@@ -1777,97 +1747,36 @@ async function openCodeChallenge() {
                     "/api/code-challenges"
                 );
 
+
             if (!response.ok) {
 
                 throw new Error(
-                    "Challenge API returned HTTP " +
-                    response.status
+                    `API returned ${response.status}`
                 );
 
             }
 
+
             codeData =
                 await response.json();
 
-        }
 
-        if (
-            !Array.isArray(codeData) ||
-            codeData.length === 0
-        ) {
+            if (
+                !Array.isArray(codeData) ||
+                codeData.length === 0
+            ) {
 
-            throw new Error(
-                "Challenge data is empty"
-            );
-
-        }
-
-        let challenge =
-            codeData[
-                Math.floor(
-                    Math.random() *
-                    codeData.length
-                )
-            ];
-
-
-        let html = `
-
-            <h2>
-                💻 Code Challenge
-            </h2>
-
-            <p style="
-                color:#aaa;
-                margin:15px 0;
-            ">
-                ${escapeHtml(
-                    challenge.question
-                )}
-            </p>
-
-            <pre class="example">${escapeHtml(
-                challenge.code
-            )}</pre>
-
-        `;
-
-
-        challenge.options.forEach(
-            (option, index) => {
-
-                html += `
-
-                    <button
-                        type="button"
-                        class="option"
-                        onclick="checkCodeAnswer(
-                            ${index},
-                            ${Number(challenge.answer)},
-                            ${JSON.stringify(
-                                challenge.explanation || ""
-                            )}
-                        )">
-
-                        ${String.fromCharCode(
-                            65 + index
-                        )}.
-
-                        ${escapeHtml(option)}
-
-                    </button>
-
-                `;
+                throw new Error(
+                    "No code challenges found."
+                );
 
             }
-        );
+
+        }
 
 
-        html += `
-            <div id="codeResult"></div>
-        `;
+        showCodeChallenge();
 
-        showModal(html);
 
     } catch (error) {
 
@@ -1876,28 +1785,125 @@ async function openCodeChallenge() {
             error
         );
 
+
         showModal(`
 
             <h2>
-                ⚠️ Challenge Error
+                ⚠️ Challenge unavailable
             </h2>
 
-            <div class="result">
-                The challenge could not be loaded.
-            </div>
+            <div class="error-message">
 
-            <p style="
-                color:#aaa;
-                margin-top:15px;
-            ">
                 ${escapeHtml(
                     error.message
                 )}
-            </p>
+
+            </div>
 
         `);
 
     }
+}
+
+
+function showCodeChallenge() {
+
+    let challenge =
+        codeData[
+            Math.floor(
+                Math.random() *
+                codeData.length
+            )
+        ];
+
+
+    let html = `
+
+        <h2>
+            💻 Code Challenge
+        </h2>
+
+        <p style="
+            color:#aaa;
+            margin:15px 0;
+        ">
+
+            ${escapeHtml(
+                challenge.question
+            )}
+
+        </p>
+
+        <pre class="example">${escapeHtml(
+            challenge.code
+        )}</pre>
+
+        <div id="codeOptions">
+
+    `;
+
+
+    challenge.options.forEach(
+        (option, index) => {
+
+            html += `
+
+                <button
+                    type="button"
+                    class="option code-option"
+                    data-index="${index}"
+                    data-answer="${challenge.answer}"
+                    data-explanation="${escapeAttr(
+                        challenge.explanation
+                    )}">
+
+                    ${String.fromCharCode(
+                        65 + index
+                    )}.
+                    ${escapeHtml(option)}
+
+                </button>
+
+            `;
+
+        }
+    );
+
+
+    html += `
+
+        </div>
+
+        <div id="codeResult"></div>
+
+    `;
+
+
+    showModal(html);
+
+
+    document
+        .querySelectorAll(".code-option")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                function() {
+
+                    checkCodeAnswer(
+                        Number(
+                            this.dataset.index
+                        ),
+                        Number(
+                            this.dataset.answer
+                        ),
+                        this.dataset.explanation
+                    );
+
+                }
+            );
+
+        });
 
 }
 
@@ -1913,7 +1919,10 @@ function checkCodeAnswer(
             "codeResult"
         );
 
-    if (!result) return;
+
+    if (!result) {
+        return;
+    }
 
 
     if (selected === correct) {
@@ -1922,10 +1931,12 @@ function checkCodeAnswer(
 
         solvedChallenges++;
 
+
         localStorage.setItem(
             "codequest_challenges",
             solvedChallenges
         );
+
 
         result.innerHTML = `
 
@@ -1992,7 +2003,6 @@ function checkCodeAnswer(
         `;
 
     }
-
 }
 
 
@@ -2004,15 +2014,14 @@ async function openErrorFinder() {
 
     showModal(`
 
-        <h2>
-            🔍 Error Finder
-        </h2>
+        <div class="loading">
 
-        <div class="result">
-            ⏳ Loading error challenge...
+            🔍 Loading Error Finder...
+
         </div>
 
     `);
+
 
     try {
 
@@ -2023,127 +2032,163 @@ async function openErrorFinder() {
                     "/api/error-finder"
                 );
 
+
             if (!response.ok) {
 
                 throw new Error(
-                    "Error Finder API returned HTTP " +
-                    response.status
+                    `API returned ${response.status}`
                 );
 
             }
 
+
             errorData =
                 await response.json();
 
-        }
 
-        if (
-            !Array.isArray(errorData) ||
-            errorData.length === 0
-        ) {
+            if (
+                !Array.isArray(errorData) ||
+                errorData.length === 0
+            ) {
 
-            throw new Error(
-                "Error Finder data is empty"
-            );
-
-        }
-
-        let challenge =
-            errorData[
-                Math.floor(
-                    Math.random() *
-                    errorData.length
-                )
-            ];
-
-
-        let html = `
-
-            <h2>
-                🔍 Error Finder
-            </h2>
-
-            <p style="
-                color:#aaa;
-                margin:15px 0;
-            ">
-                ${escapeHtml(
-                    challenge.question
-                )}
-            </p>
-
-            <pre class="example">${escapeHtml(
-                challenge.code
-            )}</pre>
-
-        `;
-
-
-        challenge.options.forEach(
-            (option, index) => {
-
-                html += `
-
-                    <button
-                        type="button"
-                        class="option"
-                        onclick="checkError(
-                            ${index},
-                            ${Number(challenge.answer)},
-                            ${JSON.stringify(
-                                challenge.explanation || ""
-                            )}
-                        )">
-
-                        ${String.fromCharCode(
-                            65 + index
-                        )}.
-
-                        ${escapeHtml(option)}
-
-                    </button>
-
-                `;
+                throw new Error(
+                    "No error challenges found."
+                );
 
             }
-        );
+
+        }
 
 
-        html += `
-            <div id="errorResult"></div>
-        `;
+        showErrorChallenge();
 
-        showModal(html);
 
     } catch (error) {
 
         console.error(
-            "Error Finder error:",
+            "Error finder error:",
             error
         );
+
 
         showModal(`
 
             <h2>
-                ⚠️ Error Finder Error
+                ⚠️ Error Finder unavailable
             </h2>
 
-            <div class="result">
-                The Error Finder could not be loaded.
-            </div>
+            <div class="error-message">
 
-            <p style="
-                color:#aaa;
-                margin-top:15px;
-            ">
                 ${escapeHtml(
                     error.message
                 )}
-            </p>
+
+            </div>
 
         `);
 
     }
+}
+
+
+function showErrorChallenge() {
+
+    let challenge =
+        errorData[
+            Math.floor(
+                Math.random() *
+                errorData.length
+            )
+        ];
+
+
+    let html = `
+
+        <h2>
+            🔍 Error Finder
+        </h2>
+
+        <p style="
+            color:#aaa;
+            margin:15px 0;
+        ">
+
+            ${escapeHtml(
+                challenge.question
+            )}
+
+        </p>
+
+        <pre class="example">${escapeHtml(
+            challenge.code
+        )}</pre>
+
+        <div id="errorOptions">
+
+    `;
+
+
+    challenge.options.forEach(
+        (option, index) => {
+
+            html += `
+
+                <button
+                    type="button"
+                    class="option error-option"
+                    data-index="${index}"
+                    data-answer="${challenge.answer}"
+                    data-explanation="${escapeAttr(
+                        challenge.explanation
+                    )}">
+
+                    ${String.fromCharCode(
+                        65 + index
+                    )}.
+                    ${escapeHtml(option)}
+
+                </button>
+
+            `;
+
+        }
+    );
+
+
+    html += `
+
+        </div>
+
+        <div id="errorResult"></div>
+
+    `;
+
+
+    showModal(html);
+
+
+    document
+        .querySelectorAll(".error-option")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                function() {
+
+                    checkError(
+                        Number(
+                            this.dataset.index
+                        ),
+                        Number(
+                            this.dataset.answer
+                        ),
+                        this.dataset.explanation
+                    );
+
+                }
+            );
+
+        });
 
 }
 
@@ -2159,7 +2204,10 @@ function checkError(
             "errorResult"
         );
 
-    if (!result) return;
+
+    if (!result) {
+        return;
+    }
 
 
     if (selected === correct) {
@@ -2168,10 +2216,12 @@ function checkError(
 
         solvedChallenges++;
 
+
         localStorage.setItem(
             "codequest_challenges",
             solvedChallenges
         );
+
 
         result.innerHTML = `
 
@@ -2227,12 +2277,11 @@ function checkError(
         `;
 
     }
-
 }
 
 
 /* =====================================================
-   CAREER
+   CAREER ASSISTANT
 ===================================================== */
 
 function careerAssistant() {
@@ -2248,8 +2297,11 @@ function careerAssistant() {
             line-height:1.7;
             margin-top:18px;
         ">
+
             Choose a career path:
+
         </p>
+
 
         <button
             type="button"
@@ -2260,6 +2312,7 @@ function careerAssistant() {
 
         </button>
 
+
         <button
             type="button"
             class="option"
@@ -2269,6 +2322,7 @@ function careerAssistant() {
 
         </button>
 
+
         <button
             type="button"
             class="option"
@@ -2277,6 +2331,7 @@ function careerAssistant() {
             🌐 Web Developer
 
         </button>
+
 
         <button
             type="button"
@@ -2332,6 +2387,7 @@ function careerResult(type) {
 
         </div>
 
+
         <button
             type="button"
             class="primary"
@@ -2367,6 +2423,7 @@ function compiler() {
 
         </p>
 
+
         <textarea
             id="codeEditor"
             style="
@@ -2383,6 +2440,7 @@ function compiler() {
             placeholder="Write your code here..."
         ></textarea>
 
+
         <button
             type="button"
             class="primary"
@@ -2391,6 +2449,7 @@ function compiler() {
             ▶ RUN CODE
 
         </button>
+
 
         <div id="compilerResult"></div>
 
@@ -2411,7 +2470,11 @@ function runCompiler() {
             "compilerResult"
         );
 
-    if (!editor || !result) return;
+
+    if (!editor || !result) {
+        return;
+    }
+
 
     if (!editor.value.trim()) {
 
@@ -2419,7 +2482,7 @@ function runCompiler() {
 
             <div
                 class="result"
-                style="color:#facc15">
+                style="color:#fbbf24">
 
                 ⚠️ Write some code first.
 
@@ -2428,8 +2491,8 @@ function runCompiler() {
         `;
 
         return;
-
     }
+
 
     result.innerHTML = `
 
@@ -2439,10 +2502,9 @@ function runCompiler() {
 
             <br><br>
 
-            Your code editor is working.
-            The actual execution engine can
-            be connected through a secure
-            backend API.
+            The editor is working correctly.
+            The actual code execution engine can
+            be connected next.
 
         </div>
 
@@ -2460,11 +2522,13 @@ function showProgress() {
     let level =
         Math.floor(xp / 100) + 1;
 
+
     showModal(`
 
         <h2>
             🏆 My Progress
         </h2>
+
 
         <div class="stats-grid">
 
@@ -2478,6 +2542,7 @@ function showProgress() {
 
             </div>
 
+
             <div class="stat">
 
                 🎯 Level
@@ -2488,6 +2553,7 @@ function showProgress() {
 
             </div>
 
+
             <div class="stat">
 
                 📚 Chapters
@@ -2497,6 +2563,7 @@ function showProgress() {
                 </strong>
 
             </div>
+
 
             <div class="stat">
 
@@ -2509,6 +2576,7 @@ function showProgress() {
             </div>
 
         </div>
+
 
         <div class="result">
 
@@ -2523,7 +2591,7 @@ function showProgress() {
 
 
 /* =====================================================
-   SECURITY
+   SECURITY HELPERS
 ===================================================== */
 
 function escapeHtml(text) {
@@ -2535,6 +2603,7 @@ function escapeHtml(text) {
         return "";
     }
 
+
     return String(text)
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
@@ -2545,8 +2614,28 @@ function escapeHtml(text) {
 }
 
 
+function escapeAttr(text) {
+
+    if (
+        text === null ||
+        text === undefined
+    ) {
+        return "";
+    }
+
+
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+
+}
+
+
 /* =====================================================
-   MODAL CLOSE
+   MODAL CONTROLS
 ===================================================== */
 
 document
@@ -2567,15 +2656,13 @@ document
     );
 
 
-/* =====================================================
-   ESC KEY
-===================================================== */
-
 document.addEventListener(
     "keydown",
     function(event) {
 
-        if (event.key === "Escape") {
+        if (
+            event.key === "Escape"
+        ) {
 
             closeModal();
 
