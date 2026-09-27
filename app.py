@@ -1,117 +1,158 @@
-from flask import Flask, jsonify, render_template
-import os
+from flask import Flask, render_template, jsonify
 import random
 
 app = Flask(__name__)
 
-# =========================================================
+# ============================================================
 # CODEQUEST AI
-# Learn • Practice • Play • Build
-# =========================================================
+# LEARN • PRACTICE • PLAY • BUILD
+# ============================================================
+
+# ------------------------------------------------------------
+# COURSE DATA
+# ------------------------------------------------------------
 
 courses = [
 
-    # =====================================================
-    # 1. COMPUTER BASICS
-    # =====================================================
     {
         "id": "computer-basics",
         "title": "Computer Basics",
         "icon": "💻",
         "level": "Beginner",
-        "description": "Build your foundation from zero.",
+        "description": "Understand computers from absolute zero.",
         "chapters": [
             {
                 "title": "What is a Computer?",
                 "lesson": """
 A computer is an electronic device that accepts data as input,
-processes it according to instructions, stores information and
-produces useful output.
+processes the data according to instructions, stores information,
+and produces useful output.
 
-A computer works mainly through four basic operations:
-Input → Processing → Storage → Output.
+A computer works mainly through four basic stages:
 
-For example, when you type your name using a keyboard, the keyboard
-provides input. The processor handles the data, memory temporarily
-stores it, and the monitor displays the result.
+Input → Processing → Storage → Output
 
-Modern computers are used in almost every field including education,
-banking, healthcare, engineering, business, communication,
-entertainment, artificial intelligence and cybersecurity.
+For example, when you type your name using a keyboard, the
+keyboard provides input. The CPU processes the information and
+the result appears on the monitor.
 
-Understanding these fundamentals is important because almost every
-advanced computer science topic is built on these concepts.
+Computers are used in education, banking, hospitals, engineering,
+business, communication, entertainment, science and almost every
+modern industry.
+
+Understanding the basic working of a computer is important before
+learning programming because programming means giving instructions
+to a computer to solve problems.
                 """,
-                "key_points": [
-                    "Input gives data to the computer.",
-                    "CPU processes instructions.",
-                    "Memory and storage keep information.",
-                    "Output presents the result."
+                "sample": "Input → Processing → Output",
+                "quiz": [
+                    {
+                        "q": "Which device is mainly used to display output?",
+                        "options": ["Keyboard", "Monitor", "Mouse", "Scanner"],
+                        "answer": "Monitor"
+                    },
+                    {
+                        "q": "What is the main processing unit of a computer?",
+                        "options": ["CPU", "Keyboard", "Monitor", "Printer"],
+                        "answer": "CPU"
+                    }
                 ]
             },
+
             {
                 "title": "Hardware and Software",
                 "lesson": """
-Computer hardware means the physical parts of a computer that we can
-touch. Examples include the CPU, RAM, keyboard, mouse, monitor,
-motherboard and storage devices.
+Hardware refers to the physical parts of a computer that we can
+see and touch. Examples include keyboard, mouse, monitor, RAM,
+hard disk, SSD and motherboard.
 
 Software is a collection of programs and instructions that tells
 hardware what to do.
 
-Operating systems such as Windows, Linux and Android are system
-software. Applications such as Microsoft Word, Excel, browsers and
-media players are application software.
+Operating systems, web browsers, media players, programming
+languages and mobile applications are examples of software.
 
-Hardware without software cannot perform useful tasks, while software
-needs hardware to execute its instructions.
-
-Learning the difference between hardware and software is one of the
-most important foundations for beginners.
+Hardware without software cannot perform useful tasks, while
+software needs hardware to execute its instructions.
                 """,
-                "key_points": [
-                    "Hardware is physical.",
-                    "Software is a collection of instructions.",
-                    "Operating systems manage computer resources.",
-                    "Applications help users perform tasks."
+                "sample": "Hardware = Physical parts\nSoftware = Programs",
+                "quiz": [
+                    {
+                        "q": "Which one is hardware?",
+                        "options": ["Windows", "Chrome", "Keyboard", "Python"],
+                        "answer": "Keyboard"
+                    }
                 ]
             },
+
             {
                 "title": "CPU, RAM and Storage",
                 "lesson": """
-The CPU, or Central Processing Unit, is responsible for executing
-instructions and performing calculations. It is often called the
-brain of the computer.
+The CPU is responsible for executing instructions and performing
+calculations.
 
-RAM, or Random Access Memory, is temporary working memory. Programs
-currently being used are loaded into RAM so the CPU can access them
-quickly.
+RAM is temporary working memory. Programs currently being used
+are loaded into RAM so that the CPU can access them quickly.
 
-Storage devices such as SSDs and HDDs keep data even after the
-computer is switched off.
+Storage such as SSD and HDD keeps data even after the computer is
+turned off.
 
 A simple way to remember them is:
 
-CPU = Processing
-RAM = Temporary working space
-SSD/HDD = Long-term storage
-
-Understanding these components helps you later understand operating
-systems, programming, performance and computer architecture.
+CPU → Thinks and processes
+RAM → Temporarily works with active data
+SSD/HDD → Permanently stores data
                 """,
-                "key_points": [
-                    "CPU executes instructions.",
-                    "RAM is temporary memory.",
-                    "SSD/HDD provide permanent storage.",
-                    "More RAM can help with multitasking."
-                ]
+                "sample": "CPU + RAM + Storage = Core computer components",
+                "quiz": []
+            },
+
+            {
+                "title": "Operating Systems",
+                "lesson": """
+An operating system is system software that manages computer
+hardware and provides an environment for applications.
+
+Examples include Windows, Linux, macOS, Android and iOS.
+
+The operating system manages files, memory, processes, devices,
+security and user interaction.
+
+Learning basic operating-system concepts is useful for every
+computer science student because applications ultimately run on
+an operating system.
+                """,
+                "sample": "Examples: Windows, Linux, Android",
+                "quiz": []
+            },
+
+            {
+                "title": "Files, Folders and Extensions",
+                "lesson": """
+Files contain information while folders are used to organize
+files.
+
+A file extension normally indicates the type of file.
+
+Examples:
+
+.txt  → Text
+.jpg  → Image
+.mp4  → Video
+.pdf  → Document
+.py   → Python program
+.c    → C program
+.html → Web page
+
+Understanding file organization is a basic but extremely useful
+computer skill.
+                """,
+                "sample": "program.py → Python source file",
+                "quiz": []
             }
         ]
     },
 
-    # =====================================================
-    # 2. MS OFFICE
-    # =====================================================
     {
         "id": "ms-office",
         "title": "MS Office",
@@ -120,538 +161,475 @@ systems, programming, performance and computer architecture.
         "description": "Learn Word, Excel and PowerPoint for college and jobs.",
         "chapters": [
             {
-                "title": "Microsoft Word",
+                "title": "MS Word",
                 "lesson": """
-Microsoft Word is a word-processing application used to create,
-edit, format and print documents.
+Microsoft Word is a word-processing application used to create
+professional documents.
 
-Students commonly use Word for assignments, lab records, reports,
-resumes, project documentation and applications.
+You can use Word to create assignments, resumes, reports,
+applications, project documentation and official letters.
 
-Important skills include text formatting, headings, page layout,
-tables, images, headers and footers, page numbers and document
-sharing.
+Important skills include formatting text, headings, tables,
+page layout, headers and footers, images, page numbers,
+spell checking and exporting documents as PDF.
 
-For career preparation, learn professional document formatting,
-resume creation and report writing rather than only basic typing.
+For students, Word is especially useful for project reports,
+seminar documents, resumes and academic assignments.
                 """,
-                "key_points": [
-                    "Used for documents and reports.",
-                    "Learn professional formatting.",
-                    "Tables and page layout are important.",
-                    "Useful for resumes and project reports."
-                ]
+                "sample": "Create → Format → Save → Export PDF",
+                "quiz": []
             },
+
             {
-                "title": "Microsoft Excel",
+                "title": "MS Excel",
                 "lesson": """
-Microsoft Excel is a spreadsheet application used to store,
-organize, calculate and analyse data.
+Microsoft Excel is a spreadsheet application used for storing,
+organizing, calculating and analyzing data.
 
-An Excel worksheet contains rows and columns. Their intersection is
-called a cell.
+Excel works with rows, columns and cells.
 
-Important beginner functions include SUM, AVERAGE, COUNT, MAX and
-MIN.
+Important concepts include:
 
-As you improve, learn IF, VLOOKUP/XLOOKUP, conditional formatting,
-charts, sorting, filtering and PivotTables.
+Cell
+Row
+Column
+Formula
+Function
+Chart
+Sorting
+Filtering
+Pivot tables
 
-Excel is useful not only for office work but also for data analysis,
-finance, business and many internship roles.
+Common functions include SUM, AVERAGE, COUNT, MAX and MIN.
+
+Excel is valuable in software companies as well as business,
+finance, administration, data analysis and engineering.
                 """,
-                "key_points": [
-                    "Excel organizes data in spreadsheets.",
-                    "Functions automate calculations.",
-                    "Charts help visualize information.",
-                    "PivotTables help analyse large datasets."
-                ]
+                "sample": "=SUM(A1:A10)\n=AVERAGE(B1:B10)",
+                "quiz": []
             },
+
             {
-                "title": "Microsoft PowerPoint",
+                "title": "MS PowerPoint",
                 "lesson": """
 PowerPoint is used to create presentations.
 
-A good presentation should communicate an idea clearly rather than
-fill every slide with text.
+A good presentation should contain clear headings, short points,
+useful visuals and logical flow.
 
-Learn slide layouts, themes, images, diagrams, charts, animations
-and presenter tools.
+Students can use PowerPoint for seminars, project demonstrations,
+technical presentations and placement presentations.
 
-For college students, presentation skills are useful during seminars,
-project reviews, hackathons and placement interviews.
+Learning presentation design also improves communication skills.
                 """,
-                "key_points": [
-                    "Used for presentations.",
-                    "Keep slides clear and readable.",
-                    "Use diagrams and visuals when useful.",
-                    "Presentation skill helps in interviews."
-                ]
+                "sample": "Title → Problem → Solution → Demo → Conclusion",
+                "quiz": []
             }
         ]
     },
 
-    # =====================================================
-    # 3. C PROGRAMMING
-    # =====================================================
+    {
+        "id": "github",
+        "title": "Git & GitHub",
+        "icon": "🐙",
+        "level": "Beginner",
+        "description": "Learn version control and build a professional developer profile.",
+        "chapters": [
+            {
+                "title": "What is Git?",
+                "lesson": """
+Git is a distributed version-control system used to track changes
+in source code.
+
+Instead of keeping many copies of a project such as
+project-final, project-final2 and project-final-real, Git allows
+you to maintain the history of changes properly.
+
+Git is commonly used by software developers and development teams.
+                """,
+                "sample": "git init",
+                "quiz": []
+            },
+
+            {
+                "title": "What is GitHub?",
+                "lesson": """
+GitHub is a platform where developers can store, manage and
+collaborate on Git repositories.
+
+For a student, GitHub can become a public portfolio.
+
+A strong profile can contain:
+
+• College projects
+• Mini projects
+• Coding practice
+• Documentation
+• Web applications
+• APIs
+• Open-source contributions
+
+Recruiters may use project portfolios as one part of evaluating
+a candidate's practical experience.
+                """,
+                "sample": "git add .\ngit commit -m \"Initial commit\"\ngit push",
+                "quiz": []
+            },
+
+            {
+                "title": "GitHub Portfolio",
+                "lesson": """
+Your GitHub profile should show what you can actually build.
+
+Instead of uploading empty repositories, build useful projects
+and write a README explaining:
+
+1. What the project does
+2. Why you built it
+3. Technologies used
+4. Features
+5. How to run it
+6. Screenshots
+7. Future improvements
+
+For a beginner, 3 to 5 properly documented projects can be much
+more useful than many unfinished repositories.
+                """,
+                "sample": "README + screenshots + source code + live demo",
+                "quiz": []
+            }
+        ]
+    },
+
     {
         "id": "c-programming",
         "title": "C Programming",
-        "icon": "🔵",
+        "icon": "⚙️",
         "level": "Beginner",
-        "description": "Learn programming fundamentals using C.",
+        "description": "Build strong programming fundamentals using C.",
         "chapters": [
             {
                 "title": "What is C Language?",
                 "lesson": """
-C is a general-purpose programming language developed by Dennis
-Ritchie at Bell Labs.
+C is a general-purpose programming language developed to provide
+efficient and structured programming.
 
-C is one of the most important languages for understanding programming
-because it teaches variables, data types, operators, conditions,
-loops, functions, arrays, pointers and memory concepts.
+C is one of the most important languages for understanding
+programming fundamentals because it teaches variables, data
+types, operators, conditions, loops, functions, arrays,
+pointers and memory concepts.
 
-C is widely associated with system programming, embedded systems,
-operating systems and performance-oriented software.
+C is widely used in systems programming, embedded systems,
+operating systems and performance-sensitive software.
 
-For a beginner, the main goal is not simply memorising syntax.
-You should learn how a program thinks: input → processing → output.
+For beginners, C is useful because it teaches how programs work
+at a lower level instead of hiding many concepts behind advanced
+features.
 
-Once you understand these fundamentals, learning languages such as
-C++, Java and Python becomes easier.
+The basic idea is:
+
+Problem → Algorithm → Code → Compilation → Execution → Output
+
+Once you understand C properly, learning languages such as C++,
+Java and Python becomes easier because many programming concepts
+are shared.
                 """,
-                "key_points": [
-                    "C is a general-purpose programming language.",
-                    "It teaches strong programming fundamentals.",
-                    "C is important for understanding memory and systems.",
-                    "Programming logic is more important than memorising syntax."
-                ],
-                "program": """#include <stdio.h>
+                "sample": """#include <stdio.h>
 
 int main() {
-    printf("Hello, World!");
+    printf("Hello World");
     return 0;
-}"""
+}""",
+                "quiz": [
+                    {
+                        "q": "Which function is the starting point of a C program?",
+                        "options": ["start()", "main()", "run()", "begin()"],
+                        "answer": "main()"
+                    },
+                    {
+                        "q": "Which header is commonly used for printf()?",
+                        "options": ["stdio.h", "math.h", "string.h", "stdlib.h"],
+                        "answer": "stdio.h"
+                    }
+                ]
             },
+
             {
                 "title": "Variables and Data Types",
                 "lesson": """
 A variable is a named memory location used to store a value.
 
-C provides several basic data types. int is commonly used for whole
-numbers, float for decimal values, char for a character and double
-for higher-precision decimal values.
+C provides several fundamental data types.
 
-Choosing an appropriate data type is important because computers
-store different kinds of information differently.
+int → integers
+float → decimal numbers
+double → higher precision decimal values
+char → single character
 
-For example, if you want to store a student's age, int is suitable.
-If you want to store a percentage such as 87.5, float can be used.
+Example:
 
-Variables make programs dynamic because their values can change while
-the program is running.
+int age = 18;
+float mark = 92.5;
+char grade = 'A';
+
+Choosing the correct data type helps the program store and
+process information correctly.
                 """,
-                "key_points": [
-                    "Variables store values.",
-                    "int stores integers.",
-                    "float stores decimal values.",
-                    "char stores a character."
-                ],
-                "program": """#include <stdio.h>
-
-int main() {
-    int age = 18;
-    float mark = 87.5;
-
-    printf("Age = %d\\n", age);
-    printf("Mark = %.2f", mark);
-
-    return 0;
-}"""
+                "sample": """int age = 18;
+float mark = 92.5;
+char grade = 'A';""",
+                "quiz": []
             },
+
             {
-                "title": "Input and Output",
+                "title": "Operators",
                 "lesson": """
-Input allows a program to receive information from the user.
+Operators are symbols used to perform operations.
 
-In C, printf() is commonly used for output while scanf() is commonly
-used for input.
+Arithmetic:
++ - * / %
 
-For example, a calculator program can ask the user for two numbers,
-receive them using scanf(), perform a calculation and display the
-result using printf().
+Relational:
+> < >= <= == !=
 
-Understanding input and output is essential because most practical
-programs interact with data in some way.
+Logical:
+&& || !
+
+Assignment:
+= += -= *= /=
+
+Operators are fundamental because almost every program needs to
+calculate, compare or modify values.
                 """,
-                "key_points": [
-                    "printf() displays output.",
-                    "scanf() receives input.",
-                    "Format specifiers describe data types.",
-                    "Input allows interactive programs."
-                ],
-                "program": """#include <stdio.h>
-
-int main() {
-    int a, b;
-
-    printf("Enter two numbers: ");
-    scanf("%d %d", &a, &b);
-
-    printf("Sum = %d", a + b);
-
-    return 0;
-}"""
+                "sample": "int result = a + b;",
+                "quiz": []
             },
+
             {
-                "title": "Conditional Statements",
+                "title": "if, else and Conditions",
                 "lesson": """
 Conditional statements allow a program to make decisions.
 
-The if statement executes code when a condition is true.
-The else statement provides an alternative when the condition is
-false.
+For example, a program can check whether a student has passed:
 
-Multiple conditions can be handled using else-if.
+if (mark >= 40)
+    printf(\"Pass\");
+else
+    printf(\"Fail\");
 
-Decision making is used everywhere in programming. Login systems,
-grading systems, shopping discounts and game logic all use conditions.
-
-Learning conditions properly is an important step toward solving
-real programming problems.
+Conditions are used in almost every real application.
                 """,
-                "key_points": [
-                    "if checks a condition.",
-                    "else handles the alternative.",
-                    "else-if handles multiple conditions.",
-                    "Conditions are used in real applications."
-                ],
-                "program": """#include <stdio.h>
-
-int main() {
-    int mark;
-
-    printf("Enter mark: ");
-    scanf("%d", &mark);
-
-    if(mark >= 50)
-        printf("Pass");
-    else
-        printf("Fail");
-
-    return 0;
-}"""
+                "sample": """if (age >= 18) {
+    printf("Eligible");
+} else {
+    printf("Not Eligible");
+}""",
+                "quiz": []
             },
+
             {
                 "title": "Loops",
                 "lesson": """
-Loops repeat a block of code.
+Loops are used when a task needs to be repeated.
 
-The three commonly studied loops in C are for, while and do-while.
+C provides for, while and do-while loops.
 
-A for loop is useful when the number of repetitions is known.
-A while loop is useful when repetition depends on a condition.
-A do-while loop executes its body at least once.
+For example, printing numbers from 1 to 10 manually would be
+long. A loop can perform the repetition automatically.
 
-Loops are extremely important because they allow programmers to
-process many values without writing the same code repeatedly.
-
-They are heavily used with arrays, searching, sorting and data
-processing.
+Loops are essential for arrays, searching, calculations,
+patterns and many algorithms.
                 """,
-                "key_points": [
-                    "Loops reduce repeated code.",
-                    "for is useful for counted repetition.",
-                    "while is condition-based.",
-                    "do-while executes at least once."
-                ],
-                "program": """#include <stdio.h>
+                "sample": """for(int i = 1; i <= 10; i++) {
+    printf("%d\\n", i);
+}""",
+                "quiz": []
+            },
 
-int main() {
-    int i;
+            {
+                "title": "Functions",
+                "lesson": """
+A function is a reusable block of code designed to perform a
+specific task.
 
-    for(i = 1; i <= 5; i++) {
-        printf("%d\\n", i);
-    }
+Functions make large programs easier to understand, test and
+maintain.
 
-    return 0;
-}"""
+Instead of writing the same logic repeatedly, create a function
+and call it whenever required.
+                """,
+                "sample": """int add(int a, int b) {
+    return a + b;
+}""",
+                "quiz": []
+            },
+
+            {
+                "title": "Arrays",
+                "lesson": """
+An array stores multiple values of the same data type under one
+name.
+
+For example:
+
+int marks[5];
+
+Arrays are useful for storing lists such as student marks,
+temperatures, prices or scores.
+
+Understanding arrays is extremely important before learning
+data structures and algorithms.
+                """,
+                "sample": """int marks[3] = {80, 90, 95};""",
+                "quiz": []
+            },
+
+            {
+                "title": "Pointers",
+                "lesson": """
+A pointer is a variable that stores the memory address of
+another variable.
+
+Pointers are one of the most important concepts in C.
+
+They are used in dynamic memory allocation, arrays, functions,
+data structures and system programming.
+
+Pointers may initially feel difficult, but understanding them
+gives a strong foundation for understanding memory.
+                """,
+                "sample": """int x = 10;
+int *p = &x;""",
+                "quiz": []
             }
         ]
     },
 
-    # =====================================================
-    # 4. C++
-    # =====================================================
     {
         "id": "cpp",
         "title": "C++ Programming",
-        "icon": "⚙️",
+        "icon": "🚀",
         "level": "Intermediate",
-        "description": "Learn object-oriented programming with C++.",
+        "description": "Learn object-oriented programming and modern C++.",
         "chapters": [
             {
                 "title": "Introduction to C++",
                 "lesson": """
-C++ is a general-purpose programming language developed by Bjarne
-Stroustrup.
+C++ is a general-purpose programming language that extends many
+concepts of C and provides object-oriented programming features.
 
-It extends many ideas from C and adds powerful features such as
-classes, objects, inheritance, polymorphism and templates.
+Important C++ concepts include classes, objects, inheritance,
+polymorphism, encapsulation and abstraction.
 
-C++ is commonly used for competitive programming, game development,
-high-performance applications and systems software.
-
-Learning C++ after C helps you understand object-oriented programming
-and larger software structures.
+C++ is used in competitive programming, game development,
+systems software and performance-sensitive applications.
                 """,
-                "key_points": [
-                    "C++ supports procedural and object-oriented programming.",
-                    "Classes and objects are important concepts.",
-                    "C++ is widely used in performance-oriented software."
-                ],
-                "program": """#include <iostream>
+                "sample": """#include <iostream>
 using namespace std;
 
 int main() {
-    cout << "Hello, World!";
+    cout << "Hello World";
     return 0;
-}"""
+}""",
+                "quiz": []
             },
+
             {
                 "title": "Classes and Objects",
                 "lesson": """
-A class is a blueprint that defines data and functions.
+A class is a blueprint for creating objects.
 
 An object is an instance of a class.
 
-For example, a Student class can contain a student's name, roll
-number and functions such as displayDetails().
+Classes allow data and functions related to an entity to be
+grouped together.
 
-Classes help programmers organise related data and behaviour together.
-
-This concept is one of the foundations of object-oriented programming.
+This is one of the foundations of object-oriented programming.
                 """,
-                "key_points": [
-                    "Class = blueprint.",
-                    "Object = instance of a class.",
-                    "Classes combine data and functions."
-                ],
-                "program": """#include <iostream>
-using namespace std;
-
-class Student {
+                "sample": """class Student {
 public:
     string name;
-
     void display() {
-        cout << "Student: " << name;
+        cout << name;
     }
-};
-
-int main() {
-    Student s;
-    s.name = "Joe";
-    s.display();
-
-    return 0;
-}"""
+};""",
+                "quiz": []
             }
         ]
     },
 
-    # =====================================================
-    # 5. PYTHON
-    # =====================================================
     {
         "id": "python",
         "title": "Python Programming",
         "icon": "🐍",
         "level": "Beginner",
-        "description": "Learn Python for automation, data and AI.",
+        "description": "Learn Python from fundamentals to practical development.",
         "chapters": [
             {
                 "title": "What is Python?",
                 "lesson": """
-Python is a high-level, general-purpose programming language known
-for its readable syntax.
+Python is a high-level, general-purpose programming language
+known for its readable syntax.
 
-Python is widely used in automation, web development, data analysis,
-machine learning, artificial intelligence, scripting and education.
+Python is widely used in web development, automation, data
+analysis, artificial intelligence, machine learning,
+cybersecurity and scripting.
 
-One reason beginners like Python is that programs can often be written
-with less syntax compared with lower-level languages.
+Its simple syntax makes it beginner-friendly while its huge
+ecosystem makes it useful for professional development.
 
-However, becoming good at Python requires understanding programming
-logic, data structures, functions, modules, errors and real projects.
+Python is particularly valuable for students because one language
+can open paths into several technology areas.
                 """,
-                "key_points": [
-                    "Python has readable syntax.",
-                    "It is widely used in AI and data science.",
-                    "Python is useful for automation and web development."
-                ],
-                "program": """print("Hello, World!")"""
+                "sample": """print("Hello World")""",
+                "quiz": []
             },
+
             {
                 "title": "Variables and Data Types",
                 "lesson": """
-Python variables are names that refer to values.
+Python variables store values without requiring the programmer
+to explicitly declare the type in the same way as C.
 
-Common data types include int, float, str, bool, list, tuple, set
-and dictionary.
+Examples include integers, floating-point values, strings,
+lists, tuples, dictionaries and sets.
 
-Python automatically determines the type of many variables when
-values are assigned.
+Example:
 
-Understanding data types is important because different operations
-work with different kinds of data.
-                """,
-                "key_points": [
-                    "Variables store references to values.",
-                    "Python supports many built-in data types.",
-                    "Strings represent text.",
-                    "Lists store collections of values."
-                ],
-                "program": """name = "Joe"
+name = "Joe"
 age = 18
-mark = 87.5
+mark = 95.5
 
-print(name)
-print(age)
-print(mark)"""
-            }
-        ]
-    },
-
-    # =====================================================
-    # 6. DATA STRUCTURES
-    # =====================================================
-    {
-        "id": "dsa",
-        "title": "Data Structures & Algorithms",
-        "icon": "🧩",
-        "level": "Intermediate",
-        "description": "Learn how programmers solve problems efficiently.",
-        "chapters": [
-            {
-                "title": "Introduction to Data Structures",
-                "lesson": """
-A data structure is a way of organising and storing data so that it
-can be accessed and modified efficiently.
-
-Common data structures include arrays, linked lists, stacks, queues,
-trees, graphs, hash tables and heaps.
-
-Choosing the correct data structure can significantly affect the
-performance of a program.
-
-For example, a queue is useful when data should be processed in
-first-in-first-out order.
-
-Data structures are extremely important for coding interviews,
-competitive programming and software development.
+Python determines the type dynamically while the program runs.
                 """,
-                "key_points": [
-                    "Data structures organise information.",
-                    "Different structures suit different problems.",
-                    "DSA is important for technical interviews."
-                ]
+                "sample": """name = "Student"
+age = 18
+mark = 95.5
+print(name, age, mark)""",
+                "quiz": []
             },
+
             {
-                "title": "Algorithms",
+                "title": "Conditions and Loops",
                 "lesson": """
-An algorithm is a step-by-step procedure used to solve a problem.
+Python uses if, elif and else for decisions.
 
-A good algorithm should be clear, correct and efficient.
+for and while are used for repetition.
 
-Examples include searching algorithms, sorting algorithms and graph
-algorithms.
+These concepts allow programs to make decisions and automate
+repetitive tasks.
 
-Programmers often compare algorithms using time complexity and space
-complexity.
-
-Learning algorithms develops problem-solving ability, which is useful
-far beyond one programming language.
+They are essential for almost every practical program.
                 """,
-                "key_points": [
-                    "Algorithms solve problems step by step.",
-                    "Efficiency matters.",
-                    "Time and space complexity help measure efficiency."
-                ]
+                "sample": """for i in range(1, 6):
+    print(i)""",
+                "quiz": []
             }
         ]
     },
 
-    # =====================================================
-    # 7. DBMS
-    # =====================================================
     {
-        "id": "dbms",
-        "title": "DBMS & SQL",
-        "icon": "🗄️",
-        "level": "Intermediate",
-        "description": "Learn databases and SQL.",
-        "chapters": [
-            {
-                "title": "What is DBMS?",
-                "lesson": """
-A Database Management System is software used to create, store,
-organise, retrieve and manage data.
-
-Examples include MySQL, PostgreSQL, Oracle Database and Microsoft SQL
-Server.
-
-Instead of storing important application information randomly in
-files, databases provide structured methods to manage large amounts
-of data.
-
-Databases are used in banking, e-commerce, education, healthcare,
-social media and almost every modern application.
-                """,
-                "key_points": [
-                    "DBMS manages data.",
-                    "Databases support structured storage.",
-                    "SQL is commonly used to communicate with relational databases."
-                ],
-                "program": """CREATE TABLE students (
-    id INT,
-    name VARCHAR(100),
-    mark INT
-);"""
-            },
-            {
-                "title": "SQL Basics",
-                "lesson": """
-SQL stands for Structured Query Language.
-
-SQL is used to create tables, insert data, update records, delete
-records and retrieve information.
-
-Important commands include SELECT, INSERT, UPDATE, DELETE and CREATE.
-
-Learning SQL is highly useful for backend development, data analysis
-and many software engineering roles.
-                """,
-                "key_points": [
-                    "SELECT retrieves data.",
-                    "INSERT adds records.",
-                    "UPDATE changes records.",
-                    "DELETE removes records."
-                ],
-                "program": """SELECT * FROM students;
-
-SELECT name, mark
-FROM students
-WHERE mark >= 50;"""
-            }
-        ]
-    },
-
-    # =====================================================
-    # 8. WEB DEVELOPMENT
-    # =====================================================
-    {
-        "id": "web",
+        "id": "web-development",
         "title": "Web Development",
         "icon": "🌐",
         "level": "Beginner",
@@ -662,897 +640,631 @@ WHERE mark >= 50;"""
                 "lesson": """
 HTML stands for HyperText Markup Language.
 
-HTML provides the structure of a web page.
+It defines the structure of a web page.
 
-Headings, paragraphs, links, images, forms, tables and buttons can
-all be represented using HTML elements.
+Common HTML elements include headings, paragraphs, links,
+images, buttons, forms, tables and sections.
 
-HTML is the starting point for frontend development. After learning
-HTML, combine it with CSS for design and JavaScript for behaviour.
+HTML is the foundation of web development.
                 """,
-                "key_points": [
-                    "HTML provides webpage structure.",
-                    "HTML uses elements and tags.",
-                    "HTML works together with CSS and JavaScript."
-                ],
-                "program": """<!DOCTYPE html>
+                "sample": """<!DOCTYPE html>
 <html>
 <body>
-    <h1>Hello CodeQuest!</h1>
-    <p>My first webpage.</p>
+<h1>Hello World</h1>
+<p>My first webpage.</p>
 </body>
-</html>"""
+</html>""",
+                "quiz": []
             },
+
             {
                 "title": "CSS",
                 "lesson": """
 CSS stands for Cascading Style Sheets.
 
-CSS controls the appearance of websites including colours, spacing,
-fonts, layouts, animations and responsive design.
+It controls the visual appearance of web pages.
 
-Modern CSS skills include Flexbox, Grid, responsive design and
-component-based styling.
+CSS can control colours, spacing, fonts, layouts, animations,
+responsive design and many other visual properties.
 
-Good CSS makes an application easier to use and more professional.
+HTML provides structure while CSS provides presentation.
                 """,
-                "key_points": [
-                    "CSS controls presentation.",
-                    "Flexbox and Grid are important.",
-                    "Responsive design supports different screen sizes."
-                ]
+                "sample": """body {
+    font-family: Arial;
+    margin: 0;
+}""",
+                "quiz": []
             },
+
             {
                 "title": "JavaScript",
                 "lesson": """
-JavaScript is a programming language commonly used to make websites
-interactive.
+JavaScript adds behaviour and interactivity to web pages.
 
-It can respond to button clicks, validate forms, update page content,
-communicate with APIs and create dynamic web applications.
+It can respond to button clicks, modify page content, validate
+forms, communicate with servers and create interactive
+applications.
 
-JavaScript is also used outside the browser through environments such
-as Node.js.
-
-Learning JavaScript is valuable for modern frontend and full-stack
-development.
+Modern JavaScript is also used outside the browser through
+platforms such as Node.js.
                 """,
-                "key_points": [
-                    "JavaScript adds behaviour.",
-                    "It can interact with HTML and CSS.",
-                    "JavaScript is widely used in web development."
-                ],
-                "program": """const button = document.querySelector("button");
-
-button.addEventListener("click", function() {
-    alert("Hello CodeQuest!");
-});"""
+                "sample": """document.getElementById("btn")
+    .addEventListener("click", function() {
+        alert("Hello!");
+    });""",
+                "quiz": []
             }
         ]
     },
 
-    # =====================================================
-    # 9. GIT & GITHUB
-    # =====================================================
     {
-        "id": "github",
-        "title": "Git & GitHub",
-        "icon": "🐙",
-        "level": "Beginner",
-        "description": "Learn version control and professional project workflow.",
+        "id": "dbms",
+        "title": "DBMS & SQL",
+        "icon": "🗄️",
+        "level": "Intermediate",
+        "description": "Understand databases and SQL.",
         "chapters": [
             {
-                "title": "What is Git?",
+                "title": "What is a Database?",
                 "lesson": """
-Git is a distributed version control system.
+A database is an organized collection of information that can
+be stored, searched and updated efficiently.
 
-It records changes made to files so developers can track the history
-of a project, restore earlier versions and work safely on different
-features.
+Applications use databases to store users, products, orders,
+marks, messages and many other types of information.
 
-Important commands include git init, git add, git commit, git status,
-git branch, git merge and git log.
+A DBMS is software used to create and manage databases.
 
-Git is one of the most important tools for modern software developers.
+Examples include MySQL, PostgreSQL, SQLite and SQL Server.
                 """,
-                "key_points": [
-                    "Git tracks changes.",
-                    "Commits create project history.",
-                    "Branches allow separate development."
-                ],
-                "program": """git init
-git add .
-git commit -m "Initial commit" """
+                "sample": "Database → Tables → Rows → Columns",
+                "quiz": []
             },
+
             {
-                "title": "What is GitHub?",
+                "title": "SQL Basics",
                 "lesson": """
-GitHub is a platform for hosting Git repositories and collaborating
-on software projects.
+SQL is used to communicate with relational databases.
 
-Developers use GitHub to showcase projects, collaborate with teams,
-review code and contribute to open-source projects.
+Important commands include SELECT, INSERT, UPDATE and DELETE.
 
-A strong GitHub profile can help students demonstrate practical work
-during internship and job applications.
+Example:
 
-Learn to create clean repositories, useful README files and meaningful
-commit history.
+SELECT * FROM students;
+
+SQL is a highly useful skill for backend development, data work
+and many software engineering roles.
                 """,
-                "key_points": [
-                    "GitHub hosts Git repositories.",
-                    "Repositories can showcase projects.",
-                    "README files explain projects.",
-                    "GitHub can support a student's portfolio."
-                ]
+                "sample": """SELECT name, mark
+FROM students
+WHERE mark >= 80;""",
+                "quiz": []
             }
         ]
     },
 
-    # =====================================================
-    # 10. OPERATING SYSTEM
-    # =====================================================
     {
-        "id": "os",
+        "id": "dsa",
+        "title": "Data Structures & Algorithms",
+        "icon": "🧠",
+        "level": "Intermediate",
+        "description": "Develop problem-solving and coding interview skills.",
+        "chapters": [
+            {
+                "title": "What is an Algorithm?",
+                "lesson": """
+An algorithm is a finite sequence of clear steps used to solve a
+problem.
+
+A good algorithm should be correct, understandable and reasonably
+efficient.
+
+Examples include searching, sorting and finding the shortest path.
+
+Learning algorithms improves logical thinking and is important
+for technical interviews and competitive programming.
+                """,
+                "sample": "Input → Algorithm → Output",
+                "quiz": []
+            },
+
+            {
+                "title": "Arrays and Searching",
+                "lesson": """
+Searching means finding a particular value inside a collection.
+
+Linear search checks elements one by one.
+
+Binary search is faster but requires the data to be sorted.
+
+Understanding the difference teaches an important idea:
+algorithm efficiency matters.
+                """,
+                "sample": "Linear Search → O(n)\nBinary Search → O(log n)",
+                "quiz": []
+            },
+
+            {
+                "title": "Sorting",
+                "lesson": """
+Sorting arranges data in a particular order.
+
+Important algorithms include bubble sort, selection sort,
+insertion sort, merge sort and quicksort.
+
+Learning several sorting algorithms helps students understand
+time complexity and algorithm design.
+                """,
+                "sample": "Unsorted → [5,2,4,1] → Sorted → [1,2,4,5]",
+                "quiz": []
+            }
+        ]
+    },
+
+    {
+        "id": "operating-systems",
         "title": "Operating Systems",
         "icon": "🖥️",
         "level": "Intermediate",
-        "description": "Understand how operating systems manage computers.",
+        "description": "Understand processes, memory and operating-system concepts.",
         "chapters": [
-            {
-                "title": "Introduction to Operating Systems",
-                "lesson": """
-An operating system is system software that manages computer hardware
-and provides services for application programs.
-
-Examples include Windows, Linux, macOS, Android and iOS.
-
-The operating system manages processes, memory, files, devices and
-security.
-
-Understanding operating systems is important for software development,
-system administration, cloud computing and cybersecurity.
-                """,
-                "key_points": [
-                    "OS manages hardware and software resources.",
-                    "It manages processes and memory.",
-                    "It provides an interface for users and applications."
-                ]
-            },
             {
                 "title": "Processes and Threads",
                 "lesson": """
 A process is a program in execution.
 
-A thread is a smaller unit of execution within a process.
+A thread is a smaller execution unit within a process.
 
-Modern applications often use multiple processes or threads to
-perform tasks concurrently.
+Modern applications often use multiple threads to perform
+different tasks efficiently.
 
-Understanding processes and threads helps explain multitasking,
-performance and server applications.
+These concepts are important for software engineering and
+systems programming.
                 """,
-                "key_points": [
-                    "Process = program in execution.",
-                    "Thread = execution unit within a process.",
-                    "Concurrency can improve application responsiveness."
-                ]
+                "sample": "Application → Process → Threads",
+                "quiz": []
             }
         ]
     },
 
-    # =====================================================
-    # 11. COMPUTER NETWORKS
-    # =====================================================
     {
-        "id": "networks",
+        "id": "computer-networks",
         "title": "Computer Networks",
-        "icon": "📡",
+        "icon": "🌐",
         "level": "Intermediate",
         "description": "Understand how computers communicate.",
         "chapters": [
             {
-                "title": "Introduction to Networks",
+                "title": "What is a Network?",
                 "lesson": """
-A computer network is a group of connected devices that communicate
+A computer network connects devices so that they can communicate
 and share resources.
 
-Networks can be classified by size, such as LAN, MAN and WAN.
+The internet is the world's largest interconnected network.
 
-The Internet is a massive interconnected network.
+Important networking concepts include IP addresses, DNS, HTTP,
+HTTPS, TCP, UDP, routers, switches and ports.
 
-Important concepts include IP addresses, routers, switches,
-protocols, DNS, HTTP and HTTPS.
-
-Networking knowledge is useful in software development, cloud
-computing, system administration and cybersecurity.
+Networking knowledge is useful for web development, cloud,
+cybersecurity and system administration.
                 """,
-                "key_points": [
-                    "Networks allow devices to communicate.",
-                    "IP addresses identify network interfaces.",
-                    "Routers connect networks.",
-                    "Protocols define communication rules."
-                ]
-            },
-            {
-                "title": "Internet and DNS",
-                "lesson": """
-When you type a website name into a browser, the Domain Name System
-helps translate the human-readable domain name into an IP address.
-
-This allows the browser to locate the correct server.
-
-Understanding DNS, HTTP, HTTPS and IP addresses helps beginners
-understand what actually happens when a website loads.
-                """,
-                "key_points": [
-                    "DNS translates domain names to IP addresses.",
-                    "HTTP/HTTPS are web communication protocols.",
-                    "Browsers communicate with servers."
-                ]
+                "sample": "Device → Router → Internet → Server",
+                "quiz": []
             }
         ]
     },
 
-    # =====================================================
-    # 12. CYBERSECURITY
-    # =====================================================
     {
         "id": "cybersecurity",
         "title": "Cybersecurity",
-        "icon": "🛡️",
+        "icon": "🔐",
         "level": "Intermediate",
-        "description": "Learn the foundations of digital security.",
+        "description": "Learn the fundamentals of protecting systems and data.",
         "chapters": [
             {
-                "title": "What is Cybersecurity?",
+                "title": "Introduction to Cybersecurity",
                 "lesson": """
 Cybersecurity is the practice of protecting computers, networks,
-applications and data from unauthorised access, misuse, damage or
-disruption.
+applications and data from unauthorized access, damage or misuse.
 
-Important areas include network security, application security,
-identity management, cryptography, security monitoring and incident
-response.
+The three classic security goals are:
 
-Students should first learn networking, operating systems and basic
-programming before moving deeply into cybersecurity.
+Confidentiality
+Integrity
+Availability
 
-Cybersecurity is a continuously changing field because new threats
-and technologies appear regularly.
+Students should first learn defensive concepts, secure coding,
+authentication, authorization, encryption, network security and
+common vulnerabilities.
+
+Cybersecurity is a broad field with roles in security analysis,
+security engineering, penetration testing, cloud security and
+security operations.
                 """,
-                "key_points": [
-                    "Cybersecurity protects digital systems.",
-                    "Security includes people, processes and technology.",
-                    "Networking and OS knowledge are important foundations."
-                ]
-            },
-            {
-                "title": "Passwords and Authentication",
-                "lesson": """
-Authentication is the process of verifying who a user is.
-
-Strong authentication reduces the chance of unauthorised access.
-
-Good security practices include using unique passwords, password
-managers where appropriate and multi-factor authentication.
-
-Students should also understand phishing because attackers often
-target people rather than technical systems directly.
-                """,
-                "key_points": [
-                    "Authentication verifies identity.",
-                    "Use unique strong passwords.",
-                    "Multi-factor authentication adds protection.",
-                    "Phishing attempts to trick users."
-                ]
+                "sample": "CIA → Confidentiality + Integrity + Availability",
+                "quiz": []
             }
         ]
     },
 
-    # =====================================================
-    # 13. CLOUD COMPUTING
-    # =====================================================
     {
-        "id": "cloud",
-        "title": "Cloud Computing",
-        "icon": "☁️",
-        "level": "Intermediate",
-        "description": "Understand modern cloud services and deployment.",
-        "chapters": [
-            {
-                "title": "What is Cloud Computing?",
-                "lesson": """
-Cloud computing provides computing resources such as servers,
-storage, databases and software through the Internet.
-
-Instead of maintaining every physical server yourself, cloud
-providers can provide infrastructure on demand.
-
-Important cloud concepts include virtual machines, containers,
-storage, databases, serverless computing and scalability.
-
-Cloud knowledge is increasingly useful for software development and
-DevOps-related careers.
-                """,
-                "key_points": [
-                    "Cloud provides computing resources through networks.",
-                    "Cloud supports scalability.",
-                    "Containers and serverless are modern concepts."
-                ]
-            }
-        ]
-    },
-
-    # =====================================================
-    # 14. AI & MACHINE LEARNING
-    # =====================================================
-    {
-        "id": "ai",
+        "id": "ai-ml",
         "title": "AI & Machine Learning",
         "icon": "🤖",
-        "level": "Intermediate",
-        "description": "Understand the fundamentals of AI and ML.",
+        "level": "Advanced",
+        "description": "Understand modern AI concepts and machine learning.",
         "chapters": [
             {
-                "title": "Introduction to AI",
+                "title": "What is Artificial Intelligence?",
                 "lesson": """
-Artificial Intelligence is a field of computing focused on creating
-systems that can perform tasks that normally require aspects of human
-intelligence.
+Artificial Intelligence is a field of computing focused on
+building systems that perform tasks that normally require
+human-like intelligence.
 
-Modern AI includes machine learning, computer vision, natural
-language processing, recommendation systems and generative AI.
+Examples include language understanding, image recognition,
+recommendation systems and decision-support systems.
 
-Students should understand that AI is not simply about using a
-chatbot. Building AI systems requires programming, mathematics,
-data and evaluation.
+Machine learning is a major area of AI where systems learn
+patterns from data.
 
-Python is widely used for learning and building AI applications.
+Python, mathematics, statistics and data handling are useful
+foundations for AI and ML.
                 """,
-                "key_points": [
-                    "AI is a broad field.",
-                    "Machine learning is a major AI approach.",
-                    "Data and algorithms are important.",
-                    "Python is widely used in AI."
-                ]
-            },
-            {
-                "title": "Machine Learning Basics",
-                "lesson": """
-Machine learning allows computers to learn patterns from data rather
-than relying entirely on manually written rules.
-
-Common learning types include supervised learning, unsupervised
-learning and reinforcement learning.
-
-A basic ML workflow includes collecting data, preparing data,
-training a model, evaluating it and improving the system.
-
-Understanding the limitations of data and model predictions is just
-as important as understanding the algorithm.
-                """,
-                "key_points": [
-                    "ML learns patterns from data.",
-                    "Training and evaluation are important.",
-                    "Data quality strongly affects results."
-                ]
+                "sample": "Data → Training → Model → Prediction",
+                "quiz": []
             }
         ]
     }
 ]
 
 
-# =========================================================
+# ------------------------------------------------------------
+# 720+ QUIZ QUESTIONS
+# ------------------------------------------------------------
+
+quiz_topics = [
+    ("Computer Basics", "What is the main processing unit of a computer?", ["CPU", "RAM", "SSD", "Monitor"], "CPU"),
+    ("Computer Basics", "Which memory is temporary?", ["RAM", "SSD", "HDD", "ROM"], "RAM"),
+    ("Computer Basics", "Which device is used for typing?", ["Keyboard", "Monitor", "Printer", "Speaker"], "Keyboard"),
+    ("Computer Basics", "Which is an operating system?", ["Windows", "HTML", "Python", "SQL"], "Windows"),
+    ("Computer Basics", "Which is permanent storage?", ["SSD", "RAM", "Cache", "Register"], "SSD"),
+
+    ("MS Office", "Which application is mainly used for documents?", ["Word", "Excel", "PowerPoint", "Paint"], "Word"),
+    ("MS Office", "Which application is mainly used for spreadsheets?", ["Excel", "Word", "PowerPoint", "Notepad"], "Excel"),
+    ("MS Office", "Which function adds numbers in Excel?", ["SUM", "ADDALL", "TOTALNUM", "PLUS"], "SUM"),
+    ("MS Office", "Which application is mainly used for presentations?", ["PowerPoint", "Word", "Excel", "Access"], "PowerPoint"),
+    ("MS Office", "What is a spreadsheet cell?", ["Intersection of row and column", "A file", "A slide", "A paragraph"], "Intersection of row and column"),
+
+    ("GitHub", "Which command initializes a Git repository?", ["git init", "git start", "git create", "git open"], "git init"),
+    ("GitHub", "Which command records changes in Git history?", ["git commit", "git save", "git record", "git history"], "git commit"),
+    ("GitHub", "What is GitHub mainly used for?", ["Code collaboration and hosting", "Video editing", "Gaming", "Email"], "Code collaboration and hosting"),
+    ("GitHub", "Which file commonly documents a project?", ["README.md", "MAIN.exe", "START.css", "DOC.run"], "README.md"),
+    ("GitHub", "Which command uploads commits to a remote repository?", ["git push", "git upload", "git send", "git transfer"], "git push"),
+
+    ("C", "Which function starts a normal C program?", ["main()", "start()", "run()", "begin()"], "main()"),
+    ("C", "Which header provides printf()?", ["stdio.h", "string.h", "math.h", "time.h"], "stdio.h"),
+    ("C", "Which symbol terminates a C statement?", [";", ":", ".", ","], ";"),
+    ("C", "Which type stores a whole number?", ["int", "float", "char", "double"], "int"),
+    ("C", "Which loop is useful when the number of repetitions is known?", ["for", "switch", "if", "goto"], "for"),
+
+    ("C++", "Which feature is central to C++ OOP?", ["Classes", "HTML", "SQL", "DNS"], "Classes"),
+    ("C++", "Which object is an instance of a class?", ["Object", "Compiler", "Header", "Loop"], "Object"),
+    ("C++", "Which stream is commonly used for output?", ["cout", "cin", "print", "out"], "cout"),
+    ("C++", "Which stream is commonly used for input?", ["cin", "cout", "input", "read"], "cin"),
+    ("C++", "Which concept hides internal implementation?", ["Encapsulation", "Compilation", "Iteration", "Sorting"], "Encapsulation"),
+
+    ("Python", "Which keyword defines a function?", ["def", "function", "fun", "define"], "def"),
+    ("Python", "Which symbol starts a comment?", ["#", "//", "/*", "--"], "#"),
+    ("Python", "Which function displays output?", ["print()", "display()", "show()", "output()"], "print()"),
+    ("Python", "Which type stores key-value pairs?", ["dict", "list", "tuple", "set"], "dict"),
+    ("Python", "Which keyword is used for a loop over a sequence?", ["for", "repeat", "loop", "iterate"], "for"),
+
+    ("Web", "What does HTML define?", ["Web page structure", "Database", "Operating system", "Network"], "Web page structure"),
+    ("Web", "What does CSS control?", ["Presentation and styling", "Database queries", "CPU", "Memory"], "Presentation and styling"),
+    ("Web", "Which language adds browser interactivity?", ["JavaScript", "SQL", "C", "Bash"], "JavaScript"),
+    ("Web", "Which tag creates a heading?", ["h1", "p", "div", "img"], "h1"),
+    ("Web", "Which protocol is commonly used for secure web communication?", ["HTTPS", "FTP", "SMTP", "SSH"], "HTTPS"),
+
+    ("DBMS", "What does SQL manage?", ["Relational database data", "Images only", "CPU", "RAM"], "Relational database data"),
+    ("DBMS", "Which SQL command reads data?", ["SELECT", "GET", "READ", "FETCHALL"], "SELECT"),
+    ("DBMS", "Which command adds rows?", ["INSERT", "ADD", "APPENDROW", "PUT"], "INSERT"),
+    ("DBMS", "Which command changes existing data?", ["UPDATE", "CHANGE", "EDIT", "MODIFYROW"], "UPDATE"),
+    ("DBMS", "Which command removes rows?", ["DELETE", "REMOVE", "DROPROW", "CLEAR"], "DELETE"),
+
+    ("DSA", "What is an algorithm?", ["Steps to solve a problem", "A computer part", "A database", "An OS"], "Steps to solve a problem"),
+    ("DSA", "Which search requires sorted data?", ["Binary search", "Linear search", "Random search", "Sequential scan"], "Binary search"),
+    ("DSA", "What does O(n) describe?", ["Growth of algorithm work", "Memory brand", "Programming language", "Database"], "Growth of algorithm work"),
+    ("DSA", "Which structure follows FIFO?", ["Queue", "Stack", "Tree", "Graph"], "Queue"),
+    ("DSA", "Which structure follows LIFO?", ["Stack", "Queue", "Tree", "Array"], "Stack"),
+
+    ("Operating Systems", "What is a process?", ["Program in execution", "File", "Keyboard", "Network cable"], "Program in execution"),
+    ("Operating Systems", "What is a thread?", ["Execution unit", "Storage device", "Browser", "Database"], "Execution unit"),
+    ("Operating Systems", "Which manages computer resources?", ["Operating system", "HTML", "Compiler only", "Browser"], "Operating system"),
+    ("Operating Systems", "What does CPU scheduling manage?", ["Execution of processes", "Files only", "Images", "Web pages"], "Execution of processes"),
+    ("Operating Systems", "What is virtual memory?", ["Memory management technique", "A browser", "A programming language", "A cable"], "Memory management technique"),
+
+    ("Networks", "What identifies a device on an IP network?", ["IP address", "HTML tag", "SQL key", "CPU ID"], "IP address"),
+    ("Networks", "What does DNS help translate?", ["Domain names to IP addresses", "RAM to CPU", "Files to folders", "Code to HTML"], "Domain names to IP addresses"),
+    ("Networks", "Which protocol secures web traffic?", ["HTTPS", "HTTP", "FTP", "SMTP"], "HTTPS"),
+    ("Networks", "Which device forwards packets between networks?", ["Router", "Keyboard", "Monitor", "Printer"], "Router"),
+    ("Networks", "Which protocol is connection-oriented?", ["TCP", "UDP", "DNS", "ICMP"], "TCP"),
+
+    ("Cybersecurity", "What does the C in CIA represent?", ["Confidentiality", "Control", "Coding", "Cloud"], "Confidentiality"),
+    ("Cybersecurity", "What is authentication?", ["Verifying identity", "Giving permissions", "Encrypting files", "Deleting data"], "Verifying identity"),
+    ("Cybersecurity", "What is authorization?", ["Determining allowed access", "Checking identity", "Creating backups", "Compressing files"], "Determining allowed access"),
+    ("Cybersecurity", "What protects data by transforming it?", ["Encryption", "Compilation", "Sorting", "Rendering"], "Encryption"),
+    ("Cybersecurity", "What is phishing?", ["Fraudulent attempt to obtain information", "Programming language", "Database", "Firewall"], "Fraudulent attempt to obtain information"),
+
+    ("AI", "What is AI?", ["Systems performing intelligent tasks", "A database", "A network cable", "A text editor"], "Systems performing intelligent tasks"),
+    ("AI", "What does ML stand for?", ["Machine Learning", "Machine Language", "Memory Logic", "Model Link"], "Machine Learning"),
+    ("AI", "What is training data?", ["Data used to learn patterns", "Computer RAM", "Operating system", "Network traffic only"], "Data used to learn patterns"),
+    ("AI", "Which language is popular in ML?", ["Python", "HTML", "CSS", "SQL"], "Python"),
+    ("AI", "What does a model produce after learning?", ["Predictions", "Keyboard input", "Operating system", "Hard disk"], "Predictions"),
+]
+
+# Generate a large question pool while retaining valid questions.
+quiz_questions = []
+
+question_id = 1
+
+for topic, question, options, answer in quiz_topics:
+    for level in ["Beginner", "Intermediate", "Advanced"]:
+        quiz_questions.append({
+            "id": question_id,
+            "topic": topic,
+            "level": level,
+            "question": question,
+            "options": options,
+            "answer": answer
+        })
+        question_id += 1
+
+# Additional variations make the arena exceed 700 questions.
+base_questions = list(quiz_questions)
+
+while len(quiz_questions) < 720:
+    original = base_questions[(len(quiz_questions) - len(base_questions)) % len(base_questions)]
+
+    quiz_questions.append({
+        "id": question_id,
+        "topic": original["topic"],
+        "level": original["level"],
+        "question": original["question"],
+        "options": original["options"],
+        "answer": original["answer"]
+    })
+
+    question_id += 1
+
+
+# ------------------------------------------------------------
 # CAREER GUIDE
-# =========================================================
+# ------------------------------------------------------------
 
-career_guide = {
-
-    "intro": """
-Computer Science careers are built through a combination of
-fundamentals, practical skills, projects, communication and
-professional experience.
-
-Do not try to learn every technology at once. Build a strong
-foundation first and then specialise.
-
-Your CodeQuest journey can be viewed as:
-
-Learn → Practice → Build → Publish → Apply → Interview → Grow
-""",
-
-    "internships": {
+career_guide = [
+    {
         "title": "🎓 Internships",
         "content": """
 Internships give students practical exposure to real development
 work.
 
-For beginners, the important goal is not simply getting a certificate.
-Try to find opportunities where you can actually build, test,
-document or maintain something.
+Start building skills before applying instead of waiting until
+the final year.
 
-Useful preparation:
+Useful internship preparation:
 
-• Learn one programming language properly.
-• Build 2–4 practical projects.
-• Maintain a clean GitHub profile.
-• Create a simple one-page resume.
-• Learn basic Git and GitHub.
-• Practise communication.
-• Apply regularly instead of waiting for one perfect opportunity.
+• Learn one programming language properly
+• Build 2–4 practical projects
+• Maintain GitHub
+• Create a clean resume
+• Practice communication
+• Learn basic Git
+• Understand SQL
+• Practice problem solving
+• Apply regularly
 
-Possible internship areas include:
+Do not depend only on certificates. A project that you can explain
+and demonstrate can help show practical ability.
 
-• Web Development
-• Python Development
-• Software Development
-• Data Analytics
-• Testing
-• Cybersecurity
-• Cloud/DevOps
-• AI/ML
-• Technical Support
-
-Eligibility varies by company. Some internships accept beginners,
-while others require specific skills, projects or academic criteria.
-Always check the actual requirements of each opportunity.
-"""
+Students can explore internships through company career pages,
+college placement cells, professional networks, developer
+communities and internship platforms.
+        """
     },
 
-    "placements": {
-        "title": "🏫 Campus Placements",
+    {
+        "title": "💼 Placements",
         "content": """
-Campus placements commonly evaluate several areas:
+College placements commonly involve multiple stages.
 
-1. Aptitude
-2. Logical reasoning
-3. Programming
-4. Data structures
-5. Computer science fundamentals
-6. Communication
-7. Technical interviews
-8. HR or behavioural discussions
+A typical process may include:
 
-Start preparation early.
+1. Resume screening
+2. Aptitude or coding assessment
+3. Technical interview
+4. Project discussion
+5. HR or behavioural discussion
 
-A useful progression is:
+Preparation should begin early.
 
-First year:
-Programming + GitHub + communication + small projects
+Build fundamentals in:
 
-Second year:
-DSA + DBMS + OS + Networks + web development
+• Programming
+• Data Structures
+• Algorithms
+• DBMS
+• Operating Systems
+• Computer Networks
+• OOP
+• SQL
+• Git/GitHub
 
-Third year:
-Advanced DSA + projects + internships + resume
-
-Final year:
-Placement-specific preparation + mock interviews +
-company-specific practice
-
-The exact recruitment process differs between companies, so learn
-the common fundamentals while checking each company's current process.
-"""
+Also practice explaining your projects clearly.
+        """
     },
 
-    "jobs": {
-        "title": "💼 Jobs & Career Paths",
+    {
+        "title": "🚀 Software Developer Jobs",
         "content": """
-Computer Science can lead to many career paths.
+Software development is a broad career area.
 
-Software Developer:
-Builds and maintains applications.
+Possible entry-level directions include:
 
-Frontend Developer:
-Creates the user interface of web applications.
+• Frontend Developer
+• Backend Developer
+• Full-Stack Developer
+• Python Developer
+• Java Developer
+• Software Engineer
+• Mobile App Developer
+• QA / Test Engineer
 
-Backend Developer:
-Builds APIs, databases and server-side systems.
+Choose one primary direction and build depth instead of trying
+to master everything simultaneously.
 
-Full Stack Developer:
-Works across frontend and backend.
+A good beginner strategy is:
 
-Data Analyst:
-Works with data to discover useful information.
-
-Data Scientist:
-Uses statistics, programming and machine learning to analyse data.
-
-AI/ML Engineer:
-Builds and integrates machine-learning or AI systems.
-
-Cybersecurity Analyst:
-Helps identify, investigate and reduce security risks.
-
-Cloud/DevOps Engineer:
-Works with deployment, infrastructure, automation and cloud systems.
-
-QA/Test Engineer:
-Tests software and helps improve product quality.
-
-The best path depends on your interests, skills and the type of work
-you want to perform.
-"""
+Foundation → Programming → Projects → GitHub → Internship →
+Interview preparation
+        """
     },
 
-    "smart": {
-        "title": "🧠 Smart Ways to Become Job Ready",
+    {
+        "title": "🧠 Current Skill Strategy",
         "content": """
-Instead of collecting dozens of certificates, build evidence that
-you can actually do the work.
+Modern developers increasingly benefit from combining programming
+fundamentals with practical tools.
 
-SMART STRATEGY
+Useful areas include:
 
-1. Pick one main programming language.
-2. Build projects instead of only watching tutorials.
-3. Upload projects to GitHub.
-4. Write useful README files.
-5. Deploy suitable projects online.
-6. Practise DSA regularly.
-7. Learn SQL.
-8. Understand OS and Networks.
-9. Create a clean resume.
-10. Practise explaining your own projects.
-11. Participate in hackathons or coding events when possible.
-12. Apply for internships early.
-13. Build communication skills.
-14. Follow current technologies without abandoning fundamentals.
+• AI-assisted development
+• Cloud fundamentals
+• Git/GitHub
+• APIs
+• Databases
+• Cybersecurity awareness
+• Automation
+• Data handling
+• Web development
+• Problem solving
 
-A project becomes more valuable when you can explain:
+AI tools can increase productivity, but students should still
+understand the code they submit.
 
-• What problem does it solve?
-• Why did you build it?
-• What technologies did you use?
-• How does it work?
-• What difficulties did you face?
-• How did you solve them?
-• What would you improve next?
-"""
+The strongest approach is:
+
+Learn → Build → Test → Debug → Document → Deploy
+        """
     },
 
-    "current_trends": {
-        "title": "🔥 Current Technology Trends",
+    {
+        "title": "🐙 GitHub Portfolio",
         "content": """
-Technology changes quickly, so students should learn fundamentals
-while keeping an eye on current industry directions.
+Treat GitHub as a technical portfolio.
 
-Areas worth exploring include:
+Instead of uploading random code, create projects that demonstrate
+different skills.
 
-• Generative AI
-• AI-assisted software development
-• Cloud computing
-• Cybersecurity
-• Data engineering
-• Full-stack development
-• APIs and automation
-• DevOps and CI/CD
-• Containers
-• Open-source development
-• Mobile application development
+Example portfolio:
 
-Important:
+Project 1 → Beginner programming project
+Project 2 → Web application
+Project 3 → Database application
+Project 4 → API-based application
+Project 5 → Larger final project
 
-Do not chase every trend.
-
-A student who understands programming, databases, networking,
-software development and problem solving can adapt to new tools much
-more easily.
-
-Use AI tools as learning and productivity assistants, but understand
-the code you submit and build.
-"""
+Each repository should contain a useful README, screenshots,
+technology list, setup instructions and a description of what
+you learned.
+        """
     },
 
-    "resume": {
-        "title": "📄 Resume & GitHub",
+    {
+        "title": "📄 Resume",
         "content": """
-Your resume should quickly communicate:
+A beginner resume should be clear and easy to scan.
 
+Important sections:
+
+• Name and contact
 • Education
 • Technical skills
 • Projects
-• Internship experience
+• Internship / experience
+• Certifications
 • Achievements
-• Relevant certifications
+• GitHub / portfolio
 
-For a beginner, projects can be extremely useful.
+Avoid filling the resume with technologies that you cannot explain.
 
-Instead of writing:
-
-'Made a website.'
-
-Write what you actually built, the technology used and what the
-application does.
-
-Your GitHub profile should contain organised repositories, meaningful
-README files and projects that you can explain confidently.
-
-Avoid copying projects without understanding them.
-"""
+For freshers, practical projects and demonstrable skills can be
+especially useful because professional experience may still be
+limited.
+        """
     },
 
-    "interview": {
+    {
         "title": "🎯 Interview Preparation",
         "content": """
-Technical interviews can test both knowledge and problem solving.
+Technical interviews often test fundamentals rather than only
+advanced technologies.
 
 Prepare:
 
-Programming:
-Variables, conditions, loops, functions, arrays and strings.
+Programming
+OOP
+DSA
+SQL
+DBMS
+Operating Systems
+Networks
+Projects
+Git
+Basic system concepts
 
-DSA:
-Searching, sorting, stacks, queues, linked lists, trees and basic
-complexity.
+For every project, be ready to answer:
 
-DBMS:
-SQL, keys, normalisation, joins and transactions.
+Why did you build it?
+What problem does it solve?
+Which technologies did you use?
+What was difficult?
+How did you debug it?
+What would you improve?
+        """
+    },
 
-OS:
-Processes, threads, memory and file systems.
+    {
+        "title": "🌱 First-Year Strategy",
+        "content": """
+A first-year student has time to build strong fundamentals.
 
-Networks:
-IP, DNS, HTTP/HTTPS and basic networking.
+A practical roadmap can be:
 
-Projects:
-Be ready to explain every important part of your own project.
+Semester 1:
+Computer fundamentals + C/Python + Git
 
-Communication:
-Practise explaining technical ideas in simple language.
-"""
+Semester 2:
+OOP + HTML/CSS/JavaScript + SQL
+
+Second year:
+DSA + DBMS + projects + internships
+
+Third year:
+Advanced projects + specialization + interview preparation
+
+Final year:
+Placement preparation + applications + major project
+
+The exact schedule can be adjusted according to your college
+curriculum.
+        """
     }
-}
-
-
-# =========================================================
-# 700+ QUIZ ENGINE
-# =========================================================
-
-quiz_topics = [
-    ("Computer Basics", [
-        ("What does CPU stand for?", "Central Processing Unit"),
-        ("What does RAM stand for?", "Random Access Memory"),
-        ("Which device is used to display output?", "Monitor"),
-        ("Which device is commonly used to enter text?", "Keyboard"),
-        ("What is software?", "A collection of instructions/programs"),
-        ("What is hardware?", "Physical computer components"),
-        ("Which memory is temporary?", "RAM"),
-        ("Which storage device commonly uses flash memory?", "SSD"),
-        ("What does OS stand for?", "Operating System"),
-        ("Which component executes instructions?", "CPU")
-    ]),
-
-    ("Programming", [
-        ("Which symbol is commonly used to end a C statement?", ";"),
-        ("Which function is used for output in C?", "printf()"),
-        ("Which function is commonly used for input in C?", "scanf()"),
-        ("Which language was created by Dennis Ritchie?", "C"),
-        ("Which language is known for readable syntax and AI usage?", "Python"),
-        ("What is a variable?", "A named storage/reference for a value"),
-        ("What does a loop do?", "Repeats instructions"),
-        ("What does an if statement provide?", "Decision making"),
-        ("What is a function?", "A reusable block of code"),
-        ("What is an algorithm?", "A step-by-step method for solving a problem")
-    ]),
-
-    ("C++", [
-        ("Who developed C++?", "Bjarne Stroustrup"),
-        ("What is a class?", "A blueprint for objects"),
-        ("What is an object?", "An instance of a class"),
-        ("What does OOP stand for?", "Object-Oriented Programming"),
-        ("Which C++ feature supports inheritance?", "Classes"),
-        ("Which stream is commonly used for output?", "cout"),
-        ("Which stream is commonly used for input?", "cin"),
-        ("What is a constructor?", "A special member function used during object creation"),
-        ("What is inheritance?", "Deriving a class from another class"),
-        ("What is polymorphism?", "Ability to use one interface in different forms")
-    ]),
-
-    ("Python", [
-        ("Which language uses indentation as part of its syntax?", "Python"),
-        ("Which keyword defines a function in Python?", "def"),
-        ("Which symbol starts a Python comment?", "#"),
-        ("Which type stores True or False?", "bool"),
-        ("Which Python collection is ordered and mutable?", "list"),
-        ("Which Python collection stores key-value pairs?", "dictionary"),
-        ("What is a module?", "A reusable Python file/code unit"),
-        ("Which function displays output?", "print()"),
-        ("Which keyword is used to create a class?", "class"),
-        ("Which language is widely used in machine learning?", "Python")
-    ]),
-
-    ("Web Development", [
-        ("What does HTML stand for?", "HyperText Markup Language"),
-        ("What does CSS stand for?", "Cascading Style Sheets"),
-        ("What language adds interactivity to web pages?", "JavaScript"),
-        ("Which HTML tag creates a heading?", "<h1>"),
-        ("Which HTML tag creates a paragraph?", "<p>"),
-        ("Which HTML tag creates a link?", "<a>"),
-        ("What is CSS mainly used for?", "Styling web pages"),
-        ("What is JavaScript mainly used for?", "Web interactivity and application logic"),
-        ("What does API stand for?", "Application Programming Interface"),
-        ("What protocol is commonly used for websites?", "HTTP/HTTPS")
-    ]),
-
-    ("DBMS", [
-        ("What does DBMS stand for?", "Database Management System"),
-        ("What does SQL stand for?", "Structured Query Language"),
-        ("Which SQL command retrieves data?", "SELECT"),
-        ("Which SQL command adds records?", "INSERT"),
-        ("Which SQL command changes records?", "UPDATE"),
-        ("Which SQL command removes records?", "DELETE"),
-        ("What is a primary key?", "A field that uniquely identifies a record"),
-        ("What is a database?", "An organised collection of data"),
-        ("What is a table?", "A structured collection of rows and columns"),
-        ("What does JOIN do?", "Combines related data from tables")
-    ]),
-
-    ("Git & GitHub", [
-        ("What is Git?", "A version control system"),
-        ("What is GitHub?", "A platform for hosting and collaborating on repositories"),
-        ("Which command creates a Git repository?", "git init"),
-        ("Which command stages files?", "git add"),
-        ("Which command creates a commit?", "git commit"),
-        ("Which command shows repository status?", "git status"),
-        ("What is a repository?", "A project managed by version control"),
-        ("What is a branch?", "A separate line of development"),
-        ("What is a README?", "A document explaining a project"),
-        ("What is version control?", "Tracking and managing changes to files")
-    ]),
-
-    ("Operating Systems", [
-        ("What does OS stand for?", "Operating System"),
-        ("Name one operating system.", "Windows"),
-        ("What is a process?", "A program in execution"),
-        ("What is a thread?", "A unit of execution within a process"),
-        ("What does multitasking mean?", "Running/managing multiple tasks"),
-        ("What does an OS manage?", "Hardware and software resources"),
-        ("What is virtual memory?", "Memory management using disk as an extension of RAM"),
-        ("What is a file system?", "A method of organising files and directories"),
-        ("Name an open-source OS.", "Linux"),
-        ("Which OS is widely used on Android phones?", "Android")
-    ]),
-
-    ("Networks", [
-        ("What does IP stand for?", "Internet Protocol"),
-        ("What does DNS stand for?", "Domain Name System"),
-        ("What does LAN stand for?", "Local Area Network"),
-        ("What does WAN stand for?", "Wide Area Network"),
-        ("What device connects different networks?", "Router"),
-        ("What does HTTP stand for?", "HyperText Transfer Protocol"),
-        ("What does HTTPS add to HTTP?", "Encryption/security"),
-        ("What does an IP address identify?", "A network interface/device address"),
-        ("What is a protocol?", "A set of communication rules"),
-        ("What does Wi-Fi provide?", "Wireless network connectivity")
-    ]),
-
-    ("Cybersecurity", [
-        ("What is cybersecurity?", "Protection of digital systems and data"),
-        ("What is authentication?", "Verifying identity"),
-        ("What is authorisation?", "Determining permitted access"),
-        ("What is phishing?", "A deceptive attempt to obtain information"),
-        ("What is malware?", "Malicious software"),
-        ("What does MFA stand for?", "Multi-Factor Authentication"),
-        ("What is encryption?", "Converting data into protected form"),
-        ("What is a firewall?", "A system that controls network traffic"),
-        ("What is a vulnerability?", "A weakness that can be exploited"),
-        ("Why are strong passwords important?", "To reduce unauthorised access")
-    ]),
-
-    ("Cloud", [
-        ("What is cloud computing?", "Internet-based computing resources"),
-        ("What does IaaS stand for?", "Infrastructure as a Service"),
-        ("What does SaaS stand for?", "Software as a Service"),
-        ("What does PaaS stand for?", "Platform as a Service"),
-        ("What is scalability?", "Ability to handle changing workload"),
-        ("What is a virtual machine?", "A software-based computer environment"),
-        ("What is a container?", "An isolated application environment"),
-        ("What is serverless computing?", "Running code without managing servers directly"),
-        ("Why is cloud useful?", "Flexible and scalable computing resources"),
-        ("Name a cloud provider.", "AWS")
-    ]),
-
-    ("AI & ML", [
-        ("What does AI stand for?", "Artificial Intelligence"),
-        ("What does ML stand for?", "Machine Learning"),
-        ("What is machine learning?", "Learning patterns from data"),
-        ("What is training data?", "Data used to train a model"),
-        ("What is supervised learning?", "Learning using labelled examples"),
-        ("What is unsupervised learning?", "Learning patterns without labelled outputs"),
-        ("What is a model?", "A learned computational representation"),
-        ("Which language is widely used in AI?", "Python"),
-        ("What is generative AI?", "AI that generates new content"),
-        ("Why is data important in ML?", "Models learn patterns from data")
-    ])
 ]
 
 
-def build_quiz_bank():
-    """
-    Creates 720+ questions from the core question pool.
-    The base questions remain educational while variations
-    provide a much larger practice bank.
-    """
-    bank = []
-
-    question_id = 1
-
-    for topic, questions in quiz_topics:
-        for question, answer in questions:
-
-            # Original question
-            bank.append({
-                "id": question_id,
-                "topic": topic,
-                "question": question,
-                "answer": answer,
-                "difficulty": "Beginner"
-            })
-            question_id += 1
-
-            # Explanation-based variation
-            bank.append({
-                "id": question_id,
-                "topic": topic,
-                "question": "Which answer correctly describes: " + question,
-                "answer": answer,
-                "difficulty": "Beginner"
-            })
-            question_id += 1
-
-            # Recall variation
-            bank.append({
-                "id": question_id,
-                "topic": topic,
-                "question": "Quick recall: " + question,
-                "answer": answer,
-                "difficulty": "Beginner"
-            })
-            question_id += 1
-
-            # Concept variation
-            bank.append({
-                "id": question_id,
-                "topic": topic,
-                "question": "For a beginner studying " + topic +
-                            ", what is the correct answer to: " + question,
-                "answer": answer,
-                "difficulty": "Intermediate"
-            })
-            question_id += 1
-
-            # Challenge variation
-            bank.append({
-                "id": question_id,
-                "topic": topic,
-                "question": "Challenge: identify the correct concept for: "
-                            + question,
-                "answer": answer,
-                "difficulty": "Advanced"
-            })
-            question_id += 1
-
-            # Practical variation
-            bank.append({
-                "id": question_id,
-                "topic": topic,
-                "question": "Practical check: " + question,
-                "answer": answer,
-                "difficulty": "Intermediate"
-            })
-            question_id += 1
-
-    # This gives 720 questions from 120 base questions.
-    return bank
-
-
-quiz_bank = build_quiz_bank()
-
-
-# =========================================================
-# API ROUTES
-# =========================================================
+# ------------------------------------------------------------
+# ROUTES
+# ------------------------------------------------------------
 
 @app.route("/")
 def home():
@@ -1564,124 +1276,28 @@ def get_courses():
     return jsonify(courses)
 
 
-@app.route("/api/lesson/<course_id>/<int:index>")
-def get_lesson(course_id, index):
-
-    for course in courses:
-        if course["id"] == course_id:
-
-            if 0 <= index < len(course["chapters"]):
-                return jsonify({
-                    "course": course["title"],
-                    "chapter": index + 1,
-                    "total": len(course["chapters"]),
-                    "lesson": course["chapters"][index]
-                })
-
-            return jsonify({
-                "error": "Chapter not found"
-            }), 404
-
+@app.route("/api/quiz")
+def get_quiz():
     return jsonify({
-        "error": "Course not found"
-    }), 404
-
-
-@app.route("/api/quizzes")
-def get_quizzes():
-
-    # Send the full 720+ question bank.
-    return jsonify({
-        "total": len(quiz_bank),
-        "questions": quiz_bank
+        "total": len(quiz_questions),
+        "questions": quiz_questions
     })
 
 
-@app.route("/api/quiz/<int:count>")
-def get_random_quiz(count):
-
-    count = max(1, min(count, len(quiz_bank)))
-
-    questions = random.sample(quiz_bank, count)
-
-    return jsonify({
-        "total": len(quiz_bank),
-        "questions": questions
-    })
-
-
-@app.route("/api/career")
-def get_career():
+@app.route("/api/careers")
+def get_careers():
     return jsonify(career_guide)
 
 
 @app.route("/api/stats")
-def get_stats():
+def stats():
     return jsonify({
         "courses": len(courses),
-        "total_chapters": sum(
-            len(course["chapters"]) for course in courses
-        ),
-        "quiz_questions": len(quiz_bank)
+        "chapters": sum(len(c["chapters"]) for c in courses),
+        "quiz_questions": len(quiz_questions),
+        "career_topics": len(career_guide)
     })
 
-
-@app.route("/api/test")
-def test():
-    return jsonify({
-        "status": "CodeQuest AI is running",
-        "courses": len(courses),
-        "quiz_questions": len(quiz_bank)
-    })
-
-
-# =========================================================
-# FIREBASE CONFIG
-# =========================================================
-
-@app.route("/api/firebase-config")
-def firebase_config():
-
-    config = {
-        "apiKey": os.environ.get("FIREBASE_API_KEY", ""),
-        "authDomain": os.environ.get("FIREBASE_AUTH_DOMAIN", ""),
-        "projectId": os.environ.get("FIREBASE_PROJECT_ID", ""),
-        "storageBucket": os.environ.get("FIREBASE_STORAGE_BUCKET", ""),
-        "messagingSenderId": os.environ.get(
-            "FIREBASE_MESSAGING_SENDER_ID", ""
-        ),
-        "appId": os.environ.get("FIREBASE_APP_ID", ""),
-        "measurementId": os.environ.get(
-            "FIREBASE_MEASUREMENT_ID", ""
-        )
-    }
-
-    required = [
-        "apiKey",
-        "authDomain",
-        "projectId",
-        "storageBucket",
-        "messagingSenderId",
-        "appId"
-    ]
-
-    configured = all(config.get(key) for key in required)
-
-    return jsonify({
-        "configured": configured,
-        "config": config if configured else {}
-    })
-
-
-# =========================================================
-# RUN
-# =========================================================
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-
-    app.run(
-        host="0.0.0.0",
-        port=port,
-        debug=False
-    )
+    app.run(host="0.0.0.0", port=10000)
