@@ -1,643 +1,1611 @@
-from flask import Flask, render_template, jsonify
+<script>
 
-app = Flask(__name__)
+/* =====================================================
+   CODEQUEST AI - FIXED JAVASCRIPT
+===================================================== */
 
-# =========================================================
-# CODEQUEST AI V0.3
-# Learn • Practice • Play • Build
-# =========================================================
+let quizData = [];
+let codeData = [];
+let errorData = [];
 
-courses = {
-    "Computer Basics": {
-        "icon": "💻",
-        "level": "Beginner",
-        "description": "Start from zero and understand computers.",
-        "chapters": [
-            "What is a Computer?",
-            "Hardware and Software",
-            "Input and Output Devices",
-            "Operating Systems",
-            "Files and Folders",
-            "Internet Basics",
-            "Computer Safety",
-            "Practical Computer Skills"
-        ]
-    },
+let xp = Number(localStorage.getItem("codequest_xp") || 0);
 
-    "MS Word": {
-        "icon": "📝",
-        "level": "Beginner",
-        "description": "Create professional documents from scratch.",
-        "chapters": [
-            "Introduction to MS Word",
-            "Creating and Saving Documents",
-            "Text Formatting",
-            "Paragraph Formatting",
-            "Tables",
-            "Images and Shapes",
-            "Headers and Footers",
-            "Page Layout",
-            "References",
-            "Mail Merge",
-            "Practical Document Project"
-        ]
-    },
+let completedChapters = [];
 
-    "MS Excel": {
-        "icon": "📊",
-        "level": "Beginner → Advanced",
-        "description": "Learn spreadsheets, formulas, data and charts.",
-        "chapters": [
-            "Introduction to Excel",
-            "Cells, Rows and Columns",
-            "Data Entry",
-            "Basic Formulas",
-            "Functions",
-            "IF and Logical Functions",
-            "Sorting and Filtering",
-            "Charts",
-            "Conditional Formatting",
-            "Data Analysis",
-            "Practical Excel Project"
-        ]
-    },
+try {
+    completedChapters = JSON.parse(
+        localStorage.getItem("codequest_chapters") || "[]"
+    );
+} catch (e) {
+    completedChapters = [];
+}
 
-    "MS Office": {
-        "icon": "📑",
-        "level": "Beginner → Advanced",
-        "description": "Master essential Microsoft Office skills.",
-        "chapters": [
-            "Introduction to MS Office",
-            "Word Basics",
-            "Excel Basics",
-            "PowerPoint Basics",
-            "Creating Presentations",
-            "Office Productivity",
-            "File Management",
-            "Professional Office Skills",
-            "Mini Office Project"
-        ]
-    },
+let solvedChallenges = Number(
+    localStorage.getItem("codequest_challenges") || 0
+);
 
-    "Programming Fundamentals": {
-        "icon": "🧠",
-        "level": "Beginner",
-        "description": "Build programming logic before learning languages.",
-        "chapters": [
-            "What is Programming?",
-            "Algorithms",
-            "Flowcharts",
-            "Variables",
-            "Data Types",
-            "Operators",
-            "Conditions",
-            "Loops",
-            "Functions",
-            "Problem Solving",
-            "Introduction to Debugging"
-        ]
-    },
 
-    "C Language": {
-        "icon": "🔵",
-        "level": "Beginner → Master",
-        "description": "Learn C from your first program to advanced concepts.",
-        "chapters": [
-            "Introduction to C",
-            "Structure of a C Program",
-            "Variables and Data Types",
-            "Input and Output",
-            "Operators",
-            "if and else",
-            "switch",
-            "for Loop",
-            "while Loop",
-            "do while Loop",
-            "Arrays",
-            "Strings",
-            "Functions",
-            "Recursion",
-            "Pointers",
-            "Structures",
-            "Unions",
-            "File Handling",
-            "Dynamic Memory",
-            "Advanced C",
-            "C Mini Projects",
-            "Final C Challenge"
-        ]
-    },
+/* =====================================================
+   SAFE HTML
+===================================================== */
 
-    "C++": {
-        "icon": "🟣",
-        "level": "Beginner → Master",
-        "description": "Learn C++ and object-oriented programming.",
-        "chapters": [
-            "Introduction to C++",
-            "Basic Syntax",
-            "Variables and Data Types",
-            "Input and Output",
-            "Operators",
-            "Conditions",
-            "Loops",
-            "Arrays and Strings",
-            "Functions",
-            "Classes and Objects",
-            "Constructors",
-            "Inheritance",
-            "Polymorphism",
-            "Encapsulation",
-            "Abstraction",
-            "Templates",
-            "STL Basics",
-            "File Handling",
-            "C++ Projects",
-            "Final C++ Challenge"
-        ]
-    },
+function escapeHtml(text) {
 
-    "OOP Concepts": {
-        "icon": "🧩",
-        "level": "Intermediate",
-        "description": "Understand the core ideas behind object-oriented programming.",
-        "chapters": [
-            "What is OOP?",
-            "Classes",
-            "Objects",
-            "Constructors",
-            "Encapsulation",
-            "Inheritance",
-            "Polymorphism",
-            "Abstraction",
-            "Method Overloading",
-            "Method Overriding",
-            "Real World OOP",
-            "OOP Mini Project"
-        ]
-    },
+    if (text === null || text === undefined) {
+        return "";
+    }
 
-    "Python": {
-        "icon": "🐍",
-        "level": "Beginner → Master",
-        "description": "Learn Python from your first program to real projects.",
-        "chapters": [
-            "Introduction to Python",
-            "Python Syntax",
-            "Variables",
-            "Data Types",
-            "Input and Output",
-            "Operators",
-            "if and else",
-            "Loops",
-            "Lists",
-            "Tuples",
-            "Sets",
-            "Dictionaries",
-            "Functions",
-            "Lambda Functions",
-            "Modules",
-            "File Handling",
-            "Exception Handling",
-            "Object-Oriented Python",
-            "Libraries",
-            "Python Projects",
-            "Final Python Challenge"
-        ]
-    },
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 
-    "Java": {
-        "icon": "☕",
-        "level": "Beginner → Master",
-        "description": "Learn Java and object-oriented programming.",
-        "chapters": [
-            "Introduction to Java",
-            "Java Syntax",
-            "Variables and Data Types",
-            "Input and Output",
-            "Operators",
-            "Conditions",
-            "Loops",
-            "Arrays",
-            "Strings",
-            "Methods",
-            "Classes and Objects",
-            "Constructors",
-            "Inheritance",
-            "Polymorphism",
-            "Interfaces",
-            "Exception Handling",
-            "Collections",
-            "File Handling",
-            "Java Projects",
-            "Final Java Challenge"
-        ]
+
+/* =====================================================
+   XP
+===================================================== */
+
+function addXP(amount) {
+
+    xp += Number(amount);
+
+    localStorage.setItem(
+        "codequest_xp",
+        String(xp)
+    );
+
+    updateProgress();
+}
+
+
+function getLevelName(level) {
+
+    const names = [
+        "Code Explorer",
+        "Bug Hunter",
+        "Logic Builder",
+        "Code Warrior",
+        "Programmer",
+        "Code Master",
+        "Tech Creator"
+    ];
+
+    return names[
+        Math.min(level - 1, names.length - 1)
+    ];
+}
+
+
+function updateProgress() {
+
+    const level =
+        Math.floor(xp / 100) + 1;
+
+    const currentXP =
+        xp % 100;
+
+    const xpText =
+        document.getElementById("xpText");
+
+    const levelText =
+        document.getElementById("levelText");
+
+    const progressText =
+        document.getElementById("progressText");
+
+    const progressBar =
+        document.getElementById("progressBar");
+
+    if (xpText) {
+        xpText.textContent =
+            `⭐ ${xp} XP`;
+    }
+
+    if (levelText) {
+        levelText.textContent =
+            `Level ${level} — ${getLevelName(level)} 🚀`;
+    }
+
+    if (progressText) {
+        progressText.textContent =
+            `${currentXP} / 100 XP`;
+    }
+
+    if (progressBar) {
+        progressBar.style.width =
+            `${currentXP}%`;
     }
 }
 
 
-# =========================================================
-# LESSON DATABASE
-# =========================================================
+/* =====================================================
+   MODAL
+===================================================== */
 
-lessons = {
+function showModal(content) {
 
-    "What is a Computer?": {
-        "title": "What is a Computer?",
-        "explanation": "A computer is an electronic device that accepts data, processes it, stores it and produces useful information.",
-        "example": "Example: When you type 10 + 20 into a calculator, the computer processes the values and produces 30.",
-        "tip": "Remember: Input → Processing → Output → Storage",
-        "question": "Which part of a computer processes instructions?",
-        "options": ["Keyboard", "CPU", "Monitor", "Mouse"],
-        "answer": 1
-    },
+    const modal =
+        document.getElementById("modal");
 
-    "Hardware and Software": {
-        "title": "Hardware and Software",
-        "explanation": "Hardware refers to the physical parts of a computer. Software refers to the programs and instructions that run on the computer.",
-        "example": "Hardware: keyboard, monitor, CPU. Software: Windows, Chrome, Python.",
-        "tip": "Hardware can be touched. Software cannot be physically touched.",
-        "question": "Which of these is software?",
-        "options": ["Keyboard", "RAM", "Windows", "Monitor"],
-        "answer": 2
-    },
+    const modalContent =
+        document.getElementById("modalContent");
 
-    "What is Programming?": {
-        "title": "What is Programming?",
-        "explanation": "Programming is the process of writing instructions that tell a computer how to perform a task.",
-        "example": "Python, C, C++ and Java are programming languages used to create programs.",
-        "tip": "Think of a program as instructions given to a computer.",
-        "question": "What is programming?",
-        "options": [
-            "Repairing a monitor",
-            "Writing instructions for a computer",
-            "Typing documents",
-            "Browsing websites"
-        ],
-        "answer": 1
-    },
+    if (!modal || !modalContent) {
+        alert("CodeQuest interface error.");
+        return;
+    }
 
-    "Algorithms": {
-        "title": "Algorithms",
-        "explanation": "An algorithm is a step-by-step procedure used to solve a problem or complete a task.",
-        "example": "To make tea: boil water → add tea → add milk → add sugar → serve.",
-        "tip": "Algorithm = Step-by-step solution.",
-        "question": "What does an algorithm provide?",
-        "options": [
-            "A step-by-step solution",
-            "Computer hardware",
-            "Internet connection",
-            "A programming language"
-        ],
-        "answer": 0
-    },
+    modalContent.innerHTML = content;
 
-    "Variables": {
-        "title": "Variables",
-        "explanation": "A variable is a named storage location used by a program to store a value.",
-        "example": "In Python: age = 18. Here, age is a variable containing 18.",
-        "tip": "Variable = name + stored value.",
-        "question": "What is a variable used for?",
-        "options": [
-            "Storing data",
-            "Displaying a monitor",
-            "Connecting Wi-Fi",
-            "Printing paper"
-        ],
-        "answer": 0
-    },
+    modal.style.display = "block";
+}
 
-    "Introduction to C": {
-        "title": "Introduction to C",
-        "explanation": "C is a general-purpose programming language developed by Dennis Ritchie. It is widely used for system programming and learning programming fundamentals.",
-        "example": """#include <stdio.h>
 
-int main() {
-    printf("Hello World");
-    return 0;
-}""",
-        "tip": "C programs commonly use main() as the starting point.",
-        "question": "Who developed the C programming language?",
-        "options": [
-            "James Gosling",
-            "Dennis Ritchie",
-            "Guido van Rossum",
-            "Bjarne Stroustrup"
-        ],
-        "answer": 1
-    },
+function closeModal() {
 
-    "Structure of a C Program": {
-        "title": "Structure of a C Program",
-        "explanation": "A basic C program normally contains header files, the main() function, statements and a return statement.",
-        "example": """#include <stdio.h>
+    const modal =
+        document.getElementById("modal");
 
-int main() {
-    printf("Hello");
-    return 0;
-}""",
-        "tip": "Execution normally begins from main().",
-        "question": "Where does execution normally begin in a C program?",
-        "options": ["printf()", "main()", "include()", "return()"],
-        "answer": 1
-    },
-
-    "Variables and Data Types": {
-        "title": "Variables and Data Types",
-        "explanation": "C provides different data types such as int, float, char and double to store different kinds of values.",
-        "example": """int age = 18;
-float mark = 85.5;
-char grade = 'A';""",
-        "tip": "Choose a data type according to the kind of value you want to store.",
-        "question": "Which data type stores an integer in C?",
-        "options": ["float", "char", "int", "string"],
-        "answer": 2
-    },
-
-    "Introduction to Python": {
-        "title": "Introduction to Python",
-        "explanation": "Python is a high-level programming language known for its readable syntax and wide range of applications.",
-        "example": """name = "Joe"
-print(name)""",
-        "tip": "Python programs can often be written with fewer lines of code.",
-        "question": "Which language is known for readable and simple syntax?",
-        "options": ["Machine Code", "Python", "Assembly", "Binary"],
-        "answer": 1
-    },
-
-    "Python Syntax": {
-        "title": "Python Syntax",
-        "explanation": "Python syntax defines how Python code must be written. Indentation is important because it defines blocks of code.",
-        "example": """age = 18
-
-if age >= 18:
-    print("Adult")""",
-        "tip": "Python uses indentation to organize blocks of code.",
-        "question": "What is especially important for Python code blocks?",
-        "options": ["Indentation", "Semicolon", "Brackets only", "Colon only"],
-        "answer": 0
-    },
-
-    "Introduction to C++": {
-        "title": "Introduction to C++",
-        "explanation": "C++ is a general-purpose programming language that supports procedural and object-oriented programming.",
-        "example": """#include <iostream>
-using namespace std;
-
-int main() {
-    cout << "Hello";
-    return 0;
-}""",
-        "tip": "C++ extends many concepts of the C language.",
-        "question": "Which language is C++ closely related to?",
-        "options": ["C", "HTML", "SQL", "CSS"],
-        "answer": 0
+    if (modal) {
+        modal.style.display = "none";
     }
 }
 
 
-# =========================================================
-# QUIZ
-# =========================================================
+/* =====================================================
+   COURSE
+===================================================== */
 
-quiz_questions = [
+async function openCourse(name) {
 
-    {
-        "question": "Which language is known for its simplicity and readability?",
-        "options": ["C", "Python", "Assembly", "Machine Code"],
-        "answer": 1,
-        "explanation": "Python is designed with simple and readable syntax."
-    },
+    console.log("START COURSE:", name);
 
-    {
-        "question": "Which symbol is commonly used to end a statement in C?",
-        "options": [".", ",", ";", ":"],
-        "answer": 2,
-        "explanation": "C statements normally end with a semicolon (;)."
-    },
+    showModal(`
+        <h2>⏳ Loading Course...</h2>
+        <p style="color:#aaa;margin-top:15px;">
+            Loading ${escapeHtml(name)}...
+        </p>
+    `);
 
-    {
-        "question": "Which component is known as the brain of a computer?",
-        "options": ["RAM", "CPU", "Keyboard", "Monitor"],
-        "answer": 1,
-        "explanation": "The CPU processes instructions and performs calculations."
-    },
+    try {
 
-    {
-        "question": "Which Excel function is commonly used to calculate a total?",
-        "options": ["TOTAL()", "SUM()", "ADD()", "PLUS()"],
-        "answer": 1,
-        "explanation": "SUM() adds numbers together in Excel."
-    },
+        const response = await fetch(
+            "/api/course/" +
+            encodeURIComponent(name),
+            {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json"
+                }
+            }
+        );
 
-    {
-        "question": "Which OOP concept allows one class to acquire properties of another?",
-        "options": [
-            "Encapsulation",
-            "Inheritance",
-            "Abstraction",
-            "Compilation"
-        ],
-        "answer": 1,
-        "explanation": "Inheritance allows a class to derive properties and behaviour from another class."
-    },
+        console.log(
+            "Course response:",
+            response.status
+        );
 
-    {
-        "question": "What does HTML mainly describe?",
-        "options": [
-            "Database queries",
-            "Web page structure",
-            "Computer hardware",
-            "Operating systems"
-        ],
-        "answer": 1,
-        "explanation": "HTML defines the structure of web pages."
+        if (!response.ok) {
+            throw new Error(
+                "Course API returned " +
+                response.status
+            );
+        }
+
+        const course =
+            await response.json();
+
+        if (
+            !course ||
+            !Array.isArray(course.chapters)
+        ) {
+            throw new Error(
+                "Invalid course data"
+            );
+        }
+
+        let completedCount =
+            course.chapters.filter(
+                chapter =>
+                    completedChapters.includes(
+                        name + "::" + chapter
+                    )
+            ).length;
+
+        let html = `
+
+            <h2>
+                ${escapeHtml(course.icon || "📚")}
+                ${escapeHtml(name)}
+            </h2>
+
+            <p style="
+                color:#aaa;
+                margin-top:10px;
+                line-height:1.6;
+            ">
+                ${escapeHtml(
+                    course.description || ""
+                )}
+            </p>
+
+            <div class="result">
+
+                📚 Chapters:
+                ${course.chapters.length}
+
+                <br>
+
+                ✅ Completed:
+                ${completedCount}
+
+            </div>
+
+            <h3 style="margin-top:25px;">
+                📖 Learning Path
+            </h3>
+
+        `;
+
+        course.chapters.forEach(
+            (chapter, index) => {
+
+                const completed =
+                    completedChapters.includes(
+                        name + "::" + chapter
+                    );
+
+                html += `
+
+                    <button
+                        type="button"
+                        class="chapter"
+                        data-course="${escapeHtml(name)}"
+                        data-chapter="${escapeHtml(chapter)}"
+                        style="
+                            width:100%;
+                            text-align:left;
+                            color:white;
+                            font-family:inherit;
+                            font-size:15px;
+                        "
+                    >
+
+                        ${completed ? "✅" : `${index + 1}.`}
+
+                        ${escapeHtml(chapter)}
+
+                        <span style="
+                            float:right;
+                            color:#a855f7;
+                        ">
+                            →
+                        </span>
+
+                    </button>
+
+                `;
+            }
+        );
+
+        showModal(html);
+
+        /*
+         * Attach chapter clicks AFTER
+         * the HTML has been inserted.
+         */
+
+        document
+            .querySelectorAll(".chapter")
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        const courseName =
+                            this.dataset.course;
+
+                        const chapter =
+                            this.dataset.chapter;
+
+                        startChapter(
+                            courseName,
+                            chapter
+                        );
+                    }
+                );
+            });
+
+    } catch (error) {
+
+        console.error(
+            "COURSE ERROR:",
+            error
+        );
+
+        showModal(`
+
+            <h2>
+                ⚠️ Course Error
+            </h2>
+
+            <p style="
+                color:#aaa;
+                margin-top:15px;
+                line-height:1.6;
+            ">
+                We couldn't load this course.
+            </p>
+
+            <div class="result">
+                ${escapeHtml(error.message)}
+            </div>
+
+            <button
+                type="button"
+                class="primary"
+                onclick="closeModal()"
+            >
+                CLOSE
+            </button>
+
+        `);
     }
-]
+}
 
 
-# =========================================================
-# CODE CHALLENGES
-# =========================================================
+/* =====================================================
+   LESSON
+===================================================== */
 
-code_challenges = [
+async function startChapter(
+    courseName,
+    chapter
+) {
 
-    {
-        "language": "C",
-        "question": "What will this program print?",
-        "code": """#include <stdio.h>
+    console.log(
+        "START CHAPTER:",
+        courseName,
+        chapter
+    );
 
-int main() {
-    int a = 5;
-    int b = 3;
+    showModal(`
+        <h2>⏳ Loading Lesson...</h2>
+        <p style="color:#aaa;margin-top:15px;">
+            Loading ${escapeHtml(chapter)}...
+        </p>
+    `);
 
-    printf("%d", a + b);
+    try {
 
-    return 0;
-}""",
-        "options": ["2", "8", "15", "53"],
-        "answer": 1,
-        "explanation": "5 + 3 = 8."
-    },
+        const response = await fetch(
+            "/api/lesson/" +
+            encodeURIComponent(chapter),
+            {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json"
+                }
+            }
+        );
 
-    {
-        "language": "Python",
-        "question": "What will this program print?",
-        "code": """a = 10
-b = 2
+        if (!response.ok) {
+            throw new Error(
+                "Lesson API returned " +
+                response.status
+            );
+        }
 
-print(a * b)""",
-        "options": ["12", "20", "102", "5"],
-        "answer": 1,
-        "explanation": "10 × 2 = 20."
-    },
+        const lesson =
+            await response.json();
 
-    {
-        "language": "C++",
-        "question": "What will this program print?",
-        "code": """#include <iostream>
-using namespace std;
+        const key =
+            courseName + "::" + chapter;
 
-int main() {
-    cout << 10 - 4;
-    return 0;
-}""",
-        "options": ["6", "14", "104", "Error"],
-        "answer": 0,
-        "explanation": "10 - 4 = 6."
+        const alreadyCompleted =
+            completedChapters.includes(key);
+
+        let html = `
+
+            <h2>
+                📖 ${escapeHtml(
+                    lesson.title || chapter
+                )}
+            </h2>
+
+            <div class="lesson-box">
+
+                <h3>💡 Explanation</h3>
+
+                <p>
+                    ${escapeHtml(
+                        lesson.explanation
+                    )}
+                </p>
+
+                <h3 style="margin-top:20px;">
+                    💻 Example
+                </h3>
+
+                <div class="example">
+                    ${escapeHtml(
+                        lesson.example
+                    )}
+                </div>
+
+                <div class="tip">
+
+                    💡 Tip:
+                    ${escapeHtml(
+                        lesson.tip
+                    )}
+
+                </div>
+
+            </div>
+
+            <div class="lesson-question">
+
+                🧠 Quick Check
+
+                <p style="
+                    color:#aaa;
+                    font-size:15px;
+                    margin-top:10px;
+                    font-weight:normal;
+                ">
+                    ${escapeHtml(
+                        lesson.question
+                    )}
+                </p>
+
+            </div>
+
+            <div id="lessonOptions"></div>
+
+            <div id="lessonResult"></div>
+
+        `;
+
+        showModal(html);
+
+        const optionsBox =
+            document.getElementById(
+                "lessonOptions"
+            );
+
+        if (
+            optionsBox &&
+            Array.isArray(lesson.options)
+        ) {
+
+            lesson.options.forEach(
+                (option, index) => {
+
+                    const button =
+                        document.createElement(
+                            "button"
+                        );
+
+                    button.type = "button";
+
+                    button.className =
+                        "option";
+
+                    button.textContent =
+                        `${String.fromCharCode(
+                            65 + index
+                        )}. ${option}`;
+
+                    button.addEventListener(
+                        "click",
+                        function () {
+
+                            checkLesson(
+                                index,
+                                Number(
+                                    lesson.answer
+                                ),
+                                key
+                            );
+                        }
+                    );
+
+                    optionsBox.appendChild(
+                        button
+                    );
+                }
+            );
+        }
+
+        if (alreadyCompleted) {
+
+            const result =
+                document.getElementById(
+                    "lessonResult"
+                );
+
+            if (result) {
+
+                result.innerHTML = `
+
+                    <div
+                        class="result"
+                        style="color:#4ade80"
+                    >
+
+                        ✅ Chapter already completed.
+
+                    </div>
+
+                `;
+            }
+        }
+
+    } catch (error) {
+
+        console.error(
+            "LESSON ERROR:",
+            error
+        );
+
+        showModal(`
+
+            <h2>
+                ⚠️ Lesson Error
+            </h2>
+
+            <p style="
+                color:#aaa;
+                margin-top:15px;
+            ">
+                This lesson could not be loaded.
+            </p>
+
+            <div class="result">
+                ${escapeHtml(error.message)}
+            </div>
+
+        `);
     }
-]
+}
 
 
-# =========================================================
-# ERROR FINDER
-# =========================================================
+/* =====================================================
+   LESSON ANSWER
+===================================================== */
 
-error_challenges = [
+function checkLesson(
+    selected,
+    correct,
+    key
+) {
 
-    {
-        "language": "C",
-        "question": "Find the error:",
-        "code": """#include <stdio.h>
+    console.log(
+        "LESSON ANSWER:",
+        selected,
+        correct
+    );
 
-int main() {
-    int age = 18
-    printf("%d", age);
-    return 0;
-}""",
-        "options": [
-            "Missing semicolon after 18",
-            "printf is wrong",
-            "main cannot return 0",
-            "No error"
-        ],
-        "answer": 0,
-        "explanation": "The statement int age = 18 needs a semicolon."
-    },
+    const result =
+        document.getElementById(
+            "lessonResult"
+        );
 
-    {
-        "language": "Python",
-        "question": "Find the error:",
-        "code": """age = 20
-
-if age >= 18
-    print("Adult")""",
-        "options": [
-            "Missing colon after the condition",
-            "age cannot be 20",
-            "print is invalid",
-            "No error"
-        ],
-        "answer": 0,
-        "explanation": "Python requires a colon (:) after an if condition."
+    if (!result) {
+        return;
     }
-]
+
+    if (Number(selected) === Number(correct)) {
+
+        if (
+            !completedChapters.includes(key)
+        ) {
+
+            completedChapters.push(key);
+
+            localStorage.setItem(
+                "codequest_chapters",
+                JSON.stringify(
+                    completedChapters
+                )
+            );
+
+            addXP(25);
+
+            result.innerHTML = `
+
+                <div
+                    class="result"
+                    style="color:#4ade80"
+                >
+
+                    🎉 Correct!
+
+                    <br><br>
+
+                    Chapter completed! ✅
+
+                    <br>
+
+                    +25 XP ⭐
+
+                </div>
+
+            `;
+
+        } else {
+
+            result.innerHTML = `
+
+                <div
+                    class="result"
+                    style="color:#4ade80"
+                >
+
+                    ✅ Correct!
+
+                    <br><br>
+
+                    This chapter was already completed.
+
+                </div>
+
+            `;
+        }
+
+    } else {
+
+        result.innerHTML = `
+
+            <div
+                class="result"
+                style="color:#fb7185"
+            >
+
+                ❌ Not quite.
+
+                <br><br>
+
+                Try reviewing the lesson
+                and answer again.
+
+            </div>
+
+        `;
+    }
+}
 
 
-# =========================================================
-# ROUTES
-# =========================================================
+/* =====================================================
+   QUIZ
+===================================================== */
 
-@app.route("/")
-def home():
-    return render_template("index.html", courses=courses)
+async function openQuiz() {
 
+    console.log("QUIZ OPEN");
 
-@app.route("/api/courses")
-def get_courses():
-    return jsonify(courses)
+    try {
 
+        if (!quizData.length) {
 
-@app.route("/api/course/<course_name>")
-def get_course(course_name):
+            const response =
+                await fetch("/api/quiz");
 
-    if course_name not in courses:
-        return jsonify({"error": "Course not found"}), 404
+            if (!response.ok) {
+                throw new Error(
+                    "Quiz API returned " +
+                    response.status
+                );
+            }
 
-    return jsonify(courses[course_name])
+            quizData =
+                await response.json();
+        }
 
+        if (!quizData.length) {
+            throw new Error(
+                "No quiz questions found."
+            );
+        }
 
-@app.route("/api/lesson/<chapter>")
-def get_lesson(chapter):
+        showQuizQuestion();
 
-    lesson = lessons.get(chapter)
+    } catch (error) {
 
-    if lesson:
-        return jsonify(lesson)
+        console.error(
+            "QUIZ ERROR:",
+            error
+        );
 
-    # Generic lesson for chapters that don't yet have
-    # specialized content.
-    return jsonify({
-        "title": chapter,
-        "explanation": f"This lesson introduces the important concepts of {chapter}. Study the topic carefully and practice the examples.",
-        "example": "Practice this concept by writing a small program or creating your own example.",
-        "tip": "Take notes, practice the example and test yourself before moving to the next chapter.",
-        "question": f"Which statement best describes {chapter}?",
-        "options": [
-            "It is an important programming/computer concept",
-            "It is only a computer game",
-            "It is a type of hardware cable",
-            "None of these"
-        ],
-        "answer": 0
-    })
+        showModal(`
 
+            <h2>
+                ⚠️ Quiz unavailable
+            </h2>
 
-@app.route("/api/quiz")
-def get_quiz():
-    return jsonify(quiz_questions)
+            <div class="result">
+                ${escapeHtml(error.message)}
+            </div>
 
-
-@app.route("/api/code-challenges")
-def get_code_challenges():
-    return jsonify(code_challenges)
+        `);
+    }
+}
 
 
-@app.route("/api/error-finder")
-def get_error_challenges():
-    return jsonify(error_challenges)
+function showQuizQuestion() {
+
+    const question =
+        quizData[
+            Math.floor(
+                Math.random() *
+                quizData.length
+            )
+        ];
+
+    let html = `
+
+        <h2>
+            🧠 Quiz Arena
+        </h2>
+
+        <div class="quiz-question">
+            ${escapeHtml(
+                question.question
+            )}
+        </div>
+
+        <div id="quizOptions"></div>
+
+        <div id="quizResult"></div>
+
+    `;
+
+    showModal(html);
+
+    const optionsBox =
+        document.getElementById(
+            "quizOptions"
+        );
+
+    question.options.forEach(
+        (option, index) => {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+            button.type = "button";
+
+            button.className =
+                "option";
+
+            button.textContent =
+                `${String.fromCharCode(
+                    65 + index
+                )}. ${option}`;
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    checkQuiz(
+                        index,
+                        Number(question.answer),
+                        question.explanation
+                    );
+                }
+            );
+
+            optionsBox.appendChild(
+                button
+            );
+        }
+    );
+}
 
 
-@app.route("/api/status")
-def status():
-    return jsonify({
-        "app": "CodeQuest AI",
-        "version": "0.3",
-        "status": "online",
-        "features": [
-            "Learning",
-            "Interactive Lessons",
-            "Quiz Arena",
-            "Code Challenges",
-            "Error Finder",
-            "AI Career Assistant",
-            "Progress Tracking"
-        ]
-    })
+function checkQuiz(
+    selected,
+    correct,
+    explanation
+) {
+
+    const result =
+        document.getElementById(
+            "quizResult"
+        );
+
+    if (!result) {
+        return;
+    }
+
+    if (
+        Number(selected) === Number(correct)
+    ) {
+
+        addXP(10);
+
+        result.innerHTML = `
+
+            <div
+                class="result"
+                style="color:#4ade80"
+            >
+
+                🎉 CORRECT!
+
+                <br><br>
+
+                +10 XP ⭐
+
+                <br><br>
+
+                ${escapeHtml(
+                    explanation
+                )}
+
+                <br><br>
+
+                <button
+                    type="button"
+                    class="primary"
+                    id="nextQuiz"
+                >
+                    NEXT QUESTION →
+                </button>
+
+            </div>
+
+        `;
+
+        document
+            .getElementById("nextQuiz")
+            .addEventListener(
+                "click",
+                showQuizQuestion
+            );
+
+    } else {
+
+        result.innerHTML = `
+
+            <div
+                class="result"
+                style="color:#fb7185"
+            >
+
+                ❌ Not quite!
+
+                <br><br>
+
+                ${escapeHtml(
+                    explanation
+                )}
+
+                <br><br>
+
+                <button
+                    type="button"
+                    class="primary"
+                    id="tryQuiz"
+                >
+                    TRY ANOTHER →
+                </button>
+
+            </div>
+
+        `;
+
+        document
+            .getElementById("tryQuiz")
+            .addEventListener(
+                "click",
+                showQuizQuestion
+            );
+    }
+}
 
 
-if __name__ == "__main__":
-    app.run(
-        host="0.0.0.0",
-        port=5000,
-        debug=True
-    )
+/* =====================================================
+   CODE CHALLENGE
+===================================================== */
+
+async function openCodeChallenge() {
+
+    try {
+
+        if (!codeData.length) {
+
+            const response =
+                await fetch(
+                    "/api/code-challenges"
+                );
+
+            if (!response.ok) {
+                throw new Error(
+                    "Challenge API returned " +
+                    response.status
+                );
+            }
+
+            codeData =
+                await response.json();
+        }
+
+        if (!codeData.length) {
+            throw new Error(
+                "No challenges found."
+            );
+        }
+
+        const challenge =
+            codeData[
+                Math.floor(
+                    Math.random() *
+                    codeData.length
+                )
+            ];
+
+        let html = `
+
+            <h2>
+                💻 Code Challenge
+            </h2>
+
+            <p style="
+                color:#aaa;
+                margin:15px 0;
+            ">
+                ${escapeHtml(
+                    challenge.question
+                )}
+            </p>
+
+            <pre class="example">${escapeHtml(
+                challenge.code
+            )}</pre>
+
+            <div id="codeOptions"></div>
+
+            <div id="codeResult"></div>
+
+        `;
+
+        showModal(html);
+
+        const optionsBox =
+            document.getElementById(
+                "codeOptions"
+            );
+
+        challenge.options.forEach(
+            (option, index) => {
+
+                const button =
+                    document.createElement(
+                        "button"
+                    );
+
+                button.type = "button";
+
+                button.className =
+                    "option";
+
+                button.textContent =
+                    `${String.fromCharCode(
+                        65 + index
+                    )}. ${option}`;
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        checkCodeAnswer(
+                            index,
+                            Number(
+                                challenge.answer
+                            ),
+                            challenge.explanation
+                        );
+                    }
+                );
+
+                optionsBox.appendChild(
+                    button
+                );
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "CODE CHALLENGE ERROR:",
+            error
+        );
+
+        showModal(`
+
+            <h2>
+                ⚠️ Challenge unavailable
+            </h2>
+
+            <div class="result">
+                ${escapeHtml(error.message)}
+            </div>
+
+        `);
+    }
+}
+
+
+function checkCodeAnswer(
+    selected,
+    correct,
+    explanation
+) {
+
+    const result =
+        document.getElementById(
+            "codeResult"
+        );
+
+    if (!result) {
+        return;
+    }
+
+    if (
+        Number(selected) === Number(correct)
+    ) {
+
+        addXP(15);
+
+        solvedChallenges++;
+
+        localStorage.setItem(
+            "codequest_challenges",
+            String(solvedChallenges)
+        );
+
+        result.innerHTML = `
+
+            <div
+                class="result"
+                style="color:#4ade80"
+            >
+
+                🧠 Correct!
+
+                <br><br>
+
+                +15 XP ⭐
+
+                <br><br>
+
+                ${escapeHtml(
+                    explanation
+                )}
+
+                <br><br>
+
+                <button
+                    type="button"
+                    class="primary"
+                    id="nextCode"
+                >
+                    NEXT CHALLENGE →
+                </button>
+
+            </div>
+
+        `;
+
+        document
+            .getElementById("nextCode")
+            .addEventListener(
+                "click",
+                openCodeChallenge
+            );
+
+    } else {
+
+        result.innerHTML = `
+
+            <div
+                class="result"
+                style="color:#fb7185"
+            >
+
+                ❌ Incorrect
+
+                <br><br>
+
+                ${escapeHtml(
+                    explanation
+                )}
+
+            </div>
+
+        `;
+    }
+}
+
+
+/* =====================================================
+   ERROR FINDER
+===================================================== */
+
+async function openErrorFinder() {
+
+    try {
+
+        if (!errorData.length) {
+
+            const response =
+                await fetch(
+                    "/api/error-finder"
+                );
+
+            if (!response.ok) {
+                throw new Error(
+                    "Error Finder API returned " +
+                    response.status
+                );
+            }
+
+            errorData =
+                await response.json();
+        }
+
+        if (!errorData.length) {
+            throw new Error(
+                "No error challenges found."
+            );
+        }
+
+        const challenge =
+            errorData[
+                Math.floor(
+                    Math.random() *
+                    errorData.length
+                )
+            ];
+
+        let html = `
+
+            <h2>
+                🔍 Error Finder
+            </h2>
+
+            <p style="
+                color:#aaa;
+                margin:15px 0;
+            ">
+                ${escapeHtml(
+                    challenge.question
+                )}
+            </p>
+
+            <pre class="example">${escapeHtml(
+                challenge.code
+            )}</pre>
+
+            <div id="errorOptions"></div>
+
+            <div id="errorResult"></div>
+
+        `;
+
+        showModal(html);
+
+        const optionsBox =
+            document.getElementById(
+                "errorOptions"
+            );
+
+        challenge.options.forEach(
+            (option, index) => {
+
+                const button =
+                    document.createElement(
+                        "button"
+                    );
+
+                button.type = "button";
+
+                button.className =
+                    "option";
+
+                button.textContent =
+                    `${String.fromCharCode(
+                        65 + index
+                    )}. ${option}`;
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        checkError(
+                            index,
+                            Number(
+                                challenge.answer
+                            ),
+                            challenge.explanation
+                        );
+                    }
+                );
+
+                optionsBox.appendChild(
+                    button
+                );
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "ERROR FINDER ERROR:",
+            error
+        );
+
+        showModal(`
+
+            <h2>
+                ⚠️ Error Finder unavailable
+            </h2>
+
+            <div class="result">
+                ${escapeHtml(error.message)}
+            </div>
+
+        `);
+    }
+}
+
+
+function checkError(
+    selected,
+    correct,
+    explanation
+) {
+
+    const result =
+        document.getElementById(
+            "errorResult"
+        );
+
+    if (!result) {
+        return;
+    }
+
+    if (
+        Number(selected) === Number(correct)
+    ) {
+
+        addXP(20);
+
+        solvedChallenges++;
+
+        localStorage.setItem(
+            "codequest_challenges",
+            String(solvedChallenges)
+        );
+
+        result.innerHTML = `
+
+            <div
+                class="result"
+                style="color:#4ade80"
+            >
+
+                🔥 ERROR FOUND!
+
+                <br><br>
+
+                +20 XP ⭐
+
+                <br><br>
+
+                ${escapeHtml(
+                    explanation
+                )}
+
+            </div>
+
+        `;
+
+    } else {
+
+        result.innerHTML = `
+
+            <div
+                class="result"
+                style="color:#fb7185"
+            >
+
+                ❌ Keep looking!
+
+                <br><br>
+
+                ${escapeHtml(
+                    explanation
+                )}
+
+            </div>
+
+        `;
+    }
+}
+
+
+/* =====================================================
+   CAREER
+===================================================== */
+
+function careerAssistant() {
+
+    showModal(`
+
+        <h2>
+            🤖 CodeQuest AI Career Assistant
+        </h2>
+
+        <p style="
+            color:#aaa;
+            line-height:1.7;
+            margin-top:18px;
+        ">
+            Choose a career path:
+        </p>
+
+        <button
+            type="button"
+            class="option"
+            onclick="careerResult('developer')"
+        >
+            💻 Software Developer
+        </button>
+
+        <button
+            type="button"
+            class="option"
+            onclick="careerResult('data')"
+        >
+            📊 Data / AI Career
+        </button>
+
+        <button
+            type="button"
+            class="option"
+            onclick="careerResult('web')"
+        >
+            🌐 Web Developer
+        </button>
+
+        <button
+            type="button"
+            class="option"
+            onclick="careerResult('app')"
+        >
+            📱 App Developer
+        </button>
+
+    `);
+}
+
+
+function careerResult(type) {
+
+    const ideas = {
+
+        developer:
+            "C/C++ → OOP → DSA → Java/Python → Git → Projects → Internship",
+
+        data:
+            "Python → Excel → SQL → Statistics → Pandas → Data Projects",
+
+        web:
+            "HTML → CSS → JavaScript → Flask → APIs → Full Stack Projects",
+
+        app:
+            "Java/Kotlin → Android → APIs → Databases → App Projects"
+    };
+
+    showModal(`
+
+        <h2>
+            🧠 Suggested Learning Path
+        </h2>
+
+        <div class="lesson-box">
+
+            <p style="
+                color:#c084fc;
+                font-size:18px;
+            ">
+                ${escapeHtml(
+                    ideas[type]
+                )}
+            </p>
+
+        </div>
+
+        <button
+            type="button"
+            class="primary"
+            onclick="closeModal()"
+        >
+            START MY JOURNEY 🚀
+        </button>
+
+    `);
+}
+
+
+/* =====================================================
+   COMPILER
+===================================================== */
+
+function compiler() {
+
+    showModal(`
+
+        <h2>
+            ▶️ Online Compiler
+        </h2>
+
+        <p style="
+            color:#aaa;
+            margin:15px 0;
+        ">
+            Write code here.
+        </p>
+
+        <textarea
+            id="codeEditor"
+            style="
+                width:100%;
+                min-height:250px;
+                background:#050507;
+                color:#d8b4fe;
+                border:1px solid #33333d;
+                border-radius:12px;
+                padding:15px;
+                font-family:monospace;
+                resize:vertical;
+            "
+            placeholder="Write your code here..."
+        ></textarea>
+
+        <button
+            type="button"
+            class="primary"
+            onclick="runCompiler()"
+        >
+            ▶ RUN CODE
+        </button>
+
+        <div id="compilerResult"></div>
+
+    `);
+}
+
+
+function runCompiler() {
+
+    const result =
+        document.getElementById(
+            "compilerResult"
+        );
+
+    if (result) {
+
+        result.innerHTML = `
+
+            <div class="result">
+
+                🚧 Compiler engine is the next upgrade.
+
+                <br><br>
+
+                The editor is ready.
+
+            </div>
+
+        `;
+    }
+}
+
+
+/* =====================================================
+   PROGRESS
+===================================================== */
+
+function showProgress() {
+
+    const level =
+        Math.floor(xp / 100) + 1;
+
+    showModal(`
+
+        <h2>
+            🏆 My Progress
+        </h2>
+
+        <div class="stats-grid">
+
+            <div class="stat">
+                ⭐ XP
+                <strong>${xp}</strong>
+            </div>
+
+            <div class="stat">
+                🎯 Level
+                <strong>${level}</strong>
+            </div>
+
+            <div class="stat">
+                📚 Chapters
+                <strong>
+                    ${completedChapters.length}
+                </strong>
+            </div>
+
+            <div class="stat">
+                🧠 Challenges
+                <strong>
+                    ${solvedChallenges}
+                </strong>
+            </div>
+
+        </div>
+
+        <div class="result">
+
+            Keep learning and completing
+            challenges to increase your XP! 🚀
+
+        </div>
+
+    `);
+}
+
+
+/* =====================================================
+   MODAL BACKGROUND CLICK
+===================================================== */
+
+const modal =
+    document.getElementById("modal");
+
+if (modal) {
+
+    modal.addEventListener(
+        "click",
+        function(event) {
+
+            if (event.target === modal) {
+                closeModal();
+            }
+
+        }
+    );
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+updateProgress();
+
+console.log(
+    "✅ CodeQuest AI JavaScript loaded successfully."
+);
+
+</script>
