@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,6 +25,10 @@ body {
     min-height: 100vh;
 }
 
+body.quiz-lockdown {
+    user-select: none;
+}
+
 header {
     padding: 20px 7%;
     display: flex;
@@ -34,7 +37,7 @@ header {
     border-bottom: 1px solid #25252e;
     position: sticky;
     top: 0;
-    background: rgba(7,7,11,.92);
+    background: rgba(7,7,11,.94);
     backdrop-filter: blur(15px);
     z-index: 10;
 }
@@ -262,7 +265,7 @@ button {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,.78);
+    background: rgba(0,0,0,.82);
     z-index: 100;
     padding: 20px;
     overflow-y: auto;
@@ -340,9 +343,37 @@ button {
     color: #d8b4fe;
 }
 
+.quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.quiz-security {
+    padding: 10px 13px;
+    border-radius: 10px;
+    background: #17131f;
+    border: 1px solid #46305f;
+    color: #c084fc;
+    font-size: 12px;
+}
+
+.quiz-timer {
+    padding: 10px 15px;
+    border-radius: 10px;
+    background: #211016;
+    border: 1px solid #63303c;
+    color: #fb7185;
+    font-weight: bold;
+}
+
 .quiz-question {
     font-size: 20px;
-    margin: 20px 0;
+    margin: 25px 0 20px;
+    line-height: 1.5;
 }
 
 .option {
@@ -361,6 +392,11 @@ button {
 .option:hover {
     border-color: #a855f7;
     background: #1c1724;
+}
+
+.option:disabled {
+    cursor: not-allowed;
+    opacity: .65;
 }
 
 .result {
@@ -399,6 +435,25 @@ button {
     margin-top: 5px;
 }
 
+.security-panel {
+    margin-top: 20px;
+    padding: 18px;
+    border-radius: 15px;
+    background: #0b0b0f;
+    border: 1px solid #292933;
+}
+
+.security-panel h3 {
+    color: #c084fc;
+    margin-bottom: 10px;
+}
+
+.security-panel p {
+    color: #aaa;
+    line-height: 1.6;
+    font-size: 14px;
+}
+
 textarea {
     outline: none;
 }
@@ -428,6 +483,34 @@ footer {
     padding: 15px;
     border-radius: 10px;
     margin-top: 15px;
+}
+
+.lockdown-warning {
+    text-align: center;
+    padding: 35px 15px;
+}
+
+.lockdown-warning .shield {
+    font-size: 60px;
+    margin-bottom: 15px;
+}
+
+.lockdown-warning h2 {
+    color: #fb7185;
+    margin-bottom: 15px;
+}
+
+.lockdown-warning p {
+    color: #aaa;
+    line-height: 1.7;
+}
+
+.security-danger {
+    color: #fb7185 !important;
+}
+
+.security-safe {
+    color: #4ade80 !important;
 }
 
 @media(max-width:600px) {
@@ -500,7 +583,7 @@ footer {
         A beginner-friendly coding platform where you can
         learn computer skills, practice programming,
         solve challenges, find errors and prepare for your
-        future career — completely free.
+        future career.
     </p>
 
 </section>
@@ -576,7 +659,7 @@ footer {
         </h3>
 
         <p>
-            Answer questions and earn XP.
+            Secure quiz mode with anti-cheating detection.
         </p>
 
     </div>
@@ -738,6 +821,7 @@ footer {
 
         <span
             class="close"
+            id="closeButton"
             onclick="closeModal()">
 
             ×
@@ -760,6 +844,13 @@ footer {
 let quizData = [];
 let codeData = [];
 let errorData = [];
+
+let quizActive = false;
+let quizTimer = null;
+let quizTimeLeft = 60;
+let quizQuestionNumber = 0;
+let quizScore = 0;
+let quizAnswered = false;
 
 let xp = Number(
     localStorage.getItem("codequest_xp") || 0
@@ -887,11 +978,21 @@ function showModal(content) {
 
 function closeModal() {
 
+    if (quizActive) {
+
+        terminateQuiz(
+            "The quiz was stopped because you attempted to leave the secure quiz environment."
+        );
+
+        return;
+    }
+
     document.getElementById(
         "modal"
     ).style.display = "none";
 
     document.body.style.overflow = "";
+
 }
 
 
@@ -1039,12 +1140,6 @@ async function openCourse(name) {
 
         showModal(html);
 
-
-        /*
-         * IMPORTANT:
-         * Event listeners are attached AFTER
-         * the chapter HTML has been inserted.
-         */
 
         document
             .querySelectorAll(".chapter")
@@ -1432,21 +1527,54 @@ function checkLesson(
 
 
 /* =====================================================
-   QUIZ
+   SECURE QUIZ SYSTEM
 ===================================================== */
 
 async function openQuiz() {
 
+    if (quizActive) {
+        return;
+    }
+
+
     showModal(`
 
-        <div class="loading">
+        <div class="security-panel">
 
-            🧠 Loading Quiz Arena...
+            <h3>
+                🛡️ Secure Quiz Environment
+            </h3>
+
+            <p>
+                This assessment uses browser security
+                controls to detect leaving the quiz,
+                changing tabs/windows, copying content
+                and common shortcut attempts.
+            </p>
+
+            <p style="margin-top:10px;">
+                If you leave the quiz environment,
+                the attempt will automatically terminate.
+            </p>
 
         </div>
 
+
+        <button
+            type="button"
+            class="primary"
+            onclick="beginSecureQuiz()">
+
+            🔐 START SECURE QUIZ
+
+        </button>
+
     `);
 
+}
+
+
+async function beginSecureQuiz() {
 
     try {
 
@@ -1491,51 +1619,488 @@ async function openQuiz() {
         }
 
 
+        quizActive = true;
+        quizQuestionNumber = 0;
+        quizScore = 0;
+        quizTimeLeft = 60;
+        quizAnswered = false;
+
+        document.body.classList.add(
+            "quiz-lockdown"
+        );
+
+
+        installQuizSecurity();
+
+        await requestFullscreen();
+
+
         showQuizQuestion();
+
+
+        startQuizTimer();
 
 
     } catch (error) {
 
         console.error(
-            "Quiz error:",
+            "Quiz start error:",
             error
         );
 
+        quizActive = false;
+
+        document.body.classList.remove(
+            "quiz-lockdown"
+        );
 
         showModal(`
 
             <h2>
-                ⚠️ Quiz unavailable
+                ⚠️ Secure Quiz Error
             </h2>
 
             <p style="
                 color:#aaa;
                 margin-top:15px;
             ">
-                The quiz could not connect to the
-                Flask backend.
+
+                ${escapeHtml(error.message)}
+
             </p>
-
-            <div class="error-message">
-
-                ${escapeHtml(
-                    error.message
-                )}
-
-            </div>
 
         `);
 
     }
+
 }
 
 
-function showQuizQuestion() {
+/* =====================================================
+   QUIZ SECURITY
+===================================================== */
 
-    if (!quizData.length) {
-        openQuiz();
+function installQuizSecurity() {
+
+    document.addEventListener(
+        "visibilitychange",
+        handleVisibilityChange
+    );
+
+    window.addEventListener(
+        "blur",
+        handleWindowBlur
+    );
+
+    window.addEventListener(
+        "beforeunload",
+        handleBeforeUnload
+    );
+
+    document.addEventListener(
+        "fullscreenchange",
+        handleFullscreenChange
+    );
+
+    document.addEventListener(
+        "contextmenu",
+        blockQuizContextMenu
+    );
+
+    document.addEventListener(
+        "copy",
+        blockQuizCopy
+    );
+
+    document.addEventListener(
+        "cut",
+        blockQuizCopy
+    );
+
+    document.addEventListener(
+        "paste",
+        blockQuizPaste
+    );
+
+    document.addEventListener(
+        "keydown",
+        blockQuizShortcuts
+    );
+
+}
+
+
+function removeQuizSecurity() {
+
+    document.removeEventListener(
+        "visibilitychange",
+        handleVisibilityChange
+    );
+
+    window.removeEventListener(
+        "blur",
+        handleWindowBlur
+    );
+
+    window.removeEventListener(
+        "beforeunload",
+        handleBeforeUnload
+    );
+
+    document.removeEventListener(
+        "fullscreenchange",
+        handleFullscreenChange
+    );
+
+    document.removeEventListener(
+        "contextmenu",
+        blockQuizContextMenu
+    );
+
+    document.removeEventListener(
+        "copy",
+        blockQuizCopy
+    );
+
+    document.removeEventListener(
+        "cut",
+        blockQuizCopy
+    );
+
+    document.removeEventListener(
+        "paste",
+        blockQuizPaste
+    );
+
+    document.removeEventListener(
+        "keydown",
+        blockQuizShortcuts
+    );
+
+}
+
+
+function handleVisibilityChange() {
+
+    if (
+        quizActive &&
+        document.hidden
+    ) {
+
+        terminateQuiz(
+            "Quiz terminated: the browser tab was hidden or the user attempted to switch away."
+        );
+
+    }
+
+}
+
+
+function handleWindowBlur() {
+
+    if (quizActive) {
+
+        terminateQuiz(
+            "Quiz terminated: the quiz window lost focus."
+        );
+
+    }
+
+}
+
+
+function handleBeforeUnload(event) {
+
+    if (quizActive) {
+
+        event.preventDefault();
+
+        event.returnValue =
+            "Your secure quiz attempt will be terminated.";
+
+    }
+
+}
+
+
+function handleFullscreenChange() {
+
+    if (
+        quizActive &&
+        !document.fullscreenElement
+    ) {
+
+        terminateQuiz(
+            "Quiz terminated: fullscreen mode was exited."
+        );
+
+    }
+
+}
+
+
+function blockQuizContextMenu(event) {
+
+    if (quizActive) {
+
+        event.preventDefault();
+
+    }
+
+}
+
+
+function blockQuizCopy(event) {
+
+    if (quizActive) {
+
+        event.preventDefault();
+
+    }
+
+}
+
+
+function blockQuizPaste(event) {
+
+    if (quizActive) {
+
+        event.preventDefault();
+
+    }
+
+}
+
+
+function blockQuizShortcuts(event) {
+
+    if (!quizActive) {
         return;
     }
+
+
+    const key =
+        event.key.toLowerCase();
+
+
+    const blocked =
+        event.ctrlKey &&
+        [
+            "c",
+            "v",
+            "x",
+            "a",
+            "f",
+            "p",
+            "s",
+            "u"
+        ].includes(key);
+
+
+    const devTools =
+        event.key === "F12" ||
+        (
+            event.ctrlKey &&
+            event.shiftKey &&
+            ["i", "j", "c"].includes(key)
+        );
+
+
+    const tabSwitch =
+        event.ctrlKey &&
+        (
+            event.key === "Tab" ||
+            event.key === "PageUp" ||
+            event.key === "PageDown"
+        );
+
+
+    if (
+        blocked ||
+        devTools ||
+        tabSwitch
+    ) {
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+    }
+
+}
+
+
+async function requestFullscreen() {
+
+    try {
+
+        if (
+            !document.fullscreenElement &&
+            document.documentElement.requestFullscreen
+        ) {
+
+            await document.documentElement.requestFullscreen();
+
+        }
+
+    } catch (error) {
+
+        console.warn(
+            "Fullscreen unavailable:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   TERMINATE QUIZ
+===================================================== */
+
+function terminateQuiz(reason) {
+
+    if (!quizActive) {
+        return;
+    }
+
+
+    quizActive = false;
+
+    clearInterval(quizTimer);
+
+    quizTimer = null;
+
+    removeQuizSecurity();
+
+    document.body.classList.remove(
+        "quiz-lockdown"
+    );
+
+
+    if (document.fullscreenElement) {
+
+        document.exitFullscreen()
+            .catch(() => {});
+
+    }
+
+
+    showModal(`
+
+        <div class="lockdown-warning">
+
+            <div class="shield">
+                🛡️
+            </div>
+
+            <h2>
+                QUIZ TERMINATED
+            </h2>
+
+            <p>
+                ${escapeHtml(reason)}
+            </p>
+
+            <p style="margin-top:15px;">
+                Your score for this attempt was:
+                <strong>
+                    ${quizScore}
+                </strong>
+            </p>
+
+            <button
+                type="button"
+                class="primary"
+                onclick="closeModal()">
+
+                RETURN TO CODEQUEST
+
+            </button>
+
+        </div>
+
+    `);
+
+}
+
+
+/* =====================================================
+   QUIZ TIMER
+===================================================== */
+
+function startQuizTimer() {
+
+    clearInterval(quizTimer);
+
+
+    quizTimer =
+        setInterval(
+            function() {
+
+                if (!quizActive) {
+
+                    clearInterval(
+                        quizTimer
+                    );
+
+                    return;
+
+                }
+
+
+                quizTimeLeft--;
+
+
+                const timer =
+                    document.getElementById(
+                        "quizTimer"
+                    );
+
+
+                if (timer) {
+
+                    timer.textContent =
+                        `⏱️ ${quizTimeLeft}s`;
+
+                }
+
+
+                if (
+                    quizTimeLeft <= 0
+                ) {
+
+                    finishQuiz(
+                        "Time is over."
+                    );
+
+                }
+
+            },
+            1000
+        );
+
+}
+
+
+/* =====================================================
+   QUIZ QUESTION
+===================================================== */
+
+function showQuizQuestion() {
+
+    if (
+        !quizActive ||
+        !quizData.length
+    ) {
+
+        return;
+
+    }
+
+
+    quizAnswered = false;
 
 
     let question =
@@ -1549,9 +2114,36 @@ function showQuizQuestion() {
 
     let html = `
 
-        <h2>
-            🧠 Quiz Arena
-        </h2>
+        <div class="quiz-header">
+
+            <div class="quiz-security">
+                🔐 SECURE MODE
+            </div>
+
+            <div
+                class="quiz-timer"
+                id="quizTimer">
+
+                ⏱️ ${quizTimeLeft}s
+
+            </div>
+
+        </div>
+
+
+        <p style="
+            color:#777;
+            margin-top:12px;
+            font-size:12px;
+        ">
+
+            Question
+            ${quizQuestionNumber + 1}
+
+            • Leaving this window ends the attempt.
+
+        </p>
+
 
         <div class="quiz-question">
 
@@ -1613,7 +2205,7 @@ function showQuizQuestion() {
                 "click",
                 function() {
 
-                    checkQuiz(
+                    answerSecureQuiz(
                         Number(
                             this.dataset.index
                         ),
@@ -1631,11 +2223,33 @@ function showQuizQuestion() {
 }
 
 
-function checkQuiz(
+function answerSecureQuiz(
     selected,
     correct,
     explanation
 ) {
+
+    if (
+        !quizActive ||
+        quizAnswered
+    ) {
+
+        return;
+
+    }
+
+
+    quizAnswered = true;
+
+
+    document
+        .querySelectorAll(".quiz-option")
+        .forEach(
+            button => {
+                button.disabled = true;
+            }
+        );
+
 
     const result =
         document.getElementById(
@@ -1649,6 +2263,8 @@ function checkQuiz(
 
 
     if (selected === correct) {
+
+        quizScore++;
 
         addXP(10);
 
@@ -1676,7 +2292,7 @@ function checkQuiz(
                 <button
                     type="button"
                     class="primary"
-                    onclick="showQuizQuestion()">
+                    onclick="nextSecureQuizQuestion()">
 
                     NEXT QUESTION →
 
@@ -1694,7 +2310,7 @@ function checkQuiz(
                 class="result"
                 style="color:#fb7185">
 
-                ❌ Not quite!
+                ❌ INCORRECT
 
                 <br><br>
 
@@ -1707,9 +2323,9 @@ function checkQuiz(
                 <button
                     type="button"
                     class="primary"
-                    onclick="showQuizQuestion()">
+                    onclick="nextSecureQuizQuestion()">
 
-                    TRY ANOTHER →
+                    NEXT QUESTION →
 
                 </button>
 
@@ -1718,6 +2334,139 @@ function checkQuiz(
         `;
 
     }
+
+}
+
+
+function nextSecureQuizQuestion() {
+
+    if (!quizActive) {
+        return;
+    }
+
+
+    quizQuestionNumber++;
+
+
+    if (
+        quizQuestionNumber >= 10
+    ) {
+
+        finishQuiz(
+            "You completed the secure quiz."
+        );
+
+        return;
+
+    }
+
+
+    showQuizQuestion();
+
+}
+
+
+function finishQuiz(reason) {
+
+    if (!quizActive) {
+        return;
+    }
+
+
+    quizActive = false;
+
+    clearInterval(quizTimer);
+
+    quizTimer = null;
+
+    removeQuizSecurity();
+
+    document.body.classList.remove(
+        "quiz-lockdown"
+    );
+
+
+    if (document.fullscreenElement) {
+
+        document.exitFullscreen()
+            .catch(() => {});
+
+    }
+
+
+    let total =
+        quizQuestionNumber + 1;
+
+
+    let percentage =
+        total > 0
+        ? Math.round(
+            (quizScore / total) * 100
+          )
+        : 0;
+
+
+    showModal(`
+
+        <div class="lockdown-warning">
+
+            <div class="shield">
+                🏆
+            </div>
+
+            <h2 style="color:#4ade80;">
+                QUIZ COMPLETE
+            </h2>
+
+            <p>
+                ${escapeHtml(reason)}
+            </p>
+
+            <div class="stats-grid">
+
+                <div class="stat">
+                    Score
+                    <strong>
+                        ${quizScore}
+                    </strong>
+                </div>
+
+                <div class="stat">
+                    Questions
+                    <strong>
+                        ${total}
+                    </strong>
+                </div>
+
+                <div class="stat">
+                    Percentage
+                    <strong>
+                        ${percentage}%
+                    </strong>
+                </div>
+
+                <div class="stat">
+                    XP
+                    <strong>
+                        +${quizScore * 10}
+                    </strong>
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                class="primary"
+                onclick="closeModal()">
+
+                RETURN TO CODEQUEST
+
+            </button>
+
+        </div>
+
+    `);
+
 }
 
 
@@ -2491,6 +3240,7 @@ function runCompiler() {
         `;
 
         return;
+
     }
 
 
@@ -2578,6 +3328,27 @@ function showProgress() {
         </div>
 
 
+        <div class="security-panel">
+
+            <h3>
+                🛡️ Security Status
+            </h3>
+
+            <p class="security-safe">
+                ● Secure quiz monitoring available
+            </p>
+
+            <p>
+                CodeQuest monitors quiz visibility,
+                window focus, fullscreen state,
+                copy/paste actions and common
+                browser shortcuts during secure
+                assessments.
+            </p>
+
+        </div>
+
+
         <div class="result">
 
             Keep learning and completing
@@ -2645,7 +3416,8 @@ document
         function(event) {
 
             if (
-                event.target === this
+                event.target === this &&
+                !quizActive
             ) {
 
                 closeModal();
@@ -2661,7 +3433,8 @@ document.addEventListener(
     function(event) {
 
         if (
-            event.key === "Escape"
+            event.key === "Escape" &&
+            !quizActive
         ) {
 
             closeModal();
