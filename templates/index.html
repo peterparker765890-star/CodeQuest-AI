@@ -80,7 +80,6 @@ header {
         #ec4899,
         #6366f1
     );
-
     -webkit-background-clip: text;
     color: transparent;
 }
@@ -97,14 +96,12 @@ header {
     padding: 24px;
     border: 1px solid #2a2a35;
     border-radius: 22px;
-
     background:
         linear-gradient(
             135deg,
             rgba(168,85,247,.16),
             rgba(30,30,40,.6)
         );
-
     display: flex;
     justify-content: space-between;
     gap: 20px;
@@ -124,6 +121,7 @@ header {
 
 .xp {
     color: #c084fc;
+    margin-top: 8px;
 }
 
 .progress {
@@ -137,12 +135,13 @@ header {
 
 .progress div {
     height: 100%;
-    width: 35%;
+    width: 0%;
     background: linear-gradient(
         90deg,
         #a855f7,
         #ec4899
     );
+    transition: width .4s;
 }
 
 .section-title {
@@ -238,13 +237,11 @@ header {
     margin-top: 18px;
     padding: 11px 16px;
     border-radius: 10px;
-
     background: linear-gradient(
         90deg,
         #7c3aed,
         #a855f7
     );
-
     color: white;
     font-weight: bold;
     cursor: pointer;
@@ -283,15 +280,12 @@ header {
     border-radius: 12px;
     background: #0b0b0f;
     cursor: pointer;
+    transition: .2s;
 }
 
 .chapter:hover {
     border-color: #a855f7;
-}
-
-.quiz-question {
-    font-size: 20px;
-    margin: 20px 0;
+    transform: translateX(3px);
 }
 
 .option {
@@ -315,6 +309,19 @@ header {
     padding: 15px;
     border-radius: 12px;
     background: #191922;
+}
+
+.lesson-box {
+    margin-top: 20px;
+    padding: 18px;
+    background: #0b0b0f;
+    border: 1px solid #292933;
+    border-radius: 15px;
+}
+
+.lesson-box p {
+    color: #b5b5bd;
+    line-height: 1.7;
 }
 
 footer {
@@ -346,6 +353,15 @@ footer {
 
     .progress {
         width: 100%;
+    }
+
+    .modal {
+        padding: 12px;
+    }
+
+    .modal-box {
+        margin: 15px auto;
+        padding: 20px;
     }
 }
 
@@ -396,12 +412,12 @@ footer {
             YOUR CODING JOURNEY
         </div>
 
-        <div class="player-level">
+        <div class="player-level" id="levelText">
             Level 1 — Code Explorer 🚀
         </div>
 
         <div class="xp">
-            ⭐ 0 XP
+            ⭐ <span id="xpText">0</span> XP
         </div>
 
     </div>
@@ -413,11 +429,11 @@ footer {
         </div>
 
         <div class="progress">
-            <div></div>
+            <div id="progressBar"></div>
         </div>
 
         <div class="player-title">
-            35 / 100 XP
+            <span id="nextXpText">0</span> / 100 XP
         </div>
 
     </div>
@@ -430,37 +446,37 @@ footer {
 
 <section class="features">
 
-    <div class="feature" onclick="openQuiz()">
+    <div class="feature" id="quizBtn">
         <div class="feature-icon">🧠</div>
         <h3>Quiz Arena</h3>
         <p>Answer questions and earn XP.</p>
     </div>
 
-    <div class="feature" onclick="openCodeChallenge()">
+    <div class="feature" id="codeBtn">
         <div class="feature-icon">💻</div>
         <h3>Code Challenge</h3>
         <p>Predict program output.</p>
     </div>
 
-    <div class="feature" onclick="openErrorFinder()">
+    <div class="feature" id="errorBtn">
         <div class="feature-icon">🔍</div>
         <h3>Error Finder</h3>
         <p>Find bugs and understand them.</p>
     </div>
 
-    <div class="feature" onclick="careerAssistant()">
+    <div class="feature" id="careerBtn">
         <div class="feature-icon">🤖</div>
         <h3>AI Career</h3>
         <p>Projects, internships and placement ideas.</p>
     </div>
 
-    <div class="feature" onclick="compiler()">
+    <div class="feature" id="compilerBtn">
         <div class="feature-icon">▶️</div>
         <h3>Online Compiler</h3>
         <p>Write code and experiment.</p>
     </div>
 
-    <div class="feature" onclick="showProgress()">
+    <div class="feature" id="progressBtn">
         <div class="feature-icon">🏆</div>
         <h3>My Progress</h3>
         <p>Track your learning journey.</p>
@@ -496,9 +512,9 @@ footer {
 
     <br>
 
-    <!-- FIXED: no Jinja backslash escaping -->
     <button
-        onclick="openCourse({{ key|tojson }})">
+        class="start-course"
+        data-course="{{ key|e }}">
 
         START COURSE →
 
@@ -520,7 +536,7 @@ footer {
 
     <div class="modal-box">
 
-        <span class="close" onclick="closeModal()">
+        <span class="close" id="closeBtn">
             ×
         </span>
 
@@ -532,9 +548,96 @@ footer {
 
 <script>
 
+/* =====================================================
+   GLOBAL DATA
+===================================================== */
+
 let quizData = [];
 let codeData = [];
 let errorData = [];
+
+let xp = Number(
+    localStorage.getItem("codequestXP") || 0
+);
+
+let coursesStarted =
+    Number(
+        localStorage.getItem("coursesStarted") || 0
+    );
+
+let challengesSolved =
+    Number(
+        localStorage.getItem("challengesSolved") || 0
+    );
+
+let completedChapters =
+    Number(
+        localStorage.getItem("completedChapters") || 0
+    );
+
+
+/* =====================================================
+   XP SYSTEM
+===================================================== */
+
+function updateXPDisplay() {
+
+    document.getElementById("xpText").textContent = xp;
+
+    let level =
+        Math.floor(xp / 100) + 1;
+
+    let currentLevelXP =
+        xp % 100;
+
+    document.getElementById("levelText").textContent =
+        "Level " +
+        level +
+        " — " +
+        getLevelName(level) +
+        " 🚀";
+
+    document.getElementById("nextXpText").textContent =
+        currentLevelXP;
+
+    document.getElementById("progressBar").style.width =
+        currentLevelXP + "%";
+}
+
+
+function getLevelName(level) {
+
+    const names = [
+        "Code Explorer",
+        "Code Learner",
+        "Code Builder",
+        "Code Master",
+        "Code Ninja",
+        "Programming Hero"
+    ];
+
+    return names[
+        Math.min(level - 1, names.length - 1)
+    ];
+}
+
+
+function addXP(amount) {
+
+    xp += amount;
+
+    localStorage.setItem(
+        "codequestXP",
+        xp
+    );
+
+    updateXPDisplay();
+}
+
+
+/* =====================================================
+   MODAL
+===================================================== */
 
 function showModal(content) {
 
@@ -547,6 +650,7 @@ function showModal(content) {
     ).style.display = "block";
 }
 
+
 function closeModal() {
 
     document.getElementById(
@@ -555,11 +659,18 @@ function closeModal() {
 }
 
 
-// =====================================================
-// COURSE
-// =====================================================
+/* =====================================================
+   COURSE
+===================================================== */
 
 async function openCourse(name) {
+
+    showModal(`
+        <h2>⏳ Loading Course...</h2>
+        <p style="color:#aaa;margin-top:15px;">
+            Preparing your learning path...
+        </p>
+    `);
 
     try {
 
@@ -576,6 +687,13 @@ async function openCourse(name) {
         const course =
             await response.json();
 
+        coursesStarted++;
+
+        localStorage.setItem(
+            "coursesStarted",
+            coursesStarted
+        );
+
         let html = `
 
             <h2>
@@ -586,6 +704,7 @@ async function openCourse(name) {
             <p style="
                 color:#aaa;
                 margin-top:10px;
+                line-height:1.6;
             ">
                 ${escapeHtml(course.description)}
             </p>
@@ -594,6 +713,16 @@ async function openCourse(name) {
                 📖 Learning Path
             </h3>
 
+            <p style="
+                color:#777;
+                margin-top:8px;
+                font-size:13px;
+            ">
+                Select a chapter to begin learning.
+            </p>
+
+            <div id="chapterList">
+
         `;
 
         course.chapters.forEach(
@@ -601,11 +730,14 @@ async function openCourse(name) {
 
                 html += `
 
-                    <div class="chapter"
-                         onclick='startChapter(${JSON.stringify(chapter)})'>
+                    <div
+                        class="chapter chapter-btn"
+                        data-chapter="${escapeAttribute(chapter)}">
 
-                        ${index + 1}.
-                        ${escapeHtml(chapter)}
+                        <span>
+                            ${index + 1}.
+                            ${escapeHtml(chapter)}
+                        </span>
 
                         <span style="
                             float:right;
@@ -620,9 +752,13 @@ async function openCourse(name) {
             }
         );
 
+        html += `</div>`;
+
         showModal(html);
 
     } catch (error) {
+
+        console.error(error);
 
         showModal(`
 
@@ -631,26 +767,34 @@ async function openCourse(name) {
             <p style="
                 color:#aaa;
                 margin-top:15px;
+                line-height:1.6;
             ">
                 We couldn't load this course.
+                Please try again.
             </p>
 
             <button
                 class="primary"
-                onclick="closeModal()">
+                id="retryBtn">
 
-                OK
+                TRY AGAIN
 
             </button>
 
         `);
+
+        document.getElementById("retryBtn")
+            .addEventListener(
+                "click",
+                () => openCourse(name)
+            );
     }
 }
 
 
-// =====================================================
-// CHAPTER
-// =====================================================
+/* =====================================================
+   CHAPTER / LESSON
+===================================================== */
 
 function startChapter(chapter) {
 
@@ -660,44 +804,84 @@ function startChapter(chapter) {
             📖 ${escapeHtml(chapter)}
         </h2>
 
-        <p style="
-            color:#aaa;
-            line-height:1.7;
-            margin-top:18px;
-        ">
+        <div class="lesson-box">
 
-        Welcome to this lesson! 🎯
+            <h3>
+                🎯 What you will learn
+            </h3>
 
-        <br><br>
+            <p style="margin-top:12px;">
+                In this chapter, you will understand
+                the basic concepts of
+                <strong>${escapeHtml(chapter)}</strong>
+                through simple explanations,
+                examples and practice.
+            </p>
 
-        CodeQuest will teach this topic
-        step-by-step using simple explanations,
-        examples, questions and coding challenges.
+        </div>
 
-        <br><br>
+        <div class="lesson-box">
 
-        🚧 Interactive lesson system is being
-        developed for the next update.
+            <h3>
+                💡 Learning Method
+            </h3>
 
-        </p>
+            <p style="margin-top:12px;">
+                Read the concept carefully,
+                understand the example,
+                then practice it yourself.
+                Regular practice will help you
+                improve your programming skills.
+            </p>
+
+        </div>
 
         <button
             class="primary"
-            onclick="closeModal()">
+            id="completeChapterBtn">
 
-            GOT IT 🚀
+            ✅ MARK CHAPTER COMPLETE +10 XP
 
         </button>
 
     `);
+
+    document
+        .getElementById("completeChapterBtn")
+        .addEventListener(
+            "click",
+            function() {
+
+                completedChapters++;
+
+                localStorage.setItem(
+                    "completedChapters",
+                    completedChapters
+                );
+
+                addXP(10);
+
+                this.disabled = true;
+
+                this.textContent =
+                    "✅ CHAPTER COMPLETED!";
+
+                this.style.opacity = "0.7";
+
+            }
+        );
 }
 
 
-// =====================================================
-// QUIZ
-// =====================================================
+/* =====================================================
+   QUIZ
+===================================================== */
 
 async function openQuiz() {
+
+    showModal(`
+        <h2>⏳ Loading Quiz...</h2>
+    `);
 
     try {
 
@@ -706,15 +890,19 @@ async function openQuiz() {
             const response =
                 await fetch("/api/quiz");
 
+            if (!response.ok) {
+                throw new Error("Quiz request failed");
+            }
+
             quizData =
                 await response.json();
         }
 
         if (!quizData.length) {
-            throw new Error();
+            throw new Error("No quiz data");
         }
 
-        let question =
+        const question =
             quizData[
                 Math.floor(
                     Math.random() *
@@ -730,6 +918,8 @@ async function openQuiz() {
                 ${escapeHtml(question.question)}
             </div>
 
+            <div id="quizOptions">
+
         `;
 
         question.options.forEach(
@@ -738,12 +928,8 @@ async function openQuiz() {
                 html += `
 
                     <button
-                        class="option"
-                        onclick="checkAnswer(
-                            ${index},
-                            ${question.answer},
-                            ${JSON.stringify(question.explanation)}
-                        )">
+                        class="option quiz-option"
+                        data-index="${index}">
 
                         ${String.fromCharCode(65 + index)}.
                         ${escapeHtml(option)}
@@ -754,17 +940,52 @@ async function openQuiz() {
             }
         );
 
-        html += `<div id="quizResult"></div>`;
+        html += `
+
+            </div>
+
+            <div id="quizResult"></div>
+
+        `;
 
         showModal(html);
 
+        document
+            .querySelectorAll(".quiz-option")
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    function() {
+
+                        checkAnswer(
+                            Number(
+                                this.dataset.index
+                            ),
+                            question.answer,
+                            question.explanation
+                        );
+
+                    }
+                );
+
+            });
+
     } catch (error) {
 
+        console.error(error);
+
         showModal(`
+
             <h2>⚠️ Quiz unavailable</h2>
-            <p style="color:#aaa;margin-top:15px;">
-                Quiz data is not available yet.
+
+            <p style="
+                color:#aaa;
+                margin-top:15px;
+            ">
+                Quiz data could not be loaded.
             </p>
+
         `);
     }
 }
@@ -781,7 +1002,28 @@ function checkAnswer(
             "quizResult"
         );
 
+    const buttons =
+        document.querySelectorAll(
+            ".quiz-option"
+        );
+
+    buttons.forEach(
+        button => {
+            button.disabled = true;
+            button.style.opacity = "0.6";
+        }
+    );
+
     if (selected === correct) {
+
+        addXP(10);
+
+        challengesSolved++;
+
+        localStorage.setItem(
+            "challengesSolved",
+            challengesSolved
+        );
 
         result.innerHTML = `
 
@@ -792,7 +1034,7 @@ function checkAnswer(
 
                 <br><br>
 
-                +10 XP ⭐
+                ⭐ +10 XP
 
                 <br><br>
 
@@ -822,11 +1064,15 @@ function checkAnswer(
 }
 
 
-// =====================================================
-// CODE CHALLENGE
-// =====================================================
+/* =====================================================
+   CODE CHALLENGE
+===================================================== */
 
 async function openCodeChallenge() {
+
+    showModal(`
+        <h2>⏳ Loading Challenge...</h2>
+    `);
 
     try {
 
@@ -836,6 +1082,10 @@ async function openCodeChallenge() {
                 await fetch(
                     "/api/code-challenges"
                 );
+
+            if (!response.ok) {
+                throw new Error();
+            }
 
             codeData =
                 await response.json();
@@ -868,6 +1118,8 @@ async function openCodeChallenge() {
                 color:#d8b4fe;
             ">${escapeHtml(challenge.code)}</pre>
 
+            <div id="codeOptions">
+
         `;
 
         challenge.options.forEach(
@@ -876,12 +1128,8 @@ async function openCodeChallenge() {
                 html += `
 
                     <button
-                        class="option"
-                        onclick="checkCodeAnswer(
-                            ${index},
-                            ${challenge.answer},
-                            ${JSON.stringify(challenge.explanation)}
-                        )">
+                        class="option code-option"
+                        data-index="${index}">
 
                         ${String.fromCharCode(65 + index)}.
                         ${escapeHtml(option)}
@@ -892,17 +1140,49 @@ async function openCodeChallenge() {
             }
         );
 
-        html += `<div id="codeResult"></div>`;
+        html += `
+
+            </div>
+
+            <div id="codeResult"></div>
+
+        `;
 
         showModal(html);
 
+        document
+            .querySelectorAll(".code-option")
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    function() {
+
+                        checkCodeAnswer(
+                            Number(
+                                this.dataset.index
+                            ),
+                            challenge.answer,
+                            challenge.explanation
+                        );
+
+                    }
+                );
+
+            });
+
     } catch (error) {
 
+        console.error(error);
+
         showModal(`
+
             <h2>⚠️ Challenge unavailable</h2>
+
             <p style="color:#aaa;margin-top:15px;">
-                Code challenge data is not available yet.
+                Code challenge data could not be loaded.
             </p>
+
         `);
     }
 }
@@ -919,18 +1199,36 @@ function checkCodeAnswer(
             "codeResult"
         );
 
+    document
+        .querySelectorAll(".code-option")
+        .forEach(
+            button => {
+                button.disabled = true;
+                button.style.opacity = "0.6";
+            }
+        );
+
     if (selected === correct) {
+
+        addXP(15);
+
+        challengesSolved++;
+
+        localStorage.setItem(
+            "challengesSolved",
+            challengesSolved
+        );
 
         result.innerHTML = `
 
             <div class="result"
                  style="color:#4ade80">
 
-                🧠 Correct!
+                🧠 CORRECT!
 
                 <br><br>
 
-                +15 XP ⭐
+                ⭐ +15 XP
 
                 <br><br>
 
@@ -947,7 +1245,7 @@ function checkCodeAnswer(
             <div class="result"
                  style="color:#fb7185">
 
-                ❌ Incorrect
+                ❌ INCORRECT
 
                 <br><br>
 
@@ -960,11 +1258,15 @@ function checkCodeAnswer(
 }
 
 
-// =====================================================
-// ERROR FINDER
-// =====================================================
+/* =====================================================
+   ERROR FINDER
+===================================================== */
 
 async function openErrorFinder() {
+
+    showModal(`
+        <h2>⏳ Loading Error Finder...</h2>
+    `);
 
     try {
 
@@ -974,6 +1276,10 @@ async function openErrorFinder() {
                 await fetch(
                     "/api/error-finder"
                 );
+
+            if (!response.ok) {
+                throw new Error();
+            }
 
             errorData =
                 await response.json();
@@ -1006,6 +1312,8 @@ async function openErrorFinder() {
                 color:#fca5a5;
             ">${escapeHtml(challenge.code)}</pre>
 
+            <div id="errorOptions">
+
         `;
 
         challenge.options.forEach(
@@ -1014,12 +1322,8 @@ async function openErrorFinder() {
                 html += `
 
                     <button
-                        class="option"
-                        onclick="checkError(
-                            ${index},
-                            ${challenge.answer},
-                            ${JSON.stringify(challenge.explanation)}
-                        )">
+                        class="option error-option"
+                        data-index="${index}">
 
                         ${String.fromCharCode(65 + index)}.
                         ${escapeHtml(option)}
@@ -1030,17 +1334,49 @@ async function openErrorFinder() {
             }
         );
 
-        html += `<div id="errorResult"></div>`;
+        html += `
+
+            </div>
+
+            <div id="errorResult"></div>
+
+        `;
 
         showModal(html);
 
+        document
+            .querySelectorAll(".error-option")
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    function() {
+
+                        checkError(
+                            Number(
+                                this.dataset.index
+                            ),
+                            challenge.answer,
+                            challenge.explanation
+                        );
+
+                    }
+                );
+
+            });
+
     } catch (error) {
 
+        console.error(error);
+
         showModal(`
+
             <h2>⚠️ Error Finder unavailable</h2>
+
             <p style="color:#aaa;margin-top:15px;">
-                Error Finder data is not available yet.
+                Error Finder data could not be loaded.
             </p>
+
         `);
     }
 }
@@ -1057,7 +1393,25 @@ function checkError(
             "errorResult"
         );
 
+    document
+        .querySelectorAll(".error-option")
+        .forEach(
+            button => {
+                button.disabled = true;
+                button.style.opacity = "0.6";
+            }
+        );
+
     if (selected === correct) {
+
+        addXP(20);
+
+        challengesSolved++;
+
+        localStorage.setItem(
+            "challengesSolved",
+            challengesSolved
+        );
 
         result.innerHTML = `
 
@@ -1068,7 +1422,7 @@ function checkError(
 
                 <br><br>
 
-                +20 XP ⭐
+                ⭐ +20 XP
 
                 <br><br>
 
@@ -1085,7 +1439,7 @@ function checkError(
             <div class="result"
                  style="color:#fb7185">
 
-                ❌ Keep looking!
+                ❌ KEEP LOOKING!
 
                 <br><br>
 
@@ -1098,9 +1452,9 @@ function checkError(
 }
 
 
-// =====================================================
-// CAREER ASSISTANT
-// =====================================================
+/* =====================================================
+   CAREER ASSISTANT
+===================================================== */
 
 function careerAssistant() {
 
@@ -1115,34 +1469,59 @@ function careerAssistant() {
             line-height:1.7;
             margin-top:18px;
         ">
-            Tell us what you want to become:
+            Choose a career path:
         </p>
 
         <button
-            class="option"
-            onclick="careerResult('developer')">
+            class="option career-option"
+            data-type="developer">
+
             💻 Software Developer
+
         </button>
 
         <button
-            class="option"
-            onclick="careerResult('data')">
+            class="option career-option"
+            data-type="data">
+
             📊 Data / AI Career
+
         </button>
 
         <button
-            class="option"
-            onclick="careerResult('web')">
+            class="option career-option"
+            data-type="web">
+
             🌐 Web Developer
+
         </button>
 
         <button
-            class="option"
-            onclick="careerResult('app')">
+            class="option career-option"
+            data-type="app">
+
             📱 App Developer
+
         </button>
 
     `);
+
+    document
+        .querySelectorAll(".career-option")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                function() {
+
+                    careerResult(
+                        this.dataset.type
+                    );
+
+                }
+            );
+
+        });
 }
 
 
@@ -1161,6 +1540,7 @@ function careerResult(type) {
 
         app:
             "Learn Java/Kotlin → Android → APIs → Databases → Publish Projects."
+
     };
 
     showModal(`
@@ -1179,19 +1559,26 @@ function careerResult(type) {
 
         <button
             class="primary"
-            onclick="closeModal()">
+            id="careerClose">
 
             START MY JOURNEY 🚀
 
         </button>
 
     `);
+
+    document
+        .getElementById("careerClose")
+        .addEventListener(
+            "click",
+            closeModal
+        );
 }
 
 
-// =====================================================
-// COMPILER
-// =====================================================
+/* =====================================================
+   COMPILER
+===================================================== */
 
 function compiler() {
 
@@ -1209,6 +1596,7 @@ function compiler() {
         </p>
 
         <textarea
+            id="compilerCode"
             style="
                 width:100%;
                 min-height:230px;
@@ -1225,25 +1613,62 @@ function compiler() {
 
         <button
             class="primary"
-            onclick="
-                alert(
-                    'Compiler engine will be connected in the next update 🚀'
-                )
-            ">
+            id="runCompiler">
 
             ▶ RUN CODE
 
         </button>
 
+        <div id="compilerResult"></div>
+
     `);
+
+    document
+        .getElementById("runCompiler")
+        .addEventListener(
+            "click",
+            function() {
+
+                const code =
+                    document
+                    .getElementById(
+                        "compilerCode"
+                    )
+                    .value;
+
+                document
+                    .getElementById(
+                        "compilerResult"
+                    )
+                    .innerHTML = `
+
+                    <div class="result">
+
+                        🚧 Compiler engine will be
+                        connected in the next update.
+
+                        <br><br>
+
+                        Your code has been captured
+                        successfully.
+
+                    </div>
+
+                `;
+
+            }
+        );
 }
 
 
-// =====================================================
-// PROGRESS
-// =====================================================
+/* =====================================================
+   PROGRESS
+===================================================== */
 
 function showProgress() {
+
+    let level =
+        Math.floor(xp / 100) + 1;
 
     showModal(`
 
@@ -1253,45 +1678,54 @@ function showProgress() {
 
         <div class="result">
 
-            ⭐ XP: 0
+            ⭐ XP:
+            ${xp}
 
             <br><br>
 
-            🎯 Level: Code Explorer
+            🎯 Level:
+            ${level}
 
             <br><br>
 
-            🔥 Streak: 0 days
+            📚 Courses Started:
+            ${coursesStarted}
 
             <br><br>
 
-            📚 Courses Started: 0
+            📖 Chapters Completed:
+            ${completedChapters}
 
             <br><br>
 
-            🧠 Challenges Solved: 0
+            🧠 Challenges Solved:
+            ${challengesSolved}
 
         </div>
 
         <p style="
             color:#777;
             margin-top:15px;
+            line-height:1.6;
         ">
-            Complete quizzes and challenges
-            to build your profile.
+            Keep learning and completing
+            challenges to increase your XP.
         </p>
 
     `);
 }
 
 
-// =====================================================
-// SECURITY / DISPLAY
-// =====================================================
+/* =====================================================
+   SECURITY
+===================================================== */
 
 function escapeHtml(text) {
 
-    if (text === null || text === undefined) {
+    if (
+        text === null ||
+        text === undefined
+    ) {
         return "";
     }
 
@@ -1304,22 +1738,140 @@ function escapeHtml(text) {
 }
 
 
-// =====================================================
-// CLOSE MODAL OUTSIDE
-// =====================================================
+function escapeAttribute(text) {
 
-document.getElementById(
-    "modal"
-).addEventListener(
-    "click",
-    function(event) {
+    return escapeHtml(text);
+}
 
-        if (event.target === this) {
-            closeModal();
+
+/* =====================================================
+   BUTTON EVENTS
+===================================================== */
+
+/* Course buttons */
+
+document
+    .querySelectorAll(".start-course")
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            function() {
+
+                const course =
+                    this.dataset.course;
+
+                openCourse(course);
+
+            }
+        );
+
+    });
+
+
+/* Practice Arena */
+
+document
+    .getElementById("quizBtn")
+    .addEventListener(
+        "click",
+        openQuiz
+    );
+
+document
+    .getElementById("codeBtn")
+    .addEventListener(
+        "click",
+        openCodeChallenge
+    );
+
+document
+    .getElementById("errorBtn")
+    .addEventListener(
+        "click",
+        openErrorFinder
+    );
+
+document
+    .getElementById("careerBtn")
+    .addEventListener(
+        "click",
+        careerAssistant
+    );
+
+document
+    .getElementById("compilerBtn")
+    .addEventListener(
+        "click",
+        compiler
+    );
+
+document
+    .getElementById("progressBtn")
+    .addEventListener(
+        "click",
+        showProgress
+    );
+
+
+/* Dynamic chapter buttons */
+
+document
+    .getElementById("modalContent")
+    .addEventListener(
+        "click",
+        function(event) {
+
+            const chapter =
+                event.target.closest(
+                    ".chapter-btn"
+                );
+
+            if (chapter) {
+
+                startChapter(
+                    chapter.dataset.chapter
+                );
+
+            }
+
         }
+    );
 
-    }
-);
+
+/* Close button */
+
+document
+    .getElementById("closeBtn")
+    .addEventListener(
+        "click",
+        closeModal
+    );
+
+
+/* Click outside modal */
+
+document
+    .getElementById("modal")
+    .addEventListener(
+        "click",
+        function(event) {
+
+            if (
+                event.target === this
+            ) {
+                closeModal();
+            }
+
+        }
+    );
+
+
+/* =====================================================
+   START APP
+===================================================== */
+
+updateXPDisplay();
 
 </script>
 
