@@ -27,8 +27,13 @@ body{
 
 button,
 textarea,
-input{
+input,
+select{
     font-family:inherit;
+}
+
+button{
+    -webkit-tap-highlight-color:transparent;
 }
 
 header{
@@ -281,7 +286,7 @@ header{
 }
 
 .modal-box{
-    max-width:850px;
+    max-width:900px;
     margin:25px auto;
     background:#111116;
     border:1px solid #343442;
@@ -355,8 +360,11 @@ header{
     overflow-x:auto;
     color:#d8b4fe;
     white-space:pre-wrap;
-    font-family:monospace;
+    font-family:
+        "Courier New",
+        monospace;
     line-height:1.6;
+    tab-size:4;
 }
 
 .tip{
@@ -365,6 +373,7 @@ header{
     border-radius:10px;
     background:#211536;
     color:#d8b4fe;
+    line-height:1.7;
 }
 
 .key-points{
@@ -490,13 +499,18 @@ header{
     padding:15px;
     border-radius:10px;
     margin-top:15px;
+    line-height:1.6;
 }
 
-textarea{
+textarea,
+input,
+select{
     outline:none;
 }
 
-textarea:focus{
+textarea:focus,
+input:focus,
+select:focus{
     border-color:#a855f7!important;
 }
 
@@ -508,6 +522,215 @@ footer{
     color:#777;
     font-size:13px;
 }
+
+
+/* =====================================================
+   CAREER ASSISTANT
+===================================================== */
+
+.ai-shell{
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+}
+
+.ai-intro{
+    padding:18px;
+    border:1px solid #30283c;
+    border-radius:15px;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(124,58,237,.16),
+            rgba(17,17,22,.9)
+        );
+}
+
+.ai-intro h3{
+    margin-bottom:8px;
+}
+
+.ai-intro p{
+    color:#aaa;
+    line-height:1.7;
+}
+
+.quick-prompts{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+}
+
+.quick-prompt{
+    padding:9px 12px;
+    border:1px solid #363642;
+    border-radius:20px;
+    background:#17171d;
+    color:#ddd;
+    cursor:pointer;
+    font-size:12px;
+}
+
+.quick-prompt:hover{
+    border-color:#a855f7;
+    color:#fff;
+}
+
+.chat-box{
+    max-height:390px;
+    overflow-y:auto;
+    padding:8px;
+    border:1px solid #292933;
+    border-radius:15px;
+    background:#09090d;
+}
+
+.chat-message{
+    display:flex;
+    margin:10px 0;
+}
+
+.chat-message.user{
+    justify-content:flex-end;
+}
+
+.chat-bubble{
+    max-width:88%;
+    padding:13px 15px;
+    border-radius:15px;
+    line-height:1.7;
+    white-space:pre-wrap;
+}
+
+.chat-message.ai .chat-bubble{
+    background:#191321;
+    border:1px solid #342545;
+    color:#ddd;
+}
+
+.chat-message.user .chat-bubble{
+    background:#6527b7;
+    color:white;
+}
+
+.ai-input-row{
+    display:flex;
+    gap:10px;
+}
+
+.ai-input{
+    flex:1;
+    min-width:0;
+    padding:14px;
+    border-radius:12px;
+    border:1px solid #33333d;
+    background:#08080c;
+    color:white;
+}
+
+.ai-send{
+    border:none;
+    padding:0 18px;
+    border-radius:12px;
+    background:linear-gradient(
+        90deg,
+        #7c3aed,
+        #a855f7
+    );
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+
+/* =====================================================
+   COMPILER
+===================================================== */
+
+.compiler-toolbar{
+    display:grid;
+    grid-template-columns:
+        1fr 1fr;
+    gap:12px;
+    margin:15px 0;
+}
+
+.compiler-field label{
+    display:block;
+    color:#aaa;
+    font-size:12px;
+    margin-bottom:7px;
+}
+
+.compiler-field select,
+.compiler-field input{
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    border:1px solid #33333d;
+    background:#09090d;
+    color:white;
+}
+
+.compiler-editor{
+    width:100%;
+    min-height:330px;
+    background:#050507;
+    color:#d8b4fe;
+    border:1px solid #33333d;
+    border-radius:14px;
+    padding:17px;
+    font-family:
+        "Courier New",
+        monospace;
+    font-size:14px;
+    line-height:1.6;
+    resize:vertical;
+    tab-size:4;
+}
+
+.compiler-actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.compiler-output{
+    margin-top:18px;
+    padding:18px;
+    background:#050507;
+    border:1px solid #292933;
+    border-radius:14px;
+}
+
+.output-title{
+    color:#c084fc;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.output-pre{
+    white-space:pre-wrap;
+    overflow-x:auto;
+    font-family:
+        "Courier New",
+        monospace;
+    color:#d4d4dc;
+    line-height:1.6;
+}
+
+.success-text{
+    color:#4ade80;
+}
+
+.error-text{
+    color:#fb7185;
+}
+
+.info-text{
+    color:#fbbf24;
+}
+
 
 @media(max-width:600px){
 
@@ -537,6 +760,23 @@ footer{
 
     .modal-box{
         padding:20px;
+        margin:10px auto;
+    }
+
+    .compiler-toolbar{
+        grid-template-columns:1fr;
+    }
+
+    .ai-input-row{
+        flex-direction:column;
+    }
+
+    .ai-send{
+        padding:13px;
+    }
+
+    .chat-bubble{
+        max-width:94%;
     }
 
 }
@@ -545,7 +785,9 @@ footer{
 
 </head>
 
+
 <body>
+
 
 <header>
 
@@ -561,6 +803,7 @@ footer{
 
 
 <main class="container">
+
 
 <section class="hero">
 
@@ -642,58 +885,121 @@ footer{
 
 <section class="features">
 
-    <div class="feature" onclick="openQuiz()">
-        <div class="feature-icon">🧠</div>
-        <h3>Quiz Arena</h3>
+
+    <div
+        class="feature"
+        onclick="openQuiz()">
+
+        <div class="feature-icon">
+            🧠
+        </div>
+
+        <h3>
+            Quiz Arena
+        </h3>
+
         <p>
             Test your knowledge and earn XP.
         </p>
+
     </div>
 
 
-    <div class="feature" onclick="openCodeChallenge()">
-        <div class="feature-icon">💻</div>
-        <h3>Code Challenge</h3>
+    <div
+        class="feature"
+        onclick="openCodeChallenge()">
+
+        <div class="feature-icon">
+            💻
+        </div>
+
+        <h3>
+            Code Challenge
+        </h3>
+
         <p>
             Predict program output.
         </p>
+
     </div>
 
 
-    <div class="feature" onclick="openErrorFinder()">
-        <div class="feature-icon">🔍</div>
-        <h3>Error Finder</h3>
+    <div
+        class="feature"
+        onclick="openErrorFinder()">
+
+        <div class="feature-icon">
+            🔍
+        </div>
+
+        <h3>
+            Error Finder
+        </h3>
+
         <p>
             Find programming mistakes.
         </p>
+
     </div>
 
 
-    <div class="feature" onclick="careerAssistant()">
-        <div class="feature-icon">🤖</div>
-        <h3>AI Career</h3>
+    <div
+        class="feature"
+        onclick="careerAssistant()">
+
+        <div class="feature-icon">
+            🤖
+        </div>
+
+        <h3>
+            AI Career
+        </h3>
+
         <p>
-            Explore technology career paths.
+            Ask about internships, jobs,
+            placements, software and hardware.
         </p>
+
     </div>
 
 
-    <div class="feature" onclick="compiler()">
-        <div class="feature-icon">▶️</div>
-        <h3>Online Compiler</h3>
+    <div
+        class="feature"
+        onclick="compiler()">
+
+        <div class="feature-icon">
+            ▶️
+        </div>
+
+        <h3>
+            Online Compiler
+        </h3>
+
         <p>
-            Experiment with code.
+            Write, run and debug programs.
         </p>
+
     </div>
 
 
-    <div class="feature" onclick="showProgress()">
-        <div class="feature-icon">🏆</div>
-        <h3>My Progress</h3>
+    <div
+        class="feature"
+        onclick="showProgress()">
+
+        <div class="feature-icon">
+            🏆
+        </div>
+
+        <h3>
+            My Progress
+        </h3>
+
         <p>
             Track your learning journey.
         </p>
+
     </div>
+
 
 </section>
 
@@ -741,11 +1047,14 @@ footer{
 
 </section>
 
+
 </main>
 
 
 <footer>
+
     CodeQuest AI • Learn today. Build tomorrow. 🚀
+
 </footer>
 
 
@@ -772,6 +1081,7 @@ footer{
 
 <script>
 
+
 /* =====================================================
    GLOBAL STATE
 ===================================================== */
@@ -784,9 +1094,13 @@ let currentQuizIndex = 0;
 let currentQuizScore = 0;
 let currentQuizTotal = 0;
 
-let xp = Number(
-    localStorage.getItem("codequest_xp") || 0
-);
+let xp =
+    Number(
+        localStorage.getItem(
+            "codequest_xp"
+        ) || 0
+    );
+
 
 let completedChapters = [];
 
@@ -809,11 +1123,13 @@ try{
 
 }
 
-let solvedChallenges = Number(
-    localStorage.getItem(
-        "codequest_challenges"
-    ) || 0
-);
+
+let solvedChallenges =
+    Number(
+        localStorage.getItem(
+            "codequest_challenges"
+        ) || 0
+    );
 
 
 /* =====================================================
@@ -842,20 +1158,24 @@ function updateProgress(){
     let currentXP =
         xp % 100;
 
+
     document.getElementById(
         "xpText"
     ).textContent =
         `⭐ ${xp} XP`;
+
 
     document.getElementById(
         "levelText"
     ).textContent =
         `Level ${level} — ${getLevelName(level)} 🚀`;
 
+
     document.getElementById(
         "progressText"
     ).textContent =
         `${currentXP} / 100 XP`;
+
 
     document.getElementById(
         "progressBar"
@@ -876,8 +1196,10 @@ function getLevelName(level){
         "Code Master",
         "Tech Creator",
         "Cyber Builder",
-        "Software Engineer"
+        "Software Engineer",
+        "Tech Architect"
     ];
+
 
     return names[
         Math.min(
@@ -887,6 +1209,7 @@ function getLevelName(level){
     ];
 
 }
+
 
 updateProgress();
 
@@ -901,9 +1224,11 @@ function showModal(content){
         "modalContent"
     ).innerHTML=content;
 
+
     document.getElementById(
         "modal"
     ).style.display="block";
+
 
     document.body.style.overflow="hidden";
 
@@ -916,22 +1241,24 @@ function closeModal(){
         "modal"
     ).style.display="none";
 
+
     document.body.style.overflow="";
 
 }
 
 
 /* =====================================================
-   COURSE
+   COURSE SYSTEM
 ===================================================== */
 
 async function openCourse(name){
 
     showModal(`
         <div class="loading">
-            📚 Loading course...
+            📚 Loading complete learning path...
         </div>
     `);
+
 
     try{
 
@@ -941,28 +1268,39 @@ async function openCourse(name){
                 encodeURIComponent(name),
                 {
                     headers:{
-                        "Accept":"application/json"
+                        "Accept":
+                            "application/json"
                     }
                 }
             );
 
+
         if(!response.ok){
+
             throw new Error(
                 `Course API returned ${response.status}`
             );
+
         }
+
 
         const course =
             await response.json();
 
+
         if(
             !course ||
-            !Array.isArray(course.chapters)
+            !Array.isArray(
+                course.chapters
+            )
         ){
+
             throw new Error(
                 "Invalid course data."
             );
+
         }
+
 
         let completedCount =
             course.chapters.filter(
@@ -975,36 +1313,46 @@ async function openCourse(name){
 
         let percentage =
             course.chapters.length
-            ? Math.round(
+            ?
+            Math.round(
                 completedCount /
                 course.chapters.length *
                 100
             )
-            : 0;
+            :
+            0;
 
 
         let html=`
 
             <h2>
-                ${escapeHtml(course.icon || "📚")}
+                ${escapeHtml(
+                    course.icon || "📚"
+                )}
+
                 ${escapeHtml(name)}
             </h2>
+
 
             <p style="
                 color:#aaa;
                 margin-top:10px;
                 line-height:1.7;
             ">
+
                 ${escapeHtml(
                     course.description || ""
                 )}
+
             </p>
+
 
             <div class="course-header">
 
                 <strong>
-                    Learning Progress
+                    📈 Learning Progress
                 </strong>
+
 
                 <div style="
                     margin-top:12px;
@@ -1026,20 +1374,30 @@ async function openCourse(name){
 
                 </div>
 
+
                 <p style="
                     color:#aaa;
                     margin-top:9px;
                     font-size:13px;
                 ">
+
                     ${completedCount}
-                    / ${course.chapters.length}
+                    /
+                    ${course.chapters.length}
                     chapters completed
+
                 </p>
 
             </div>
 
-            <h3 style="margin-top:28px;">
+
+            <h3 style="
+                margin-top:28px;
+                margin-bottom:12px;
+            ">
+
                 📖 Complete Learning Path
+
             </h3>
 
         `;
@@ -1052,6 +1410,7 @@ async function openCourse(name){
                     completedChapters.includes(
                         name+"::"+chapter
                     );
+
 
                 html+=`
 
@@ -1113,6 +1472,7 @@ async function openCourse(name){
 
         console.error(error);
 
+
         showModal(`
 
             <h2>
@@ -1120,7 +1480,11 @@ async function openCourse(name){
             </h2>
 
             <div class="error-message">
-                ${escapeHtml(error.message)}
+
+                ${escapeHtml(
+                    error.message
+                )}
+
             </div>
 
         `);
@@ -1154,16 +1518,19 @@ async function startChapter(
                 encodeURIComponent(chapter),
                 {
                     headers:{
-                        "Accept":"application/json"
+                        "Accept":
+                            "application/json"
                     }
                 }
             );
 
 
         if(!response.ok){
+
             throw new Error(
                 `Lesson API returned ${response.status}`
             );
+
         }
 
 
@@ -1176,7 +1543,9 @@ async function startChapter(
 
 
         let alreadyCompleted =
-            completedChapters.includes(key);
+            completedChapters.includes(
+                key
+            );
 
 
         let html=`
@@ -1187,42 +1556,55 @@ async function startChapter(
                 )}
             </h2>
 
+
             <div class="lesson-box">
 
                 <h3>
                     🧠 Understand the Concept
                 </h3>
 
+
                 <p>
                     ${escapeHtml(
-                        lesson.explanation || 
+                        lesson.explanation ||
                         "This chapter explains an important concept."
                     )}
                 </p>
 
 
-                <h3 style="margin-top:25px;">
+                <h3 style="
+                    margin-top:25px;
+                ">
+
                     💻 Simple Example
+
                 </h3>
+
 
                 <p style="
                     color:#aaa;
                     margin-bottom:10px;
                 ">
-                    Look at this example and try to understand
-                    why it works before moving to the quiz.
+
+                    First understand this small example.
+                    Look at each line and think about
+                    what the computer is doing.
+
                 </p>
 
-                <div class="example">
-                    ${escapeHtml(
+
+                <pre class="example">${
+                    formatCode(
                         lesson.example || ""
-                    )}
-                </div>
+                    )
+                }</pre>
 
 
                 ${
                     lesson.key_points &&
-                    Array.isArray(lesson.key_points)
+                    Array.isArray(
+                        lesson.key_points
+                    )
                     ?
                     `
                     <div class="key-points">
@@ -1255,7 +1637,10 @@ async function startChapter(
 
                 <div class="tip">
 
-                    💡 Smart Tip:
+                    💡 <strong>
+                    Smart Tip:
+                    </strong>
+
                     ${escapeHtml(
                         lesson.tip ||
                         "Practice this concept yourself."
@@ -1281,13 +1666,15 @@ async function startChapter(
 
                 </p>
 
+
                 <p style="
                     margin-top:12px;
                     font-size:17px;
                 ">
 
                     ${escapeHtml(
-                        lesson.question
+                        lesson.question ||
+                        "What did you understand from this chapter?"
                     )}
 
                 </p>
@@ -1300,27 +1687,35 @@ async function startChapter(
         `;
 
 
-        lesson.options.forEach(
-            (option,index)=>{
+        if(
+            Array.isArray(
+                lesson.options
+            )
+        ){
 
-                html+=`
+            lesson.options.forEach(
+                (option,index)=>{
 
-                    <button
-                        type="button"
-                        class="option lesson-option"
-                        data-index="${index}"
-                        data-answer="${lesson.answer}"
-                        data-key="${escapeAttr(key)}">
+                    html+=`
 
-                        ${String.fromCharCode(65+index)}.
-                        ${escapeHtml(option)}
+                        <button
+                            type="button"
+                            class="option lesson-option"
+                            data-index="${index}"
+                            data-answer="${lesson.answer}"
+                            data-key="${escapeAttr(key)}">
 
-                    </button>
+                            ${String.fromCharCode(65+index)}.
+                            ${escapeHtml(option)}
 
-                `;
+                        </button>
 
-            }
-        );
+                    `;
+
+                }
+            );
+
+        }
 
 
         html+=`
@@ -1328,6 +1723,7 @@ async function startChapter(
             </div>
 
             <div id="lessonResult"></div>
+
 
             ${
                 alreadyCompleted
@@ -1353,7 +1749,9 @@ async function startChapter(
 
 
         document
-            .querySelectorAll(".lesson-option")
+            .querySelectorAll(
+                ".lesson-option"
+            )
             .forEach(button=>{
 
                 button.addEventListener(
@@ -1380,6 +1778,7 @@ async function startChapter(
 
         console.error(error);
 
+
         showModal(`
 
             <h2>
@@ -1387,7 +1786,11 @@ async function startChapter(
             </h2>
 
             <div class="error-message">
-                ${escapeHtml(error.message)}
+
+                ${escapeHtml(
+                    error.message
+                )}
+
             </div>
 
         `);
@@ -1408,13 +1811,16 @@ function checkLesson(
             "lessonResult"
         );
 
+
     if(!result){
         return;
     }
 
 
     document
-        .querySelectorAll(".lesson-option")
+        .querySelectorAll(
+            ".lesson-option"
+        )
         .forEach(button=>{
             button.disabled=true;
         });
@@ -1422,9 +1828,14 @@ function checkLesson(
 
     if(selected===correct){
 
-        if(!completedChapters.includes(key)){
+        if(
+            !completedChapters.includes(
+                key
+            )
+        ){
 
             completedChapters.push(key);
+
 
             localStorage.setItem(
                 "codequest_chapters",
@@ -1432,6 +1843,7 @@ function checkLesson(
                     completedChapters
                 )
             );
+
 
             addXP(25);
 
@@ -1442,11 +1854,11 @@ function checkLesson(
                     class="result"
                     style="color:#4ade80">
 
-                    🎉 Correct!
+                    🎉 <strong>Correct!</strong>
 
                     <br><br>
 
-                    You understood the chapter.
+                    You understood this chapter.
 
                     <br>
 
@@ -1456,8 +1868,9 @@ function checkLesson(
 
                     <br><br>
 
-                    Keep going — you're building
-                    your knowledge step-by-step.
+                    Keep going.
+                    You're building your knowledge
+                    step-by-step. 🚀
 
                 </div>
 
@@ -1495,16 +1908,23 @@ function checkLesson(
 
                 <br><br>
 
-                Read the explanation again
-                and try another answer.
+                Go back through the explanation
+                and example carefully.
 
                 <br><br>
 
                 <button
                     class="primary"
-                    onclick="location.reload()">
+                    onclick="startChapter(
+                        ${JSON.stringify(
+                            key.split("::")[0]
+                        )},
+                        ${JSON.stringify(
+                            key.split("::").slice(1).join("::")
+                        )}
+                    )">
 
-                    REVIEW AGAIN
+                    📖 REVIEW CHAPTER
 
                 </button>
 
@@ -1518,7 +1938,7 @@ function checkLesson(
 
 
 /* =====================================================
-   SECURE QUIZ
+   QUIZ
 ===================================================== */
 
 async function openQuiz(){
@@ -1539,7 +1959,8 @@ async function openQuiz(){
                     "/api/quiz",
                     {
                         headers:{
-                            "Accept":"application/json"
+                            "Accept":
+                                "application/json"
                         }
                     }
                 );
@@ -1573,9 +1994,14 @@ async function openQuiz(){
 
 
         currentQuizIndex=0;
+
         currentQuizScore=0;
+
         currentQuizTotal=
-            Math.min(quizData.length,10);
+            Math.min(
+                quizData.length,
+                10
+            );
 
 
         startSecureQuiz();
@@ -1585,6 +2011,7 @@ async function openQuiz(){
 
         console.error(error);
 
+
         showModal(`
 
             <h2>
@@ -1592,8 +2019,13 @@ async function openQuiz(){
             </h2>
 
             <div class="error-message">
-                ${escapeHtml(error.message)}
+
+                ${escapeHtml(
+                    error.message
+                )}
+
             </div>
+
 
             <button
                 class="primary"
@@ -1612,7 +2044,13 @@ async function openQuiz(){
 
 function startSecureQuiz(){
 
-    if(currentQuizIndex>=currentQuizTotal){
+    activateQuizSecurity();
+
+
+    if(
+        currentQuizIndex>=
+        currentQuizTotal
+    ){
 
         finishQuiz();
 
@@ -1622,7 +2060,9 @@ function startSecureQuiz(){
 
 
     let question =
-        quizData[currentQuizIndex];
+        quizData[
+            currentQuizIndex
+        ];
 
 
     let html=`
@@ -1639,6 +2079,7 @@ function startSecureQuiz(){
 
         </div>
 
+
         <p style="
             color:#aaa;
             margin-top:12px;
@@ -1652,14 +2093,15 @@ function startSecureQuiz(){
 
         </p>
 
+
         <div class="warning">
 
             ⚠️ Exam integrity mode is active.
-            Leaving the quiz, switching tabs,
-            hiding the page or attempting to
-            navigate away may terminate the test.
+            Leaving the quiz or switching away
+            may terminate the attempt.
 
         </div>
+
 
         <div class="quiz-question">
 
@@ -1668,6 +2110,7 @@ function startSecureQuiz(){
             )}
 
         </div>
+
 
         <div id="quizOptions">
 
@@ -1708,7 +2151,9 @@ function startSecureQuiz(){
 
 
     document
-        .querySelectorAll(".quiz-option")
+        .querySelectorAll(
+            ".quiz-option"
+        )
         .forEach(button=>{
 
             button.addEventListener(
@@ -1729,14 +2174,20 @@ function startSecureQuiz(){
 }
 
 
-function answerSecureQuiz(selected){
+function answerSecureQuiz(
+    selected
+){
 
     let question =
-        quizData[currentQuizIndex];
+        quizData[
+            currentQuizIndex
+        ];
 
 
     document
-        .querySelectorAll(".quiz-option")
+        .querySelectorAll(
+            ".quiz-option"
+        )
         .forEach(button=>{
             button.disabled=true;
         });
@@ -1751,6 +2202,7 @@ function answerSecureQuiz(selected){
     if(selected===question.answer){
 
         currentQuizScore++;
+
 
         result.innerHTML=`
 
@@ -1826,6 +2278,9 @@ function nextSecureQuestion(){
 
 function finishQuiz(){
 
+    deactivateQuizSecurity();
+
+
     let percentage =
         currentQuizTotal
         ?
@@ -1851,23 +2306,32 @@ function finishQuiz(){
             🏆 Quiz Complete
         </h2>
 
+
         <div class="stats-grid">
 
             <div class="stat">
+
                 Score
+
                 <strong>
                     ${currentQuizScore}/${currentQuizTotal}
                 </strong>
+
             </div>
 
+
             <div class="stat">
+
                 Accuracy
+
                 <strong>
                     ${percentage}%
                 </strong>
+
             </div>
 
         </div>
+
 
         <div
             class="result"
@@ -1880,6 +2344,7 @@ function finishQuiz(){
             +${earnedXP} XP ⭐
 
         </div>
+
 
         <button
             class="primary"
@@ -1895,16 +2360,18 @@ function finishQuiz(){
 
 
 /* =====================================================
-   ANTI-CHEATING / EXAM INTEGRITY
+   QUIZ SECURITY
 ===================================================== */
 
 let secureQuizActive=false;
+
 
 function activateQuizSecurity(){
 
     secureQuizActive=true;
 
 }
+
 
 function deactivateQuizSecurity(){
 
@@ -1954,13 +2421,16 @@ function terminateSecureQuiz(reason){
         return;
     }
 
+
     secureQuizActive=false;
+
 
     showModal(`
 
         <h2>
             🛡️ Quiz Terminated
         </h2>
+
 
         <div
             class="result"
@@ -1975,6 +2445,7 @@ function terminateSecureQuiz(reason){
 
         </div>
 
+
         <button
             class="primary"
             onclick="openQuiz()">
@@ -1986,34 +2457,6 @@ function terminateSecureQuiz(reason){
     `);
 
 }
-
-
-/* Activate security whenever secure quiz begins */
-
-const originalStartSecureQuiz =
-    startSecureQuiz;
-
-startSecureQuiz=function(){
-
-    activateQuizSecurity();
-
-    originalStartSecureQuiz();
-
-};
-
-
-/* Stop security when quiz finishes */
-
-const originalFinishQuiz =
-    finishQuiz;
-
-finishQuiz=function(){
-
-    deactivateQuizSecurity();
-
-    originalFinishQuiz();
-
-};
 
 
 /* =====================================================
@@ -2028,6 +2471,7 @@ async function openCodeChallenge(){
         </div>
     `);
 
+
     try{
 
         if(!codeData.length){
@@ -2037,26 +2481,41 @@ async function openCodeChallenge(){
                     "/api/code-challenges"
                 );
 
+
             if(!response.ok){
+
                 throw new Error(
                     `API returned ${response.status}`
                 );
+
             }
+
 
             codeData=
                 await response.json();
 
         }
 
+
         showCodeChallenge();
+
 
     }catch(error){
 
         showModal(`
-            <h2>⚠️ Challenge Error</h2>
+
+            <h2>
+                ⚠️ Challenge Error
+            </h2>
+
             <div class="error-message">
-                ${escapeHtml(error.message)}
+
+                ${escapeHtml(
+                    error.message
+                )}
+
             </div>
+
         `);
 
     }
@@ -2081,18 +2540,25 @@ function showCodeChallenge(){
             💻 Code Challenge
         </h2>
 
+
         <p style="
             color:#aaa;
             margin:15px 0;
         ">
+
             ${escapeHtml(
                 challenge.question
             )}
+
         </p>
 
-        <pre class="example">${escapeHtml(
-            challenge.code
-        )}</pre>
+
+        <pre class="example">${
+            formatCode(
+                challenge.code
+            )
+        }</pre>
+
 
         <div id="codeOptions">
 
@@ -2136,7 +2602,9 @@ function showCodeChallenge(){
 
 
     document
-        .querySelectorAll(".code-option")
+        .querySelectorAll(
+            ".code-option"
+        )
         .forEach(button=>{
 
             button.addEventListener(
@@ -2172,14 +2640,26 @@ function checkCodeAnswer(
             "codeResult"
         );
 
+
     if(!result)return;
+
+
+    document
+        .querySelectorAll(
+            ".code-option"
+        )
+        .forEach(button=>{
+            button.disabled=true;
+        });
 
 
     if(selected===correct){
 
         addXP(15);
 
+
         solvedChallenges++;
+
 
         localStorage.setItem(
             "codequest_challenges",
@@ -2193,7 +2673,7 @@ function checkCodeAnswer(
                 class="result"
                 style="color:#4ade80">
 
-                🧠 Correct!
+                🧠 <strong>Correct!</strong>
 
                 <br><br>
 
@@ -2201,7 +2681,9 @@ function checkCodeAnswer(
 
                 <br><br>
 
-                ${escapeHtml(explanation)}
+                ${escapeHtml(
+                    explanation
+                )}
 
                 <br><br>
 
@@ -2229,7 +2711,9 @@ function checkCodeAnswer(
 
                 <br><br>
 
-                ${escapeHtml(explanation)}
+                ${escapeHtml(
+                    explanation
+                )}
 
             </div>
 
@@ -2262,26 +2746,41 @@ async function openErrorFinder(){
                     "/api/error-finder"
                 );
 
+
             if(!response.ok){
+
                 throw new Error(
                     `API returned ${response.status}`
                 );
+
             }
+
 
             errorData=
                 await response.json();
 
         }
 
+
         showErrorChallenge();
+
 
     }catch(error){
 
         showModal(`
-            <h2>⚠️ Error Finder Error</h2>
+
+            <h2>
+                ⚠️ Error Finder Error
+            </h2>
+
             <div class="error-message">
-                ${escapeHtml(error.message)}
+
+                ${escapeHtml(
+                    error.message
+                )}
+
             </div>
+
         `);
 
     }
@@ -2306,18 +2805,25 @@ function showErrorChallenge(){
             🔍 Error Finder
         </h2>
 
+
         <p style="
             color:#aaa;
             margin:15px 0;
         ">
+
             ${escapeHtml(
                 challenge.question
             )}
+
         </p>
 
-        <pre class="example">${escapeHtml(
-            challenge.code
-        )}</pre>
+
+        <pre class="example">${
+            formatCode(
+                challenge.code
+            )
+        }</pre>
+
 
         <div id="errorOptions">
 
@@ -2361,7 +2867,9 @@ function showErrorChallenge(){
 
 
     document
-        .querySelectorAll(".error-option")
+        .querySelectorAll(
+            ".error-option"
+        )
         .forEach(button=>{
 
             button.addEventListener(
@@ -2397,14 +2905,26 @@ function checkError(
             "errorResult"
         );
 
+
     if(!result)return;
+
+
+    document
+        .querySelectorAll(
+            ".error-option"
+        )
+        .forEach(button=>{
+            button.disabled=true;
+        });
 
 
     if(selected===correct){
 
         addXP(20);
 
+
         solvedChallenges++;
+
 
         localStorage.setItem(
             "codequest_challenges",
@@ -2418,7 +2938,7 @@ function checkError(
                 class="result"
                 style="color:#4ade80">
 
-                🔥 ERROR FOUND!
+                🔥 <strong>ERROR FOUND!</strong>
 
                 <br><br>
 
@@ -2426,7 +2946,9 @@ function checkError(
 
                 <br><br>
 
-                ${escapeHtml(explanation)}
+                ${escapeHtml(
+                    explanation
+                )}
 
                 <br><br>
 
@@ -2454,7 +2976,9 @@ function checkError(
 
                 <br><br>
 
-                ${escapeHtml(explanation)}
+                ${escapeHtml(
+                    explanation
+                )}
 
             </div>
 
@@ -2466,119 +2990,570 @@ function checkError(
 
 
 /* =====================================================
-   CAREER ASSISTANT
+   AI CAREER ASSISTANT
 ===================================================== */
 
 function careerAssistant(){
 
     showModal(`
 
-        <h2>
-            🤖 CodeQuest Career Assistant
-        </h2>
-
-        <p style="
-            color:#aaa;
-            line-height:1.7;
-            margin-top:18px;
-        ">
-            Choose a career path:
-        </p>
+        <div class="ai-shell">
 
 
-        <button
-            class="option"
-            onclick="careerResult('developer')">
+            <div class="ai-intro">
 
-            💻 Software Developer
+                <h2>
+                    🤖 CodeQuest AI Career Assistant
+                </h2>
 
-        </button>
+                <p>
+                    Ask me about internships, placements,
+                    jobs, software, hardware, coding,
+                    projects, resumes, skills, interviews,
+                    career paths and more.
+                </p>
 
-
-        <button
-            class="option"
-            onclick="careerResult('data')">
-
-            📊 Data / AI Career
-
-        </button>
+            </div>
 
 
-        <button
-            class="option"
-            onclick="careerResult('web')">
+            <div class="quick-prompts">
 
-            🌐 Web Developer
+                <button
+                    class="quick-prompt"
+                    onclick="useCareerPrompt(
+                        'How should I prepare for internships?'
+                    )">
 
-        </button>
+                    🎓 Internships
+
+                </button>
 
 
-        <button
-            class="option"
-            onclick="careerResult('app')">
+                <button
+                    class="quick-prompt"
+                    onclick="useCareerPrompt(
+                        'How should I prepare for campus placements?'
+                    )">
 
-            📱 App Developer
+                    💼 Placements
 
-        </button>
+                </button>
+
+
+                <button
+                    class="quick-prompt"
+                    onclick="useCareerPrompt(
+                        'What skills do I need to become a software developer?'
+                    )">
+
+                    💻 Software Jobs
+
+                </button>
+
+
+                <button
+                    class="quick-prompt"
+                    onclick="useCareerPrompt(
+                        'What should I learn for hardware and computer systems?'
+                    )">
+
+                    🖥️ Hardware
+
+                </button>
+
+
+                <button
+                    class="quick-prompt"
+                    onclick="useCareerPrompt(
+                        'How can I build a strong resume as a student?'
+                    )">
+
+                    📄 Resume
+
+                </button>
+
+
+                <button
+                    class="quick-prompt"
+                    onclick="useCareerPrompt(
+                        'Give me a roadmap to get my first IT job.'
+                    )">
+
+                    🚀 First Job
+
+                </button>
+
+            </div>
+
+
+            <div
+                id="careerChat"
+                class="chat-box">
+
+                <div class="chat-message ai">
+
+                    <div class="chat-bubble">
+
+                        👋 Hi! I'm your CodeQuest
+                        Career Assistant.
+
+                        <br><br>
+
+                        You can ask me things like:
+
+                        <br><br>
+
+                        • How do I get an internship?
+                        <br>
+                        • What should I learn for placements?
+                        <br>
+                        • Which programming language should I learn?
+                        <br>
+                        • How do I build projects?
+                        <br>
+                        • What laptop is suitable for coding?
+                        <br>
+                        • How do software jobs work?
+                        <br>
+                        • What hardware skills are useful?
+                        <br>
+                        • How should I prepare for interviews?
+
+                        <br><br>
+
+                        Ask anything related to
+                        technology and career growth. 🚀
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="ai-input-row">
+
+                <input
+                    id="careerInput"
+                    class="ai-input"
+                    type="text"
+                    placeholder="Ask your career or technology question..."
+                    onkeydown="
+                        if(event.key==='Enter'){
+                            askCareerAI();
+                        }
+                    "
+                >
+
+
+                <button
+                    class="ai-send"
+                    onclick="askCareerAI()">
+
+                    ASK
+
+                </button>
+
+            </div>
+
+
+        </div>
 
     `);
 
 }
 
 
-function careerResult(type){
+function useCareerPrompt(question){
 
-    const ideas={
-
-        developer:
-        "C/C++ → OOP → DSA → Java/Python → Git → Projects → Internship",
-
-        data:
-        "Python → Excel → SQL → Statistics → Pandas → Data Projects",
-
-        web:
-        "HTML → CSS → JavaScript → Flask → APIs → Full Stack Projects",
-
-        app:
-        "Java/Kotlin → Android → APIs → Databases → App Projects"
-
-    };
+    const input =
+        document.getElementById(
+            "careerInput"
+        );
 
 
-    showModal(`
+    if(!input){
+        return;
+    }
 
-        <h2>
-            🧠 Suggested Learning Path
-        </h2>
 
-        <div class="lesson-box">
+    input.value=question;
 
-            <p style="
-                color:#c084fc;
-                font-size:18px;
-            ">
-                ${escapeHtml(
-                    ideas[type]
-                )}
-            </p>
+    askCareerAI();
 
-        </div>
+}
 
-        <button
-            class="primary"
-            onclick="closeModal()">
 
-            START MY JOURNEY 🚀
+function addCareerMessage(
+    type,
+    text
+){
 
-        </button>
+    const chat =
+        document.getElementById(
+            "careerChat"
+        );
 
-    `);
+
+    if(!chat){
+        return;
+    }
+
+
+    const wrapper =
+        document.createElement(
+            "div"
+        );
+
+
+    wrapper.className =
+        `chat-message ${type}`;
+
+
+    const bubble =
+        document.createElement(
+            "div"
+        );
+
+
+    bubble.className =
+        "chat-bubble";
+
+
+    bubble.textContent=text;
+
+
+    wrapper.appendChild(
+        bubble
+    );
+
+
+    chat.appendChild(
+        wrapper
+    );
+
+
+    chat.scrollTop =
+        chat.scrollHeight;
+
+}
+
+
+async function askCareerAI(){
+
+    const input =
+        document.getElementById(
+            "careerInput"
+        );
+
+
+    if(!input){
+        return;
+    }
+
+
+    const question =
+        input.value.trim();
+
+
+    if(!question){
+        return;
+    }
+
+
+    addCareerMessage(
+        "user",
+        question
+    );
+
+
+    input.value="";
+
+
+    addCareerMessage(
+        "ai",
+        "🤔 Thinking..."
+    );
+
+
+    const chat =
+        document.getElementById(
+            "careerChat"
+        );
+
+
+    const thinkingBubble =
+        chat.lastElementChild
+        ?.querySelector(
+            ".chat-bubble"
+        );
+
+
+    try{
+
+        const response =
+            await fetch(
+                "/api/career",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json",
+
+                        "Accept":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            question:question
+                        })
+                }
+            );
+
+
+        if(!response.ok){
+
+            throw new Error(
+                `Career API returned ${response.status}`
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        const answer =
+            data.answer ||
+            data.response ||
+            data.message ||
+            data.reply;
+
+
+        if(!answer){
+
+            throw new Error(
+                "The career assistant returned no answer."
+            );
+
+        }
+
+
+        if(thinkingBubble){
+
+            thinkingBubble.textContent=
+                answer;
+
+        }
+
+
+    }catch(error){
+
+        console.error(error);
+
+
+        const fallback =
+            localCareerAnswer(
+                question
+            );
+
+
+        if(thinkingBubble){
+
+            thinkingBubble.textContent=
+                fallback;
+
+        }
+
+    }
 
 }
 
 
 /* =====================================================
-   COMPILER
+   LOCAL CAREER BACKUP
+===================================================== */
+
+function localCareerAnswer(
+    question
+){
+
+    const q =
+        question.toLowerCase();
+
+
+    if(
+        q.includes("internship") ||
+        q.includes("intern")
+    ){
+
+        return `
+🎓 Internship Roadmap
+
+1. Learn one programming language properly.
+2. Learn Git and GitHub.
+3. Build 2–3 real projects.
+4. Put your projects on GitHub.
+5. Create a simple one-page resume.
+6. Practice basic coding and interview questions.
+7. Apply regularly instead of waiting for the perfect opportunity.
+
+For an IT student, projects + fundamentals + communication skills can make your profile much stronger.
+        `.trim();
+
+    }
+
+
+    if(
+        q.includes("placement") ||
+        q.includes("campus")
+    ){
+
+        return `
+💼 Placement Preparation
+
+Focus on these areas:
+
+• Programming fundamentals
+• DSA basics
+• OOP
+• DBMS
+• Operating Systems
+• Computer Networks
+• SQL
+• Git/GitHub
+• Aptitude
+• Communication
+• Technical interviews
+• HR interviews
+
+Start preparing early instead of trying to study everything during the final semester.
+        `.trim();
+
+    }
+
+
+    if(
+        q.includes("hardware") ||
+        q.includes("laptop") ||
+        q.includes("computer hardware")
+    ){
+
+        return `
+🖥️ Hardware Learning Path
+
+Start with:
+
+Computer components → CPU → RAM → Storage → Motherboard → GPU → Power supply → Operating system → Networking → Troubleshooting.
+
+For IT students, you don't necessarily need advanced electronics knowledge, but understanding how computers actually work will make software and system concepts easier.
+        `.trim();
+
+    }
+
+
+    if(
+        q.includes("resume") ||
+        q.includes("cv")
+    ){
+
+        return `
+📄 Student Resume
+
+Keep your resume simple and preferably one page.
+
+Include:
+
+• Name and contact
+• Education
+• Programming skills
+• Projects
+• Certifications
+• Internship/experience if available
+• GitHub
+• LinkedIn
+• Achievements
+
+Don't fill the resume with skills you cannot explain in an interview.
+        `.trim();
+
+    }
+
+
+    if(
+        q.includes("software") ||
+        q.includes("developer") ||
+        q.includes("coding")
+    ){
+
+        return `
+💻 Software Developer Roadmap
+
+Programming fundamentals
+→ Data Structures
+→ OOP
+→ Git/GitHub
+→ SQL
+→ APIs
+→ Projects
+→ Testing/debugging
+→ Internship
+→ Interview preparation
+
+Choose one main language first instead of jumping between many languages.
+        `.trim();
+
+    }
+
+
+    if(
+        q.includes("project") ||
+        q.includes("portfolio")
+    ){
+
+        return `
+🚀 Project Strategy
+
+Start with small projects and gradually increase complexity.
+
+Example:
+
+Calculator
+→ To-do app
+→ Student management system
+→ API-based application
+→ Full-stack project
+→ Real-world problem solving project.
+
+A good project should demonstrate what you learned and explain the problem it solves.
+        `.trim();
+
+    }
+
+
+    return `
+🤖 Here's how I would approach this:
+
+First understand the fundamentals, then practice with a small example, then build a project using the concept.
+
+If you're asking about a specific technology, career, internship, placement, software, hardware or programming problem, tell me the exact topic and I'll break it down step-by-step.
+
+For example:
+"How do I get my first internship?"
+"What should I learn for placements?"
+"Should I learn Python or Java?"
+"How does RAM work?"
+"How do I prepare for a software interview?"
+    `.trim();
+
+}
+
+
+/* =====================================================
+   ONLINE COMPILER
 ===================================================== */
 
 function compiler(){
@@ -2589,61 +3564,281 @@ function compiler(){
             ▶️ Online Compiler
         </h2>
 
+
         <p style="
             color:#aaa;
-            margin:15px 0;
+            margin:12px 0;
+            line-height:1.6;
         ">
-            Write and experiment with code.
+
+            Write code, provide optional input,
+            run it and see the program output.
+
         </p>
+
+
+        <div class="compiler-toolbar">
+
+
+            <div class="compiler-field">
+
+                <label>
+                    PROGRAMMING LANGUAGE
+                </label>
+
+                <select
+                    id="compilerLanguage"
+                    onchange="changeCompilerTemplate()">
+
+                    <option value="c">
+                        C
+                    </option>
+
+                    <option value="cpp">
+                        C++
+                    </option>
+
+                    <option value="python">
+                        Python
+                    </option>
+
+                    <option value="java">
+                        Java
+                    </option>
+
+                    <option value="javascript">
+                        JavaScript
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="compiler-field">
+
+                <label>
+                    STANDARD INPUT
+                </label>
+
+                <input
+                    id="compilerInput"
+                    type="text"
+                    placeholder="Example: 10 20"
+                >
+
+            </div>
+
+
+        </div>
+
 
         <textarea
             id="codeEditor"
-            style="
-                width:100%;
-                min-height:250px;
-                background:#050507;
-                color:#d8b4fe;
-                border:1px solid #33333d;
-                border-radius:12px;
-                padding:15px;
-                font-family:monospace;
-                resize:vertical;
-            "
-            placeholder="Write your code here..."
+            class="compiler-editor"
+            spellcheck="false"
         ></textarea>
 
-        <button
-            class="primary"
-            onclick="runCompiler()">
 
-            ▶ RUN CODE
+        <div class="compiler-actions">
 
-        </button>
+            <button
+                class="primary"
+                onclick="runCompiler()">
 
-        <div id="compilerResult"></div>
+                ▶ RUN CODE
+
+            </button>
+
+
+            <button
+                class="secondary"
+                onclick="resetCompiler()">
+
+                ↻ RESET
+
+            </button>
+
+        </div>
+
+
+        <div id="compilerResult">
+
+            <div class="result">
+
+                💡 Choose a language, write your
+                program and press <strong>RUN CODE</strong>.
+
+            </div>
+
+        </div>
 
     `);
+
+
+    changeCompilerTemplate();
 
 }
 
 
-function runCompiler(){
+function changeCompilerTemplate(){
 
-    const editor=
+    const language =
+        document.getElementById(
+            "compilerLanguage"
+        );
+
+
+    const editor =
         document.getElementById(
             "codeEditor"
         );
 
-    const result=
+
+    if(!language || !editor){
+        return;
+    }
+
+
+    const templates={
+
+        c:
+`#include <stdio.h>
+
+int main()
+{
+    printf("Hello World");
+    return 0;
+}`,
+
+        cpp:
+`#include <iostream>
+using namespace std;
+
+int main()
+{
+    cout << "Hello World";
+    return 0;
+}`,
+
+        python:
+`name = input()
+print("Hello", name)`,
+
+        java:
+`public class Main
+{
+    public static void main(String[] args)
+    {
+        System.out.println("Hello World");
+    }
+}`,
+
+        javascript:
+`const name = "World";
+console.log("Hello " + name);`
+
+    };
+
+
+    editor.value =
+        templates[
+            language.value
+        ] || "";
+
+}
+
+
+function resetCompiler(){
+
+    changeCompilerTemplate();
+
+
+    const input =
+        document.getElementById(
+            "compilerInput"
+        );
+
+
+    if(input){
+        input.value="";
+    }
+
+
+    const result =
         document.getElementById(
             "compilerResult"
         );
 
 
-    if(!editor||!result)return;
+    if(result){
+
+        result.innerHTML=`
+
+            <div class="result">
+
+                💡 Editor reset successfully.
+
+            </div>
+
+        `;
+
+    }
+
+}
 
 
-    if(!editor.value.trim()){
+async function runCompiler(){
+
+    const languageElement =
+        document.getElementById(
+            "compilerLanguage"
+        );
+
+
+    const editor =
+        document.getElementById(
+            "codeEditor"
+        );
+
+
+    const input =
+        document.getElementById(
+            "compilerInput"
+        );
+
+
+    const result =
+        document.getElementById(
+            "compilerResult"
+        );
+
+
+    if(
+        !languageElement ||
+        !editor ||
+        !input ||
+        !result
+    ){
+
+        return;
+
+    }
+
+
+    const language =
+        languageElement.value;
+
+
+    const code =
+        editor.value;
+
+
+    const stdin =
+        input.value;
+
+
+    if(!code.trim()){
 
         result.innerHTML=`
 
@@ -2664,14 +3859,245 @@ function runCompiler(){
 
     result.innerHTML=`
 
-        <div class="result">
+        <div class="loading">
 
-            🚧 Compiler engine is ready
-            for the next upgrade.
+            ⚙️ Compiling and running your program...
 
-            <br><br>
+        </div>
 
-            The editor is working correctly.
+    `;
+
+
+    try{
+
+        const response =
+            await fetch(
+                "/api/compile",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json",
+
+                        "Accept":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            language:
+                                language,
+
+                            code:
+                                code,
+
+                            stdin:
+                                stdin
+
+                        })
+                }
+            );
+
+
+        let data={};
+
+
+        try{
+
+            data =
+                await response.json();
+
+        }catch(e){
+
+            data={};
+
+        }
+
+
+        if(!response.ok){
+
+            throw new Error(
+                data.message ||
+                data.error ||
+                `Compiler API returned ${response.status}`
+            );
+
+        }
+
+
+        renderCompilerResult(
+            data
+        );
+
+
+    }catch(error){
+
+        console.error(error);
+
+
+        result.innerHTML=`
+
+            <div
+                class="compiler-output">
+
+                <div
+                    class="output-title error-text">
+
+                    ❌ Compiler Error
+
+                </div>
+
+
+                <div class="output-pre">
+
+                    ${escapeHtml(
+                        error.message
+                    )}
+
+                </div>
+
+
+                <br>
+
+
+                <div
+                    class="info-text"
+                    style="line-height:1.6">
+
+                    The compiler endpoint could not
+                    complete the request.
+
+                    <br><br>
+
+                    Check that your latest
+                    <strong>app.py</strong> contains
+                    the <strong>/api/compile</strong>
+                    route.
+
+                </div>
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+function renderCompilerResult(
+    data
+){
+
+    const result =
+        document.getElementById(
+            "compilerResult"
+        );
+
+
+    if(!result){
+        return;
+    }
+
+
+    const run =
+        data.run || {};
+
+
+    const compile =
+        data.compile || {};
+
+
+    const stdout =
+        data.stdout ??
+        run.stdout ??
+        run.output ??
+        "";
+
+
+    const stderr =
+        data.stderr ??
+        run.stderr ??
+        "";
+
+
+    const compileError =
+        compile.stderr ||
+        compile.message ||
+        "";
+
+
+    const output =
+        stdout ||
+        stderr ||
+        compileError ||
+        data.output ||
+        data.message ||
+        "Program finished with no output.";
+
+
+    const success =
+        !stderr &&
+        !compileError &&
+        (
+            run.code === undefined ||
+            run.code === null ||
+            run.code === 0 ||
+            data.success === true
+        );
+
+
+    result.innerHTML=`
+
+        <div class="compiler-output">
+
+
+            <div class="output-title ${
+                success
+                ? "success-text"
+                : "error-text"
+            }">
+
+                ${
+                    success
+                    ? "✅ Program Output"
+                    : "❌ Program Error"
+                }
+
+            </div>
+
+
+            <pre class="output-pre">${
+                escapeHtml(
+                    output
+                )
+            }</pre>
+
+
+            ${
+                run.code !== undefined &&
+                run.code !== null
+                ?
+                `
+                <div style="
+                    margin-top:12px;
+                    color:#777;
+                    font-size:12px;
+                ">
+
+                    Exit code:
+                    ${escapeHtml(
+                        run.code
+                    )}
+
+                </div>
+                `
+                :
+                ""
+            }
+
 
         </div>
 
@@ -2687,7 +4113,9 @@ function runCompiler(){
 function showProgress(){
 
     let level=
-        Math.floor(xp/100)+1;
+        Math.floor(
+            xp/100
+        )+1;
 
 
     showModal(`
@@ -2696,33 +4124,56 @@ function showProgress(){
             🏆 My Progress
         </h2>
 
+
         <div class="stats-grid">
 
+
             <div class="stat">
+
                 ⭐ XP
-                <strong>${xp}</strong>
+
+                <strong>
+                    ${xp}
+                </strong>
+
             </div>
 
+
             <div class="stat">
+
                 🎯 Level
-                <strong>${level}</strong>
+
+                <strong>
+                    ${level}
+                </strong>
+
             </div>
 
+
             <div class="stat">
+
                 📚 Chapters
+
                 <strong>
                     ${completedChapters.length}
                 </strong>
+
             </div>
 
+
             <div class="stat">
+
                 🧠 Challenges
+
                 <strong>
                     ${solvedChallenges}
                 </strong>
+
             </div>
 
+
         </div>
+
 
         <div class="result">
 
@@ -2737,31 +4188,92 @@ function showProgress(){
 
 
 /* =====================================================
+   CODE FORMATTING
+===================================================== */
+
+function formatCode(text){
+
+    if(
+        text===null ||
+        text===undefined
+    ){
+
+        return "";
+
+    }
+
+
+    let value =
+        String(text);
+
+
+    /*
+     * Fix examples coming from Python/JSON
+     * where newline characters may arrive
+     * as literal \n text.
+     */
+
+    value =
+        value
+        .replace(/\\r\\n/g,"\n")
+        .replace(/\\n/g,"\n")
+        .replace(/\\r/g,"\n")
+        .replace(/\\t/g,"\t");
+
+
+    return escapeHtml(
+        value
+    );
+
+}
+
+
+/* =====================================================
    SECURITY HELPERS
 ===================================================== */
 
 function escapeHtml(text){
 
     if(
-        text===null||
+        text===null ||
         text===undefined
     ){
+
         return "";
+
     }
 
+
     return String(text)
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 
 }
 
 
 function escapeAttr(text){
 
-    return escapeHtml(text);
+    return escapeHtml(
+        text
+    );
 
 }
 
@@ -2771,13 +4283,31 @@ function escapeAttr(text){
 ===================================================== */
 
 document
-    .getElementById("modal")
+    .getElementById(
+        "modal"
+    )
     .addEventListener(
         "click",
         function(event){
 
-            if(event.target===this){
-                closeModal();
+            if(
+                event.target===this
+            ){
+
+                if(
+                    secureQuizActive
+                ){
+
+                    terminateSecureQuiz(
+                        "The quiz was terminated because the exam window was closed."
+                    );
+
+                }else{
+
+                    closeModal();
+
+                }
+
             }
 
         }
@@ -2788,14 +4318,13 @@ document.addEventListener(
     "keydown",
     function(event){
 
-        if(event.key==="Escape"){
+        if(
+            event.key==="Escape"
+        ){
 
-            /*
-             * Don't allow Escape to silently
-             * bypass an active exam.
-             */
-
-            if(secureQuizActive){
+            if(
+                secureQuizActive
+            ){
 
                 terminateSecureQuiz(
                     "The quiz was terminated because the exam window was closed."
