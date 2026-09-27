@@ -3,12 +3,11 @@ from flask import Flask, render_template, jsonify
 app = Flask(__name__)
 
 # =========================================================
-# CODEQUEST AI — V0.2
+# CODEQUEST AI V0.3
 # Learn • Practice • Play • Build
 # =========================================================
 
 courses = {
-
     "Computer Basics": {
         "icon": "💻",
         "level": "Beginner",
@@ -132,7 +131,7 @@ courses = {
     "C++": {
         "icon": "🟣",
         "level": "Beginner → Master",
-        "description": "Learn C++ and modern object-oriented programming.",
+        "description": "Learn C++ and object-oriented programming.",
         "chapters": [
             "Introduction to C++",
             "Basic Syntax",
@@ -237,7 +236,167 @@ courses = {
 
 
 # =========================================================
-# QUIZ ARENA
+# LESSON DATABASE
+# =========================================================
+
+lessons = {
+
+    "What is a Computer?": {
+        "title": "What is a Computer?",
+        "explanation": "A computer is an electronic device that accepts data, processes it, stores it and produces useful information.",
+        "example": "Example: When you type 10 + 20 into a calculator, the computer processes the values and produces 30.",
+        "tip": "Remember: Input → Processing → Output → Storage",
+        "question": "Which part of a computer processes instructions?",
+        "options": ["Keyboard", "CPU", "Monitor", "Mouse"],
+        "answer": 1
+    },
+
+    "Hardware and Software": {
+        "title": "Hardware and Software",
+        "explanation": "Hardware refers to the physical parts of a computer. Software refers to the programs and instructions that run on the computer.",
+        "example": "Hardware: keyboard, monitor, CPU. Software: Windows, Chrome, Python.",
+        "tip": "Hardware can be touched. Software cannot be physically touched.",
+        "question": "Which of these is software?",
+        "options": ["Keyboard", "RAM", "Windows", "Monitor"],
+        "answer": 2
+    },
+
+    "What is Programming?": {
+        "title": "What is Programming?",
+        "explanation": "Programming is the process of writing instructions that tell a computer how to perform a task.",
+        "example": "Python, C, C++ and Java are programming languages used to create programs.",
+        "tip": "Think of a program as instructions given to a computer.",
+        "question": "What is programming?",
+        "options": [
+            "Repairing a monitor",
+            "Writing instructions for a computer",
+            "Typing documents",
+            "Browsing websites"
+        ],
+        "answer": 1
+    },
+
+    "Algorithms": {
+        "title": "Algorithms",
+        "explanation": "An algorithm is a step-by-step procedure used to solve a problem or complete a task.",
+        "example": "To make tea: boil water → add tea → add milk → add sugar → serve.",
+        "tip": "Algorithm = Step-by-step solution.",
+        "question": "What does an algorithm provide?",
+        "options": [
+            "A step-by-step solution",
+            "Computer hardware",
+            "Internet connection",
+            "A programming language"
+        ],
+        "answer": 0
+    },
+
+    "Variables": {
+        "title": "Variables",
+        "explanation": "A variable is a named storage location used by a program to store a value.",
+        "example": "In Python: age = 18. Here, age is a variable containing 18.",
+        "tip": "Variable = name + stored value.",
+        "question": "What is a variable used for?",
+        "options": [
+            "Storing data",
+            "Displaying a monitor",
+            "Connecting Wi-Fi",
+            "Printing paper"
+        ],
+        "answer": 0
+    },
+
+    "Introduction to C": {
+        "title": "Introduction to C",
+        "explanation": "C is a general-purpose programming language developed by Dennis Ritchie. It is widely used for system programming and learning programming fundamentals.",
+        "example": """#include <stdio.h>
+
+int main() {
+    printf("Hello World");
+    return 0;
+}""",
+        "tip": "C programs commonly use main() as the starting point.",
+        "question": "Who developed the C programming language?",
+        "options": [
+            "James Gosling",
+            "Dennis Ritchie",
+            "Guido van Rossum",
+            "Bjarne Stroustrup"
+        ],
+        "answer": 1
+    },
+
+    "Structure of a C Program": {
+        "title": "Structure of a C Program",
+        "explanation": "A basic C program normally contains header files, the main() function, statements and a return statement.",
+        "example": """#include <stdio.h>
+
+int main() {
+    printf("Hello");
+    return 0;
+}""",
+        "tip": "Execution normally begins from main().",
+        "question": "Where does execution normally begin in a C program?",
+        "options": ["printf()", "main()", "include()", "return()"],
+        "answer": 1
+    },
+
+    "Variables and Data Types": {
+        "title": "Variables and Data Types",
+        "explanation": "C provides different data types such as int, float, char and double to store different kinds of values.",
+        "example": """int age = 18;
+float mark = 85.5;
+char grade = 'A';""",
+        "tip": "Choose a data type according to the kind of value you want to store.",
+        "question": "Which data type stores an integer in C?",
+        "options": ["float", "char", "int", "string"],
+        "answer": 2
+    },
+
+    "Introduction to Python": {
+        "title": "Introduction to Python",
+        "explanation": "Python is a high-level programming language known for its readable syntax and wide range of applications.",
+        "example": """name = "Joe"
+print(name)""",
+        "tip": "Python programs can often be written with fewer lines of code.",
+        "question": "Which language is known for readable and simple syntax?",
+        "options": ["Machine Code", "Python", "Assembly", "Binary"],
+        "answer": 1
+    },
+
+    "Python Syntax": {
+        "title": "Python Syntax",
+        "explanation": "Python syntax defines how Python code must be written. Indentation is important because it defines blocks of code.",
+        "example": """age = 18
+
+if age >= 18:
+    print("Adult")""",
+        "tip": "Python uses indentation to organize blocks of code.",
+        "question": "What is especially important for Python code blocks?",
+        "options": ["Indentation", "Semicolon", "Brackets only", "Colon only"],
+        "answer": 0
+    },
+
+    "Introduction to C++": {
+        "title": "Introduction to C++",
+        "explanation": "C++ is a general-purpose programming language that supports procedural and object-oriented programming.",
+        "example": """#include <iostream>
+using namespace std;
+
+int main() {
+    cout << "Hello";
+    return 0;
+}""",
+        "tip": "C++ extends many concepts of the C language.",
+        "question": "Which language is C++ closely related to?",
+        "options": ["C", "HTML", "SQL", "CSS"],
+        "answer": 0
+    }
+}
+
+
+# =========================================================
+# QUIZ
 # =========================================================
 
 quiz_questions = [
@@ -400,10 +559,7 @@ if age >= 18
 
 @app.route("/")
 def home():
-    return render_template(
-        "index.html",
-        courses=courses
-    )
+    return render_template("index.html", courses=courses)
 
 
 @app.route("/api/courses")
@@ -415,11 +571,35 @@ def get_courses():
 def get_course(course_name):
 
     if course_name not in courses:
-        return jsonify({
-            "error": "Course not found"
-        }), 404
+        return jsonify({"error": "Course not found"}), 404
 
     return jsonify(courses[course_name])
+
+
+@app.route("/api/lesson/<chapter>")
+def get_lesson(chapter):
+
+    lesson = lessons.get(chapter)
+
+    if lesson:
+        return jsonify(lesson)
+
+    # Generic lesson for chapters that don't yet have
+    # specialized content.
+    return jsonify({
+        "title": chapter,
+        "explanation": f"This lesson introduces the important concepts of {chapter}. Study the topic carefully and practice the examples.",
+        "example": "Practice this concept by writing a small program or creating your own example.",
+        "tip": "Take notes, practice the example and test yourself before moving to the next chapter.",
+        "question": f"Which statement best describes {chapter}?",
+        "options": [
+            "It is an important programming/computer concept",
+            "It is only a computer game",
+            "It is a type of hardware cable",
+            "None of these"
+        ],
+        "answer": 0
+    })
 
 
 @app.route("/api/quiz")
@@ -441,23 +621,19 @@ def get_error_challenges():
 def status():
     return jsonify({
         "app": "CodeQuest AI",
-        "version": "0.2",
+        "version": "0.3",
         "status": "online",
         "features": [
             "Learning",
+            "Interactive Lessons",
             "Quiz Arena",
             "Code Challenges",
             "Error Finder",
             "AI Career Assistant",
-            "Online Compiler",
             "Progress Tracking"
         ]
     })
 
-
-# =========================================================
-# RUN
-# =========================================================
 
 if __name__ == "__main__":
     app.run(
