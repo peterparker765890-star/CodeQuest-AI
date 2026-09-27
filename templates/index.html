@@ -18,31 +18,39 @@
 body{
     font-family:Arial,Helvetica,sans-serif;
     min-height:100vh;
+    color:#fff;
     background:
-        radial-gradient(circle at top right,#35136b 0%,transparent 35%),
+        radial-gradient(circle at top right,#35136b 0%,transparent 32%),
         radial-gradient(circle at bottom left,#102c63 0%,transparent 35%),
         #080b16;
-    color:white;
 }
 
-/* NAVBAR */
+button{
+    font-family:inherit;
+}
+
+.hidden{
+    display:none!important;
+}
+
+/* ================= NAVBAR ================= */
 
 .navbar{
+    position:sticky;
+    top:0;
+    z-index:1000;
     width:100%;
-    padding:18px 7%;
+    padding:15px 6%;
     display:flex;
     justify-content:space-between;
     align-items:center;
+    background:rgba(8,11,22,.88);
+    backdrop-filter:blur(14px);
     border-bottom:1px solid rgba(255,255,255,.08);
-    background:rgba(8,11,22,.8);
-    backdrop-filter:blur(12px);
-    position:sticky;
-    top:0;
-    z-index:100;
 }
 
 .logo{
-    font-size:23px;
+    font-size:22px;
     font-weight:bold;
 }
 
@@ -53,39 +61,36 @@ body{
 .nav-right{
     display:flex;
     align-items:center;
-    gap:12px;
+    gap:10px;
 }
 
 .google-btn{
-    border:none;
-    background:white;
+    border:0;
+    background:#fff;
     color:#222;
-    padding:11px 18px;
-    border-radius:10px;
-    font-size:14px;
+    padding:10px 15px;
+    border-radius:9px;
     font-weight:bold;
     cursor:pointer;
     display:flex;
     align-items:center;
-    gap:9px;
+    gap:8px;
 }
 
 .google-icon{
     width:18px;
-    height:18px;
 }
 
 .user-box{
     display:none;
     align-items:center;
-    gap:10px;
+    gap:9px;
 }
 
 .user-photo{
-    width:38px;
-    height:38px;
+    width:36px;
+    height:36px;
     border-radius:50%;
-    object-fit:cover;
     border:2px solid #9b6cff;
 }
 
@@ -97,21 +102,21 @@ body{
 .logout-btn{
     border:1px solid rgba(255,255,255,.15);
     background:rgba(255,255,255,.06);
-    color:white;
-    padding:8px 13px;
+    color:#fff;
+    padding:8px 12px;
     border-radius:8px;
     cursor:pointer;
 }
 
-/* HERO */
+/* ================= HERO ================= */
 
 .hero{
-    min-height:70vh;
+    min-height:65vh;
     display:flex;
-    align-items:center;
     justify-content:center;
+    align-items:center;
     text-align:center;
-    padding:60px 20px;
+    padding:70px 20px;
 }
 
 .hero-content{
@@ -120,13 +125,13 @@ body{
 
 .badge{
     display:inline-block;
-    background:rgba(155,108,255,.12);
-    border:1px solid rgba(155,108,255,.3);
-    color:#bda5ff;
     padding:8px 15px;
     border-radius:30px;
-    font-size:13px;
+    background:rgba(155,108,255,.12);
+    border:1px solid rgba(155,108,255,.3);
+    color:#c6b2ff;
     margin-bottom:20px;
+    font-size:13px;
 }
 
 .hero h1{
@@ -140,195 +145,484 @@ body{
 }
 
 .hero p{
-    max-width:650px;
-    margin:auto;
-    color:#b6b8c5;
-    font-size:17px;
+    color:#b8bbc9;
     line-height:1.7;
+    font-size:17px;
 }
 
-.start-btn{
-    margin-top:30px;
-    padding:15px 27px;
-    border:none;
-    border-radius:12px;
-    background:linear-gradient(135deg,#8f5cff,#6134d9);
+.primary-btn{
+    margin-top:28px;
+    padding:14px 25px;
+    border:0;
+    border-radius:11px;
     color:white;
-    font-size:16px;
+    background:linear-gradient(135deg,#8f5cff,#6134d9);
     font-weight:bold;
     cursor:pointer;
-    box-shadow:0 10px 35px rgba(110,70,220,.3);
+    box-shadow:0 10px 35px rgba(110,70,220,.25);
 }
 
-.start-btn:hover{
+.primary-btn:hover{
     transform:translateY(-2px);
 }
 
-/* FEATURES */
+/* ================= HOME CARDS ================= */
 
 .features{
-    padding:50px 7%;
+    padding:35px 6% 65px;
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:20px;
+    grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+    gap:18px;
 }
 
 .card{
+    padding:24px;
+    border-radius:17px;
     background:rgba(255,255,255,.045);
     border:1px solid rgba(255,255,255,.08);
-    border-radius:18px;
-    padding:25px;
 }
 
 .card-icon{
     font-size:30px;
-    margin-bottom:15px;
+    margin-bottom:14px;
 }
 
 .card h3{
-    margin-bottom:10px;
+    margin-bottom:9px;
 }
 
 .card p{
-    color:#aeb0bd;
+    color:#aeb1bf;
     line-height:1.6;
     font-size:14px;
 }
 
-/* DASHBOARD */
+/* ================= APP ================= */
 
-#dashboard{
+#app{
     display:none;
-    padding:40px 7% 70px;
+    padding:25px 6% 70px;
 }
 
-.dashboard-header{
-    margin-bottom:30px;
+.app-layout{
+    display:grid;
+    grid-template-columns:220px 1fr;
+    gap:22px;
 }
 
-.dashboard-header h1{
+/* SIDEBAR */
+
+.sidebar{
+    position:sticky;
+    top:85px;
+    height:max-content;
+    padding:15px;
+    background:rgba(255,255,255,.045);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:17px;
+}
+
+.side-btn{
+    width:100%;
+    padding:12px;
+    margin-bottom:6px;
+    text-align:left;
+    border:0;
+    border-radius:9px;
+    background:transparent;
+    color:#c8cad5;
+    cursor:pointer;
+}
+
+.side-btn:hover,
+.side-btn.active{
+    background:rgba(143,92,255,.18);
+    color:#fff;
+}
+
+/* CONTENT */
+
+.content{
+    min-width:0;
+}
+
+.page{
+    display:none;
+}
+
+.page.active{
+    display:block;
+}
+
+.page-title{
     font-size:32px;
-    margin-bottom:8px;
+    margin-bottom:7px;
 }
 
-.dashboard-header p{
-    color:#aeb0bd;
+.page-subtitle{
+    color:#aeb1bf;
+    margin-bottom:25px;
 }
+
+/* ================= STATS ================= */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+    margin-bottom:25px;
+}
+
+.stat{
+    padding:18px;
+    background:rgba(255,255,255,.045);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:14px;
+}
+
+.stat-number{
+    font-size:27px;
+    font-weight:bold;
+    margin-bottom:5px;
+}
+
+.stat-label{
+    color:#9296a8;
+    font-size:13px;
+}
+
+/* ================= COURSE GRID ================= */
 
 .course-grid{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
-    gap:20px;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:17px;
 }
 
-.course{
-    background:rgba(255,255,255,.05);
-    border:1px solid rgba(255,255,255,.09);
-    border-radius:18px;
-    padding:25px;
-    cursor:pointer;
+.course-card{
+    padding:22px;
+    border-radius:16px;
+    background:rgba(255,255,255,.045);
+    border:1px solid rgba(255,255,255,.08);
     transition:.2s;
 }
 
-.course:hover{
-    transform:translateY(-5px);
-    border-color:#8f5cff;
+.course-card:hover{
+    transform:translateY(-4px);
+    border-color:#7650d9;
 }
 
 .course-icon{
-    font-size:38px;
-    margin-bottom:15px;
+    font-size:35px;
+    margin-bottom:12px;
 }
 
-.course h3{
+.course-card h3{
     margin-bottom:8px;
 }
 
-.course p{
-    color:#aeb0bd;
-    font-size:14px;
-    line-height:1.5;
+.course-card p{
+    color:#aeb1bf;
+    font-size:13px;
+    line-height:1.55;
+}
+
+.course-meta{
+    display:flex;
+    justify-content:space-between;
+    margin-top:15px;
+    color:#9b6cff;
+    font-size:12px;
 }
 
 .course-btn{
-    margin-top:18px;
     width:100%;
-    padding:11px;
-    border:none;
-    border-radius:9px;
+    margin-top:15px;
+    padding:10px;
+    border:0;
+    border-radius:8px;
     background:#713fe0;
-    color:white;
+    color:#fff;
     font-weight:bold;
     cursor:pointer;
 }
 
-/* LESSON */
+/* ================= SYLLABUS ================= */
 
-#lessonPage{
+.syllabus{
+    display:grid;
+    gap:12px;
+}
+
+.module{
+    background:rgba(255,255,255,.045);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:13px;
+    overflow:hidden;
+}
+
+.module-head{
+    padding:16px;
+    cursor:pointer;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.module-head:hover{
+    background:rgba(255,255,255,.04);
+}
+
+.module-body{
     display:none;
-    padding:40px 7% 70px;
+    padding:0 16px 16px;
 }
 
-.lesson-box{
-    max-width:850px;
-    margin:auto;
-    background:rgba(255,255,255,.05);
-    border:1px solid rgba(255,255,255,.09);
-    border-radius:20px;
-    padding:30px;
+.module.open .module-body{
+    display:block;
 }
 
-.lesson-box h1{
+.chapter{
+    padding:10px;
+    margin-top:7px;
+    border-radius:8px;
+    background:rgba(255,255,255,.035);
+    color:#c6c8d2;
+    cursor:pointer;
+}
+
+.chapter:hover{
+    background:rgba(143,92,255,.15);
+}
+
+/* ================= LESSON ================= */
+
+.lesson{
+    background:rgba(255,255,255,.045);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:17px;
+    padding:25px;
+}
+
+.lesson h2{
     margin-bottom:15px;
 }
 
-.lesson-box p{
+.lesson p{
     color:#c0c2ce;
-    line-height:1.7;
-    margin-bottom:20px;
+    line-height:1.75;
+    margin-bottom:15px;
 }
 
-.code-box{
+.code{
     background:#05060b;
-    border:1px solid rgba(255,255,255,.1);
-    padding:20px;
-    border-radius:12px;
+    padding:18px;
+    border-radius:10px;
     overflow:auto;
-    margin:20px 0;
+    margin:18px 0;
+    border:1px solid rgba(255,255,255,.08);
 }
 
-.code-box pre{
-    color:#d7d7e0;
+.code pre{
+    color:#ddd;
 }
 
-.back-btn{
-    border:none;
-    background:rgba(255,255,255,.08);
-    color:white;
-    padding:11px 17px;
+.lesson-actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.secondary-btn{
+    padding:10px 16px;
+    border:1px solid rgba(255,255,255,.13);
+    background:rgba(255,255,255,.05);
+    color:#fff;
     border-radius:9px;
     cursor:pointer;
 }
 
-/* FOOTER */
+/* ================= QUIZ ================= */
 
-footer{
+.quiz-box{
+    max-width:800px;
+    background:rgba(255,255,255,.045);
+    border:1px solid rgba(255,255,255,.08);
+    padding:25px;
+    border-radius:17px;
+}
+
+.quiz-progress{
+    color:#9b6cff;
+    font-size:13px;
+    margin-bottom:15px;
+}
+
+.question{
+    font-size:20px;
+    line-height:1.5;
+    margin-bottom:20px;
+}
+
+.option{
+    width:100%;
+    padding:13px;
+    margin-bottom:10px;
+    text-align:left;
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:9px;
+    background:rgba(255,255,255,.04);
+    color:#fff;
+    cursor:pointer;
+}
+
+.option:hover{
+    background:rgba(143,92,255,.15);
+}
+
+.quiz-result{
+    padding:20px;
     text-align:center;
-    padding:35px 20px;
-    color:#777b8b;
+}
+
+.correct{
+    border-color:#3bd48a!important;
+}
+
+.wrong{
+    border-color:#ff5964!important;
+}
+
+/* ================= CAREER ================= */
+
+.career-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:16px;
+}
+
+.career-card{
+    padding:22px;
+    border-radius:16px;
+    background:rgba(255,255,255,.045);
+    border:1px solid rgba(255,255,255,.08);
+}
+
+.career-card h3{
+    margin-bottom:10px;
+}
+
+.career-card p{
+    color:#adb0bd;
+    line-height:1.6;
+    font-size:14px;
+}
+
+.career-card ul{
+    padding-left:18px;
+    margin-top:12px;
+    color:#c5c7d2;
+    line-height:1.8;
     font-size:13px;
 }
 
-/* MOBILE */
+.qa-box{
+    margin-top:20px;
+    padding:20px;
+    background:rgba(255,255,255,.045);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:15px;
+}
+
+.qa-input{
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border-radius:8px;
+    border:1px solid rgba(255,255,255,.12);
+    background:#101321;
+    color:white;
+}
+
+/* ================= PROGRESS ================= */
+
+.progress-box{
+    padding:20px;
+    margin-bottom:15px;
+    background:rgba(255,255,255,.045);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:15px;
+}
+
+.progress-bar{
+    width:100%;
+    height:10px;
+    margin-top:12px;
+    background:#1a1d2a;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.progress-fill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,#8f5cff,#b47cff);
+}
+
+/* ================= ACHIEVEMENTS ================= */
+
+.achievement-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:15px;
+}
+
+.achievement{
+    padding:20px;
+    text-align:center;
+    border-radius:14px;
+    background:rgba(255,255,255,.045);
+    border:1px solid rgba(255,255,255,.08);
+}
+
+.achievement .emoji{
+    font-size:35px;
+    margin-bottom:10px;
+}
+
+.locked{
+    opacity:.4;
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:850px){
+
+    .app-layout{
+        grid-template-columns:1fr;
+    }
+
+    .sidebar{
+        position:static;
+        display:grid;
+        grid-template-columns:repeat(2,1fr);
+        gap:5px;
+    }
+
+    .side-btn{
+        margin:0;
+    }
+
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
 
 @media(max-width:600px){
 
     .navbar{
-        padding:15px 5%;
-    }
-
-    .logo{
-        font-size:19px;
+        padding:14px 5%;
     }
 
     .user-name{
@@ -339,19 +633,27 @@ footer{
         padding:50px 20px;
     }
 
-    .hero p{
-        font-size:15px;
+    .features,
+    #app{
+        padding-left:5%;
+        padding-right:5%;
     }
 
-    .features{
-        padding:30px 5%;
+    .stats{
+        grid-template-columns:repeat(2,1fr);
     }
 
-    #dashboard,
-    #lessonPage{
-        padding:30px 5%;
+    .sidebar{
+        grid-template-columns:1fr 1fr;
     }
 
+}
+
+footer{
+    text-align:center;
+    padding:35px;
+    color:#737789;
+    font-size:13px;
 }
 
 </style>
@@ -360,7 +662,10 @@ footer{
 <body>
 
 
-<!-- NAVBAR -->
+<!-- =====================================================
+     NAVBAR
+     FIREBASE LOGIN SECTION — KEEPING THE LOGIN MECHANISM
+     ===================================================== -->
 
 <nav class="navbar">
 
@@ -384,10 +689,7 @@ footer{
 
         </button>
 
-
-        <div
-            id="userBox"
-            class="user-box">
+        <div id="userBox" class="user-box">
 
             <img
                 id="userPhoto"
@@ -415,11 +717,11 @@ footer{
 </nav>
 
 
-<!-- HOME -->
+<!-- =====================================================
+     HOME
+     ===================================================== -->
 
-<section
-    id="homePage"
-    class="hero">
+<section id="homePage" class="hero">
 
     <div class="hero-content">
 
@@ -432,13 +734,13 @@ footer{
         </h1>
 
         <p>
-            Learn programming, practice coding,
-            solve challenges, and build your skills
-            with one smart learning platform.
+            Your A-to-Z computer science learning platform.
+            Start from the basics and build the skills needed
+            for real-world projects and careers.
         </p>
 
         <button
-            class="start-btn"
+            class="primary-btn"
             onclick="startLearning()">
 
             Start Learning →
@@ -450,256 +752,182 @@ footer{
 </section>
 
 
-<!-- FEATURES -->
-
-<section
-    id="features"
-    class="features">
+<section id="features" class="features">
 
     <div class="card">
-
-        <div class="card-icon">💻</div>
-
+        <div class="card-icon">📚</div>
         <h3>Learn</h3>
-
         <p>
-            Learn computer basics and programming
-            step by step from beginner level.
+            Follow a structured syllabus from computer
+            basics to advanced computer science.
         </p>
-
     </div>
 
-
     <div class="card">
-
         <div class="card-icon">🧠</div>
-
         <h3>Practice</h3>
-
         <p>
-            Practice coding questions and improve
-            your problem-solving skills.
+            Test your knowledge with quizzes,
+            coding questions and Bug Hunter challenges.
         </p>
-
     </div>
 
-
     <div class="card">
-
         <div class="card-icon">🎮</div>
-
         <h3>Play</h3>
-
         <p>
-            Turn learning into challenges and
-            interactive coding activities.
+            Earn XP, unlock levels, complete challenges
+            and collect achievements.
         </p>
-
     </div>
 
-
     <div class="card">
-
-        <div class="card-icon">🚀</div>
-
-        <h3>Build</h3>
-
+        <div class="card-icon">🎓</div>
+        <h3>Career Guide</h3>
         <p>
-            Use your knowledge to create real
-            applications and projects.
+            Explore career paths and understand what
+            skills you need for each technology career.
         </p>
-
     </div>
 
 </section>
 
 
-<!-- DASHBOARD -->
+<!-- =====================================================
+     APPLICATION
+     ===================================================== -->
 
-<section
-    id="dashboard">
+<section id="app">
 
-    <div class="dashboard-header">
+<div class="app-layout">
 
-        <h1>
-            🚀 Learning Dashboard
-        </h1>
 
-        <p>
-            Choose a course and start your coding journey.
-        </p>
+<!-- SIDEBAR -->
+
+<aside class="sidebar">
+
+    <button class="side-btn active"
+            onclick="showPage('dashboard',this)">
+        🏠 Dashboard
+    </button>
+
+    <button class="side-btn"
+            onclick="showPage('learn',this)">
+        📚 Learn
+    </button>
+
+    <button class="side-btn"
+            onclick="showPage('quiz',this)">
+        🧠 Quiz Arena
+    </button>
+
+    <button class="side-btn"
+            onclick="showPage('bug',this)">
+        🐞 Bug Hunter
+    </button>
+
+    <button class="side-btn"
+            onclick="showPage('career',this)">
+        🎓 Career Guide
+    </button>
+
+    <button class="side-btn"
+            onclick="showPage('projects',this)">
+        🚀 Projects
+    </button>
+
+    <button class="side-btn"
+            onclick="showPage('progress',this)">
+        📈 Progress
+    </button>
+
+    <button class="side-btn"
+            onclick="showPage('achievements',this)">
+        🏆 Achievements
+    </button>
+
+</aside>
+
+
+<main class="content">
+
+
+<!-- =====================================================
+     DASHBOARD
+     ===================================================== -->
+
+<section id="dashboard" class="page active">
+
+    <h1 class="page-title">
+        🚀 Your Dashboard
+    </h1>
+
+    <p class="page-subtitle">
+        Keep learning, practicing and building.
+    </p>
+
+
+    <div class="stats">
+
+        <div class="stat">
+            <div class="stat-number" id="xpValue">0</div>
+            <div class="stat-label">⭐ XP</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-number" id="levelValue">1</div>
+            <div class="stat-label">🎯 Level</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-number" id="streakValue">0</div>
+            <div class="stat-label">🔥 Streak</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-number" id="completedValue">0</div>
+            <div class="stat-label">✅ Completed</div>
+        </div>
 
     </div>
 
 
     <div class="course-grid">
 
-
-        <!-- COMPUTER BASICS -->
-
-        <div class="course">
-
-            <div class="course-icon">
-                💻
-            </div>
-
-            <h3>
-                Computer Basics
-            </h3>
-
+        <div class="course-card">
+            <div class="course-icon">📚</div>
+            <h3>Continue Learning</h3>
             <p>
-                Understand computers, hardware,
-                software, operating systems and more.
+                Continue your A-to-Z learning journey.
             </p>
-
-            <button
-                class="course-btn"
-                onclick="openLesson('computer')">
-
-                Start Course
-
+            <button class="course-btn"
+                    onclick="showPage('learn')">
+                Continue
             </button>
-
         </div>
 
-
-        <!-- C -->
-
-        <div class="course">
-
-            <div class="course-icon">
-                ⚙️
-            </div>
-
-            <h3>
-                C Programming
-            </h3>
-
+        <div class="course-card">
+            <div class="course-icon">🧠</div>
+            <h3>Quiz Arena</h3>
             <p>
-                Learn variables, conditions,
-                loops, functions and arrays.
+                Test your programming and CS knowledge.
             </p>
-
-            <button
-                class="course-btn"
-                onclick="openLesson('c')">
-
-                Start Course
-
+            <button class="course-btn"
+                    onclick="showPage('quiz')">
+                Take Quiz
             </button>
-
         </div>
 
-
-        <!-- PYTHON -->
-
-        <div class="course">
-
-            <div class="course-icon">
-                🐍
-            </div>
-
-            <h3>
-                Python
-            </h3>
-
+        <div class="course-card">
+            <div class="course-icon">🎓</div>
+            <h3>Career Guide</h3>
             <p>
-                Learn Python programming from
-                beginner level with simple examples.
+                Discover career paths and required skills.
             </p>
-
-            <button
-                class="course-btn"
-                onclick="openLesson('python')">
-
-                Start Course
-
-            </button>
-
-        </div>
-
-
-        <!-- C++ -->
-
-        <div class="course">
-
-            <div class="course-icon">
-                💠
-            </div>
-
-            <h3>
-                C++
-            </h3>
-
-            <p>
-                Learn object-oriented programming,
-                classes, objects and more.
-            </p>
-
-            <button
-                class="course-btn"
-                onclick="openLesson('cpp')">
-
-                Start Course
-
-            </button>
-
-        </div>
-
-
-        <!-- CHALLENGES -->
-
-        <div class="course">
-
-            <div class="course-icon">
-                🧠
-            </div>
-
-            <h3>
-                Coding Challenges
-            </h3>
-
-            <p>
-                Test your programming knowledge
-                with coding challenges.
-            </p>
-
-            <button
-                class="course-btn"
-                onclick="openLesson('challenge')">
-
-                Practice
-
-            </button>
-
-        </div>
-
-
-        <!-- PROJECTS -->
-
-        <div class="course">
-
-            <div class="course-icon">
-                🚀
-            </div>
-
-            <h3>
-                Projects
-            </h3>
-
-            <p>
-                Build real-world projects and
-                turn your ideas into applications.
-            </p>
-
-            <button
-                class="course-btn"
-                onclick="openLesson('projects')">
-
+            <button class="course-btn"
+                    onclick="showPage('career')">
                 Explore
-
             </button>
-
         </div>
 
     </div>
@@ -707,50 +935,471 @@ footer{
 </section>
 
 
-<!-- LESSON PAGE -->
+<!-- =====================================================
+     LEARN
+     ===================================================== -->
 
-<section
-    id="lessonPage">
+<section id="learn" class="page">
 
-    <div class="lesson-box">
+    <h1 class="page-title">
+        📚 Learn
+    </h1>
 
-        <button
-            class="back-btn"
-            onclick="backToDashboard()">
+    <p class="page-subtitle">
+        From zero knowledge to job-ready computer science skills.
+    </p>
 
-            ← Back
+    <div id="courseGrid" class="course-grid"></div>
 
+</section>
+
+
+<!-- =====================================================
+     SYLLABUS / LESSON
+     ===================================================== -->
+
+<section id="lessonPage" class="page">
+
+    <button
+        class="secondary-btn"
+        onclick="showPage('learn')">
+
+        ← Back to Courses
+
+    </button>
+
+    <br><br>
+
+    <div id="lessonContainer"></div>
+
+</section>
+
+
+<!-- =====================================================
+     QUIZ
+     ===================================================== -->
+
+<section id="quiz" class="page">
+
+    <h1 class="page-title">
+        🧠 Quiz Arena
+    </h1>
+
+    <p class="page-subtitle">
+        Answer questions, earn XP and improve your knowledge.
+    </p>
+
+    <div id="quizContainer"></div>
+
+</section>
+
+
+<!-- =====================================================
+     BUG HUNTER
+     ===================================================== -->
+
+<section id="bug" class="page">
+
+    <h1 class="page-title">
+        🐞 Bug Hunter
+    </h1>
+
+    <p class="page-subtitle">
+        Find the mistake in the code.
+    </p>
+
+    <div class="quiz-box">
+
+        <div class="question">
+            What is wrong with this Python code?
+        </div>
+
+        <div class="code">
+<pre>
+name = "CodeQuest"
+print(name
+</pre>
+        </div>
+
+        <button class="option"
+                onclick="bugAnswer(false)">
+            A. Variable name is wrong
         </button>
 
-        <br><br>
+        <button class="option"
+                onclick="bugAnswer(true)">
+            B. Closing parenthesis is missing
+        </button>
 
-        <h1 id="lessonTitle">
-            Lesson
-        </h1>
+        <button class="option"
+                onclick="bugAnswer(false)">
+            C. Python cannot print strings
+        </button>
 
-        <p id="lessonText">
-        </p>
+        <button class="option"
+                onclick="bugAnswer(false)">
+            D. Quotes are not allowed
+        </button>
 
-        <div
-            id="lessonCode"
-            class="code-box"
-            style="display:none;">
+        <p id="bugResult"></p>
 
-            <pre id="codeContent"></pre>
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     CAREER GUIDE
+     ===================================================== -->
+
+<section id="career" class="page">
+
+    <h1 class="page-title">
+        🎓 Career Guide
+    </h1>
+
+    <p class="page-subtitle">
+        Understand different technology careers and the skills
+        you can build for them.
+    </p>
+
+
+    <div class="career-grid">
+
+
+        <div class="career-card">
+
+            <h3>💻 Software Developer</h3>
+
+            <p>
+                Build applications, websites and software systems.
+            </p>
+
+            <ul>
+                <li>C / C++ / Python / Java</li>
+                <li>DSA</li>
+                <li>Git & GitHub</li>
+                <li>Software Engineering</li>
+                <li>Projects</li>
+            </ul>
+
+        </div>
+
+
+        <div class="career-card">
+
+            <h3>🌐 Web Developer</h3>
+
+            <p>
+                Build modern websites and web applications.
+            </p>
+
+            <ul>
+                <li>HTML</li>
+                <li>CSS</li>
+                <li>JavaScript</li>
+                <li>Backend</li>
+                <li>Databases</li>
+            </ul>
+
+        </div>
+
+
+        <div class="career-card">
+
+            <h3>📱 App Developer</h3>
+
+            <p>
+                Build Android and mobile applications.
+            </p>
+
+            <ul>
+                <li>Java / Kotlin</li>
+                <li>UI design</li>
+                <li>APIs</li>
+                <li>Firebase</li>
+                <li>App projects</li>
+            </ul>
+
+        </div>
+
+
+        <div class="career-card">
+
+            <h3>🤖 AI / ML Engineer</h3>
+
+            <p>
+                Work with artificial intelligence and machine learning.
+            </p>
+
+            <ul>
+                <li>Python</li>
+                <li>Mathematics</li>
+                <li>Data Structures</li>
+                <li>Machine Learning</li>
+                <li>AI projects</li>
+            </ul>
+
+        </div>
+
+
+        <div class="career-card">
+
+            <h3>🔐 Cybersecurity</h3>
+
+            <p>
+                Learn how systems, networks and applications
+                are protected.
+            </p>
+
+            <ul>
+                <li>Networking</li>
+                <li>Linux</li>
+                <li>Security fundamentals</li>
+                <li>Web security</li>
+                <li>Ethical security practices</li>
+            </ul>
+
+        </div>
+
+
+        <div class="career-card">
+
+            <h3>☁️ Cloud / DevOps</h3>
+
+            <p>
+                Deploy, automate and maintain modern applications.
+            </p>
+
+            <ul>
+                <li>Linux</li>
+                <li>Git</li>
+                <li>Cloud fundamentals</li>
+                <li>Docker</li>
+                <li>CI/CD</li>
+            </ul>
 
         </div>
 
     </div>
+
+
+    <div class="qa-box">
+
+        <h3>💬 Career Q&A</h3>
+
+        <p style="color:#aeb1bf;margin-top:8px;">
+            Ask yourself a career question and use this
+            guide to identify the skills you should learn.
+        </p>
+
+        <input
+            id="careerQuestion"
+            class="qa-input"
+            placeholder="Example: What should I learn for web development?">
+
+        <button
+            class="primary-btn"
+            style="margin-top:5px"
+            onclick="careerAnswer()">
+
+            Get Guidance
+
+        </button>
+
+        <p id="careerAnswer"
+           style="margin-top:18px;color:#c9cbd5;">
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     PROJECTS
+     ===================================================== -->
+
+<section id="projects" class="page">
+
+    <h1 class="page-title">
+        🚀 Projects
+    </h1>
+
+    <p class="page-subtitle">
+        Build real applications as you progress through the syllabus.
+    </p>
+
+    <div class="course-grid">
+
+        <div class="course-card">
+            <div class="course-icon">🧮</div>
+            <h3>Calculator</h3>
+            <p>
+                Beginner project for programming logic and UI.
+            </p>
+        </div>
+
+        <div class="course-card">
+            <div class="course-icon">📝</div>
+            <h3>Student Task Manager</h3>
+            <p>
+                Manage assignments, tasks and deadlines.
+            </p>
+        </div>
+
+        <div class="course-card">
+            <div class="course-icon">🌦️</div>
+            <h3>Weather Application</h3>
+            <p>
+                Learn APIs and application development.
+            </p>
+        </div>
+
+        <div class="course-card">
+            <div class="course-icon">📚</div>
+            <h3>Student Learning App</h3>
+            <p>
+                Build a complete educational application.
+            </p>
+        </div>
+
+        <div class="course-card">
+            <div class="course-icon">🤖</div>
+            <h3>AI Assistant</h3>
+            <p>
+                Learn how applications can interact with AI systems.
+            </p>
+        </div>
+
+        <div class="course-card">
+            <div class="course-icon">🚀</div>
+            <h3>Final Capstone</h3>
+            <p>
+                Combine your skills into one real-world project.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     PROGRESS
+     ===================================================== -->
+
+<section id="progress" class="page">
+
+    <h1 class="page-title">
+        📈 Your Progress
+    </h1>
+
+    <p class="page-subtitle">
+        Track your CodeQuest journey.
+    </p>
+
+    <div class="progress-box">
+
+        <h3>Overall Learning Progress</h3>
+
+        <div class="progress-bar">
+            <div
+                id="overallProgress"
+                class="progress-fill">
+            </div>
+        </div>
+
+        <p
+            id="progressText"
+            style="color:#aeb1bf;margin-top:10px;">
+            0% completed
+        </p>
+
+    </div>
+
+
+    <div class="progress-box">
+
+        <h3>🔥 Learning Streak</h3>
+
+        <p
+            id="streakText"
+            style="color:#aeb1bf;margin-top:8px;">
+            Start learning today!
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     ACHIEVEMENTS
+     ===================================================== -->
+
+<section id="achievements" class="page">
+
+    <h1 class="page-title">
+        🏆 Achievements
+    </h1>
+
+    <p class="page-subtitle">
+        Unlock achievements by learning and practicing.
+    </p>
+
+    <div class="achievement-grid">
+
+        <div id="achievement1" class="achievement">
+            <div class="emoji">🌱</div>
+            <h3>First Step</h3>
+            <p>Start your first lesson.</p>
+        </div>
+
+        <div id="achievement2" class="achievement locked">
+            <div class="emoji">🧠</div>
+            <h3>Quiz Starter</h3>
+            <p>Complete your first quiz.</p>
+        </div>
+
+        <div id="achievement3" class="achievement locked">
+            <div class="emoji">🔥</div>
+            <h3>On Fire</h3>
+            <p>Reach a 3-day streak.</p>
+        </div>
+
+        <div id="achievement4" class="achievement locked">
+            <div class="emoji">🚀</div>
+            <h3>Builder</h3>
+            <p>Explore your first project.</p>
+        </div>
+
+        <div id="achievement5" class="achievement locked">
+            <div class="emoji">🎓</div>
+            <h3>Career Explorer</h3>
+            <p>Explore the Career Guide.</p>
+        </div>
+
+    </div>
+
+</section>
+
+
+</main>
+</div>
 
 </section>
 
 
 <footer>
-    © 2026 CodeQuest AI • Learn. Practice. Build.
+    © 2026 CodeQuest AI • Learn. Practice. Play. Build.
 </footer>
 
 
-<!-- FIREBASE -->
+<!-- =====================================================
+     FIREBASE LOGIN
+     DO NOT CHANGE THIS LOGIN LOGIC
+     ===================================================== -->
 
 <script type="module">
 
@@ -811,8 +1460,6 @@ provider.setCustomParameters({
     prompt:"select_account"
 });
 
-
-/* ELEMENTS */
 
 const loginButton =
     document.getElementById("googleLoginBtn");
@@ -921,7 +1568,501 @@ async function(){
 };
 
 
-/* START LEARNING */
+/* =====================================================
+   CODEQUEST FEATURES
+   ===================================================== */
+
+const courseData = [
+
+{
+    id:"basics",
+    icon:"💻",
+    title:"Computer Basics",
+    description:"Understand computers from zero.",
+    level:"Beginner",
+    chapters:[
+        "What is a Computer?",
+        "Hardware and Software",
+        "CPU and Memory",
+        "Input and Output Devices",
+        "Operating Systems",
+        "Files and Folders",
+        "Internet Basics",
+        "Computer Security Basics"
+    ]
+},
+
+{
+    id:"office",
+    icon:"📄",
+    title:"Office & Productivity",
+    description:"Learn Word, Excel, PowerPoint and email.",
+    level:"Beginner",
+    chapters:[
+        "Microsoft Word Basics",
+        "Document Formatting",
+        "Tables and Documents",
+        "Excel Basics",
+        "Formulas and Functions",
+        "Charts and Data",
+        "PowerPoint Presentations",
+        "Professional Email"
+    ]
+},
+
+{
+    id:"c",
+    icon:"⚙️",
+    title:"C Programming",
+    description:"Build strong programming fundamentals.",
+    level:"Beginner",
+    chapters:[
+        "Introduction to C",
+        "Variables and Data Types",
+        "Input and Output",
+        "Operators",
+        "If Else",
+        "Switch",
+        "Loops",
+        "Arrays",
+        "Strings",
+        "Functions",
+        "Pointers",
+        "Structures",
+        "File Handling"
+    ]
+},
+
+{
+    id:"cpp",
+    icon:"💠",
+    title:"C++ Programming",
+    description:"Learn modern programming and OOP concepts.",
+    level:"Intermediate",
+    chapters:[
+        "C++ Basics",
+        "Functions",
+        "Arrays and Strings",
+        "Classes and Objects",
+        "Constructors",
+        "Destructors",
+        "Inheritance",
+        "Polymorphism",
+        "Virtual Functions",
+        "Templates",
+        "STL"
+    ]
+},
+
+{
+    id:"python",
+    icon:"🐍",
+    title:"Python",
+    description:"Learn Python from beginner to practical programming.",
+    level:"Beginner",
+    chapters:[
+        "Python Introduction",
+        "Variables",
+        "Data Types",
+        "Conditions",
+        "Loops",
+        "Lists",
+        "Tuples",
+        "Dictionaries",
+        "Functions",
+        "Modules",
+        "Exception Handling",
+        "Object Oriented Python",
+        "Python Projects"
+    ]
+},
+
+{
+    id:"java",
+    icon:"☕",
+    title:"Java",
+    description:"Learn Java and object-oriented programming.",
+    level:"Intermediate",
+    chapters:[
+        "Java Basics",
+        "Variables",
+        "Conditions and Loops",
+        "Arrays",
+        "Classes and Objects",
+        "Inheritance",
+        "Interfaces",
+        "Exception Handling",
+        "Collections",
+        "Java Projects"
+    ]
+},
+
+{
+    id:"dsa",
+    icon:"🧠",
+    title:"Data Structures & Algorithms",
+    description:"Develop problem-solving and coding skills.",
+    level:"Intermediate",
+    chapters:[
+        "Algorithm Basics",
+        "Time Complexity",
+        "Arrays",
+        "Linked Lists",
+        "Stacks",
+        "Queues",
+        "Trees",
+        "Binary Search Trees",
+        "Graphs",
+        "Sorting",
+        "Searching",
+        "Recursion"
+    ]
+},
+
+{
+    id:"sql",
+    icon:"🗄️",
+    title:"SQL & Databases",
+    description:"Learn how applications store and manage data.",
+    level:"Intermediate",
+    chapters:[
+        "Database Basics",
+        "SQL Introduction",
+        "SELECT",
+        "WHERE",
+        "ORDER BY",
+        "INSERT",
+        "UPDATE",
+        "DELETE",
+        "Joins",
+        "Keys",
+        "Normalization",
+        "Database Projects"
+    ]
+},
+
+{
+    id:"web",
+    icon:"🌐",
+    title:"Web Development",
+    description:"Build websites and web applications.",
+    level:"Intermediate",
+    chapters:[
+        "HTML",
+        "CSS",
+        "Responsive Design",
+        "JavaScript",
+        "DOM",
+        "Events",
+        "APIs",
+        "Frontend Concepts",
+        "Backend Concepts",
+        "Web Projects"
+    ]
+},
+
+{
+    id:"app",
+    icon:"📱",
+    title:"App Development",
+    description:"Understand how mobile applications are built.",
+    level:"Intermediate",
+    chapters:[
+        "Mobile App Concepts",
+        "UI Design",
+        "Android Basics",
+        "Java/Kotlin Concepts",
+        "APIs",
+        "Firebase",
+        "Authentication",
+        "Database Integration",
+        "App Deployment"
+    ]
+},
+
+{
+    id:"software",
+    icon:"🧩",
+    title:"Software Engineering",
+    description:"Learn how real software projects are planned and developed.",
+    level:"Intermediate",
+    chapters:[
+        "Software Development Life Cycle",
+        "Requirements",
+        "System Design",
+        "Version Control",
+        "Git and GitHub",
+        "Testing",
+        "Debugging",
+        "Documentation",
+        "Agile Basics",
+        "Team Development"
+    ]
+},
+
+{
+    id:"network",
+    icon:"🌐",
+    title:"Networking",
+    description:"Understand how computers communicate.",
+    level:"Intermediate",
+    chapters:[
+        "Network Basics",
+        "LAN and WAN",
+        "IP Addresses",
+        "MAC Addresses",
+        "DNS",
+        "HTTP and HTTPS",
+        "TCP and UDP",
+        "Routers",
+        "Switches",
+        "Network Security"
+    ]
+},
+
+{
+    id:"cyber",
+    icon:"🔐",
+    title:"Cybersecurity",
+    description:"Learn the fundamentals of protecting systems.",
+    level:"Advanced",
+    chapters:[
+        "Security Fundamentals",
+        "Authentication",
+        "Passwords",
+        "Encryption Basics",
+        "Web Security",
+        "Network Security",
+        "Malware Awareness",
+        "Secure Coding",
+        "Ethical Security"
+    ]
+},
+
+{
+    id:"cloud",
+    icon:"☁️",
+    title:"Cloud & DevOps",
+    description:"Learn deployment and modern development practices.",
+    level:"Advanced",
+    chapters:[
+        "Cloud Computing",
+        "Virtual Machines",
+        "Cloud Storage",
+        "Linux Basics",
+        "Git",
+        "CI/CD",
+        "Containers",
+        "Docker Concepts",
+        "Deployment",
+        "Monitoring"
+    ]
+},
+
+{
+    id:"ai",
+    icon:"🤖",
+    title:"AI & Machine Learning",
+    description:"Explore artificial intelligence and machine learning.",
+    level:"Advanced",
+    chapters:[
+        "AI Introduction",
+        "Python for AI",
+        "Data Basics",
+        "Machine Learning",
+        "Supervised Learning",
+        "Unsupervised Learning",
+        "Neural Networks",
+        "Generative AI",
+        "AI Applications",
+        "AI Projects"
+    ]
+}
+
+];
+
+
+/* =====================================================
+   QUIZ QUESTIONS
+   ===================================================== */
+
+const quizQuestions = [
+
+{
+    q:"What does CPU stand for?",
+    options:[
+        "Central Processing Unit",
+        "Computer Personal Unit",
+        "Central Program Utility",
+        "Control Processing User"
+    ],
+    answer:0
+},
+
+{
+    q:"Which language is mainly known for its simple syntax?",
+    options:[
+        "Python",
+        "Assembly",
+        "Machine Code",
+        "Binary"
+    ],
+    answer:0
+},
+
+{
+    q:"Which symbol is commonly used to start a comment in Python?",
+    options:[
+        "//",
+        "#",
+        "/*",
+        "<!--"
+    ],
+    answer:1
+},
+
+{
+    q:"Which data structure follows LIFO?",
+    options:[
+        "Queue",
+        "Stack",
+        "Tree",
+        "Graph"
+    ],
+    answer:1
+},
+
+{
+    q:"Which SQL command is used to retrieve data?",
+    options:[
+        "GET",
+        "SELECT",
+        "FETCHALL",
+        "READ"
+    ],
+    answer:1
+},
+
+{
+    q:"HTML is mainly used for:",
+    options:[
+        "Web page structure",
+        "Database storage",
+        "Operating systems",
+        "Network routing"
+    ],
+    answer:0
+},
+
+{
+    q:"Which technology is used to style HTML pages?",
+    options:[
+        "CSS",
+        "SQL",
+        "C",
+        "Git"
+    ],
+    answer:0
+},
+
+{
+    q:"What does API stand for?",
+    options:[
+        "Application Programming Interface",
+        "Application Process Internet",
+        "Advanced Program Input",
+        "Application Protocol Integration"
+    ],
+    answer:0
+},
+
+{
+    q:"Which one is a version-control system?",
+    options:[
+        "Git",
+        "Excel",
+        "HTML",
+        "CSS"
+    ],
+    answer:0
+},
+
+{
+    q:"Which language uses printf() for standard output?",
+    options:[
+        "C",
+        "HTML",
+        "SQL",
+        "CSS"
+    ],
+    answer:0
+},
+
+{
+    q:"Which protocol is commonly used for secure web communication?",
+    options:[
+        "HTTP",
+        "HTTPS",
+        "FTP",
+        "SMTP"
+    ],
+    answer:1
+},
+
+{
+    q:"Which structure uses FIFO?",
+    options:[
+        "Stack",
+        "Queue",
+        "Tree",
+        "Graph"
+    ],
+    answer:1
+},
+
+{
+    q:"What does SQL stand for?",
+    options:[
+        "Structured Query Language",
+        "Simple Question Language",
+        "System Query Logic",
+        "Structured Question List"
+    ],
+    answer:0
+},
+
+{
+    q:"Which language is widely used in AI and machine learning?",
+    options:[
+        "Python",
+        "HTML",
+        "CSS",
+        "XML"
+    ],
+    answer:0
+},
+
+{
+    q:"What does RAM provide?",
+    options:[
+        "Temporary working memory",
+        "Permanent internet",
+        "Power supply",
+        "Network address"
+    ],
+    answer:0
+}
+
+];
+
+
+let currentQuiz = 0;
+let quizScore = 0;
+
+
+/* =====================================================
+   START LEARNING
+   ===================================================== */
 
 window.startLearning =
 function(){
@@ -950,8 +2091,64 @@ function(){
     ).style.display="none";
 
     document.getElementById(
-        "dashboard"
+        "app"
     ).style.display="block";
+
+    showPage("dashboard");
+
+};
+
+
+/* =====================================================
+   PAGE NAVIGATION
+   ===================================================== */
+
+window.showPage =
+function(pageId,button){
+
+    document
+        .querySelectorAll(".page")
+        .forEach(p=>{
+            p.classList.remove("active");
+        });
+
+
+    const page =
+        document.getElementById(pageId);
+
+    if(page){
+        page.classList.add("active");
+    }
+
+
+    document
+        .querySelectorAll(".side-btn")
+        .forEach(b=>{
+            b.classList.remove("active");
+        });
+
+
+    if(button){
+        button.classList.add("active");
+    }
+
+
+    if(pageId==="learn"){
+        renderCourses();
+    }
+
+    if(pageId==="quiz"){
+        startQuiz();
+    }
+
+    if(pageId==="progress"){
+        updateProgress();
+    }
+
+    if(pageId==="achievements"){
+        updateAchievements();
+    }
+
 
     window.scrollTo(
         0,
@@ -961,67 +2158,203 @@ function(){
 };
 
 
-/* OPEN LESSON */
+/* =====================================================
+   COURSES
+   ===================================================== */
 
-window.openLesson =
-function(type){
+function renderCourses(){
 
-    const title =
+    const grid =
         document.getElementById(
-            "lessonTitle"
+            "courseGrid"
         );
 
-    const text =
-        document.getElementById(
-            "lessonText"
+    grid.innerHTML="";
+
+
+    courseData.forEach(course=>{
+
+        const card =
+            document.createElement("div");
+
+        card.className="course-card";
+
+        card.innerHTML=`
+
+            <div class="course-icon">
+                ${course.icon}
+            </div>
+
+            <h3>
+                ${course.title}
+            </h3>
+
+            <p>
+                ${course.description}
+            </p>
+
+            <div class="course-meta">
+                <span>${course.level}</span>
+                <span>${course.chapters.length} Chapters</span>
+            </div>
+
+            <button
+                class="course-btn"
+                onclick="openCourse('${course.id}')">
+
+                View Syllabus
+
+            </button>
+        `;
+
+        grid.appendChild(card);
+
+    });
+
+}
+
+
+/* =====================================================
+   COURSE SYLLABUS
+   ===================================================== */
+
+window.openCourse =
+function(id){
+
+    const course =
+        courseData.find(
+            c=>c.id===id
         );
 
-    const codeBox =
-        document.getElementById(
-            "lessonCode"
-        );
-
-    const code =
-        document.getElementById(
-            "codeContent"
-        );
-
-
-    document.getElementById(
-        "dashboard"
-    ).style.display="none";
-
-
-    document.getElementById(
-        "lessonPage"
-    ).style.display="block";
-
-
-    codeBox.style.display="none";
-
-
-    if(type==="computer"){
-
-        title.textContent =
-            "💻 Computer Basics";
-
-        text.textContent =
-            "A computer is an electronic device that accepts data, processes it, stores it and produces useful information. In this course you will learn hardware, software, operating systems and computer fundamentals.";
-
+    if(!course){
+        return;
     }
 
 
-    else if(type==="c"){
+    const container =
+        document.getElementById(
+            "lessonContainer"
+        );
 
-        title.textContent =
-            "⚙️ C Programming";
 
-        text.textContent =
-            "C is a general-purpose programming language. Start with your first C program:";
+    let html=`
 
-        codeBox.style.display="block";
+        <div class="lesson">
 
-        code.textContent =
+            <h2>
+                ${course.icon} ${course.title}
+            </h2>
+
+            <p>
+                ${course.description}
+            </p>
+
+            <h3>
+                📚 Course Syllabus
+            </h3>
+
+            <div class="syllabus">
+    `;
+
+
+    course.chapters.forEach(
+        (chapter,index)=>{
+
+            html+=`
+
+                <div class="module">
+
+                    <div
+                        class="module-head"
+                        onclick="toggleModule(this)">
+
+                        <span>
+                            ${index+1}. ${chapter}
+                        </span>
+
+                        <span>+</span>
+
+                    </div>
+
+                    <div class="module-body">
+
+                        <div
+                            class="chapter"
+                            onclick="openChapter('${course.id}',${index})">
+
+                            📖 Learn ${chapter}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+    );
+
+
+    html+=`
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    container.innerHTML=html;
+
+
+    showPage("lessonPage");
+
+};
+
+
+/* =====================================================
+   MODULE TOGGLE
+   ===================================================== */
+
+window.toggleModule =
+function(element){
+
+    const module =
+        element.parentElement;
+
+    module.classList.toggle("open");
+
+};
+
+
+/* =====================================================
+   CHAPTER
+   ===================================================== */
+
+window.openChapter =
+function(courseId,index){
+
+    const course =
+        courseData.find(
+            c=>c.id===courseId
+        );
+
+    const chapter =
+        course.chapters[index];
+
+
+    const container =
+        document.getElementById(
+            "lessonContainer"
+        );
+
+
+    let example="";
+
+    if(courseId==="c"){
+
+        example=
 `#include <stdio.h>
 
 int main()
@@ -1033,34 +2366,18 @@ int main()
 
     }
 
+    else if(courseId==="python"){
 
-    else if(type==="python"){
+        example=
+`name = "CodeQuest"
 
-        title.textContent =
-            "🐍 Python";
-
-        text.textContent =
-            "Python is a high-level programming language known for its simple syntax. Here is your first Python program:";
-
-        codeBox.style.display="block";
-
-        code.textContent =
-`print("Hello World")`;
+print("Hello", name)`;
 
     }
 
+    else if(courseId==="cpp"){
 
-    else if(type==="cpp"){
-
-        title.textContent =
-            "💠 C++";
-
-        text.textContent =
-            "C++ is a powerful programming language that supports object-oriented programming. Here is a simple program:";
-
-        codeBox.style.display="block";
-
-        code.textContent =
+        example=
 `#include <iostream>
 using namespace std;
 
@@ -1073,32 +2390,88 @@ int main()
 
     }
 
+    else if(courseId==="java"){
 
-    else if(type==="challenge"){
+        example=
+`class Main {
 
-        title.textContent =
-            "🧠 Coding Challenge";
+    public static void main(String[] args) {
 
-        text.textContent =
-            "Challenge: Write a program that prints Hello World. Try solving it yourself before checking the answer.";
+        System.out.println("Hello World");
 
-        codeBox.style.display="block";
+    }
+}`;
 
-        code.textContent =
-`print("Hello World")`;
+    }
+
+    else{
+
+        example=
+`This chapter contains practical
+concepts and examples.
+
+Keep learning and complete the
+chapter quiz to earn XP.`;
 
     }
 
 
-    else if(type==="projects"){
+    container.innerHTML=`
 
-        title.textContent =
-            "🚀 Projects";
+        <div class="lesson">
 
-        text.textContent =
-            "Projects will allow you to apply your programming knowledge to real-world applications. CodeQuest AI itself can be your first major project!";
+            <h2>
+                ${course.icon} ${chapter}
+            </h2>
 
-    }
+            <p>
+                In this lesson you will learn the
+                fundamentals of <b>${chapter}</b>.
+                Read the concept, understand the example,
+                and then test yourself with a quiz.
+            </p>
+
+            <h3>
+                💡 Concept
+            </h3>
+
+            <p>
+                CodeQuest AI is designed to help you
+                understand the concept step by step,
+                rather than simply memorizing definitions.
+            </p>
+
+            <h3>
+                💻 Example
+            </h3>
+
+            <div class="code">
+                <pre>${escapeHtml(example)}</pre>
+            </div>
+
+            <div class="lesson-actions">
+
+                <button
+                    class="primary-btn"
+                    style="margin-top:0"
+                    onclick="completeChapter('${courseId}',${index})">
+
+                    ✅ Mark Chapter Complete
+
+                </button>
+
+                <button
+                    class="secondary-btn"
+                    onclick="showPage('quiz')">
+
+                    🧠 Test Me
+
+                </button>
+
+            </div>
+
+        </div>
+    `;
 
 
     window.scrollTo(
@@ -1109,37 +2482,486 @@ int main()
 };
 
 
-/* BACK */
+/* =====================================================
+   COMPLETE CHAPTER
+   ===================================================== */
 
-window.backToDashboard =
+window.completeChapter =
+function(courseId,index){
+
+    let completed =
+        JSON.parse(
+            localStorage.getItem(
+                "cq_completed"
+            ) || "[]"
+        );
+
+
+    const key =
+        courseId+"-"+index;
+
+
+    if(!completed.includes(key)){
+
+        completed.push(key);
+
+        localStorage.setItem(
+            "cq_completed",
+            JSON.stringify(completed)
+        );
+
+
+        addXP(20);
+
+        alert(
+            "🎉 Chapter completed! +20 XP"
+        );
+
+    }
+    else{
+
+        alert(
+            "You already completed this chapter."
+        );
+
+    }
+
+
+    updateStats();
+
+};
+
+
+/* =====================================================
+   QUIZ
+   ===================================================== */
+
+function startQuiz(){
+
+    currentQuiz=0;
+    quizScore=0;
+
+    renderQuiz();
+
+}
+
+
+function renderQuiz(){
+
+    const container =
+        document.getElementById(
+            "quizContainer"
+        );
+
+
+    if(currentQuiz>=quizQuestions.length){
+
+        container.innerHTML=`
+
+            <div class="quiz-box quiz-result">
+
+                <h2>
+                    🎉 Quiz Complete!
+                </h2>
+
+                <br>
+
+                <h1>
+                    ${quizScore}/${quizQuestions.length}
+                </h1>
+
+                <br>
+
+                <p>
+                    You earned
+                    <b>${quizScore*10} XP</b>
+                </p>
+
+                <button
+                    class="primary-btn"
+                    onclick="startQuiz()">
+
+                    Try Again
+
+                </button>
+
+            </div>
+
+        `;
+
+
+        addXP(
+            quizScore*10
+        );
+
+        return;
+
+    }
+
+
+    const q =
+        quizQuestions[currentQuiz];
+
+
+    let html=`
+
+        <div class="quiz-box">
+
+            <div class="quiz-progress">
+
+                Question
+                ${currentQuiz+1}
+                /
+                ${quizQuestions.length}
+
+            </div>
+
+            <div class="question">
+                ${q.q}
+            </div>
+
+    `;
+
+
+    q.options.forEach(
+        (option,index)=>{
+
+            html+=`
+
+                <button
+                    class="option"
+                    onclick="answerQuiz(${index})">
+
+                    ${String.fromCharCode(65+index)}.
+                    ${option}
+
+                </button>
+
+            `;
+
+        }
+    );
+
+
+    html+=`
+
+        </div>
+    `;
+
+
+    container.innerHTML=html;
+
+}
+
+
+window.answerQuiz =
+function(index){
+
+    const q =
+        quizQuestions[currentQuiz];
+
+
+    if(index===q.answer){
+
+        quizScore++;
+
+        alert(
+            "✅ Correct!"
+        );
+
+    }
+    else{
+
+        alert(
+            "❌ Incorrect. Keep learning!"
+        );
+
+    }
+
+
+    currentQuiz++;
+
+    renderQuiz();
+
+};
+
+
+/* =====================================================
+   BUG HUNTER
+   ===================================================== */
+
+window.bugAnswer =
+function(correct){
+
+    const result =
+        document.getElementById(
+            "bugResult"
+        );
+
+
+    if(correct){
+
+        result.innerHTML=
+            "✅ Correct! The closing ')' is missing.";
+
+        addXP(25);
+
+    }
+    else{
+
+        result.innerHTML=
+            "❌ Not quite. Look carefully at the print statement.";
+
+    }
+
+};
+
+
+/* =====================================================
+   XP
+   ===================================================== */
+
+function addXP(amount){
+
+    let xp =
+        Number(
+            localStorage.getItem(
+                "cq_xp"
+            ) || 0
+        );
+
+
+    xp+=amount;
+
+
+    localStorage.setItem(
+        "cq_xp",
+        xp
+    );
+
+
+    updateStats();
+
+}
+
+
+function updateStats(){
+
+    const xp =
+        Number(
+            localStorage.getItem(
+                "cq_xp"
+            ) || 0
+        );
+
+
+    const completed =
+        JSON.parse(
+            localStorage.getItem(
+                "cq_completed"
+            ) || "[]"
+        );
+
+
+    const level =
+        Math.floor(xp/100)+1;
+
+
+    document.getElementById(
+        "xpValue"
+    ).textContent=xp;
+
+
+    document.getElementById(
+        "levelValue"
+    ).textContent=level;
+
+
+    document.getElementById(
+        "completedValue"
+    ).textContent=
+        completed.length;
+
+
+    document.getElementById(
+        "streakValue"
+    ).textContent=
+        localStorage.getItem(
+            "cq_streak"
+        ) || 0;
+
+}
+
+
+/* =====================================================
+   PROGRESS
+   ===================================================== */
+
+function updateProgress(){
+
+    const completed =
+        JSON.parse(
+            localStorage.getItem(
+                "cq_completed"
+            ) || "[]"
+        );
+
+
+    const total =
+        courseData.reduce(
+            (sum,c)=>sum+c.chapters.length,
+            0
+        );
+
+
+    const percentage =
+        Math.min(
+            100,
+            Math.round(
+                completed.length/total*100
+            )
+        );
+
+
+    document.getElementById(
+        "overallProgress"
+    ).style.width=
+        percentage+"%";
+
+
+    document.getElementById(
+        "progressText"
+    ).textContent=
+        percentage+
+        "% completed";
+
+
+    updateStats();
+
+}
+
+
+/* =====================================================
+   ACHIEVEMENTS
+   ===================================================== */
+
+function updateAchievements(){
+
+    const completed =
+        JSON.parse(
+            localStorage.getItem(
+                "cq_completed"
+            ) || "[]"
+        );
+
+
+    if(completed.length>0){
+
+        document
+            .getElementById("achievement1")
+            .classList.remove("locked");
+
+    }
+
+
+    const xp =
+        Number(
+            localStorage.getItem(
+                "cq_xp"
+            ) || 0
+        );
+
+
+    if(xp>=100){
+
+        document
+            .getElementById("achievement2")
+            .classList.remove("locked");
+
+    }
+
+}
+
+
+/* =====================================================
+   CAREER GUIDE Q&A
+   ===================================================== */
+
+window.careerAnswer =
 function(){
 
-    document.getElementById(
-        "lessonPage"
-    ).style.display="none";
+    const input =
+        document.getElementById(
+            "careerQuestion"
+        );
 
-    document.getElementById(
-        "dashboard"
-    ).style.display="block";
 
-    window.scrollTo(
-        0,
-        0
-    );
+    const answer =
+        document.getElementById(
+            "careerAnswer"
+        );
+
+
+    const question =
+        input.value.toLowerCase();
+
+
+    if(question.includes("web")){
+
+        answer.textContent=
+            "🌐 Web Development path: HTML → CSS → JavaScript → APIs → Backend → SQL → Git/GitHub → Projects.";
+
+    }
+
+    else if(question.includes("ai")){
+
+        answer.textContent=
+            "🤖 AI/ML path: Python → Mathematics → Data → Machine Learning → Neural Networks → AI Projects.";
+
+    }
+
+    else if(question.includes("app")){
+
+        answer.textContent=
+            "📱 App Development path: Programming → UI → Android concepts → APIs → Firebase → Database → Projects.";
+
+    }
+
+    else if(question.includes("cyber")){
+
+        answer.textContent=
+            "🔐 Cybersecurity path: Computer Basics → Networking → Linux → Security Fundamentals → Secure Coding → Ethical Security.";
+
+    }
+
+    else if(question.includes("software")){
+
+        answer.textContent=
+            "💻 Software Developer path: Programming → DSA → Git/GitHub → Software Engineering → Databases → Projects.";
+
+    }
+
+    else{
+
+        answer.textContent=
+            "🎓 Start with Computer Basics, then learn programming, DSA, databases, development and finally choose a specialization. Build projects throughout the journey.";
+
+    }
+
+
+    addXP(5);
 
 };
 
 
-/* HOME */
+/* =====================================================
+   HOME
+   ===================================================== */
 
 function showHome(){
 
     document.getElementById(
-        "dashboard"
-    ).style.display="none";
-
-    document.getElementById(
-        "lessonPage"
+        "app"
     ).style.display="none";
 
     document.getElementById(
@@ -1151,6 +2973,25 @@ function showHome(){
     ).style.display="grid";
 
 }
+
+
+/* =====================================================
+   ESCAPE HTML
+   ===================================================== */
+
+function escapeHtml(text){
+
+    return text
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;");
+
+}
+
+
+/* INITIAL STATS */
+
+updateStats();
 
 </script>
 
