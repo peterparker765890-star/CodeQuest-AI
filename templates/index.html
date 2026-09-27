@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CodeQuest AI</title>
+
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+    <header class="topbar">
+
+        <div class="brand">
+            ⚡ CodeQuest <span>AI</span>
+        </div>
+
+        <div class="level">
+            LEVEL 1
+        </div>
+
+    </header>
+
+
+    <main class="container">
+
+        <section class="welcome">
+
+            <p class="small-label">WELCOME, CODER 👋</p>
+
+            <h1>
+                Learn.<br>
+                Code.<br>
+                <span>Level Up.</span>
+            </h1>
+
+            <p class="description">
+                Your beginner-friendly journey from
+                zero coding knowledge to confident developer.
+            </p>
+
+        </section>
+
+
+        <section class="stats">
+
+            <div class="stat-card">
+                <div class="stat-number">0</div>
+                <div class="stat-label">XP</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-number">🔥 0</div>
+                <div class="stat-label">DAY STREAK</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-number">0%</div>
+                <div class="stat-label">PROGRESS</div>
+            </div>
+
+        </section>
+
+
+        <section class="continue-card">
+
+            <div>
+
+                <p class="section-label">
+                    🚀 CONTINUE LEARNING
+                </p>
+
+                <h2>
+                    Programming Fundamentals
+                </h2>
+
+                <p>
+                    Start building your programming logic.
+                </p>
+
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+
+                <span class="progress-text">
+                    Ready to start
+                </span>
+
+            </div>
+
+            <button onclick="startLearning()">
+                START →
+            </button>
+
+        </section>
+
+
+        <section class="quick-actions">
+
+            <h2>⚡ Quick Play</h2>
+
+            <div class="action-grid">
+
+                <button class="action-card"
+                        onclick="showMessage('Quiz Arena coming next! 🎯')">
+
+                    <span>🎯</span>
+                    <strong>Quiz Arena</strong>
+                    <small>Test your knowledge</small>
+
+                </button>
+
+
+                <button class="action-card"
+                        onclick="showMessage('Bug Hunter coming next! 🐞')">
+
+                    <span>🐞</span>
+                    <strong>Bug Hunter</strong>
+                    <small>Find coding errors</small>
+
+                </button>
+
+
+                <button class="action-card"
+                        onclick="showMessage('Code Lab coming next! 💻')">
+
+                    <span>💻</span>
+                    <strong>Code Lab</strong>
+                    <small>Practice coding</small>
+
+                </button>
+
+
+                <button class="action-card"
+                        onclick="showMessage('AI Career Hub coming next! 🤖')">
+
+                    <span>🤖</span>
+                    <strong>AI Career Hub</strong>
+                    <small>Projects & careers</small>
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <section class="learning-section">
+
+            <div class="section-heading">
+
+                <div>
+                    <p class="section-label">
+                        📚 LEARNING HUB
+                    </p>
+
+                    <h2>
+                        Choose what you want to learn
+                    </h2>
+                </div>
+
+            </div>
+
+
+            <div class="subject-grid">
+
+                {% for subject in subjects %}
+
+                <button class="subject-card"
+                        onclick="selectSubject('{{ subject.name }}')">
+
+                    <div class="subject-title">
+                        {{ subject.name }}
+                    </div>
+
+                    <p>
+                        {{ subject.description }}
+                    </p>
+
+                    <span class="difficulty">
+                        {{ subject.level }}
+                    </span>
+
+                    <div class="learn-arrow">
+                        LEARN →
+                    </div>
+
+                </button>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+
+        <section class="smart-card">
+
+            <div class="ai-icon">
+                🤖
+            </div>
+
+            <div>
+
+                <p class="section-label">
+                    SMART LEARNING
+                </p>
+
+                <h2>
+                    Don't know where to start?
+                </h2>
+
+                <p>
+                    CodeQuest can guide you from
+                    complete beginner to advanced.
+                </p>
+
+            </div>
+
+            <button onclick="showMessage('Smart learning assistant coming next! 🧠')">
+                HELP ME →
+            </button>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+
+        <p>
+            ⚡ CodeQuest AI
+        </p>
+
+        <small>
+            Learn • Code • Debug • Level Up
+        </small>
+
+    </footer>
+
+
+    <script src="/static/script.js"></script>
+
+</body>
+</html>
