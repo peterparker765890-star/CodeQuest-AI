@@ -1,297 +1,364 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>CodeQuest AI</title>
 
 <style>
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
 }
 
-body {
-    font-family: Arial, Helvetica, sans-serif;
-    min-height: 100vh;
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    min-height:100vh;
     background:
-        radial-gradient(circle at top right, #35136b 0%, transparent 35%),
-        radial-gradient(circle at bottom left, #102c63 0%, transparent 35%),
+        radial-gradient(circle at top right,#35136b 0%,transparent 35%),
+        radial-gradient(circle at bottom left,#102c63 0%,transparent 35%),
         #080b16;
-    color: white;
+    color:white;
 }
 
 /* NAVBAR */
 
-.navbar {
-    width: 100%;
-    padding: 18px 7%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-    background: rgba(8,11,22,0.75);
-    backdrop-filter: blur(12px);
-    position: sticky;
-    top: 0;
-    z-index: 100;
+.navbar{
+    width:100%;
+    padding:18px 7%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:1px solid rgba(255,255,255,.08);
+    background:rgba(8,11,22,.8);
+    backdrop-filter:blur(12px);
+    position:sticky;
+    top:0;
+    z-index:100;
 }
 
-.logo {
-    font-size: 23px;
-    font-weight: bold;
+.logo{
+    font-size:23px;
+    font-weight:bold;
 }
 
-.logo span {
-    color: #9b6cff;
+.logo span{
+    color:#9b6cff;
 }
 
-.nav-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+.nav-right{
+    display:flex;
+    align-items:center;
+    gap:12px;
 }
 
-/* LOGIN BUTTON */
-
-.google-btn {
-    border: none;
-    background: white;
-    color: #222;
-    padding: 11px 18px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    transition: 0.2s;
+.google-btn{
+    border:none;
+    background:white;
+    color:#222;
+    padding:11px 18px;
+    border-radius:10px;
+    font-size:14px;
+    font-weight:bold;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:9px;
 }
 
-.google-btn:hover {
-    transform: translateY(-2px);
+.google-icon{
+    width:18px;
+    height:18px;
 }
 
-.google-icon {
-    width: 18px;
-    height: 18px;
+.user-box{
+    display:none;
+    align-items:center;
+    gap:10px;
 }
 
-/* USER */
-
-.user-box {
-    display: none;
-    align-items: center;
-    gap: 10px;
+.user-photo{
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    object-fit:cover;
+    border:2px solid #9b6cff;
 }
 
-.user-photo {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #9b6cff;
+.user-name{
+    font-size:14px;
+    font-weight:bold;
 }
 
-.user-name {
-    font-size: 14px;
-    font-weight: bold;
-}
-
-.logout-btn {
-    border: 1px solid rgba(255,255,255,0.15);
-    background: rgba(255,255,255,0.06);
-    color: white;
-    padding: 8px 13px;
-    border-radius: 8px;
-    cursor: pointer;
+.logout-btn{
+    border:1px solid rgba(255,255,255,.15);
+    background:rgba(255,255,255,.06);
+    color:white;
+    padding:8px 13px;
+    border-radius:8px;
+    cursor:pointer;
 }
 
 /* HERO */
 
-.hero {
-    min-height: 78vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 60px 20px;
+.hero{
+    min-height:70vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:60px 20px;
 }
 
-.hero-content {
-    max-width: 850px;
+.hero-content{
+    max-width:850px;
 }
 
-.badge {
-    display: inline-block;
-    background: rgba(155,108,255,0.12);
-    border: 1px solid rgba(155,108,255,0.3);
-    color: #bda5ff;
-    padding: 8px 15px;
-    border-radius: 30px;
-    font-size: 13px;
-    margin-bottom: 20px;
+.badge{
+    display:inline-block;
+    background:rgba(155,108,255,.12);
+    border:1px solid rgba(155,108,255,.3);
+    color:#bda5ff;
+    padding:8px 15px;
+    border-radius:30px;
+    font-size:13px;
+    margin-bottom:20px;
 }
 
-.hero h1 {
-    font-size: clamp(42px, 8vw, 76px);
-    line-height: 1.05;
-    margin-bottom: 20px;
+.hero h1{
+    font-size:clamp(42px,8vw,76px);
+    line-height:1.05;
+    margin-bottom:20px;
 }
 
-.hero h1 span {
-    color: #9b6cff;
+.hero h1 span{
+    color:#9b6cff;
 }
 
-.hero p {
-    max-width: 650px;
-    margin: auto;
-    color: #b6b8c5;
-    font-size: 17px;
-    line-height: 1.7;
+.hero p{
+    max-width:650px;
+    margin:auto;
+    color:#b6b8c5;
+    font-size:17px;
+    line-height:1.7;
 }
 
-.start-btn {
-    margin-top: 30px;
-    padding: 14px 24px;
-    border: none;
-    border-radius: 12px;
-    background: linear-gradient(135deg,#8f5cff,#6134d9);
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 10px 35px rgba(110,70,220,0.3);
+.start-btn{
+    margin-top:30px;
+    padding:15px 27px;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(135deg,#8f5cff,#6134d9);
+    color:white;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    box-shadow:0 10px 35px rgba(110,70,220,.3);
 }
 
-.start-btn:hover {
-    transform: translateY(-2px);
+.start-btn:hover{
+    transform:translateY(-2px);
 }
 
 /* FEATURES */
 
-.features {
-    padding: 50px 7%;
-    display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
-    gap: 20px;
+.features{
+    padding:50px 7%;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
 }
 
-.card {
-    background: rgba(255,255,255,0.045);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 18px;
-    padding: 25px;
-    backdrop-filter: blur(10px);
+.card{
+    background:rgba(255,255,255,.045);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:18px;
+    padding:25px;
 }
 
-.card-icon {
-    font-size: 30px;
-    margin-bottom: 15px;
+.card-icon{
+    font-size:30px;
+    margin-bottom:15px;
 }
 
-.card h3 {
-    margin-bottom: 10px;
+.card h3{
+    margin-bottom:10px;
 }
 
-.card p {
-    color: #aeb0bd;
-    line-height: 1.6;
-    font-size: 14px;
+.card p{
+    color:#aeb0bd;
+    line-height:1.6;
+    font-size:14px;
 }
 
-/* LOGIN MESSAGE */
+/* DASHBOARD */
 
-.login-message {
-    display: none;
-    margin: 0 auto 30px;
-    max-width: 600px;
-    padding: 14px;
-    border-radius: 10px;
-    background: rgba(68, 207, 132, 0.1);
-    border: 1px solid rgba(68, 207, 132, 0.25);
-    color: #72e3a4;
+#dashboard{
+    display:none;
+    padding:40px 7% 70px;
 }
 
-/* LOADING */
-
-.loading {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(5,7,15,0.8);
-    z-index: 999;
-    align-items: center;
-    justify-content: center;
+.dashboard-header{
+    margin-bottom:30px;
 }
 
-.loading-box {
-    background: #151827;
-    padding: 25px 30px;
-    border-radius: 15px;
-    text-align: center;
+.dashboard-header h1{
+    font-size:32px;
+    margin-bottom:8px;
 }
 
-.spinner {
-    width: 35px;
-    height: 35px;
-    border: 4px solid rgba(255,255,255,0.15);
-    border-top-color: #9b6cff;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin: auto auto 15px;
+.dashboard-header p{
+    color:#aeb0bd;
 }
 
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
+.course-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    gap:20px;
+}
+
+.course{
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.09);
+    border-radius:18px;
+    padding:25px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.course:hover{
+    transform:translateY(-5px);
+    border-color:#8f5cff;
+}
+
+.course-icon{
+    font-size:38px;
+    margin-bottom:15px;
+}
+
+.course h3{
+    margin-bottom:8px;
+}
+
+.course p{
+    color:#aeb0bd;
+    font-size:14px;
+    line-height:1.5;
+}
+
+.course-btn{
+    margin-top:18px;
+    width:100%;
+    padding:11px;
+    border:none;
+    border-radius:9px;
+    background:#713fe0;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* LESSON */
+
+#lessonPage{
+    display:none;
+    padding:40px 7% 70px;
+}
+
+.lesson-box{
+    max-width:850px;
+    margin:auto;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.09);
+    border-radius:20px;
+    padding:30px;
+}
+
+.lesson-box h1{
+    margin-bottom:15px;
+}
+
+.lesson-box p{
+    color:#c0c2ce;
+    line-height:1.7;
+    margin-bottom:20px;
+}
+
+.code-box{
+    background:#05060b;
+    border:1px solid rgba(255,255,255,.1);
+    padding:20px;
+    border-radius:12px;
+    overflow:auto;
+    margin:20px 0;
+}
+
+.code-box pre{
+    color:#d7d7e0;
+}
+
+.back-btn{
+    border:none;
+    background:rgba(255,255,255,.08);
+    color:white;
+    padding:11px 17px;
+    border-radius:9px;
+    cursor:pointer;
 }
 
 /* FOOTER */
 
-footer {
-    text-align: center;
-    padding: 35px 20px;
-    color: #777b8b;
-    font-size: 13px;
+footer{
+    text-align:center;
+    padding:35px 20px;
+    color:#777b8b;
+    font-size:13px;
 }
 
 /* MOBILE */
 
-@media(max-width:600px) {
+@media(max-width:600px){
 
-    .navbar {
-        padding: 15px 5%;
+    .navbar{
+        padding:15px 5%;
     }
 
-    .logo {
-        font-size: 19px;
+    .logo{
+        font-size:19px;
     }
 
-    .user-name {
-        display: none;
+    .user-name{
+        display:none;
     }
 
-    .hero {
-        padding: 50px 20px;
+    .hero{
+        padding:50px 20px;
     }
 
-    .hero p {
-        font-size: 15px;
+    .hero p{
+        font-size:15px;
     }
 
-    .features {
-        padding: 30px 5%;
+    .features{
+        padding:30px 5%;
     }
+
+    #dashboard,
+    #lessonPage{
+        padding:30px 5%;
+    }
+
 }
+
 </style>
 </head>
 
 <body>
+
 
 <!-- NAVBAR -->
 
@@ -303,37 +370,42 @@ footer {
 
     <div class="nav-right">
 
-        <!-- LOGIN BUTTON -->
         <button
             id="googleLoginBtn"
             class="google-btn"
-            onclick="loginWithGoogle()"
-        >
+            onclick="loginWithGoogle()">
+
             <img
                 class="google-icon"
                 src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-                alt="Google"
-            >
+                alt="Google">
+
             Continue with Google
+
         </button>
 
-        <!-- LOGGED-IN USER -->
-        <div id="userBox" class="user-box">
+
+        <div
+            id="userBox"
+            class="user-box">
 
             <img
                 id="userPhoto"
                 class="user-photo"
                 src=""
-                alt="User"
-            >
+                alt="User">
 
-            <span id="userName" class="user-name"></span>
+            <span
+                id="userName"
+                class="user-name">
+            </span>
 
             <button
                 class="logout-btn"
-                onclick="logout()"
-            >
+                onclick="logout()">
+
                 Logout
+
             </button>
 
         </div>
@@ -343,26 +415,11 @@ footer {
 </nav>
 
 
-<!-- LOADING -->
+<!-- HOME -->
 
-<div id="loading" class="loading">
-
-    <div class="loading-box">
-
-        <div class="spinner"></div>
-
-        <div id="loadingText">
-            Signing in...
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- HERO -->
-
-<section class="hero">
+<section
+    id="homePage"
+    class="hero">
 
     <div class="hero-content">
 
@@ -375,15 +432,17 @@ footer {
         </h1>
 
         <p>
-            Learn programming, practice coding, solve challenges,
-            and build your skills with one smart learning platform.
+            Learn programming, practice coding,
+            solve challenges, and build your skills
+            with one smart learning platform.
         </p>
 
         <button
             class="start-btn"
-            onclick="handleStart()"
-        >
+            onclick="startLearning()">
+
             Start Learning →
+
         </button>
 
     </div>
@@ -391,18 +450,11 @@ footer {
 </section>
 
 
-<!-- LOGIN SUCCESS MESSAGE -->
-
-<div
-    id="loginMessage"
-    class="login-message"
->
-</div>
-
-
 <!-- FEATURES -->
 
-<section class="features">
+<section
+    id="features"
+    class="features">
 
     <div class="card">
 
@@ -462,6 +514,237 @@ footer {
 </section>
 
 
+<!-- DASHBOARD -->
+
+<section
+    id="dashboard">
+
+    <div class="dashboard-header">
+
+        <h1>
+            🚀 Learning Dashboard
+        </h1>
+
+        <p>
+            Choose a course and start your coding journey.
+        </p>
+
+    </div>
+
+
+    <div class="course-grid">
+
+
+        <!-- COMPUTER BASICS -->
+
+        <div class="course">
+
+            <div class="course-icon">
+                💻
+            </div>
+
+            <h3>
+                Computer Basics
+            </h3>
+
+            <p>
+                Understand computers, hardware,
+                software, operating systems and more.
+            </p>
+
+            <button
+                class="course-btn"
+                onclick="openLesson('computer')">
+
+                Start Course
+
+            </button>
+
+        </div>
+
+
+        <!-- C -->
+
+        <div class="course">
+
+            <div class="course-icon">
+                ⚙️
+            </div>
+
+            <h3>
+                C Programming
+            </h3>
+
+            <p>
+                Learn variables, conditions,
+                loops, functions and arrays.
+            </p>
+
+            <button
+                class="course-btn"
+                onclick="openLesson('c')">
+
+                Start Course
+
+            </button>
+
+        </div>
+
+
+        <!-- PYTHON -->
+
+        <div class="course">
+
+            <div class="course-icon">
+                🐍
+            </div>
+
+            <h3>
+                Python
+            </h3>
+
+            <p>
+                Learn Python programming from
+                beginner level with simple examples.
+            </p>
+
+            <button
+                class="course-btn"
+                onclick="openLesson('python')">
+
+                Start Course
+
+            </button>
+
+        </div>
+
+
+        <!-- C++ -->
+
+        <div class="course">
+
+            <div class="course-icon">
+                💠
+            </div>
+
+            <h3>
+                C++
+            </h3>
+
+            <p>
+                Learn object-oriented programming,
+                classes, objects and more.
+            </p>
+
+            <button
+                class="course-btn"
+                onclick="openLesson('cpp')">
+
+                Start Course
+
+            </button>
+
+        </div>
+
+
+        <!-- CHALLENGES -->
+
+        <div class="course">
+
+            <div class="course-icon">
+                🧠
+            </div>
+
+            <h3>
+                Coding Challenges
+            </h3>
+
+            <p>
+                Test your programming knowledge
+                with coding challenges.
+            </p>
+
+            <button
+                class="course-btn"
+                onclick="openLesson('challenge')">
+
+                Practice
+
+            </button>
+
+        </div>
+
+
+        <!-- PROJECTS -->
+
+        <div class="course">
+
+            <div class="course-icon">
+                🚀
+            </div>
+
+            <h3>
+                Projects
+            </h3>
+
+            <p>
+                Build real-world projects and
+                turn your ideas into applications.
+            </p>
+
+            <button
+                class="course-btn"
+                onclick="openLesson('projects')">
+
+                Explore
+
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- LESSON PAGE -->
+
+<section
+    id="lessonPage">
+
+    <div class="lesson-box">
+
+        <button
+            class="back-btn"
+            onclick="backToDashboard()">
+
+            ← Back
+
+        </button>
+
+        <br><br>
+
+        <h1 id="lessonTitle">
+            Lesson
+        </h1>
+
+        <p id="lessonText">
+        </p>
+
+        <div
+            id="lessonCode"
+            class="code-box"
+            style="display:none;">
+
+            <pre id="codeContent"></pre>
+
+        </div>
+
+    </div>
+
+</section>
+
+
 <footer>
     © 2026 CodeQuest AI • Learn. Practice. Build.
 </footer>
@@ -471,8 +754,11 @@ footer {
 
 <script type="module">
 
-import { initializeApp }
+import {
+    initializeApp
+}
 from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+
 
 import {
     getAuth,
@@ -484,9 +770,7 @@ import {
 from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
 
-/* =========================================
-   FIREBASE CONFIGURATION
-========================================= */
+/* FIREBASE CONFIG */
 
 const firebaseConfig = {
 
@@ -513,24 +797,22 @@ const firebaseConfig = {
 };
 
 
-/* =========================================
-   INITIALIZE FIREBASE
-========================================= */
+const app =
+    initializeApp(firebaseConfig);
 
-const app = initializeApp(firebaseConfig);
+const auth =
+    getAuth(app);
 
-const auth = getAuth(app);
+const provider =
+    new GoogleAuthProvider();
 
-const provider = new GoogleAuthProvider();
 
 provider.setCustomParameters({
-    prompt: "select_account"
+    prompt:"select_account"
 });
 
 
-/* =========================================
-   ELEMENTS
-========================================= */
+/* ELEMENTS */
 
 const loginButton =
     document.getElementById("googleLoginBtn");
@@ -544,174 +826,90 @@ const userPhoto =
 const userName =
     document.getElementById("userName");
 
-const loginMessage =
-    document.getElementById("loginMessage");
 
-const loading =
-    document.getElementById("loading");
+/* GOOGLE LOGIN */
 
-const loadingText =
-    document.getElementById("loadingText");
+window.loginWithGoogle =
+async function(){
 
+    try{
 
-/* =========================================
-   LOADING
-========================================= */
-
-function showLoading(message) {
-
-    loadingText.textContent = message;
-
-    loading.style.display = "flex";
-}
-
-
-function hideLoading() {
-
-    loading.style.display = "none";
-}
-
-
-/* =========================================
-   GOOGLE LOGIN
-========================================= */
-
-window.loginWithGoogle = async function () {
-
-    try {
-
-        showLoading("Opening Google login...");
-
-        const result =
-            await signInWithPopup(auth, provider);
-
-        const user = result.user;
-
-        console.log(
-            "Google login successful:",
-            user
-        );
-
-        showUser(user);
-
-        hideLoading();
-
-        showMessage(
-            "Welcome to CodeQuest AI, " +
-            (user.displayName || "User") +
-            "! 🎉"
+        await signInWithPopup(
+            auth,
+            provider
         );
 
     }
 
-    catch (error) {
+    catch(error){
 
-        console.error(
-            "Firebase login error:",
-            error
+        console.error(error);
+
+        alert(
+            "Login failed: " +
+            error.message
         );
-
-        hideLoading();
-
-        if (
-            error.code ===
-            "auth/popup-closed-by-user"
-        ) {
-
-            alert("Google login was cancelled.");
-
-        }
-
-        else if (
-            error.code ===
-            "auth/popup-blocked"
-        ) {
-
-            alert(
-                "Google login popup was blocked. " +
-                "Please allow popups and try again."
-            );
-
-        }
-
-        else if (
-            error.code ===
-            "auth/unauthorized-domain"
-        ) {
-
-            alert(
-                "This website is not authorized in Firebase. " +
-                "Add your current website domain under " +
-                "Firebase → Authentication → Settings → Authorized domains."
-            );
-
-        }
-
-        else {
-
-            alert(
-                "Login failed.\n\n" +
-                error.message
-            );
-
-        }
 
     }
 
 };
 
 
-/* =========================================
-   SHOW USER
-========================================= */
+/* AUTH STATE */
 
-function showUser(user) {
+onAuthStateChanged(
+    auth,
+    (user)=>{
 
-    loginButton.style.display = "none";
+        if(user){
 
-    userBox.style.display = "flex";
+            loginButton.style.display =
+                "none";
 
-    userPhoto.src =
-        user.photoURL ||
-        "https://via.placeholder.com/100";
+            userBox.style.display =
+                "flex";
 
-    userName.textContent =
-        user.displayName ||
-        user.email ||
-        "User";
-}
+            userPhoto.src =
+                user.photoURL ||
+                "https://via.placeholder.com/100";
+
+            userName.textContent =
+                user.displayName ||
+                user.email ||
+                "User";
+
+        }
+
+        else{
+
+            loginButton.style.display =
+                "flex";
+
+            userBox.style.display =
+                "none";
+
+        }
+
+    }
+);
 
 
-/* =========================================
-   LOGOUT
-========================================= */
+/* LOGOUT */
 
-window.logout = async function () {
+window.logout =
+async function(){
 
-    try {
-
-        showLoading("Signing out...");
+    try{
 
         await signOut(auth);
 
-        hideLoading();
-
-        userBox.style.display = "none";
-
-        loginButton.style.display = "flex";
-
-        loginMessage.style.display = "none";
+        showHome();
 
     }
 
-    catch (error) {
+    catch(error){
 
-        hideLoading();
-
-        console.error(
-            "Logout error:",
-            error
-        );
+        console.error(error);
 
         alert(
             "Logout failed: " +
@@ -723,69 +921,15 @@ window.logout = async function () {
 };
 
 
-/* =========================================
-   AUTH STATE
-========================================= */
+/* START LEARNING */
 
-onAuthStateChanged(
-    auth,
-    (user) => {
+window.startLearning =
+function(){
 
-        if (user) {
+    const user =
+        auth.currentUser;
 
-            console.log(
-                "User is already logged in:",
-                user.email
-            );
-
-            showUser(user);
-
-        }
-
-        else {
-
-            console.log(
-                "No user is currently logged in."
-            );
-
-            userBox.style.display = "none";
-
-            loginButton.style.display = "flex";
-
-        }
-
-    }
-);
-
-
-/* =========================================
-   MESSAGE
-========================================= */
-
-function showMessage(message) {
-
-    loginMessage.textContent = message;
-
-    loginMessage.style.display = "block";
-
-    setTimeout(() => {
-
-        loginMessage.style.display = "none";
-
-    }, 5000);
-
-}
-
-
-/* =========================================
-   START LEARNING
-========================================= */
-
-window.handleStart = function () {
-
-    const user = auth.currentUser;
-
-    if (!user) {
+    if(!user){
 
         alert(
             "Please login with Google first."
@@ -794,15 +938,219 @@ window.handleStart = function () {
         loginWithGoogle();
 
         return;
+
     }
 
-    alert(
-        "Welcome " +
-        (user.displayName || "User") +
-        "! Your CodeQuest journey starts now 🚀"
+    document.getElementById(
+        "homePage"
+    ).style.display="none";
+
+    document.getElementById(
+        "features"
+    ).style.display="none";
+
+    document.getElementById(
+        "dashboard"
+    ).style.display="block";
+
+    window.scrollTo(
+        0,
+        0
     );
 
 };
+
+
+/* OPEN LESSON */
+
+window.openLesson =
+function(type){
+
+    const title =
+        document.getElementById(
+            "lessonTitle"
+        );
+
+    const text =
+        document.getElementById(
+            "lessonText"
+        );
+
+    const codeBox =
+        document.getElementById(
+            "lessonCode"
+        );
+
+    const code =
+        document.getElementById(
+            "codeContent"
+        );
+
+
+    document.getElementById(
+        "dashboard"
+    ).style.display="none";
+
+
+    document.getElementById(
+        "lessonPage"
+    ).style.display="block";
+
+
+    codeBox.style.display="none";
+
+
+    if(type==="computer"){
+
+        title.textContent =
+            "💻 Computer Basics";
+
+        text.textContent =
+            "A computer is an electronic device that accepts data, processes it, stores it and produces useful information. In this course you will learn hardware, software, operating systems and computer fundamentals.";
+
+    }
+
+
+    else if(type==="c"){
+
+        title.textContent =
+            "⚙️ C Programming";
+
+        text.textContent =
+            "C is a general-purpose programming language. Start with your first C program:";
+
+        codeBox.style.display="block";
+
+        code.textContent =
+`#include <stdio.h>
+
+int main()
+{
+    printf("Hello World");
+
+    return 0;
+}`;
+
+    }
+
+
+    else if(type==="python"){
+
+        title.textContent =
+            "🐍 Python";
+
+        text.textContent =
+            "Python is a high-level programming language known for its simple syntax. Here is your first Python program:";
+
+        codeBox.style.display="block";
+
+        code.textContent =
+`print("Hello World")`;
+
+    }
+
+
+    else if(type==="cpp"){
+
+        title.textContent =
+            "💠 C++";
+
+        text.textContent =
+            "C++ is a powerful programming language that supports object-oriented programming. Here is a simple program:";
+
+        codeBox.style.display="block";
+
+        code.textContent =
+`#include <iostream>
+using namespace std;
+
+int main()
+{
+    cout << "Hello World";
+
+    return 0;
+}`;
+
+    }
+
+
+    else if(type==="challenge"){
+
+        title.textContent =
+            "🧠 Coding Challenge";
+
+        text.textContent =
+            "Challenge: Write a program that prints Hello World. Try solving it yourself before checking the answer.";
+
+        codeBox.style.display="block";
+
+        code.textContent =
+`print("Hello World")`;
+
+    }
+
+
+    else if(type==="projects"){
+
+        title.textContent =
+            "🚀 Projects";
+
+        text.textContent =
+            "Projects will allow you to apply your programming knowledge to real-world applications. CodeQuest AI itself can be your first major project!";
+
+    }
+
+
+    window.scrollTo(
+        0,
+        0
+    );
+
+};
+
+
+/* BACK */
+
+window.backToDashboard =
+function(){
+
+    document.getElementById(
+        "lessonPage"
+    ).style.display="none";
+
+    document.getElementById(
+        "dashboard"
+    ).style.display="block";
+
+    window.scrollTo(
+        0,
+        0
+    );
+
+};
+
+
+/* HOME */
+
+function showHome(){
+
+    document.getElementById(
+        "dashboard"
+    ).style.display="none";
+
+    document.getElementById(
+        "lessonPage"
+    ).style.display="none";
+
+    document.getElementById(
+        "homePage"
+    ).style.display="flex";
+
+    document.getElementById(
+        "features"
+    ).style.display="grid";
+
+}
 
 </script>
 
