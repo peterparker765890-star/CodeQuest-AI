@@ -2,14 +2,11 @@
 <html lang="en">
 
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>CodeQuest AI</title>
 
 <style>
-
 *{
     box-sizing:border-box;
     margin:0;
@@ -34,9 +31,7 @@ button{
     display:none!important;
 }
 
-/* =========================================================
-   LOGIN
-========================================================= */
+/* ================= LOGIN ================= */
 
 #loginPage{
     min-height:100vh;
@@ -49,7 +44,7 @@ button{
 .login-card{
     width:100%;
     max-width:440px;
-    background:rgba(20,25,45,.88);
+    background:rgba(20,25,45,.9);
     border:1px solid rgba(255,255,255,.12);
     border-radius:28px;
     padding:40px 28px;
@@ -83,11 +78,20 @@ button{
     font-size:16px;
     font-weight:bold;
     cursor:pointer;
+    transition:.2s;
 }
 
-/* =========================================================
-   APP
-========================================================= */
+.google-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 25px rgba(0,0,0,.3);
+}
+
+.google-btn:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+}
+
+/* ================= APP ================= */
 
 #app{
     display:none;
@@ -138,15 +142,15 @@ button{
     font-weight:bold;
 }
 
+/* ================= MAIN ================= */
+
 main{
     max-width:1250px;
     margin:auto;
     padding:25px 18px 80px;
 }
 
-/* =========================================================
-   HERO
-========================================================= */
+/* ================= HERO ================= */
 
 .hero{
     background:
@@ -156,7 +160,6 @@ main{
     border-radius:28px;
     padding:30px;
     margin-bottom:22px;
-    overflow:hidden;
 }
 
 .hero h1{
@@ -193,11 +196,10 @@ main{
     width:38%;
     height:100%;
     background:linear-gradient(90deg,#8f5cff,#23c8ff);
+    transition:.4s;
 }
 
-/* =========================================================
-   QUICK STATS
-========================================================= */
+/* ================= STATS ================= */
 
 .stats{
     display:grid;
@@ -227,9 +229,7 @@ main{
     color:#8f9bb3;
 }
 
-/* =========================================================
-   NAV TABS
-========================================================= */
+/* ================= TABS ================= */
 
 .tabs{
     display:flex;
@@ -254,9 +254,7 @@ main{
     color:white;
 }
 
-/* =========================================================
-   SECTIONS
-========================================================= */
+/* ================= SECTIONS ================= */
 
 .section{
     display:none;
@@ -279,9 +277,7 @@ main{
     margin-top:7px;
 }
 
-/* =========================================================
-   COURSE CARDS
-========================================================= */
+/* ================= COURSES ================= */
 
 .course-grid{
     display:grid;
@@ -315,7 +311,6 @@ main{
 .course p{
     color:#929db3;
     line-height:1.5;
-    min-height:48px;
 }
 
 .level{
@@ -328,9 +323,7 @@ main{
     font-size:12px;
 }
 
-/* =========================================================
-   LESSON PANEL
-========================================================= */
+/* ================= LESSONS ================= */
 
 .lesson-panel{
     background:rgba(18,24,41,.92);
@@ -351,7 +344,7 @@ main{
 
 .chapter{
     border-top:1px solid rgba(255,255,255,.08);
-    padding:22px 0;
+    padding:25px 0;
 }
 
 .chapter:first-of-type{
@@ -399,9 +392,7 @@ main{
     cursor:pointer;
 }
 
-/* =========================================================
-   QUIZ ARENA
-========================================================= */
+/* ================= QUIZ ================= */
 
 .quiz-box{
     background:
@@ -474,9 +465,7 @@ main{
     cursor:pointer;
 }
 
-/* =========================================================
-   CAREER
-========================================================= */
+/* ================= CAREER ================= */
 
 .career-grid{
     display:grid;
@@ -501,9 +490,7 @@ main{
     line-height:1.75;
 }
 
-/* =========================================================
-   GAMING
-========================================================= */
+/* ================= GAMES ================= */
 
 .game-grid{
     display:grid;
@@ -512,13 +499,18 @@ main{
 }
 
 .game-card{
-    background:
-        linear-gradient(145deg,#171f39,#0e1425);
+    background:linear-gradient(145deg,#171f39,#0e1425);
     border:1px solid #283453;
     border-radius:22px;
     padding:25px;
     text-align:center;
     cursor:pointer;
+    transition:.2s;
+}
+
+.game-card:hover{
+    transform:translateY(-5px);
+    border-color:#8064e9;
 }
 
 .game-card .game-icon{
@@ -534,9 +526,7 @@ main{
     line-height:1.5;
 }
 
-/* =========================================================
-   MOBILE
-========================================================= */
+/* ================= RESPONSIVE ================= */
 
 @media(max-width:900px){
 
@@ -551,7 +541,6 @@ main{
     .game-grid{
         grid-template-columns:repeat(2,1fr);
     }
-
 }
 
 @media(max-width:600px){
@@ -577,27 +566,13 @@ main{
     .question{
         font-size:19px;
     }
-
 }
-
 </style>
-
 </head>
 
 <body>
 
-
-<!-- =========================================================
-     KEEP YOUR EXISTING GOOGLE LOGIN SECTION HERE
-     
-     IMPORTANT:
-     Your current Firebase Google login is already working.
-     Do NOT change your Firebase configuration or signInWithPopup
-     code. Connect your successful login callback to:
-     
-         showApp()
-     
-========================================================= -->
+<!-- ================= LOGIN ================= -->
 
 <div id="loginPage">
 
@@ -607,17 +582,19 @@ main{
 
         <h1>CodeQuest AI</h1>
 
-        <p>
-            Learn • Practice • Play • Build
-        </p>
+        <p>Learn • Practice • Play • Build</p>
 
         <p style="margin-top:8px;">
             Your interactive Computer Science learning journey.
         </p>
 
-        <!-- Keep your existing working Google login button/function -->
-        <button class="google-btn" onclick="startGoogleLogin()">
+        <button
+            class="google-btn"
+            id="googleLoginBtn"
+            type="button">
+
             🔵 Continue with Google
+
         </button>
 
     </div>
@@ -625,9 +602,7 @@ main{
 </div>
 
 
-<!-- =========================================================
-     MAIN APP
-========================================================= -->
+<!-- ================= APP ================= -->
 
 <div id="app">
 
@@ -665,9 +640,10 @@ main{
             <h1>Level Up Your CS Skills 🚀</h1>
 
             <p>
-                Go from computer basics to programming, GitHub,
-                databases, DSA, networking, cybersecurity and AI.
-                Learn concepts, write code, test yourself and build
+                Start from computer fundamentals and progress through
+                programming, MS Office, GitHub, databases, networking,
+                cybersecurity, software development, AI and more.
+                Learn concepts, practise code, take quizzes and build
                 real projects.
             </p>
 
@@ -725,32 +701,38 @@ main{
         </section>
 
 
-        <!-- NAVIGATION -->
+        <!-- TABS -->
 
         <div class="tabs">
 
-            <button class="tab active" onclick="openSection('courses',this)">
+            <button
+                class="tab active"
+                onclick="openSection('courses',this)">
                 📚 Courses
             </button>
 
-            <button class="tab" onclick="openSection('quiz',this)">
+            <button
+                class="tab"
+                onclick="openSection('quiz',this)">
                 🧠 Quiz Arena
             </button>
 
-            <button class="tab" onclick="openSection('career',this)">
+            <button
+                class="tab"
+                onclick="openSection('career',this)">
                 💼 Career Guide
             </button>
 
-            <button class="tab" onclick="openSection('games',this)">
+            <button
+                class="tab"
+                onclick="openSection('games',this)">
                 🎮 Game Zone
             </button>
 
         </div>
 
 
-        <!-- =================================================
-             COURSES
-        ================================================= -->
+        <!-- ================= COURSES ================= -->
 
         <section id="courses" class="section active">
 
@@ -761,22 +743,29 @@ main{
                     <h2>Computer Science Roadmap</h2>
 
                     <p>
-                        Start from zero and gradually move toward
-                        advanced computer science.
+                        Follow a structured path from computer basics
+                        toward advanced computer science.
                     </p>
 
                 </div>
 
-                <div class="course-grid" id="courseGrid"></div>
+                <div
+                    class="course-grid"
+                    id="courseGrid">
+                </div>
 
             </div>
 
 
-            <div id="lessonArea" class="hidden">
+            <div
+                id="lessonArea"
+                class="hidden">
 
                 <div class="lesson-panel">
 
-                    <button class="back-btn" onclick="showCourses()">
+                    <button
+                        class="back-btn"
+                        onclick="showCourses()">
                         ← Back to Courses
                     </button>
 
@@ -789,9 +778,7 @@ main{
         </section>
 
 
-        <!-- =================================================
-             QUIZ
-        ================================================= -->
+        <!-- ================= QUIZ ================= -->
 
         <section id="quiz" class="section">
 
@@ -830,11 +817,16 @@ main{
                     Loading...
                 </div>
 
-                <div class="question" id="questionText">
+                <div
+                    class="question"
+                    id="questionText">
                     Loading question...
                 </div>
 
-                <div class="options" id="options"></div>
+                <div
+                    class="options"
+                    id="options">
+                </div>
 
                 <button
                     class="next-btn hidden"
@@ -848,9 +840,7 @@ main{
         </section>
 
 
-        <!-- =================================================
-             CAREER GUIDE
-        ================================================= -->
+        <!-- ================= CAREER ================= -->
 
         <section id="career" class="section">
 
@@ -859,20 +849,22 @@ main{
                 <h2>💼 Career Guide</h2>
 
                 <p>
-                    Learn how to turn your CS skills into internships,
-                    placements and long-term career opportunities.
+                    Understand internships, placements, jobs,
+                    skills, projects, GitHub, interviews and
+                    practical career preparation.
                 </p>
 
             </div>
 
-            <div class="career-grid" id="careerGrid"></div>
+            <div
+                class="career-grid"
+                id="careerGrid">
+            </div>
 
         </section>
 
 
-        <!-- =================================================
-             GAME ZONE
-        ================================================= -->
+        <!-- ================= GAMES ================= -->
 
         <section id="games" class="section">
 
@@ -882,27 +874,31 @@ main{
 
                 <p>
                     Learn computer science through challenges,
-                    XP and mini-games.
+                    XP, achievements and mini-games.
                 </p>
 
             </div>
 
             <div class="game-grid">
 
-                <div class="game-card" onclick="startQuickGame()">
+                <div
+                    class="game-card"
+                    onclick="startQuickGame()">
 
                     <div class="game-icon">⚡</div>
 
                     <h3>Quick Challenge</h3>
 
                     <p>
-                        Answer 5 questions as quickly as possible.
+                        Answer five questions and earn XP.
                     </p>
 
                 </div>
 
 
-                <div class="game-card" onclick="openSection('quiz')">
+                <div
+                    class="game-card"
+                    onclick="goToQuiz()">
 
                     <div class="game-icon">🧠</div>
 
@@ -915,15 +911,17 @@ main{
                 </div>
 
 
-                <div class="game-card" onclick="showAchievement()">
+                <div
+                    class="game-card"
+                    onclick="showAchievement()">
 
                     <div class="game-icon">🏆</div>
 
                     <h3>Achievements</h3>
 
                     <p>
-                        Unlock badges by learning and completing
-                        challenges.
+                        Unlock achievements by learning and
+                        completing challenges.
                     </p>
 
                 </div>
@@ -940,7 +938,7 @@ main{
 <script>
 
 /* ============================================================
-   GLOBAL DATA
+   DATA
 ============================================================ */
 
 let courses = [];
@@ -948,54 +946,85 @@ let quizQuestions = [];
 let careers = [];
 
 let currentCourse = null;
-
 let currentQuiz = 0;
 let quizScore = 0;
 let quizAnswered = false;
 
 
 /* ============================================================
-   LOGIN CONNECTION
+   GOOGLE LOGIN BRIDGE
 ============================================================ */
 
 /*
-    IMPORTANT:
+ IMPORTANT:
 
-    Your Firebase Google login is already working.
+ This does NOT replace Firebase authentication.
 
-    Keep your current Firebase login code.
+ It tries to use your existing Google-login function.
 
-    When Google login succeeds, call:
-
-        showApp();
-
-    This function is intentionally separate so the login system
-    does not get mixed with the new application interior.
+ If your existing function has another name, connect that
+ function here instead of changing Firebase configuration.
 */
 
-function startGoogleLogin(){
+document
+    .getElementById("googleLoginBtn")
+    .addEventListener("click", function(){
 
-    /*
-       DO NOT replace your existing Google authentication here.
+        const button = this;
 
-       If your existing login function already exists, call it here.
+        button.disabled = true;
+        button.innerText = "Connecting to Google...";
 
-       Example:
+        try{
 
-       signInWithPopup(auth, provider)
-           .then((result) => {
-               showApp();
-           });
+            if(typeof window.loginWithGoogle === "function"){
 
-    */
+                window.loginWithGoogle();
 
-    if(typeof window.loginWithGoogle === "function"){
-        window.loginWithGoogle();
-    }else{
-        alert("Connect this button to your existing Google login function.");
-    }
+                return;
+            }
 
-}
+            if(typeof window.signInWithGoogle === "function"){
+
+                window.signInWithGoogle();
+
+                return;
+            }
+
+            if(typeof window.googleLogin === "function"){
+
+                window.googleLogin();
+
+                return;
+            }
+
+            console.error(
+                "Existing Firebase Google login function was not found."
+            );
+
+            alert(
+                "Google login function is not connected."
+            );
+
+            button.disabled = false;
+            button.innerText =
+                "🔵 Continue with Google";
+
+        }catch(error){
+
+            console.error(error);
+
+            button.disabled = false;
+            button.innerText =
+                "🔵 Continue with Google";
+
+            alert(
+                "Google login failed. Please try again."
+            );
+
+        }
+
+    });
 
 
 /* ============================================================
@@ -1004,11 +1033,52 @@ function startGoogleLogin(){
 
 function showApp(){
 
-    document.getElementById("loginPage").style.display = "none";
+    document
+        .getElementById("loginPage")
+        .style.display = "none";
 
-    document.getElementById("app").style.display = "block";
+    document
+        .getElementById("app")
+        .style.display = "block";
 
     loadAllData();
+}
+
+
+/* ============================================================
+   USER INFORMATION
+============================================================ */
+
+function setUserInfo(user){
+
+    if(!user)
+        return;
+
+    const name =
+        user.displayName ||
+        user.email ||
+        "Student";
+
+    document
+        .getElementById("userName")
+        .innerText = name;
+
+    const avatar =
+        document.getElementById("avatar");
+
+    if(user.photoURL){
+
+        avatar.innerHTML =
+            `<img src="${user.photoURL}"
+             style="width:100%;height:100%;
+             border-radius:50%;object-fit:cover;">`;
+
+    }else{
+
+        avatar.innerText =
+            name.charAt(0).toUpperCase();
+
+    }
 
 }
 
@@ -1024,6 +1094,9 @@ async function loadAllData(){
         const courseResponse =
             await fetch("/api/courses");
 
+        if(!courseResponse.ok)
+            throw new Error("Courses API failed");
+
         courses =
             await courseResponse.json();
 
@@ -1031,35 +1104,49 @@ async function loadAllData(){
         const quizResponse =
             await fetch("/api/quiz");
 
+        if(!quizResponse.ok)
+            throw new Error("Quiz API failed");
+
         const quizData =
             await quizResponse.json();
 
         quizQuestions =
-            quizData.questions;
+            Array.isArray(quizData)
+            ? quizData
+            : (quizData.questions || []);
 
 
         const careerResponse =
             await fetch("/api/careers");
+
+        if(!careerResponse.ok)
+            throw new Error("Career API failed");
 
         careers =
             await careerResponse.json();
 
 
         updateStats();
-
         renderCourses();
-
         renderCareer();
-
         prepareQuiz();
 
     }catch(error){
 
         console.error(error);
 
-        alert(
-            "Unable to load CodeQuest data. Please refresh."
-        );
+        document.getElementById("courseGrid").innerHTML = `
+            <div style="
+                grid-column:1/-1;
+                padding:25px;
+                background:#171d30;
+                border-radius:18px;
+                color:#aeb7ca;
+            ">
+                ⚠️ Course data could not be loaded.
+                Please refresh the page.
+            </div>
+        `;
 
     }
 
@@ -1074,8 +1161,11 @@ function updateStats(){
 
     const chapterCount =
         courses.reduce(
-            (total,course) =>
-            total + course.chapters.length,
+            (total,course)=>
+            total +
+            (Array.isArray(course.chapters)
+                ? course.chapters.length
+                : 0),
             0
         );
 
@@ -1086,13 +1176,16 @@ function updateStats(){
         .innerText = chapterCount;
 
     document.getElementById("quizCount")
-        .innerText = quizQuestions.length + "+";
+        .innerText =
+        quizQuestions.length >= 700
+        ? "700+"
+        : quizQuestions.length + "+";
 
 }
 
 
 /* ============================================================
-   COURSE CARDS
+   COURSES
 ============================================================ */
 
 function renderCourses(){
@@ -1115,19 +1208,19 @@ function renderCourses(){
         card.innerHTML = `
 
             <div class="course-icon">
-                ${course.icon}
+                ${course.icon || "📘"}
             </div>
 
             <h3>
-                ${course.title}
+                ${course.title || "Course"}
             </h3>
 
             <p>
-                ${course.description}
+                ${course.description || ""}
             </p>
 
             <span class="level">
-                ${course.level}
+                ${course.level || "Beginner"}
             </span>
 
             <div style="
@@ -1135,7 +1228,8 @@ function renderCourses(){
                 color:#737f99;
                 font-size:13px;
             ">
-                ${course.chapters.length} lessons →
+                ${(course.chapters || []).length}
+                lessons →
             </div>
 
         `;
@@ -1148,7 +1242,7 @@ function renderCourses(){
 
 
 /* ============================================================
-   OPEN COURSE
+   COURSE LESSON
 ============================================================ */
 
 function openCourse(index){
@@ -1156,10 +1250,12 @@ function openCourse(index){
     currentCourse =
         courses[index];
 
-    document.getElementById("courseList")
+    document
+        .getElementById("courseList")
         .classList.add("hidden");
 
-    document.getElementById("lessonArea")
+    document
+        .getElementById("lessonArea")
         .classList.remove("hidden");
 
 
@@ -1169,25 +1265,28 @@ function openCourse(index){
     container.innerHTML = `
 
         <h2 style="font-size:30px;margin-bottom:8px;">
-            ${currentCourse.icon}
+            ${currentCourse.icon || "📘"}
             ${currentCourse.title}
         </h2>
 
-        <p style="color:#8f9bb3;margin-bottom:25px;">
-            ${currentCourse.description}
+        <p style="
+            color:#8f9bb3;
+            margin-bottom:25px;
+            line-height:1.7;
+        ">
+            ${currentCourse.description || ""}
         </p>
 
     `;
 
 
-    currentCourse.chapters.forEach(
-        (chapter,index)=>{
+    (currentCourse.chapters || [])
+        .forEach((chapter,index)=>{
 
             const div =
                 document.createElement("div");
 
-            div.className =
-                "chapter";
+            div.className = "chapter";
 
             div.innerHTML = `
 
@@ -1197,18 +1296,31 @@ function openCourse(index){
                 </h3>
 
                 <div class="lesson-text">
-                    ${chapter.lesson}
-                </div>
-
-                <div class="code">
-${escapeHTML(chapter.sample)}
+                    ${chapter.lesson || ""}
                 </div>
 
             `;
 
 
-            if(chapter.quiz &&
-               chapter.quiz.length > 0){
+            if(chapter.sample){
+
+                const code =
+                    document.createElement("div");
+
+                code.className = "code";
+
+                code.textContent =
+                    chapter.sample;
+
+                div.appendChild(code);
+
+            }
+
+
+            if(
+                Array.isArray(chapter.quiz) &&
+                chapter.quiz.length
+            ){
 
                 const quiz =
                     document.createElement("div");
@@ -1216,81 +1328,84 @@ ${escapeHTML(chapter.sample)}
                 quiz.className =
                     "mini-quiz";
 
-                quiz.innerHTML = `
-                    <b>📝 Quick Check</b>
-                `;
+                quiz.innerHTML =
+                    "<b>📝 Quick Check</b>";
 
-                chapter.quiz.forEach(
-                    (q)=>{
 
-                        const qDiv =
-                            document.createElement("div");
+                chapter.quiz.forEach(q=>{
 
-                        qDiv.style.marginTop =
-                            "15px";
+                    const qDiv =
+                        document.createElement("div");
 
-                        qDiv.innerHTML = `
-                            <p>
-                                ${q.q}
-                            </p>
-                        `;
+                    qDiv.style.marginTop =
+                        "15px";
 
-                        q.options.forEach(
-                            option=>{
+                    qDiv.innerHTML = `
+                        <p>${q.q}</p>
+                    `;
 
-                                const button =
-                                    document.createElement("button");
 
-                                button.innerText =
-                                    option;
+                    (q.options || [])
+                        .forEach(option=>{
 
-                                button.onclick = ()=>{
-                                    if(option === q.answer){
+                            const button =
+                                document.createElement("button");
 
-                                        button.style.background =
-                                            "#124a38";
+                            button.innerText =
+                                option;
 
-                                        button.innerText =
-                                            "✓ " + option;
+                            button.onclick = ()=>{
 
-                                        addXP(20);
+                                if(
+                                    option ===
+                                    q.answer
+                                ){
 
-                                    }else{
+                                    button.style.background =
+                                        "#124a38";
 
-                                        button.style.background =
-                                            "#522027";
+                                    button.innerText =
+                                        "✓ " + option;
 
-                                    }
-                                };
+                                    addXP(20);
 
-                                qDiv.appendChild(button);
+                                }else{
 
-                            }
-                        );
+                                    button.style.background =
+                                        "#522027";
 
-                        quiz.appendChild(qDiv);
+                                }
 
-                    }
-                );
+                            };
+
+                            qDiv.appendChild(button);
+
+                        });
+
+                    quiz.appendChild(qDiv);
+
+                });
 
                 div.appendChild(quiz);
 
             }
 
+
             container.appendChild(div);
 
-        }
-    );
+        });
 
 }
 
 
 function showCourses(){
 
-    document.getElementById("courseList")
+    document
+        .getElementById("courseList")
         .classList.remove("hidden");
 
-    document.getElementById("lessonArea")
+    document
+        .getElementById("lessonArea")
         .classList.add("hidden");
 
 }
@@ -1307,74 +1422,63 @@ function renderCareer(){
 
     grid.innerHTML = "";
 
-    careers.forEach(
-        career=>{
+    careers.forEach(career=>{
 
-            const card =
-                document.createElement("div");
+        const card =
+            document.createElement("div");
 
-            card.className =
-                "career-card";
+        card.className =
+            "career-card";
 
-            card.innerHTML = `
+        card.innerHTML = `
 
-                <h3>
-                    ${career.title}
-                </h3>
+            <h3>
+                ${career.title || "Career Guide"}
+            </h3>
 
-                <p>
-                    ${career.content}
-                </p>
+            <p>
+                ${career.content || ""}
+            </p>
 
-            `;
+        `;
 
-            grid.appendChild(card);
+        grid.appendChild(card);
 
-        }
-    );
+    });
 
 }
 
 
 /* ============================================================
-   QUIZ ENGINE
+   QUIZ
 ============================================================ */
 
 function prepareQuiz(){
 
-    /*
-        Adaptive allocation:
+    if(!quizQuestions.length)
+        return;
 
-        Beginners receive beginner questions first.
-        As progress increases, intermediate and advanced
-        questions can be introduced.
-    */
-
-    let level =
+    const level =
         localStorage.getItem("cq_level")
         || "Beginner";
 
 
-    let filtered =
+    let selected =
         quizQuestions.filter(
-            q => q.level === level
+            q =>
+            !q.level ||
+            q.level === level
         );
 
 
-    if(filtered.length < 20){
-
-        filtered =
-            quizQuestions;
-
-    }
+    if(selected.length < 20)
+        selected = [...quizQuestions];
 
 
-    shuffle(filtered);
+    shuffle(selected);
 
     quizQuestions =
-        filtered.concat(
-            quizQuestions
-        );
+        selected;
 
     currentQuiz = 0;
     quizScore = 0;
@@ -1386,11 +1490,12 @@ function prepareQuiz(){
 
 function showQuestion(){
 
-    if(quizQuestions.length === 0)
+    if(!quizQuestions.length)
         return;
 
 
     quizAnswered = false;
+
 
     const q =
         quizQuestions[
@@ -1403,20 +1508,17 @@ function showQuestion(){
         .innerText =
         currentQuiz + 1;
 
-
     document.getElementById("quizScore")
         .innerText =
         quizScore;
 
-
     document.getElementById("quizTopic")
         .innerText =
-        "📚 " + q.topic;
-
+        "📚 " + (q.topic || "Computer Science");
 
     document.getElementById("questionText")
         .innerText =
-        q.question;
+        q.question || "Question unavailable";
 
 
     const options =
@@ -1425,34 +1527,31 @@ function showQuestion(){
     options.innerHTML = "";
 
 
-    q.options.forEach(
-        option=>{
+    (q.options || []).forEach(option=>{
 
-            const button =
-                document.createElement("button");
+        const button =
+            document.createElement("button");
 
-            button.className =
-                "option";
+        button.className =
+            "option";
 
-            button.innerText =
-                option;
+        button.innerText =
+            option;
 
+        button.onclick =
+            ()=>answerQuestion(
+                button,
+                option,
+                q.answer
+            );
 
-            button.onclick =
-                ()=>answerQuestion(
-                    button,
-                    option,
-                    q.answer
-                );
+        options.appendChild(button);
 
-
-            options.appendChild(button);
-
-        }
-    );
+    });
 
 
-    document.getElementById("nextBtn")
+    document
+        .getElementById("nextBtn")
         .classList.add("hidden");
 
 }
@@ -1482,21 +1581,22 @@ function answerQuestion(
 
         button.classList.add("wrong");
 
+        document
+            .querySelectorAll(".option")
+            .forEach(btn=>{
 
-        const buttons =
-            document.querySelectorAll(
-                ".option"
-            );
+                if(
+                    btn.innerText ===
+                    correct
+                ){
 
-        buttons.forEach(
-            btn=>{
-                if(btn.innerText === correct){
                     btn.classList.add(
                         "correct"
                     );
+
                 }
-            }
-        );
+
+            });
 
     }
 
@@ -1506,7 +1606,8 @@ function answerQuestion(
         quizScore;
 
 
-    document.getElementById("nextBtn")
+    document
+        .getElementById("nextBtn")
         .classList.remove("hidden");
 
 }
@@ -1522,7 +1623,7 @@ function nextQuestion(){
 
 
 /* ============================================================
-   XP SYSTEM
+   XP
 ============================================================ */
 
 function addXP(amount){
@@ -1535,47 +1636,61 @@ function addXP(amount){
 
     xp += amount;
 
-
-    let level =
-        Math.floor(xp / 1000) + 1;
-
-
     localStorage.setItem(
         "cq_xp",
         xp
     );
 
+    updateXP(xp);
+
+}
+
+
+function updateXP(xp){
+
+    const current =
+        xp % 1000;
+
+    const level =
+        Math.floor(xp / 1000) + 1;
 
     document.getElementById("xp")
         .innerText =
-        xp % 1000;
-
+        current;
 
     document.getElementById("level")
         .innerText =
         level;
 
-
     document.getElementById("xpFill")
         .style.width =
-        (xp % 1000) / 10 + "%";
+        (current / 10) + "%";
 
 }
 
 
 /* ============================================================
-   GAME
+   GAMES
 ============================================================ */
 
-function startQuickGame(){
+function goToQuiz(){
+
+    const quizTab =
+        document.querySelectorAll(".tab")[1];
 
     openSection(
         "quiz",
-        document.querySelectorAll(".tab")[1]
+        quizTab
     );
 
-    currentQuiz = 0;
+}
 
+
+function startQuickGame(){
+
+    goToQuiz();
+
+    currentQuiz = 0;
     quizScore = 0;
 
     prepareQuiz();
@@ -1586,69 +1701,48 @@ function startQuickGame(){
 function showAchievement(){
 
     alert(
-        "🏆 Achievement system coming alive!\n\n" +
-        "Keep learning, complete quizzes and earn XP."
+        "🏆 Achievements\n\n" +
+        "Keep learning, answer quizzes and earn XP!"
     );
 
 }
 
 
 /* ============================================================
-   SECTION NAVIGATION
+   NAVIGATION
 ============================================================ */
 
-function openSection(
-    id,
-    button
-){
+function openSection(id,button){
 
-    document.querySelectorAll(
-        ".section"
-    ).forEach(
-        section=>{
-            section.classList.remove(
-                "active"
-            );
-        }
-    );
+    document
+        .querySelectorAll(".section")
+        .forEach(section=>{
+            section.classList.remove("active");
+        });
 
 
     const target =
         document.getElementById(id);
 
-    if(target){
-
-        target.classList.add(
-            "active"
-        );
-
-    }
+    if(target)
+        target.classList.add("active");
 
 
-    document.querySelectorAll(
-        ".tab"
-    ).forEach(
-        tab=>{
-            tab.classList.remove(
-                "active"
-            );
-        }
-    );
+    document
+        .querySelectorAll(".tab")
+        .forEach(tab=>{
+            tab.classList.remove("active");
+        });
 
 
-    if(button){
-
-        button.classList.add(
-            "active"
-        );
-
-    }
+    if(button)
+        button.classList.add("active");
 
 }
 
 
 /* ============================================================
-   UTILITIES
+   SHUFFLE
 ============================================================ */
 
 function shuffle(array){
@@ -1678,48 +1772,21 @@ function shuffle(array){
 }
 
 
-function escapeHTML(text){
-
-    return text
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;");
-
-}
-
-
 /* ============================================================
-   LOAD SAVED XP
+   INITIAL XP
 ============================================================ */
 
-window.addEventListener(
-    "load",
-    ()=>{
+window.addEventListener("load",()=>{
 
-        const xp =
-            Number(
-                localStorage.getItem(
-                    "cq_xp"
-                ) || 380
-            );
+    const xp =
+        Number(
+            localStorage.getItem("cq_xp")
+            || 380
+        );
 
+    updateXP(xp);
 
-        document.getElementById("xp")
-            .innerText =
-            xp % 1000;
-
-
-        document.getElementById("level")
-            .innerText =
-            Math.floor(xp / 1000) + 1;
-
-
-        document.getElementById("xpFill")
-            .style.width =
-            (xp % 1000) / 10 + "%";
-
-    }
-);
+});
 
 </script>
 
