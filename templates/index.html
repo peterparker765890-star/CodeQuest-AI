@@ -9,538 +9,534 @@
 
 <style>
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
 }
 
-body {
-    font-family: Arial, Helvetica, sans-serif;
+body{
+    font-family:Arial,Helvetica,sans-serif;
     background:
-        radial-gradient(circle at top right, #25104d 0%, transparent 35%),
-        radial-gradient(circle at bottom left, #101b3d 0%, transparent 35%),
+        radial-gradient(circle at top right,#25104d 0%,transparent 35%),
+        radial-gradient(circle at bottom left,#101b3d 0%,transparent 35%),
         #07070b;
-    color: white;
-    min-height: 100vh;
+    color:white;
+    min-height:100vh;
 }
 
-body.quiz-lockdown {
-    user-select: none;
+button,
+textarea,
+input{
+    font-family:inherit;
 }
 
-header {
-    padding: 20px 7%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #25252e;
-    position: sticky;
-    top: 0;
-    background: rgba(7,7,11,.94);
-    backdrop-filter: blur(15px);
-    z-index: 10;
+header{
+    padding:18px 7%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:1px solid #25252e;
+    position:sticky;
+    top:0;
+    background:rgba(7,7,11,.94);
+    backdrop-filter:blur(15px);
+    z-index:50;
 }
 
-.logo {
-    font-size: 22px;
-    font-weight: 900;
+.logo{
+    font-size:22px;
+    font-weight:900;
 }
 
-.logo span {
-    color: #a855f7;
+.logo span{
+    color:#a855f7;
 }
 
-.status {
-    font-size: 12px;
-    color: #4ade80;
+.status{
+    font-size:12px;
+    color:#4ade80;
 }
 
-.container {
-    width: 86%;
-    max-width: 1200px;
-    margin: auto;
+.container{
+    width:86%;
+    max-width:1250px;
+    margin:auto;
 }
 
-.hero {
-    padding: 60px 0 30px;
+.hero{
+    padding:65px 0 30px;
 }
 
-.hero small {
-    color: #a855f7;
-    font-weight: bold;
-    letter-spacing: 2px;
+.hero small{
+    color:#a855f7;
+    font-weight:bold;
+    letter-spacing:2px;
 }
 
-.hero h1 {
-    font-size: clamp(38px, 7vw, 72px);
-    line-height: 1;
-    margin: 14px 0;
+.hero h1{
+    font-size:clamp(38px,7vw,72px);
+    line-height:1;
+    margin:15px 0;
 }
 
-.gradient {
-    background: linear-gradient(
+.gradient{
+    background:linear-gradient(
         90deg,
         #a855f7,
         #ec4899,
         #6366f1
     );
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
 }
 
-.hero p {
-    max-width: 650px;
-    color: #a1a1aa;
-    font-size: 17px;
-    line-height: 1.6;
+.hero p{
+    max-width:700px;
+    color:#a1a1aa;
+    font-size:17px;
+    line-height:1.7;
 }
 
-.player-card {
-    margin: 30px 0;
-    padding: 24px;
-    border: 1px solid #2a2a35;
-    border-radius: 22px;
+.player-card{
+    margin:30px 0;
+    padding:25px;
+    border:1px solid #2a2a35;
+    border-radius:22px;
     background:
         linear-gradient(
             135deg,
             rgba(168,85,247,.16),
             rgba(30,30,40,.6)
         );
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-    flex-wrap: wrap;
+    display:flex;
+    justify-content:space-between;
+    gap:25px;
+    flex-wrap:wrap;
 }
 
-.player-title {
-    font-size: 13px;
-    color: #a1a1aa;
+.player-title{
+    font-size:12px;
+    color:#a1a1aa;
+    letter-spacing:1px;
 }
 
-.player-level {
-    font-size: 25px;
-    font-weight: bold;
-    margin-top: 6px;
+.player-level{
+    font-size:25px;
+    font-weight:bold;
+    margin-top:7px;
 }
 
-.xp {
-    color: #c084fc;
-    margin-top: 5px;
+.xp{
+    color:#c084fc;
+    margin-top:6px;
 }
 
-.progress {
-    width: 230px;
-    height: 8px;
-    background: #27272f;
-    border-radius: 10px;
-    margin-top: 12px;
-    overflow: hidden;
+.progress{
+    width:260px;
+    height:9px;
+    background:#27272f;
+    border-radius:10px;
+    margin-top:13px;
+    overflow:hidden;
 }
 
-.progress div {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(
+.progress div{
+    height:100%;
+    width:0%;
+    background:linear-gradient(
         90deg,
         #a855f7,
         #ec4899
     );
-    transition: width .4s;
+    transition:.4s;
 }
 
-.section-title {
-    margin: 45px 0 20px;
-    font-size: 25px;
+.section-title{
+    margin:48px 0 20px;
+    font-size:25px;
 }
 
-.features {
-    display: grid;
+.features{
+    display:grid;
     grid-template-columns:
-        repeat(auto-fit, minmax(180px, 1fr));
-    gap: 15px;
+        repeat(auto-fit,minmax(180px,1fr));
+    gap:15px;
 }
 
-.feature {
-    padding: 22px;
-    border: 1px solid #292933;
-    border-radius: 18px;
-    background: #111116;
-    cursor: pointer;
-    transition: .2s;
+.feature{
+    padding:22px;
+    border:1px solid #292933;
+    border-radius:18px;
+    background:#111116;
+    cursor:pointer;
+    transition:.2s;
 }
 
-.feature:hover {
-    transform: translateY(-4px);
-    border-color: #a855f7;
+.feature:hover{
+    transform:translateY(-4px);
+    border-color:#a855f7;
 }
 
-.feature-icon {
-    font-size: 30px;
+.feature-icon{
+    font-size:30px;
 }
 
-.feature h3 {
-    margin-top: 12px;
+.feature h3{
+    margin-top:12px;
 }
 
-.feature p {
-    color: #92929c;
-    font-size: 13px;
-    margin-top: 7px;
-    line-height: 1.5;
+.feature p{
+    color:#92929c;
+    font-size:13px;
+    margin-top:7px;
+    line-height:1.5;
 }
 
-.courses {
-    display: grid;
+.courses{
+    display:grid;
     grid-template-columns:
-        repeat(auto-fit, minmax(250px, 1fr));
-    gap: 18px;
+        repeat(auto-fit,minmax(260px,1fr));
+    gap:18px;
 }
 
-.course {
-    border: 1px solid #292933;
-    border-radius: 20px;
-    padding: 22px;
-    background: rgba(17,17,22,.92);
-    transition: .2s;
+.course{
+    border:1px solid #292933;
+    border-radius:20px;
+    padding:23px;
+    background:rgba(17,17,22,.94);
+    transition:.2s;
 }
 
-.course:hover {
-    transform: translateY(-5px);
-    border-color: #7c3aed;
+.course:hover{
+    transform:translateY(-5px);
+    border-color:#7c3aed;
 }
 
-.course-icon {
-    font-size: 34px;
+.course-icon{
+    font-size:35px;
 }
 
-.course h3 {
-    margin: 12px 0 6px;
+.course h3{
+    margin:12px 0 6px;
 }
 
-.course p {
-    color: #92929c;
-    font-size: 14px;
-    line-height: 1.5;
+.course p{
+    color:#92929c;
+    font-size:14px;
+    line-height:1.6;
 }
 
-.level {
-    display: inline-block;
-    margin-top: 12px;
-    padding: 5px 9px;
-    border-radius: 20px;
-    background: #211536;
-    color: #c084fc;
-    font-size: 11px;
-}
-
-button {
-    font-family: inherit;
+.level{
+    display:inline-block;
+    margin-top:12px;
+    padding:5px 9px;
+    border-radius:20px;
+    background:#211536;
+    color:#c084fc;
+    font-size:11px;
 }
 
 .course button,
-.primary {
-    border: none;
-    margin-top: 18px;
-    padding: 11px 16px;
-    border-radius: 10px;
-    background: linear-gradient(
+.primary{
+    border:none;
+    margin-top:18px;
+    padding:12px 17px;
+    border-radius:10px;
+    background:linear-gradient(
         90deg,
         #7c3aed,
         #a855f7
     );
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
 }
 
 .course button:hover,
-.primary:hover {
-    opacity: .9;
-    transform: translateY(-1px);
+.primary:hover{
+    opacity:.9;
+    transform:translateY(-1px);
 }
 
-.modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.82);
-    z-index: 100;
-    padding: 20px;
-    overflow-y: auto;
+.secondary{
+    border:1px solid #3b3b49;
+    padding:11px 16px;
+    border-radius:10px;
+    background:#17171d;
+    color:white;
+    cursor:pointer;
+    margin-top:12px;
 }
 
-.modal-box {
-    max-width: 750px;
-    margin: 30px auto;
-    background: #111116;
-    border: 1px solid #343442;
-    border-radius: 22px;
-    padding: 28px;
-    min-height: 150px;
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.84);
+    z-index:100;
+    padding:15px;
+    overflow-y:auto;
 }
 
-.close {
-    float: right;
-    font-size: 28px;
-    cursor: pointer;
-    color: #aaa;
+.modal-box{
+    max-width:850px;
+    margin:25px auto;
+    background:#111116;
+    border:1px solid #343442;
+    border-radius:22px;
+    padding:30px;
+    min-height:160px;
 }
 
-.close:hover {
-    color: white;
+.close{
+    float:right;
+    font-size:28px;
+    cursor:pointer;
+    color:#aaa;
 }
 
-.chapter {
-    padding: 16px;
-    margin-top: 9px;
-    border: 1px solid #292933;
-    border-radius: 12px;
-    background: #0b0b0f;
-    cursor: pointer;
-    transition: .2s;
+.close:hover{
+    color:white;
 }
 
-.chapter:hover {
-    border-color: #a855f7;
-    background: #15121d;
+.course-header{
+    padding:20px;
+    border:1px solid #292933;
+    border-radius:16px;
+    background:#0b0b0f;
+    margin-top:15px;
 }
 
-.lesson-box {
-    margin-top: 22px;
-    padding: 20px;
-    background: #0b0b0f;
-    border: 1px solid #292933;
-    border-radius: 15px;
-    line-height: 1.7;
+.chapter{
+    padding:17px;
+    margin-top:10px;
+    border:1px solid #292933;
+    border-radius:13px;
+    background:#0b0b0f;
+    cursor:pointer;
+    transition:.2s;
 }
 
-.lesson-box h3 {
-    margin-bottom: 10px;
+.chapter:hover{
+    border-color:#a855f7;
+    background:#15121d;
+    transform:translateX(3px);
 }
 
-.lesson-box p {
-    color: #b8b8c2;
+.chapter.completed{
+    border-color:#166534;
 }
 
-.example {
-    margin-top: 15px;
-    padding: 16px;
-    background: #050507;
-    border-radius: 12px;
-    overflow-x: auto;
-    color: #d8b4fe;
-    white-space: pre-wrap;
-    font-family: monospace;
+.lesson-box{
+    margin-top:20px;
+    padding:22px;
+    background:#0b0b0f;
+    border:1px solid #292933;
+    border-radius:16px;
+    line-height:1.8;
 }
 
-.tip {
-    margin-top: 15px;
-    padding: 14px;
-    border-radius: 10px;
-    background: #211536;
-    color: #d8b4fe;
+.lesson-box h3{
+    margin-bottom:10px;
 }
 
-.quiz-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-    flex-wrap: wrap;
-    margin-top: 15px;
+.lesson-box p{
+    color:#c2c2ca;
 }
 
-.quiz-security {
-    padding: 10px 13px;
-    border-radius: 10px;
-    background: #17131f;
-    border: 1px solid #46305f;
-    color: #c084fc;
-    font-size: 12px;
+.example{
+    margin-top:15px;
+    padding:17px;
+    background:#050507;
+    border:1px solid #22222c;
+    border-radius:12px;
+    overflow-x:auto;
+    color:#d8b4fe;
+    white-space:pre-wrap;
+    font-family:monospace;
+    line-height:1.6;
 }
 
-.quiz-timer {
-    padding: 10px 15px;
-    border-radius: 10px;
-    background: #211016;
-    border: 1px solid #63303c;
-    color: #fb7185;
-    font-weight: bold;
+.tip{
+    margin-top:17px;
+    padding:15px;
+    border-radius:10px;
+    background:#211536;
+    color:#d8b4fe;
 }
 
-.quiz-question {
-    font-size: 20px;
-    margin: 25px 0 20px;
-    line-height: 1.5;
+.key-points{
+    margin-top:20px;
+    padding:18px;
+    border:1px solid #292933;
+    border-radius:13px;
+    background:#101017;
 }
 
-.option {
-    width: 100%;
-    padding: 14px;
-    margin: 7px 0;
-    border: 1px solid #30303a;
-    background: #17171d;
-    color: white;
-    border-radius: 10px;
-    text-align: left;
-    cursor: pointer;
-    transition: .2s;
+.key-points li{
+    margin:8px 0;
+    color:#c7c7d0;
+    margin-left:20px;
 }
 
-.option:hover {
-    border-color: #a855f7;
-    background: #1c1724;
+.lesson-question{
+    margin-top:25px;
+    font-size:19px;
+    font-weight:bold;
 }
 
-.option:disabled {
-    cursor: not-allowed;
-    opacity: .65;
+.option{
+    width:100%;
+    padding:14px;
+    margin:7px 0;
+    border:1px solid #30303a;
+    background:#17171d;
+    color:white;
+    border-radius:10px;
+    text-align:left;
+    cursor:pointer;
+    transition:.2s;
 }
 
-.result {
-    margin-top: 18px;
-    padding: 15px;
-    border-radius: 12px;
-    background: #191922;
-    line-height: 1.6;
+.option:hover{
+    border-color:#a855f7;
+    background:#1c1724;
 }
 
-.lesson-question {
-    margin-top: 22px;
-    font-size: 18px;
-    font-weight: bold;
+.option.correct{
+    border-color:#22c55e;
+    background:#102417;
 }
 
-.stats-grid {
-    display: grid;
+.option.wrong{
+    border-color:#ef4444;
+    background:#291215;
+}
+
+.result{
+    margin-top:18px;
+    padding:17px;
+    border-radius:12px;
+    background:#191922;
+    line-height:1.7;
+}
+
+.quiz-top{
+    display:flex;
+    justify-content:space-between;
+    gap:15px;
+    flex-wrap:wrap;
+    padding:15px;
+    background:#0b0b0f;
+    border:1px solid #292933;
+    border-radius:12px;
+}
+
+.security-badge{
+    color:#4ade80;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.warning{
+    margin-top:15px;
+    padding:13px;
+    border-radius:10px;
+    background:#261d0d;
+    color:#fbbf24;
+    font-size:13px;
+    line-height:1.5;
+}
+
+.quiz-question{
+    font-size:21px;
+    line-height:1.6;
+    margin:25px 0 15px;
+}
+
+.stats-grid{
+    display:grid;
     grid-template-columns:
-        repeat(2, 1fr);
-    gap: 12px;
-    margin-top: 20px;
+        repeat(2,1fr);
+    gap:12px;
+    margin-top:20px;
 }
 
-.stat {
-    padding: 18px;
-    border: 1px solid #292933;
-    border-radius: 15px;
-    background: #0b0b0f;
+.stat{
+    padding:18px;
+    border:1px solid #292933;
+    border-radius:15px;
+    background:#0b0b0f;
 }
 
-.stat strong {
-    display: block;
-    font-size: 25px;
-    color: #c084fc;
-    margin-top: 5px;
+.stat strong{
+    display:block;
+    font-size:25px;
+    color:#c084fc;
+    margin-top:5px;
 }
 
-.security-panel {
-    margin-top: 20px;
-    padding: 18px;
-    border-radius: 15px;
-    background: #0b0b0f;
-    border: 1px solid #292933;
+.loading{
+    text-align:center;
+    padding:35px;
+    color:#aaa;
 }
 
-.security-panel h3 {
-    color: #c084fc;
-    margin-bottom: 10px;
+.error-message{
+    color:#fb7185;
+    background:#251016;
+    padding:15px;
+    border-radius:10px;
+    margin-top:15px;
 }
 
-.security-panel p {
-    color: #aaa;
-    line-height: 1.6;
-    font-size: 14px;
+textarea{
+    outline:none;
 }
 
-textarea {
-    outline: none;
+textarea:focus{
+    border-color:#a855f7!important;
 }
 
-textarea:focus {
-    border-color: #a855f7 !important;
+footer{
+    margin-top:70px;
+    padding:30px;
+    text-align:center;
+    border-top:1px solid #25252e;
+    color:#777;
+    font-size:13px;
 }
 
-footer {
-    margin-top: 70px;
-    padding: 30px;
-    text-align: center;
-    border-top: 1px solid #25252e;
-    color: #777;
-    font-size: 13px;
-}
+@media(max-width:600px){
 
-.loading {
-    text-align: center;
-    padding: 30px;
-    color: #aaa;
-}
-
-.error-message {
-    color: #fb7185;
-    background: #251016;
-    padding: 15px;
-    border-radius: 10px;
-    margin-top: 15px;
-}
-
-.lockdown-warning {
-    text-align: center;
-    padding: 35px 15px;
-}
-
-.lockdown-warning .shield {
-    font-size: 60px;
-    margin-bottom: 15px;
-}
-
-.lockdown-warning h2 {
-    color: #fb7185;
-    margin-bottom: 15px;
-}
-
-.lockdown-warning p {
-    color: #aaa;
-    line-height: 1.7;
-}
-
-.security-danger {
-    color: #fb7185 !important;
-}
-
-.security-safe {
-    color: #4ade80 !important;
-}
-
-@media(max-width:600px) {
-
-    header {
-        padding: 18px;
+    header{
+        padding:18px;
     }
 
-    .container {
-        width: 92%;
+    .container{
+        width:92%;
     }
 
-    .hero {
-        padding-top: 45px;
+    .hero{
+        padding-top:45px;
     }
 
-    .player-card {
-        flex-direction: column;
+    .player-card{
+        flex-direction:column;
     }
 
-    .progress {
-        width: 100%;
+    .progress{
+        width:100%;
     }
 
-    .stats-grid {
-        grid-template-columns: 1fr;
+    .stats-grid{
+        grid-template-columns:1fr;
     }
 
-    .modal-box {
-        padding: 20px;
+    .modal-box{
+        padding:20px;
     }
 
 }
@@ -580,10 +576,10 @@ footer {
     </h1>
 
     <p>
-        A beginner-friendly coding platform where you can
-        learn computer skills, practice programming,
-        solve challenges, find errors and prepare for your
-        future career.
+        Learn computer science from the fundamentals,
+        understand every concept step-by-step, practice
+        what you learn and build real programming skills.
+        CodeQuest turns learning into a guided coding journey.
     </p>
 
 </section>
@@ -646,117 +642,57 @@ footer {
 
 <section class="features">
 
-    <div
-        class="feature"
-        onclick="openQuiz()">
-
-        <div class="feature-icon">
-            🧠
-        </div>
-
-        <h3>
-            Quiz Arena
-        </h3>
-
+    <div class="feature" onclick="openQuiz()">
+        <div class="feature-icon">🧠</div>
+        <h3>Quiz Arena</h3>
         <p>
-            Secure quiz mode with anti-cheating detection.
+            Test your knowledge and earn XP.
         </p>
-
     </div>
 
 
-    <div
-        class="feature"
-        onclick="openCodeChallenge()">
-
-        <div class="feature-icon">
-            💻
-        </div>
-
-        <h3>
-            Code Challenge
-        </h3>
-
+    <div class="feature" onclick="openCodeChallenge()">
+        <div class="feature-icon">💻</div>
+        <h3>Code Challenge</h3>
         <p>
             Predict program output.
         </p>
-
     </div>
 
 
-    <div
-        class="feature"
-        onclick="openErrorFinder()">
-
-        <div class="feature-icon">
-            🔍
-        </div>
-
-        <h3>
-            Error Finder
-        </h3>
-
+    <div class="feature" onclick="openErrorFinder()">
+        <div class="feature-icon">🔍</div>
+        <h3>Error Finder</h3>
         <p>
-            Find bugs and understand them.
+            Find programming mistakes.
         </p>
-
     </div>
 
 
-    <div
-        class="feature"
-        onclick="careerAssistant()">
-
-        <div class="feature-icon">
-            🤖
-        </div>
-
-        <h3>
-            AI Career
-        </h3>
-
+    <div class="feature" onclick="careerAssistant()">
+        <div class="feature-icon">🤖</div>
+        <h3>AI Career</h3>
         <p>
-            Projects, internships and placement ideas.
+            Explore technology career paths.
         </p>
-
     </div>
 
 
-    <div
-        class="feature"
-        onclick="compiler()">
-
-        <div class="feature-icon">
-            ▶️
-        </div>
-
-        <h3>
-            Online Compiler
-        </h3>
-
+    <div class="feature" onclick="compiler()">
+        <div class="feature-icon">▶️</div>
+        <h3>Online Compiler</h3>
         <p>
-            Write code and experiment.
+            Experiment with code.
         </p>
-
     </div>
 
 
-    <div
-        class="feature"
-        onclick="showProgress()">
-
-        <div class="feature-icon">
-            🏆
-        </div>
-
-        <h3>
-            My Progress
-        </h3>
-
+    <div class="feature" onclick="showProgress()">
+        <div class="feature-icon">🏆</div>
+        <h3>My Progress</h3>
         <p>
             Track your learning journey.
         </p>
-
     </div>
 
 </section>
@@ -821,7 +757,6 @@ footer {
 
         <span
             class="close"
-            id="closeButton"
             onclick="closeModal()">
 
             ×
@@ -845,12 +780,9 @@ let quizData = [];
 let codeData = [];
 let errorData = [];
 
-let quizActive = false;
-let quizTimer = null;
-let quizTimeLeft = 60;
-let quizQuestionNumber = 0;
-let quizScore = 0;
-let quizAnswered = false;
+let currentQuizIndex = 0;
+let currentQuizScore = 0;
+let currentQuizTotal = 0;
 
 let xp = Number(
     localStorage.getItem("codequest_xp") || 0
@@ -858,7 +790,7 @@ let xp = Number(
 
 let completedChapters = [];
 
-try {
+try{
 
     completedChapters =
         JSON.parse(
@@ -867,16 +799,15 @@ try {
             ) || "[]"
         );
 
-    if (!Array.isArray(completedChapters)) {
-        completedChapters = [];
+    if(!Array.isArray(completedChapters)){
+        completedChapters=[];
     }
 
-} catch (e) {
+}catch(e){
 
-    completedChapters = [];
+    completedChapters=[];
 
 }
-
 
 let solvedChallenges = Number(
     localStorage.getItem(
@@ -889,7 +820,7 @@ let solvedChallenges = Number(
    XP SYSTEM
 ===================================================== */
 
-function addXP(amount) {
+function addXP(amount){
 
     xp += Number(amount);
 
@@ -899,10 +830,11 @@ function addXP(amount) {
     );
 
     updateProgress();
+
 }
 
 
-function updateProgress() {
+function updateProgress(){
 
     let level =
         Math.floor(xp / 100) + 1;
@@ -929,29 +861,32 @@ function updateProgress() {
         "progressBar"
     ).style.width =
         `${currentXP}%`;
+
 }
 
 
-function getLevelName(level) {
+function getLevelName(level){
 
-    const names = [
+    const names=[
         "Code Explorer",
         "Bug Hunter",
         "Logic Builder",
         "Code Warrior",
         "Programmer",
         "Code Master",
-        "Tech Creator"
+        "Tech Creator",
+        "Cyber Builder",
+        "Software Engineer"
     ];
 
     return names[
         Math.min(
-            level - 1,
-            names.length - 1
+            level-1,
+            names.length-1
         )
     ];
-}
 
+}
 
 updateProgress();
 
@@ -960,38 +895,28 @@ updateProgress();
    MODAL
 ===================================================== */
 
-function showModal(content) {
+function showModal(content){
 
-    const modal =
-        document.getElementById("modal");
-
-    const modalContent =
-        document.getElementById("modalContent");
-
-    modalContent.innerHTML = content;
-
-    modal.style.display = "block";
-
-    document.body.style.overflow = "hidden";
-}
-
-
-function closeModal() {
-
-    if (quizActive) {
-
-        terminateQuiz(
-            "The quiz was stopped because you attempted to leave the secure quiz environment."
-        );
-
-        return;
-    }
+    document.getElementById(
+        "modalContent"
+    ).innerHTML=content;
 
     document.getElementById(
         "modal"
-    ).style.display = "none";
+    ).style.display="block";
 
-    document.body.style.overflow = "";
+    document.body.style.overflow="hidden";
+
+}
+
+
+function closeModal(){
+
+    document.getElementById(
+        "modal"
+    ).style.display="none";
+
+    document.body.style.overflow="";
 
 }
 
@@ -1000,66 +925,65 @@ function closeModal() {
    COURSE
 ===================================================== */
 
-async function openCourse(name) {
+async function openCourse(name){
 
     showModal(`
-
         <div class="loading">
-
-            📚 Loading
-            <strong>${escapeHtml(name)}</strong>...
-
+            📚 Loading course...
         </div>
-
     `);
 
-    try {
+    try{
 
         const response =
             await fetch(
                 "/api/course/" +
                 encodeURIComponent(name),
                 {
-                    method: "GET",
-                    headers: {
-                        "Accept": "application/json"
+                    headers:{
+                        "Accept":"application/json"
                     }
                 }
             );
 
-        if (!response.ok) {
-
+        if(!response.ok){
             throw new Error(
-                `Server returned ${response.status}`
+                `Course API returned ${response.status}`
             );
-
         }
 
         const course =
             await response.json();
 
-        if (
+        if(
             !course ||
             !Array.isArray(course.chapters)
-        ) {
-
+        ){
             throw new Error(
-                "Invalid course data"
+                "Invalid course data."
             );
-
         }
-
 
         let completedCount =
             course.chapters.filter(
                 chapter =>
                     completedChapters.includes(
-                        name + "::" + chapter
+                        name+"::"+chapter
                     )
             ).length;
 
 
-        let html = `
+        let percentage =
+            course.chapters.length
+            ? Math.round(
+                completedCount /
+                course.chapters.length *
+                100
+            )
+            : 0;
+
+
+        let html=`
 
             <h2>
                 ${escapeHtml(course.icon || "📚")}
@@ -1069,56 +993,81 @@ async function openCourse(name) {
             <p style="
                 color:#aaa;
                 margin-top:10px;
-                line-height:1.6;
+                line-height:1.7;
             ">
                 ${escapeHtml(
                     course.description || ""
                 )}
             </p>
 
-            <div class="result">
+            <div class="course-header">
 
-                📚 Chapters:
                 <strong>
-                    ${course.chapters.length}
+                    Learning Progress
                 </strong>
 
-                <br>
+                <div style="
+                    margin-top:12px;
+                    height:8px;
+                    background:#27272f;
+                    border-radius:10px;
+                    overflow:hidden;
+                ">
 
-                ✅ Completed:
-                <strong>
+                    <div style="
+                        width:${percentage}%;
+                        height:100%;
+                        background:linear-gradient(
+                            90deg,
+                            #7c3aed,
+                            #ec4899
+                        );
+                    "></div>
+
+                </div>
+
+                <p style="
+                    color:#aaa;
+                    margin-top:9px;
+                    font-size:13px;
+                ">
                     ${completedCount}
-                </strong>
+                    / ${course.chapters.length}
+                    chapters completed
+                </p>
 
             </div>
 
-            <h3 style="margin-top:25px;">
-                📖 Learning Path
+            <h3 style="margin-top:28px;">
+                📖 Complete Learning Path
             </h3>
 
         `;
 
 
         course.chapters.forEach(
-            (chapter, index) => {
+            (chapter,index)=>{
 
                 let completed =
                     completedChapters.includes(
-                        name + "::" + chapter
+                        name+"::"+chapter
                     );
 
-
-                html += `
+                html+=`
 
                     <div
-                        class="chapter"
+                        class="chapter ${
+                            completed
+                            ? "completed"
+                            : ""
+                        }"
                         data-course="${escapeAttr(name)}"
                         data-chapter="${escapeAttr(chapter)}">
 
                         ${
                             completed
                             ? "✅"
-                            : `${index + 1}.`
+                            : `${index+1}.`
                         }
 
                         ${escapeHtml(chapter)}
@@ -1143,11 +1092,11 @@ async function openCourse(name) {
 
         document
             .querySelectorAll(".chapter")
-            .forEach(chapterElement => {
+            .forEach(element=>{
 
-                chapterElement.addEventListener(
+                element.addEventListener(
                     "click",
-                    function() {
+                    function(){
 
                         startChapter(
                             this.dataset.course,
@@ -1160,12 +1109,9 @@ async function openCourse(name) {
             });
 
 
-    } catch (error) {
+    }catch(error){
 
-        console.error(
-            "Course error:",
-            error
-        );
+        console.error(error);
 
         showModal(`
 
@@ -1173,75 +1119,51 @@ async function openCourse(name) {
                 ⚠️ Course Error
             </h2>
 
-            <p style="
-                color:#aaa;
-                margin-top:15px;
-                line-height:1.6;
-            ">
-                We couldn't load this course.
-            </p>
-
             <div class="error-message">
-
-                ${escapeHtml(
-                    error.message
-                )}
-
+                ${escapeHtml(error.message)}
             </div>
-
-            <button
-                class="primary"
-                onclick="closeModal()">
-
-                CLOSE
-
-            </button>
 
         `);
 
     }
+
 }
 
 
 /* =====================================================
-   LESSON
+   LESSON SYSTEM
 ===================================================== */
 
 async function startChapter(
     courseName,
     chapter
-) {
+){
 
     showModal(`
-
         <div class="loading">
-            📖 Loading lesson...
+            📖 Preparing your lesson...
         </div>
-
     `);
 
 
-    try {
+    try{
 
         const response =
             await fetch(
                 "/api/lesson/" +
                 encodeURIComponent(chapter),
                 {
-                    method: "GET",
-                    headers: {
-                        "Accept": "application/json"
+                    headers:{
+                        "Accept":"application/json"
                     }
                 }
             );
 
 
-        if (!response.ok) {
-
+        if(!response.ok){
             throw new Error(
-                `Lesson returned ${response.status}`
+                `Lesson API returned ${response.status}`
             );
-
         }
 
 
@@ -1250,14 +1172,14 @@ async function startChapter(
 
 
         let key =
-            courseName + "::" + chapter;
+            courseName+"::"+chapter;
 
 
         let alreadyCompleted =
             completedChapters.includes(key);
 
 
-        let html = `
+        let html=`
 
             <h2>
                 📖 ${escapeHtml(
@@ -1268,30 +1190,75 @@ async function startChapter(
             <div class="lesson-box">
 
                 <h3>
-                    💡 Explanation
+                    🧠 Understand the Concept
                 </h3>
 
                 <p>
                     ${escapeHtml(
-                        lesson.explanation
+                        lesson.explanation || 
+                        "This chapter explains an important concept."
                     )}
                 </p>
 
-                <h3 style="margin-top:20px;">
-                    💻 Example
+
+                <h3 style="margin-top:25px;">
+                    💻 Simple Example
                 </h3>
+
+                <p style="
+                    color:#aaa;
+                    margin-bottom:10px;
+                ">
+                    Look at this example and try to understand
+                    why it works before moving to the quiz.
+                </p>
 
                 <div class="example">
                     ${escapeHtml(
-                        lesson.example
+                        lesson.example || ""
                     )}
                 </div>
 
+
+                ${
+                    lesson.key_points &&
+                    Array.isArray(lesson.key_points)
+                    ?
+                    `
+                    <div class="key-points">
+
+                        <h3>
+                            📌 Key Points
+                        </h3>
+
+                        <ul>
+
+                            ${
+                                lesson.key_points
+                                .map(
+                                    point =>
+                                    `<li>
+                                        ${escapeHtml(point)}
+                                    </li>`
+                                )
+                                .join("")
+                            }
+
+                        </ul>
+
+                    </div>
+                    `
+                    :
+                    ""
+                }
+
+
                 <div class="tip">
 
-                    💡 Tip:
+                    💡 Smart Tip:
                     ${escapeHtml(
-                        lesson.tip
+                        lesson.tip ||
+                        "Practice this concept yourself."
                     )}
 
                 </div>
@@ -1301,13 +1268,22 @@ async function startChapter(
 
             <div class="lesson-question">
 
-                🧠 Quick Check
+                🧪 Quick Check
 
                 <p style="
                     color:#aaa;
                     font-size:15px;
                     margin-top:10px;
                     font-weight:normal;
+                ">
+
+                    Test what you just learned:
+
+                </p>
+
+                <p style="
+                    margin-top:12px;
+                    font-size:17px;
                 ">
 
                     ${escapeHtml(
@@ -1318,15 +1294,16 @@ async function startChapter(
 
             </div>
 
+
             <div id="lessonOptions">
 
         `;
 
 
         lesson.options.forEach(
-            (option, index) => {
+            (option,index)=>{
 
-                html += `
+                html+=`
 
                     <button
                         type="button"
@@ -1335,9 +1312,7 @@ async function startChapter(
                         data-answer="${lesson.answer}"
                         data-key="${escapeAttr(key)}">
 
-                        ${String.fromCharCode(
-                            65 + index
-                        )}.
+                        ${String.fromCharCode(65+index)}.
                         ${escapeHtml(option)}
 
                     </button>
@@ -1348,7 +1323,7 @@ async function startChapter(
         );
 
 
-        html += `
+        html+=`
 
             </div>
 
@@ -1356,16 +1331,19 @@ async function startChapter(
 
             ${
                 alreadyCompleted
-                ? `
-                    <div
-                        class="result"
-                        style="color:#4ade80">
+                ?
+                `
+                <div
+                    class="result"
+                    style="color:#4ade80">
 
-                        ✅ Chapter already completed.
+                    ✅ You have already completed
+                    this chapter.
 
-                    </div>
-                  `
-                : ""
+                </div>
+                `
+                :
+                ""
             }
 
         `;
@@ -1376,11 +1354,11 @@ async function startChapter(
 
         document
             .querySelectorAll(".lesson-option")
-            .forEach(button => {
+            .forEach(button=>{
 
                 button.addEventListener(
                     "click",
-                    function() {
+                    function(){
 
                         checkLesson(
                             Number(
@@ -1398,35 +1376,24 @@ async function startChapter(
             });
 
 
-    } catch (error) {
+    }catch(error){
 
-        console.error(
-            "Lesson error:",
-            error
-        );
+        console.error(error);
 
         showModal(`
 
             <h2>
-                ⚠️ Lesson unavailable
+                ⚠️ Lesson Error
             </h2>
 
-            <p style="
-                color:#aaa;
-                margin-top:15px;
-            ">
-                This lesson could not be loaded.
-            </p>
-
             <div class="error-message">
-                ${escapeHtml(
-                    error.message
-                )}
+                ${escapeHtml(error.message)}
             </div>
 
         `);
 
     }
+
 }
 
 
@@ -1434,22 +1401,28 @@ function checkLesson(
     selected,
     correct,
     key
-) {
+){
 
     const result =
         document.getElementById(
             "lessonResult"
         );
 
-
-    if (!result) {
+    if(!result){
         return;
     }
 
 
-    if (selected === correct) {
+    document
+        .querySelectorAll(".lesson-option")
+        .forEach(button=>{
+            button.disabled=true;
+        });
 
-        if (!completedChapters.includes(key)) {
+
+    if(selected===correct){
+
+        if(!completedChapters.includes(key)){
 
             completedChapters.push(key);
 
@@ -1463,7 +1436,7 @@ function checkLesson(
             addXP(25);
 
 
-            result.innerHTML = `
+            result.innerHTML=`
 
                 <div
                     class="result"
@@ -1473,19 +1446,26 @@ function checkLesson(
 
                     <br><br>
 
-                    Chapter completed! ✅
+                    You understood the chapter.
 
                     <br>
 
-                    +25 XP ⭐
+                    <strong>
+                        +25 XP ⭐
+                    </strong>
+
+                    <br><br>
+
+                    Keep going — you're building
+                    your knowledge step-by-step.
 
                 </div>
 
             `;
 
-        } else {
+        }else{
 
-            result.innerHTML = `
+            result.innerHTML=`
 
                 <div
                     class="result"
@@ -1495,7 +1475,7 @@ function checkLesson(
 
                     <br><br>
 
-                    This chapter was already completed.
+                    Chapter already completed.
 
                 </div>
 
@@ -1503,9 +1483,9 @@ function checkLesson(
 
         }
 
-    } else {
+    }else{
 
-        result.innerHTML = `
+        result.innerHTML=`
 
             <div
                 class="result"
@@ -1515,84 +1495,57 @@ function checkLesson(
 
                 <br><br>
 
-                Try reviewing the lesson
-                and answer again.
+                Read the explanation again
+                and try another answer.
+
+                <br><br>
+
+                <button
+                    class="primary"
+                    onclick="location.reload()">
+
+                    REVIEW AGAIN
+
+                </button>
 
             </div>
 
         `;
 
     }
+
 }
 
 
 /* =====================================================
-   SECURE QUIZ SYSTEM
+   SECURE QUIZ
 ===================================================== */
 
-async function openQuiz() {
-
-    if (quizActive) {
-        return;
-    }
-
+async function openQuiz(){
 
     showModal(`
-
-        <div class="security-panel">
-
-            <h3>
-                🛡️ Secure Quiz Environment
-            </h3>
-
-            <p>
-                This assessment uses browser security
-                controls to detect leaving the quiz,
-                changing tabs/windows, copying content
-                and common shortcut attempts.
-            </p>
-
-            <p style="margin-top:10px;">
-                If you leave the quiz environment,
-                the attempt will automatically terminate.
-            </p>
-
+        <div class="loading">
+            🛡️ Initializing Secure Quiz...
         </div>
-
-
-        <button
-            type="button"
-            class="primary"
-            onclick="beginSecureQuiz()">
-
-            🔐 START SECURE QUIZ
-
-        </button>
-
     `);
 
-}
 
+    try{
 
-async function beginSecureQuiz() {
-
-    try {
-
-        if (!quizData.length) {
+        if(!quizData.length){
 
             const response =
                 await fetch(
                     "/api/quiz",
                     {
-                        method: "GET",
-                        headers: {
-                            "Accept": "application/json"
+                        headers:{
+                            "Accept":"application/json"
                         }
                     }
                 );
 
 
-            if (!response.ok) {
+            if(!response.ok){
 
                 throw new Error(
                     `Quiz API returned ${response.status}`
@@ -1605,13 +1558,13 @@ async function beginSecureQuiz() {
                 await response.json();
 
 
-            if (
+            if(
                 !Array.isArray(quizData) ||
-                quizData.length === 0
-            ) {
+                !quizData.length
+            ){
 
                 throw new Error(
-                    "No quiz questions found."
+                    "No quiz questions available."
                 );
 
             }
@@ -1619,55 +1572,36 @@ async function beginSecureQuiz() {
         }
 
 
-        quizActive = true;
-        quizQuestionNumber = 0;
-        quizScore = 0;
-        quizTimeLeft = 60;
-        quizAnswered = false;
-
-        document.body.classList.add(
-            "quiz-lockdown"
-        );
+        currentQuizIndex=0;
+        currentQuizScore=0;
+        currentQuizTotal=
+            Math.min(quizData.length,10);
 
 
-        installQuizSecurity();
-
-        await requestFullscreen();
+        startSecureQuiz();
 
 
-        showQuizQuestion();
+    }catch(error){
 
-
-        startQuizTimer();
-
-
-    } catch (error) {
-
-        console.error(
-            "Quiz start error:",
-            error
-        );
-
-        quizActive = false;
-
-        document.body.classList.remove(
-            "quiz-lockdown"
-        );
+        console.error(error);
 
         showModal(`
 
             <h2>
-                ⚠️ Secure Quiz Error
+                ⚠️ Quiz Error
             </h2>
 
-            <p style="
-                color:#aaa;
-                margin-top:15px;
-            ">
-
+            <div class="error-message">
                 ${escapeHtml(error.message)}
+            </div>
 
-            </p>
+            <button
+                class="primary"
+                onclick="openQuiz()">
+
+                TRY AGAIN
+
+            </button>
 
         `);
 
@@ -1676,474 +1610,56 @@ async function beginSecureQuiz() {
 }
 
 
-/* =====================================================
-   QUIZ SECURITY
-===================================================== */
+function startSecureQuiz(){
 
-function installQuizSecurity() {
+    if(currentQuizIndex>=currentQuizTotal){
 
-    document.addEventListener(
-        "visibilitychange",
-        handleVisibilityChange
-    );
-
-    window.addEventListener(
-        "blur",
-        handleWindowBlur
-    );
-
-    window.addEventListener(
-        "beforeunload",
-        handleBeforeUnload
-    );
-
-    document.addEventListener(
-        "fullscreenchange",
-        handleFullscreenChange
-    );
-
-    document.addEventListener(
-        "contextmenu",
-        blockQuizContextMenu
-    );
-
-    document.addEventListener(
-        "copy",
-        blockQuizCopy
-    );
-
-    document.addEventListener(
-        "cut",
-        blockQuizCopy
-    );
-
-    document.addEventListener(
-        "paste",
-        blockQuizPaste
-    );
-
-    document.addEventListener(
-        "keydown",
-        blockQuizShortcuts
-    );
-
-}
-
-
-function removeQuizSecurity() {
-
-    document.removeEventListener(
-        "visibilitychange",
-        handleVisibilityChange
-    );
-
-    window.removeEventListener(
-        "blur",
-        handleWindowBlur
-    );
-
-    window.removeEventListener(
-        "beforeunload",
-        handleBeforeUnload
-    );
-
-    document.removeEventListener(
-        "fullscreenchange",
-        handleFullscreenChange
-    );
-
-    document.removeEventListener(
-        "contextmenu",
-        blockQuizContextMenu
-    );
-
-    document.removeEventListener(
-        "copy",
-        blockQuizCopy
-    );
-
-    document.removeEventListener(
-        "cut",
-        blockQuizCopy
-    );
-
-    document.removeEventListener(
-        "paste",
-        blockQuizPaste
-    );
-
-    document.removeEventListener(
-        "keydown",
-        blockQuizShortcuts
-    );
-
-}
-
-
-function handleVisibilityChange() {
-
-    if (
-        quizActive &&
-        document.hidden
-    ) {
-
-        terminateQuiz(
-            "Quiz terminated: the browser tab was hidden or the user attempted to switch away."
-        );
-
-    }
-
-}
-
-
-function handleWindowBlur() {
-
-    if (quizActive) {
-
-        terminateQuiz(
-            "Quiz terminated: the quiz window lost focus."
-        );
-
-    }
-
-}
-
-
-function handleBeforeUnload(event) {
-
-    if (quizActive) {
-
-        event.preventDefault();
-
-        event.returnValue =
-            "Your secure quiz attempt will be terminated.";
-
-    }
-
-}
-
-
-function handleFullscreenChange() {
-
-    if (
-        quizActive &&
-        !document.fullscreenElement
-    ) {
-
-        terminateQuiz(
-            "Quiz terminated: fullscreen mode was exited."
-        );
-
-    }
-
-}
-
-
-function blockQuizContextMenu(event) {
-
-    if (quizActive) {
-
-        event.preventDefault();
-
-    }
-
-}
-
-
-function blockQuizCopy(event) {
-
-    if (quizActive) {
-
-        event.preventDefault();
-
-    }
-
-}
-
-
-function blockQuizPaste(event) {
-
-    if (quizActive) {
-
-        event.preventDefault();
-
-    }
-
-}
-
-
-function blockQuizShortcuts(event) {
-
-    if (!quizActive) {
-        return;
-    }
-
-
-    const key =
-        event.key.toLowerCase();
-
-
-    const blocked =
-        event.ctrlKey &&
-        [
-            "c",
-            "v",
-            "x",
-            "a",
-            "f",
-            "p",
-            "s",
-            "u"
-        ].includes(key);
-
-
-    const devTools =
-        event.key === "F12" ||
-        (
-            event.ctrlKey &&
-            event.shiftKey &&
-            ["i", "j", "c"].includes(key)
-        );
-
-
-    const tabSwitch =
-        event.ctrlKey &&
-        (
-            event.key === "Tab" ||
-            event.key === "PageUp" ||
-            event.key === "PageDown"
-        );
-
-
-    if (
-        blocked ||
-        devTools ||
-        tabSwitch
-    ) {
-
-        event.preventDefault();
-
-        event.stopPropagation();
-
-    }
-
-}
-
-
-async function requestFullscreen() {
-
-    try {
-
-        if (
-            !document.fullscreenElement &&
-            document.documentElement.requestFullscreen
-        ) {
-
-            await document.documentElement.requestFullscreen();
-
-        }
-
-    } catch (error) {
-
-        console.warn(
-            "Fullscreen unavailable:",
-            error
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   TERMINATE QUIZ
-===================================================== */
-
-function terminateQuiz(reason) {
-
-    if (!quizActive) {
-        return;
-    }
-
-
-    quizActive = false;
-
-    clearInterval(quizTimer);
-
-    quizTimer = null;
-
-    removeQuizSecurity();
-
-    document.body.classList.remove(
-        "quiz-lockdown"
-    );
-
-
-    if (document.fullscreenElement) {
-
-        document.exitFullscreen()
-            .catch(() => {});
-
-    }
-
-
-    showModal(`
-
-        <div class="lockdown-warning">
-
-            <div class="shield">
-                🛡️
-            </div>
-
-            <h2>
-                QUIZ TERMINATED
-            </h2>
-
-            <p>
-                ${escapeHtml(reason)}
-            </p>
-
-            <p style="margin-top:15px;">
-                Your score for this attempt was:
-                <strong>
-                    ${quizScore}
-                </strong>
-            </p>
-
-            <button
-                type="button"
-                class="primary"
-                onclick="closeModal()">
-
-                RETURN TO CODEQUEST
-
-            </button>
-
-        </div>
-
-    `);
-
-}
-
-
-/* =====================================================
-   QUIZ TIMER
-===================================================== */
-
-function startQuizTimer() {
-
-    clearInterval(quizTimer);
-
-
-    quizTimer =
-        setInterval(
-            function() {
-
-                if (!quizActive) {
-
-                    clearInterval(
-                        quizTimer
-                    );
-
-                    return;
-
-                }
-
-
-                quizTimeLeft--;
-
-
-                const timer =
-                    document.getElementById(
-                        "quizTimer"
-                    );
-
-
-                if (timer) {
-
-                    timer.textContent =
-                        `⏱️ ${quizTimeLeft}s`;
-
-                }
-
-
-                if (
-                    quizTimeLeft <= 0
-                ) {
-
-                    finishQuiz(
-                        "Time is over."
-                    );
-
-                }
-
-            },
-            1000
-        );
-
-}
-
-
-/* =====================================================
-   QUIZ QUESTION
-===================================================== */
-
-function showQuizQuestion() {
-
-    if (
-        !quizActive ||
-        !quizData.length
-    ) {
+        finishQuiz();
 
         return;
 
     }
-
-
-    quizAnswered = false;
 
 
     let question =
-        quizData[
-            Math.floor(
-                Math.random() *
-                quizData.length
-            )
-        ];
+        quizData[currentQuizIndex];
 
 
-    let html = `
+    let html=`
 
-        <div class="quiz-header">
+        <div class="quiz-top">
 
-            <div class="quiz-security">
-                🔐 SECURE MODE
-            </div>
+            <strong>
+                🧠 Secure Quiz
+            </strong>
 
-            <div
-                class="quiz-timer"
-                id="quizTimer">
-
-                ⏱️ ${quizTimeLeft}s
-
-            </div>
+            <span class="security-badge">
+                🛡️ EXAM MODE
+            </span>
 
         </div>
 
-
         <p style="
-            color:#777;
+            color:#aaa;
             margin-top:12px;
-            font-size:12px;
+            font-size:13px;
         ">
 
             Question
-            ${quizQuestionNumber + 1}
-
-            • Leaving this window ends the attempt.
+            ${currentQuizIndex+1}
+            of
+            ${currentQuizTotal}
 
         </p>
 
+        <div class="warning">
+
+            ⚠️ Exam integrity mode is active.
+            Leaving the quiz, switching tabs,
+            hiding the page or attempting to
+            navigate away may terminate the test.
+
+        </div>
 
         <div class="quiz-question">
 
@@ -2159,22 +1675,16 @@ function showQuizQuestion() {
 
 
     question.options.forEach(
-        (option, index) => {
+        (option,index)=>{
 
-            html += `
+            html+=`
 
                 <button
                     type="button"
                     class="option quiz-option"
-                    data-index="${index}"
-                    data-answer="${question.answer}"
-                    data-explanation="${escapeAttr(
-                        question.explanation
-                    )}">
+                    data-index="${index}">
 
-                    ${String.fromCharCode(
-                        65 + index
-                    )}.
+                    ${String.fromCharCode(65+index)}.
                     ${escapeHtml(option)}
 
                 </button>
@@ -2185,7 +1695,7 @@ function showQuizQuestion() {
     );
 
 
-    html += `
+    html+=`
 
         </div>
 
@@ -2199,20 +1709,16 @@ function showQuizQuestion() {
 
     document
         .querySelectorAll(".quiz-option")
-        .forEach(button => {
+        .forEach(button=>{
 
             button.addEventListener(
                 "click",
-                function() {
+                function(){
 
                     answerSecureQuiz(
                         Number(
                             this.dataset.index
-                        ),
-                        Number(
-                            this.dataset.answer
-                        ),
-                        this.dataset.explanation
+                        )
                     );
 
                 }
@@ -2223,32 +1729,17 @@ function showQuizQuestion() {
 }
 
 
-function answerSecureQuiz(
-    selected,
-    correct,
-    explanation
-) {
+function answerSecureQuiz(selected){
 
-    if (
-        !quizActive ||
-        quizAnswered
-    ) {
-
-        return;
-
-    }
-
-
-    quizAnswered = true;
+    let question =
+        quizData[currentQuizIndex];
 
 
     document
         .querySelectorAll(".quiz-option")
-        .forEach(
-            button => {
-                button.disabled = true;
-            }
-        );
+        .forEach(button=>{
+            button.disabled=true;
+        });
 
 
     const result =
@@ -2257,42 +1748,29 @@ function answerSecureQuiz(
         );
 
 
-    if (!result) {
-        return;
-    }
+    if(selected===question.answer){
 
+        currentQuizScore++;
 
-    if (selected === correct) {
-
-        quizScore++;
-
-        addXP(10);
-
-
-        result.innerHTML = `
+        result.innerHTML=`
 
             <div
                 class="result"
                 style="color:#4ade80">
 
-                🎉 CORRECT!
-
-                <br><br>
-
-                +10 XP ⭐
+                ✅ Correct!
 
                 <br><br>
 
                 ${escapeHtml(
-                    explanation
+                    question.explanation || ""
                 )}
 
                 <br><br>
 
                 <button
-                    type="button"
                     class="primary"
-                    onclick="nextSecureQuizQuestion()">
+                    onclick="nextSecureQuestion()">
 
                     NEXT QUESTION →
 
@@ -2302,28 +1780,27 @@ function answerSecureQuiz(
 
         `;
 
-    } else {
+    }else{
 
-        result.innerHTML = `
+        result.innerHTML=`
 
             <div
                 class="result"
                 style="color:#fb7185">
 
-                ❌ INCORRECT
+                ❌ Incorrect
 
                 <br><br>
 
                 ${escapeHtml(
-                    explanation
+                    question.explanation || ""
                 )}
 
                 <br><br>
 
                 <button
-                    type="button"
                     class="primary"
-                    onclick="nextSecureQuizQuestion()">
+                    onclick="nextSecureQuestion()">
 
                     NEXT QUESTION →
 
@@ -2338,132 +1815,79 @@ function answerSecureQuiz(
 }
 
 
-function nextSecureQuizQuestion() {
+function nextSecureQuestion(){
 
-    if (!quizActive) {
-        return;
-    }
+    currentQuizIndex++;
 
-
-    quizQuestionNumber++;
-
-
-    if (
-        quizQuestionNumber >= 10
-    ) {
-
-        finishQuiz(
-            "You completed the secure quiz."
-        );
-
-        return;
-
-    }
-
-
-    showQuizQuestion();
+    startSecureQuiz();
 
 }
 
 
-function finishQuiz(reason) {
-
-    if (!quizActive) {
-        return;
-    }
-
-
-    quizActive = false;
-
-    clearInterval(quizTimer);
-
-    quizTimer = null;
-
-    removeQuizSecurity();
-
-    document.body.classList.remove(
-        "quiz-lockdown"
-    );
-
-
-    if (document.fullscreenElement) {
-
-        document.exitFullscreen()
-            .catch(() => {});
-
-    }
-
-
-    let total =
-        quizQuestionNumber + 1;
-
+function finishQuiz(){
 
     let percentage =
-        total > 0
-        ? Math.round(
-            (quizScore / total) * 100
-          )
-        : 0;
+        currentQuizTotal
+        ?
+        Math.round(
+            currentQuizScore /
+            currentQuizTotal *
+            100
+        )
+        :
+        0;
+
+
+    let earnedXP =
+        currentQuizScore * 10;
+
+
+    addXP(earnedXP);
 
 
     showModal(`
 
-        <div class="lockdown-warning">
+        <h2>
+            🏆 Quiz Complete
+        </h2>
 
-            <div class="shield">
-                🏆
+        <div class="stats-grid">
+
+            <div class="stat">
+                Score
+                <strong>
+                    ${currentQuizScore}/${currentQuizTotal}
+                </strong>
             </div>
 
-            <h2 style="color:#4ade80;">
-                QUIZ COMPLETE
-            </h2>
-
-            <p>
-                ${escapeHtml(reason)}
-            </p>
-
-            <div class="stats-grid">
-
-                <div class="stat">
-                    Score
-                    <strong>
-                        ${quizScore}
-                    </strong>
-                </div>
-
-                <div class="stat">
-                    Questions
-                    <strong>
-                        ${total}
-                    </strong>
-                </div>
-
-                <div class="stat">
-                    Percentage
-                    <strong>
-                        ${percentage}%
-                    </strong>
-                </div>
-
-                <div class="stat">
-                    XP
-                    <strong>
-                        +${quizScore * 10}
-                    </strong>
-                </div>
-
+            <div class="stat">
+                Accuracy
+                <strong>
+                    ${percentage}%
+                </strong>
             </div>
-
-            <button
-                type="button"
-                class="primary"
-                onclick="closeModal()">
-
-                RETURN TO CODEQUEST
-
-            </button>
 
         </div>
+
+        <div
+            class="result"
+            style="color:#4ade80">
+
+            🎉 Test completed successfully!
+
+            <br><br>
+
+            +${earnedXP} XP ⭐
+
+        </div>
+
+        <button
+            class="primary"
+            onclick="openQuiz()">
+
+            TAKE ANOTHER QUIZ →
+
+        </button>
 
     `);
 
@@ -2471,102 +1895,187 @@ function finishQuiz(reason) {
 
 
 /* =====================================================
-   CODE CHALLENGE
+   ANTI-CHEATING / EXAM INTEGRITY
 ===================================================== */
 
-async function openCodeChallenge() {
+let secureQuizActive=false;
+
+function activateQuizSecurity(){
+
+    secureQuizActive=true;
+
+}
+
+function deactivateQuizSecurity(){
+
+    secureQuizActive=false;
+
+}
+
+
+document.addEventListener(
+    "visibilitychange",
+    function(){
+
+        if(
+            document.hidden &&
+            secureQuizActive
+        ){
+
+            terminateSecureQuiz(
+                "The quiz was stopped because the page was left."
+            );
+
+        }
+
+    }
+);
+
+
+window.addEventListener(
+    "blur",
+    function(){
+
+        if(secureQuizActive){
+
+            terminateSecureQuiz(
+                "The quiz was stopped because the application lost focus."
+            );
+
+        }
+
+    }
+);
+
+
+function terminateSecureQuiz(reason){
+
+    if(!secureQuizActive){
+        return;
+    }
+
+    secureQuizActive=false;
 
     showModal(`
 
-        <div class="loading">
+        <h2>
+            🛡️ Quiz Terminated
+        </h2>
 
-            💻 Loading Code Challenge...
+        <div
+            class="result"
+            style="color:#fb7185">
+
+            ⚠️ ${escapeHtml(reason)}
+
+            <br><br>
+
+            This attempt has been terminated
+            to protect exam integrity.
 
         </div>
 
+        <button
+            class="primary"
+            onclick="openQuiz()">
+
+            START NEW ATTEMPT
+
+        </button>
+
     `);
 
+}
 
-    try {
 
-        if (!codeData.length) {
+/* Activate security whenever secure quiz begins */
 
-            const response =
+const originalStartSecureQuiz =
+    startSecureQuiz;
+
+startSecureQuiz=function(){
+
+    activateQuizSecurity();
+
+    originalStartSecureQuiz();
+
+};
+
+
+/* Stop security when quiz finishes */
+
+const originalFinishQuiz =
+    finishQuiz;
+
+finishQuiz=function(){
+
+    deactivateQuizSecurity();
+
+    originalFinishQuiz();
+
+};
+
+
+/* =====================================================
+   CODE CHALLENGE
+===================================================== */
+
+async function openCodeChallenge(){
+
+    showModal(`
+        <div class="loading">
+            💻 Loading Code Challenge...
+        </div>
+    `);
+
+    try{
+
+        if(!codeData.length){
+
+            const response=
                 await fetch(
                     "/api/code-challenges"
                 );
 
-
-            if (!response.ok) {
-
+            if(!response.ok){
                 throw new Error(
                     `API returned ${response.status}`
                 );
-
             }
 
-
-            codeData =
+            codeData=
                 await response.json();
-
-
-            if (
-                !Array.isArray(codeData) ||
-                codeData.length === 0
-            ) {
-
-                throw new Error(
-                    "No code challenges found."
-                );
-
-            }
 
         }
 
-
         showCodeChallenge();
 
-
-    } catch (error) {
-
-        console.error(
-            "Code challenge error:",
-            error
-        );
-
+    }catch(error){
 
         showModal(`
-
-            <h2>
-                ⚠️ Challenge unavailable
-            </h2>
-
+            <h2>⚠️ Challenge Error</h2>
             <div class="error-message">
-
-                ${escapeHtml(
-                    error.message
-                )}
-
+                ${escapeHtml(error.message)}
             </div>
-
         `);
 
     }
+
 }
 
 
-function showCodeChallenge() {
+function showCodeChallenge(){
 
-    let challenge =
+    let challenge=
         codeData[
             Math.floor(
-                Math.random() *
+                Math.random()*
                 codeData.length
             )
         ];
 
 
-    let html = `
+    let html=`
 
         <h2>
             💻 Code Challenge
@@ -2576,11 +2085,9 @@ function showCodeChallenge() {
             color:#aaa;
             margin:15px 0;
         ">
-
             ${escapeHtml(
                 challenge.question
             )}
-
         </p>
 
         <pre class="example">${escapeHtml(
@@ -2593,12 +2100,11 @@ function showCodeChallenge() {
 
 
     challenge.options.forEach(
-        (option, index) => {
+        (option,index)=>{
 
-            html += `
+            html+=`
 
                 <button
-                    type="button"
                     class="option code-option"
                     data-index="${index}"
                     data-answer="${challenge.answer}"
@@ -2606,9 +2112,7 @@ function showCodeChallenge() {
                         challenge.explanation
                     )}">
 
-                    ${String.fromCharCode(
-                        65 + index
-                    )}.
+                    ${String.fromCharCode(65+index)}.
                     ${escapeHtml(option)}
 
                 </button>
@@ -2619,7 +2123,7 @@ function showCodeChallenge() {
     );
 
 
-    html += `
+    html+=`
 
         </div>
 
@@ -2633,11 +2137,11 @@ function showCodeChallenge() {
 
     document
         .querySelectorAll(".code-option")
-        .forEach(button => {
+        .forEach(button=>{
 
             button.addEventListener(
                 "click",
-                function() {
+                function(){
 
                     checkCodeAnswer(
                         Number(
@@ -2661,25 +2165,21 @@ function checkCodeAnswer(
     selected,
     correct,
     explanation
-) {
+){
 
-    const result =
+    const result=
         document.getElementById(
             "codeResult"
         );
 
-
-    if (!result) {
-        return;
-    }
+    if(!result)return;
 
 
-    if (selected === correct) {
+    if(selected===correct){
 
         addXP(15);
 
         solvedChallenges++;
-
 
         localStorage.setItem(
             "codequest_challenges",
@@ -2687,7 +2187,7 @@ function checkCodeAnswer(
         );
 
 
-        result.innerHTML = `
+        result.innerHTML=`
 
             <div
                 class="result"
@@ -2701,14 +2201,11 @@ function checkCodeAnswer(
 
                 <br><br>
 
-                ${escapeHtml(
-                    explanation
-                )}
+                ${escapeHtml(explanation)}
 
                 <br><br>
 
                 <button
-                    type="button"
                     class="primary"
                     onclick="openCodeChallenge()">
 
@@ -2720,9 +2217,9 @@ function checkCodeAnswer(
 
         `;
 
-    } else {
+    }else{
 
-        result.innerHTML = `
+        result.innerHTML=`
 
             <div
                 class="result"
@@ -2732,26 +2229,14 @@ function checkCodeAnswer(
 
                 <br><br>
 
-                ${escapeHtml(
-                    explanation
-                )}
-
-                <br><br>
-
-                <button
-                    type="button"
-                    class="primary"
-                    onclick="openCodeChallenge()">
-
-                    TRY ANOTHER →
-
-                </button>
+                ${escapeHtml(explanation)}
 
             </div>
 
         `;
 
     }
+
 }
 
 
@@ -2759,99 +2244,63 @@ function checkCodeAnswer(
    ERROR FINDER
 ===================================================== */
 
-async function openErrorFinder() {
+async function openErrorFinder(){
 
     showModal(`
-
         <div class="loading">
-
             🔍 Loading Error Finder...
-
         </div>
-
     `);
 
 
-    try {
+    try{
 
-        if (!errorData.length) {
+        if(!errorData.length){
 
-            const response =
+            const response=
                 await fetch(
                     "/api/error-finder"
                 );
 
-
-            if (!response.ok) {
-
+            if(!response.ok){
                 throw new Error(
                     `API returned ${response.status}`
                 );
-
             }
 
-
-            errorData =
+            errorData=
                 await response.json();
-
-
-            if (
-                !Array.isArray(errorData) ||
-                errorData.length === 0
-            ) {
-
-                throw new Error(
-                    "No error challenges found."
-                );
-
-            }
 
         }
 
-
         showErrorChallenge();
 
-
-    } catch (error) {
-
-        console.error(
-            "Error finder error:",
-            error
-        );
-
+    }catch(error){
 
         showModal(`
-
-            <h2>
-                ⚠️ Error Finder unavailable
-            </h2>
-
+            <h2>⚠️ Error Finder Error</h2>
             <div class="error-message">
-
-                ${escapeHtml(
-                    error.message
-                )}
-
+                ${escapeHtml(error.message)}
             </div>
-
         `);
 
     }
+
 }
 
 
-function showErrorChallenge() {
+function showErrorChallenge(){
 
-    let challenge =
+    let challenge=
         errorData[
             Math.floor(
-                Math.random() *
+                Math.random()*
                 errorData.length
             )
         ];
 
 
-    let html = `
+    let html=`
 
         <h2>
             🔍 Error Finder
@@ -2861,11 +2310,9 @@ function showErrorChallenge() {
             color:#aaa;
             margin:15px 0;
         ">
-
             ${escapeHtml(
                 challenge.question
             )}
-
         </p>
 
         <pre class="example">${escapeHtml(
@@ -2878,12 +2325,11 @@ function showErrorChallenge() {
 
 
     challenge.options.forEach(
-        (option, index) => {
+        (option,index)=>{
 
-            html += `
+            html+=`
 
                 <button
-                    type="button"
                     class="option error-option"
                     data-index="${index}"
                     data-answer="${challenge.answer}"
@@ -2891,9 +2337,7 @@ function showErrorChallenge() {
                         challenge.explanation
                     )}">
 
-                    ${String.fromCharCode(
-                        65 + index
-                    )}.
+                    ${String.fromCharCode(65+index)}.
                     ${escapeHtml(option)}
 
                 </button>
@@ -2904,7 +2348,7 @@ function showErrorChallenge() {
     );
 
 
-    html += `
+    html+=`
 
         </div>
 
@@ -2918,11 +2362,11 @@ function showErrorChallenge() {
 
     document
         .querySelectorAll(".error-option")
-        .forEach(button => {
+        .forEach(button=>{
 
             button.addEventListener(
                 "click",
-                function() {
+                function(){
 
                     checkError(
                         Number(
@@ -2946,25 +2390,21 @@ function checkError(
     selected,
     correct,
     explanation
-) {
+){
 
-    const result =
+    const result=
         document.getElementById(
             "errorResult"
         );
 
-
-    if (!result) {
-        return;
-    }
+    if(!result)return;
 
 
-    if (selected === correct) {
+    if(selected===correct){
 
         addXP(20);
 
         solvedChallenges++;
-
 
         localStorage.setItem(
             "codequest_challenges",
@@ -2972,7 +2412,7 @@ function checkError(
         );
 
 
-        result.innerHTML = `
+        result.innerHTML=`
 
             <div
                 class="result"
@@ -2986,14 +2426,11 @@ function checkError(
 
                 <br><br>
 
-                ${escapeHtml(
-                    explanation
-                )}
+                ${escapeHtml(explanation)}
 
                 <br><br>
 
                 <button
-                    type="button"
                     class="primary"
                     onclick="openErrorFinder()">
 
@@ -3005,9 +2442,9 @@ function checkError(
 
         `;
 
-    } else {
+    }else{
 
-        result.innerHTML = `
+        result.innerHTML=`
 
             <div
                 class="result"
@@ -3017,15 +2454,14 @@ function checkError(
 
                 <br><br>
 
-                ${escapeHtml(
-                    explanation
-                )}
+                ${escapeHtml(explanation)}
 
             </div>
 
         `;
 
     }
+
 }
 
 
@@ -3033,12 +2469,12 @@ function checkError(
    CAREER ASSISTANT
 ===================================================== */
 
-function careerAssistant() {
+function careerAssistant(){
 
     showModal(`
 
         <h2>
-            🤖 CodeQuest AI Career Assistant
+            🤖 CodeQuest Career Assistant
         </h2>
 
         <p style="
@@ -3046,14 +2482,11 @@ function careerAssistant() {
             line-height:1.7;
             margin-top:18px;
         ">
-
             Choose a career path:
-
         </p>
 
 
         <button
-            type="button"
             class="option"
             onclick="careerResult('developer')">
 
@@ -3063,7 +2496,6 @@ function careerAssistant() {
 
 
         <button
-            type="button"
             class="option"
             onclick="careerResult('data')">
 
@@ -3073,7 +2505,6 @@ function careerAssistant() {
 
 
         <button
-            type="button"
             class="option"
             onclick="careerResult('web')">
 
@@ -3083,7 +2514,6 @@ function careerAssistant() {
 
 
         <button
-            type="button"
             class="option"
             onclick="careerResult('app')">
 
@@ -3096,21 +2526,21 @@ function careerAssistant() {
 }
 
 
-function careerResult(type) {
+function careerResult(type){
 
-    const ideas = {
+    const ideas={
 
         developer:
-            "C/C++ → OOP → DSA → Java/Python → Git → Projects → Internship",
+        "C/C++ → OOP → DSA → Java/Python → Git → Projects → Internship",
 
         data:
-            "Python → Excel → SQL → Statistics → Pandas → Data Projects",
+        "Python → Excel → SQL → Statistics → Pandas → Data Projects",
 
         web:
-            "HTML → CSS → JavaScript → Flask → APIs → Full Stack Projects",
+        "HTML → CSS → JavaScript → Flask → APIs → Full Stack Projects",
 
         app:
-            "Java/Kotlin → Android → APIs → Databases → App Projects"
+        "Java/Kotlin → Android → APIs → Databases → App Projects"
 
     };
 
@@ -3127,18 +2557,14 @@ function careerResult(type) {
                 color:#c084fc;
                 font-size:18px;
             ">
-
                 ${escapeHtml(
                     ideas[type]
                 )}
-
             </p>
 
         </div>
 
-
         <button
-            type="button"
             class="primary"
             onclick="closeModal()">
 
@@ -3155,7 +2581,7 @@ function careerResult(type) {
    COMPILER
 ===================================================== */
 
-function compiler() {
+function compiler(){
 
     showModal(`
 
@@ -3167,11 +2593,8 @@ function compiler() {
             color:#aaa;
             margin:15px 0;
         ">
-
-            Write code here.
-
+            Write and experiment with code.
         </p>
-
 
         <textarea
             id="codeEditor"
@@ -3189,16 +2612,13 @@ function compiler() {
             placeholder="Write your code here..."
         ></textarea>
 
-
         <button
-            type="button"
             class="primary"
             onclick="runCompiler()">
 
             ▶ RUN CODE
 
         </button>
-
 
         <div id="compilerResult"></div>
 
@@ -3207,27 +2627,25 @@ function compiler() {
 }
 
 
-function runCompiler() {
+function runCompiler(){
 
-    const editor =
+    const editor=
         document.getElementById(
             "codeEditor"
         );
 
-    const result =
+    const result=
         document.getElementById(
             "compilerResult"
         );
 
 
-    if (!editor || !result) {
-        return;
-    }
+    if(!editor||!result)return;
 
 
-    if (!editor.value.trim()) {
+    if(!editor.value.trim()){
 
-        result.innerHTML = `
+        result.innerHTML=`
 
             <div
                 class="result"
@@ -3244,17 +2662,16 @@ function runCompiler() {
     }
 
 
-    result.innerHTML = `
+    result.innerHTML=`
 
         <div class="result">
 
-            🚧 Compiler engine is the next upgrade.
+            🚧 Compiler engine is ready
+            for the next upgrade.
 
             <br><br>
 
             The editor is working correctly.
-            The actual code execution engine can
-            be connected next.
 
         </div>
 
@@ -3267,10 +2684,10 @@ function runCompiler() {
    PROGRESS
 ===================================================== */
 
-function showProgress() {
+function showProgress(){
 
-    let level =
-        Math.floor(xp / 100) + 1;
+    let level=
+        Math.floor(xp/100)+1;
 
 
     showModal(`
@@ -3279,75 +2696,33 @@ function showProgress() {
             🏆 My Progress
         </h2>
 
-
         <div class="stats-grid">
 
             <div class="stat">
-
                 ⭐ XP
-
-                <strong>
-                    ${xp}
-                </strong>
-
+                <strong>${xp}</strong>
             </div>
 
-
             <div class="stat">
-
                 🎯 Level
-
-                <strong>
-                    ${level}
-                </strong>
-
+                <strong>${level}</strong>
             </div>
 
-
             <div class="stat">
-
                 📚 Chapters
-
                 <strong>
                     ${completedChapters.length}
                 </strong>
-
             </div>
 
-
             <div class="stat">
-
                 🧠 Challenges
-
                 <strong>
                     ${solvedChallenges}
                 </strong>
-
             </div>
 
         </div>
-
-
-        <div class="security-panel">
-
-            <h3>
-                🛡️ Security Status
-            </h3>
-
-            <p class="security-safe">
-                ● Secure quiz monitoring available
-            </p>
-
-            <p>
-                CodeQuest monitors quiz visibility,
-                window focus, fullscreen state,
-                copy/paste actions and common
-                browser shortcuts during secure
-                assessments.
-            </p>
-
-        </div>
-
 
         <div class="result">
 
@@ -3365,42 +2740,28 @@ function showProgress() {
    SECURITY HELPERS
 ===================================================== */
 
-function escapeHtml(text) {
+function escapeHtml(text){
 
-    if (
-        text === null ||
-        text === undefined
-    ) {
+    if(
+        text===null||
+        text===undefined
+    ){
         return "";
     }
 
-
     return String(text)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
 
 }
 
 
-function escapeAttr(text) {
+function escapeAttr(text){
 
-    if (
-        text === null ||
-        text === undefined
-    ) {
-        return "";
-    }
-
-
-    return String(text)
-        .replace(/&/g, "&amp;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
+    return escapeHtml(text);
 
 }
 
@@ -3413,15 +2774,10 @@ document
     .getElementById("modal")
     .addEventListener(
         "click",
-        function(event) {
+        function(event){
 
-            if (
-                event.target === this &&
-                !quizActive
-            ) {
-
+            if(event.target===this){
                 closeModal();
-
             }
 
         }
@@ -3430,14 +2786,26 @@ document
 
 document.addEventListener(
     "keydown",
-    function(event) {
+    function(event){
 
-        if (
-            event.key === "Escape" &&
-            !quizActive
-        ) {
+        if(event.key==="Escape"){
 
-            closeModal();
+            /*
+             * Don't allow Escape to silently
+             * bypass an active exam.
+             */
+
+            if(secureQuizActive){
+
+                terminateSecureQuiz(
+                    "The quiz was terminated because the exam window was closed."
+                );
+
+            }else{
+
+                closeModal();
+
+            }
 
         }
 
