@@ -1,6 +1,8 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -16,24 +18,32 @@
 
 body {
     font-family: Arial, Helvetica, sans-serif;
+
     background:
         radial-gradient(circle at top right, #25104d 0%, transparent 35%),
         radial-gradient(circle at bottom left, #101b3d 0%, transparent 35%),
         #07070b;
+
     color: white;
     min-height: 100vh;
 }
 
 header {
-    padding: 24px 7%;
+    padding: 20px 7%;
+
     display: flex;
     justify-content: space-between;
     align-items: center;
+
     border-bottom: 1px solid #25252e;
+
     position: sticky;
     top: 0;
-    background: rgba(7,7,11,.88);
+
+    background: rgba(7,7,11,.9);
+
     backdrop-filter: blur(15px);
+
     z-index: 10;
 }
 
@@ -58,7 +68,7 @@ header {
 }
 
 .hero {
-    padding: 65px 0 35px;
+    padding: 60px 0 30px;
 }
 
 .hero small {
@@ -80,6 +90,7 @@ header {
         #ec4899,
         #6366f1
     );
+
     -webkit-background-clip: text;
     color: transparent;
 }
@@ -94,14 +105,17 @@ header {
 .player-card {
     margin: 30px 0;
     padding: 24px;
+
     border: 1px solid #2a2a35;
     border-radius: 22px;
+
     background:
         linear-gradient(
             135deg,
             rgba(168,85,247,.16),
             rgba(30,30,40,.6)
         );
+
     display: flex;
     justify-content: space-between;
     gap: 20px;
@@ -121,26 +135,31 @@ header {
 
 .xp {
     color: #c084fc;
-    margin-top: 8px;
 }
 
 .progress {
     width: 230px;
     height: 8px;
+
     background: #27272f;
+
     border-radius: 10px;
+
     margin-top: 12px;
+
     overflow: hidden;
 }
 
 .progress div {
     height: 100%;
     width: 0%;
+
     background: linear-gradient(
         90deg,
         #a855f7,
         #ec4899
     );
+
     transition: width .4s;
 }
 
@@ -151,19 +170,23 @@ header {
 
 .features {
     display: grid;
-    grid-template-columns: repeat(
-        auto-fit,
-        minmax(180px, 1fr)
-    );
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(180px, 1fr));
+
     gap: 15px;
 }
 
 .feature {
     padding: 22px;
+
     border: 1px solid #292933;
     border-radius: 18px;
+
     background: #111116;
+
     cursor: pointer;
+
     transition: .2s;
 }
 
@@ -189,16 +212,22 @@ header {
 
 .courses {
     display: grid;
+
     grid-template-columns:
         repeat(auto-fit, minmax(250px, 1fr));
+
     gap: 18px;
 }
 
 .course {
     border: 1px solid #292933;
+
     border-radius: 20px;
+
     padding: 22px;
+
     background: rgba(17,17,22,.92);
+
     transition: .2s;
 }
 
@@ -223,113 +252,269 @@ header {
 
 .level {
     display: inline-block;
+
     margin-top: 12px;
+
     padding: 5px 9px;
+
     border-radius: 20px;
+
     background: #211536;
+
     color: #c084fc;
+
     font-size: 11px;
+}
+
+button {
+    font-family: inherit;
 }
 
 .course button,
 .primary {
     border: none;
+
     margin-top: 18px;
+
     padding: 11px 16px;
+
     border-radius: 10px;
+
     background: linear-gradient(
         90deg,
         #7c3aed,
         #a855f7
     );
+
     color: white;
+
     font-weight: bold;
+
     cursor: pointer;
+}
+
+.course button:hover,
+.primary:hover {
+    opacity: .9;
+    transform: translateY(-1px);
 }
 
 .modal {
     display: none;
+
     position: fixed;
+
     inset: 0;
-    background: rgba(0,0,0,.75);
+
+    background: rgba(0,0,0,.78);
+
     z-index: 100;
-    padding: 30px;
+
+    padding: 20px;
+
     overflow-y: auto;
 }
 
 .modal-box {
-    max-width: 700px;
-    margin: 40px auto;
+    max-width: 750px;
+
+    margin: 30px auto;
+
     background: #111116;
+
     border: 1px solid #343442;
+
     border-radius: 22px;
+
     padding: 28px;
+
+    min-height: 150px;
 }
 
 .close {
     float: right;
-    font-size: 25px;
+
+    font-size: 28px;
+
     cursor: pointer;
+
     color: #aaa;
 }
 
+.close:hover {
+    color: white;
+}
+
 .chapter {
-    padding: 15px;
+    padding: 16px;
+
     margin-top: 9px;
+
     border: 1px solid #292933;
+
     border-radius: 12px;
+
     background: #0b0b0f;
+
     cursor: pointer;
+
     transition: .2s;
 }
 
 .chapter:hover {
     border-color: #a855f7;
-    transform: translateX(3px);
+
+    background: #15121d;
+}
+
+.lesson-box {
+    margin-top: 22px;
+
+    padding: 20px;
+
+    background: #0b0b0f;
+
+    border: 1px solid #292933;
+
+    border-radius: 15px;
+
+    line-height: 1.7;
+}
+
+.lesson-box h3 {
+    margin-bottom: 10px;
+}
+
+.lesson-box p {
+    color: #b8b8c2;
+}
+
+.example {
+    margin-top: 15px;
+
+    padding: 16px;
+
+    background: #050507;
+
+    border-radius: 12px;
+
+    overflow-x: auto;
+
+    color: #d8b4fe;
+
+    white-space: pre-wrap;
+
+    font-family: monospace;
+}
+
+.tip {
+    margin-top: 15px;
+
+    padding: 14px;
+
+    border-radius: 10px;
+
+    background: #211536;
+
+    color: #d8b4fe;
+}
+
+.quiz-question {
+    font-size: 20px;
+
+    margin: 20px 0;
 }
 
 .option {
     width: 100%;
+
     padding: 14px;
+
     margin: 7px 0;
+
     border: 1px solid #30303a;
+
     background: #17171d;
+
     color: white;
+
     border-radius: 10px;
+
     text-align: left;
+
     cursor: pointer;
+
+    transition: .2s;
 }
 
 .option:hover {
     border-color: #a855f7;
+
+    background: #1c1724;
 }
 
 .result {
     margin-top: 18px;
+
     padding: 15px;
+
     border-radius: 12px;
+
     background: #191922;
+
+    line-height: 1.6;
 }
 
-.lesson-box {
+.lesson-question {
+    margin-top: 22px;
+
+    font-size: 18px;
+
+    font-weight: bold;
+}
+
+.stats-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 12px;
+
     margin-top: 20px;
-    padding: 18px;
-    background: #0b0b0f;
-    border: 1px solid #292933;
-    border-radius: 15px;
 }
 
-.lesson-box p {
-    color: #b5b5bd;
-    line-height: 1.7;
+.stat {
+    padding: 18px;
+
+    border: 1px solid #292933;
+
+    border-radius: 15px;
+
+    background: #0b0b0f;
+}
+
+.stat strong {
+    display: block;
+
+    font-size: 25px;
+
+    color: #c084fc;
+
+    margin-top: 5px;
 }
 
 footer {
     margin-top: 70px;
+
     padding: 30px;
+
     text-align: center;
+
     border-top: 1px solid #25252e;
+
     color: #777;
+
     font-size: 13px;
 }
 
@@ -355,17 +540,17 @@ footer {
         width: 100%;
     }
 
-    .modal {
-        padding: 12px;
+    .stats-grid {
+        grid-template-columns: 1fr;
     }
 
     .modal-box {
-        margin: 15px auto;
         padding: 20px;
     }
 }
 
 </style>
+
 </head>
 
 <body>
@@ -382,11 +567,14 @@ footer {
 
 </header>
 
+
 <main class="container">
 
 <section class="hero">
 
-    <small>LEARN • PRACTICE • PLAY • BUILD</small>
+    <small>
+        LEARN • PRACTICE • PLAY • BUILD
+    </small>
 
     <h1>
         Become a
@@ -404,6 +592,7 @@ footer {
 
 </section>
 
+
 <section class="player-card">
 
     <div>
@@ -412,12 +601,20 @@ footer {
             YOUR CODING JOURNEY
         </div>
 
-        <div class="player-level" id="levelText">
+        <div
+            class="player-level"
+            id="levelText">
+
             Level 1 — Code Explorer 🚀
+
         </div>
 
-        <div class="xp">
-            ⭐ <span id="xpText">0</span> XP
+        <div
+            class="xp"
+            id="xpText">
+
+            ⭐ 0 XP
+
         </div>
 
     </div>
@@ -432,61 +629,146 @@ footer {
             <div id="progressBar"></div>
         </div>
 
-        <div class="player-title">
-            <span id="nextXpText">0</span> / 100 XP
+        <div
+            class="player-title"
+            id="progressText">
+
+            0 / 100 XP
+
         </div>
 
     </div>
 
 </section>
 
+
 <h2 class="section-title">
     🎮 Practice Arena
 </h2>
 
+
 <section class="features">
 
-    <div class="feature" id="quizBtn">
-        <div class="feature-icon">🧠</div>
-        <h3>Quiz Arena</h3>
-        <p>Answer questions and earn XP.</p>
+    <div
+        class="feature"
+        onclick="openQuiz()">
+
+        <div class="feature-icon">
+            🧠
+        </div>
+
+        <h3>
+            Quiz Arena
+        </h3>
+
+        <p>
+            Answer questions and earn XP.
+        </p>
+
     </div>
 
-    <div class="feature" id="codeBtn">
-        <div class="feature-icon">💻</div>
-        <h3>Code Challenge</h3>
-        <p>Predict program output.</p>
+
+    <div
+        class="feature"
+        onclick="openCodeChallenge()">
+
+        <div class="feature-icon">
+            💻
+        </div>
+
+        <h3>
+            Code Challenge
+        </h3>
+
+        <p>
+            Predict program output.
+        </p>
+
     </div>
 
-    <div class="feature" id="errorBtn">
-        <div class="feature-icon">🔍</div>
-        <h3>Error Finder</h3>
-        <p>Find bugs and understand them.</p>
+
+    <div
+        class="feature"
+        onclick="openErrorFinder()">
+
+        <div class="feature-icon">
+            🔍
+        </div>
+
+        <h3>
+            Error Finder
+        </h3>
+
+        <p>
+            Find bugs and understand them.
+        </p>
+
     </div>
 
-    <div class="feature" id="careerBtn">
-        <div class="feature-icon">🤖</div>
-        <h3>AI Career</h3>
-        <p>Projects, internships and placement ideas.</p>
+
+    <div
+        class="feature"
+        onclick="careerAssistant()">
+
+        <div class="feature-icon">
+            🤖
+        </div>
+
+        <h3>
+            AI Career
+        </h3>
+
+        <p>
+            Projects, internships and placement ideas.
+        </p>
+
     </div>
 
-    <div class="feature" id="compilerBtn">
-        <div class="feature-icon">▶️</div>
-        <h3>Online Compiler</h3>
-        <p>Write code and experiment.</p>
+
+    <div
+        class="feature"
+        onclick="compiler()">
+
+        <div class="feature-icon">
+            ▶️
+        </div>
+
+        <h3>
+            Online Compiler
+        </h3>
+
+        <p>
+            Write code and experiment.
+        </p>
+
     </div>
 
-    <div class="feature" id="progressBtn">
-        <div class="feature-icon">🏆</div>
-        <h3>My Progress</h3>
-        <p>Track your learning journey.</p>
+
+    <div
+        class="feature"
+        onclick="showProgress()">
+
+        <div class="feature-icon">
+            🏆
+        </div>
+
+        <h3>
+            My Progress
+        </h3>
+
+        <p>
+            Track your learning journey.
+        </p>
+
     </div>
 
 </section>
 
+
 <h2 class="section-title">
     📚 Learn Anything
 </h2>
+
 
 <section class="courses">
 
@@ -513,8 +795,7 @@ footer {
     <br>
 
     <button
-        class="start-course"
-        data-course="{{ key|e }}">
+        onclick="openCourse({{ key|tojson }})">
 
         START COURSE →
 
@@ -528,16 +809,24 @@ footer {
 
 </main>
 
+
 <footer>
     CodeQuest AI • Learn today. Build tomorrow. 🚀
 </footer>
 
-<div id="modal" class="modal">
+
+<div
+    id="modal"
+    class="modal">
 
     <div class="modal-box">
 
-        <span class="close" id="closeBtn">
+        <span
+            class="close"
+            onclick="closeModal()">
+
             ×
+
         </span>
 
         <div id="modalContent"></div>
@@ -546,10 +835,11 @@ footer {
 
 </div>
 
+
 <script>
 
 /* =====================================================
-   GLOBAL DATA
+   STATE
 ===================================================== */
 
 let quizData = [];
@@ -557,22 +847,21 @@ let codeData = [];
 let errorData = [];
 
 let xp = Number(
-    localStorage.getItem("codequestXP") || 0
+    localStorage.getItem("codequest_xp") || 0
 );
 
-let coursesStarted =
-    Number(
-        localStorage.getItem("coursesStarted") || 0
-    );
-
-let challengesSolved =
-    Number(
-        localStorage.getItem("challengesSolved") || 0
-    );
-
 let completedChapters =
+    JSON.parse(
+        localStorage.getItem(
+            "codequest_chapters"
+        ) || "[]"
+    );
+
+let solvedChallenges =
     Number(
-        localStorage.getItem("completedChapters") || 0
+        localStorage.getItem(
+            "codequest_challenges"
+        ) || 0
     );
 
 
@@ -580,28 +869,48 @@ let completedChapters =
    XP SYSTEM
 ===================================================== */
 
-function updateXPDisplay() {
+function addXP(amount) {
 
-    document.getElementById("xpText").textContent = xp;
+    xp += amount;
+
+    localStorage.setItem(
+        "codequest_xp",
+        xp
+    );
+
+    updateProgress();
+}
+
+
+function updateProgress() {
 
     let level =
         Math.floor(xp / 100) + 1;
 
-    let currentLevelXP =
+    let currentXP =
         xp % 100;
 
-    document.getElementById("levelText").textContent =
-        "Level " +
-        level +
-        " — " +
-        getLevelName(level) +
-        " 🚀";
+    document.getElementById(
+        "xpText"
+    ).innerHTML =
+        `⭐ ${xp} XP`;
 
-    document.getElementById("nextXpText").textContent =
-        currentLevelXP;
+    document.getElementById(
+        "levelText"
+    ).innerHTML =
+        `Level ${level} — ${
+            getLevelName(level)
+        } 🚀`;
 
-    document.getElementById("progressBar").style.width =
-        currentLevelXP + "%";
+    document.getElementById(
+        "progressText"
+    ).innerHTML =
+        `${currentXP} / 100 XP`;
+
+    document.getElementById(
+        "progressBar"
+    ).style.width =
+        `${currentXP}%`;
 }
 
 
@@ -609,30 +918,24 @@ function getLevelName(level) {
 
     const names = [
         "Code Explorer",
-        "Code Learner",
-        "Code Builder",
+        "Bug Hunter",
+        "Logic Builder",
+        "Code Warrior",
+        "Programmer",
         "Code Master",
-        "Code Ninja",
-        "Programming Hero"
+        "Tech Creator"
     ];
 
     return names[
-        Math.min(level - 1, names.length - 1)
+        Math.min(
+            level - 1,
+            names.length - 1
+        )
     ];
 }
 
 
-function addXP(amount) {
-
-    xp += amount;
-
-    localStorage.setItem(
-        "codequestXP",
-        xp
-    );
-
-    updateXPDisplay();
-}
+updateProgress();
 
 
 /* =====================================================
@@ -660,17 +963,10 @@ function closeModal() {
 
 
 /* =====================================================
-   COURSE
+   COURSES
 ===================================================== */
 
 async function openCourse(name) {
-
-    showModal(`
-        <h2>⏳ Loading Course...</h2>
-        <p style="color:#aaa;margin-top:15px;">
-            Preparing your learning path...
-        </p>
-    `);
 
     try {
 
@@ -681,18 +977,19 @@ async function openCourse(name) {
             );
 
         if (!response.ok) {
-            throw new Error("Course not found");
+            throw new Error();
         }
 
         const course =
             await response.json();
 
-        coursesStarted++;
-
-        localStorage.setItem(
-            "coursesStarted",
-            coursesStarted
-        );
+        let completedCount =
+            course.chapters.filter(
+                chapter =>
+                    completedChapters.includes(
+                        name + "::" + chapter
+                    )
+            ).length;
 
         let html = `
 
@@ -704,40 +1001,49 @@ async function openCourse(name) {
             <p style="
                 color:#aaa;
                 margin-top:10px;
-                line-height:1.6;
             ">
                 ${escapeHtml(course.description)}
             </p>
+
+            <div class="result">
+
+                📚 Chapters:
+                ${course.chapters.length}
+
+                <br>
+
+                ✅ Completed:
+                ${completedCount}
+
+            </div>
 
             <h3 style="margin-top:25px;">
                 📖 Learning Path
             </h3>
 
-            <p style="
-                color:#777;
-                margin-top:8px;
-                font-size:13px;
-            ">
-                Select a chapter to begin learning.
-            </p>
-
-            <div id="chapterList">
-
         `;
+
 
         course.chapters.forEach(
             (chapter, index) => {
 
+                let completed =
+                    completedChapters.includes(
+                        name + "::" + chapter
+                    );
+
                 html += `
 
                     <div
-                        class="chapter chapter-btn"
-                        data-chapter="${escapeAttribute(chapter)}">
+                        class="chapter"
+                        onclick='startChapter(
+                            ${JSON.stringify(name)},
+                            ${JSON.stringify(chapter)}
+                        )'>
 
-                        <span>
-                            ${index + 1}.
-                            ${escapeHtml(chapter)}
-                        </span>
+                        ${completed ? "✅" : `${index + 1}.`}
+
+                        ${escapeHtml(chapter)}
 
                         <span style="
                             float:right;
@@ -749,127 +1055,278 @@ async function openCourse(name) {
                     </div>
 
                 `;
+
             }
         );
 
-        html += `</div>`;
 
         showModal(html);
 
     } catch (error) {
 
-        console.error(error);
-
         showModal(`
 
-            <h2>⚠️ Course Error</h2>
+            <h2>
+                ⚠️ Course Error
+            </h2>
 
             <p style="
                 color:#aaa;
                 margin-top:15px;
-                line-height:1.6;
             ">
                 We couldn't load this course.
-                Please try again.
             </p>
 
-            <button
-                class="primary"
-                id="retryBtn">
-
-                TRY AGAIN
-
-            </button>
-
         `);
-
-        document.getElementById("retryBtn")
-            .addEventListener(
-                "click",
-                () => openCourse(name)
-            );
     }
 }
 
 
 /* =====================================================
-   CHAPTER / LESSON
+   LESSON
 ===================================================== */
 
-function startChapter(chapter) {
+async function startChapter(
+    courseName,
+    chapter
+) {
 
-    showModal(`
+    try {
 
-        <h2>
-            📖 ${escapeHtml(chapter)}
-        </h2>
+        const response =
+            await fetch(
+                "/api/lesson/" +
+                encodeURIComponent(chapter)
+            );
 
-        <div class="lesson-box">
+        const lesson =
+            await response.json();
 
-            <h3>
-                🎯 What you will learn
-            </h3>
+        let key =
+            courseName + "::" + chapter;
 
-            <p style="margin-top:12px;">
-                In this chapter, you will understand
-                the basic concepts of
-                <strong>${escapeHtml(chapter)}</strong>
-                through simple explanations,
-                examples and practice.
-            </p>
+        let alreadyCompleted =
+            completedChapters.includes(key);
 
-        </div>
 
-        <div class="lesson-box">
+        let html = `
 
-            <h3>
-                💡 Learning Method
-            </h3>
+            <h2>
+                📖 ${escapeHtml(lesson.title)}
+            </h2>
 
-            <p style="margin-top:12px;">
-                Read the concept carefully,
-                understand the example,
-                then practice it yourself.
-                Regular practice will help you
-                improve your programming skills.
-            </p>
+            <div class="lesson-box">
 
-        </div>
+                <h3>
+                    💡 Explanation
+                </h3>
 
-        <button
-            class="primary"
-            id="completeChapterBtn">
+                <p>
+                    ${escapeHtml(
+                        lesson.explanation
+                    )}
+                </p>
 
-            ✅ MARK CHAPTER COMPLETE +10 XP
+                <h3 style="
+                    margin-top:20px;
+                ">
+                    💻 Example
+                </h3>
 
-        </button>
+                <div class="example">
+                    ${escapeHtml(
+                        lesson.example
+                    )}
+                </div>
 
-    `);
+                <div class="tip">
 
-    document
-        .getElementById("completeChapterBtn")
-        .addEventListener(
-            "click",
-            function() {
+                    💡 Tip:
+                    ${escapeHtml(
+                        lesson.tip
+                    )}
 
-                completedChapters++;
+                </div>
 
-                localStorage.setItem(
-                    "completedChapters",
-                    completedChapters
-                );
+            </div>
 
-                addXP(10);
 
-                this.disabled = true;
+            <div class="lesson-question">
 
-                this.textContent =
-                    "✅ CHAPTER COMPLETED!";
+                🧠 Quick Check
 
-                this.style.opacity = "0.7";
+                <p style="
+                    color:#aaa;
+                    font-size:15px;
+                    margin-top:10px;
+                    font-weight:normal;
+                ">
+                    ${escapeHtml(
+                        lesson.question
+                    )}
+                </p>
+
+            </div>
+
+            <div id="lessonOptions">
+
+        `;
+
+
+        lesson.options.forEach(
+            (option, index) => {
+
+                html += `
+
+                    <button
+                        class="option"
+                        onclick="checkLesson(
+                            ${index},
+                            ${lesson.answer},
+                            ${JSON.stringify(key)}
+                        )">
+
+                        ${String.fromCharCode(
+                            65 + index
+                        )}.
+                        ${escapeHtml(option)}
+
+                    </button>
+
+                `;
 
             }
         );
+
+
+        html += `
+
+            </div>
+
+            <div id="lessonResult"></div>
+
+            ${
+                alreadyCompleted
+                ? `
+                    <div class="result"
+                         style="color:#4ade80">
+
+                        ✅ Chapter already completed.
+
+                    </div>
+                  `
+                : ""
+            }
+
+        `;
+
+
+        showModal(html);
+
+    } catch (error) {
+
+        showModal(`
+
+            <h2>
+                ⚠️ Lesson unavailable
+            </h2>
+
+            <p style="
+                color:#aaa;
+                margin-top:15px;
+            ">
+                This lesson could not be loaded.
+            </p>
+
+        `);
+
+    }
+}
+
+
+function checkLesson(
+    selected,
+    correct,
+    key
+) {
+
+    const result =
+        document.getElementById(
+            "lessonResult"
+        );
+
+    if (selected === correct) {
+
+        if (!completedChapters.includes(key)) {
+
+            completedChapters.push(key);
+
+            localStorage.setItem(
+                "codequest_chapters",
+                JSON.stringify(
+                    completedChapters
+                )
+            );
+
+            addXP(25);
+
+            result.innerHTML = `
+
+                <div
+                    class="result"
+                    style="color:#4ade80">
+
+                    🎉 Correct!
+
+                    <br><br>
+
+                    Chapter completed! ✅
+
+                    <br>
+
+                    +25 XP ⭐
+
+                </div>
+
+            `;
+
+        } else {
+
+            result.innerHTML = `
+
+                <div
+                    class="result"
+                    style="color:#4ade80">
+
+                    ✅ Correct!
+                    <br><br>
+                    This chapter was already completed.
+
+                </div>
+
+            `;
+        }
+
+    } else {
+
+        result.innerHTML = `
+
+            <div
+                class="result"
+                style="color:#fb7185">
+
+                ❌ Not quite.
+
+                <br><br>
+
+                Try reviewing the lesson
+                and answer again.
+
+            </div>
+
+        `;
+
+    }
 }
 
 
@@ -879,10 +1336,6 @@ function startChapter(chapter) {
 
 async function openQuiz() {
 
-    showModal(`
-        <h2>⏳ Loading Quiz...</h2>
-    `);
-
     try {
 
         if (!quizData.length) {
@@ -890,108 +1343,91 @@ async function openQuiz() {
             const response =
                 await fetch("/api/quiz");
 
-            if (!response.ok) {
-                throw new Error("Quiz request failed");
-            }
-
             quizData =
                 await response.json();
+
         }
 
-        if (!quizData.length) {
-            throw new Error("No quiz data");
-        }
-
-        const question =
-            quizData[
-                Math.floor(
-                    Math.random() *
-                    quizData.length
-                )
-            ];
-
-        let html = `
-
-            <h2>🧠 Quiz Arena</h2>
-
-            <div class="quiz-question">
-                ${escapeHtml(question.question)}
-            </div>
-
-            <div id="quizOptions">
-
-        `;
-
-        question.options.forEach(
-            (option, index) => {
-
-                html += `
-
-                    <button
-                        class="option quiz-option"
-                        data-index="${index}">
-
-                        ${String.fromCharCode(65 + index)}.
-                        ${escapeHtml(option)}
-
-                    </button>
-
-                `;
-            }
-        );
-
-        html += `
-
-            </div>
-
-            <div id="quizResult"></div>
-
-        `;
-
-        showModal(html);
-
-        document
-            .querySelectorAll(".quiz-option")
-            .forEach(button => {
-
-                button.addEventListener(
-                    "click",
-                    function() {
-
-                        checkAnswer(
-                            Number(
-                                this.dataset.index
-                            ),
-                            question.answer,
-                            question.explanation
-                        );
-
-                    }
-                );
-
-            });
+        showQuizQuestion();
 
     } catch (error) {
 
-        console.error(error);
-
         showModal(`
 
-            <h2>⚠️ Quiz unavailable</h2>
-
-            <p style="
-                color:#aaa;
-                margin-top:15px;
-            ">
-                Quiz data could not be loaded.
-            </p>
+            <h2>
+                ⚠️ Quiz unavailable
+            </h2>
 
         `);
+
     }
 }
 
 
-function checkAnswer(
+function showQuizQuestion() {
+
+    let question =
+        quizData[
+            Math.floor(
+                Math.random() *
+                quizData.length
+            )
+        ];
+
+    let html = `
+
+        <h2>
+            🧠 Quiz Arena
+        </h2>
+
+        <div class="quiz-question">
+
+            ${escapeHtml(
+                question.question
+            )}
+
+        </div>
+
+    `;
+
+
+    question.options.forEach(
+        (option, index) => {
+
+            html += `
+
+                <button
+                    class="option"
+                    onclick="checkQuiz(
+                        ${index},
+                        ${question.answer},
+                        ${JSON.stringify(
+                            question.explanation
+                        )}
+                    )">
+
+                    ${String.fromCharCode(
+                        65 + index
+                    )}.
+                    ${escapeHtml(option)}
+
+                </button>
+
+            `;
+
+        }
+    );
+
+
+    html += `
+        <div id="quizResult"></div>
+    `;
+
+    showModal(html);
+}
+
+
+function checkQuiz(
     selected,
     correct,
     explanation
@@ -1002,43 +1438,37 @@ function checkAnswer(
             "quizResult"
         );
 
-    const buttons =
-        document.querySelectorAll(
-            ".quiz-option"
-        );
-
-    buttons.forEach(
-        button => {
-            button.disabled = true;
-            button.style.opacity = "0.6";
-        }
-    );
-
     if (selected === correct) {
 
         addXP(10);
 
-        challengesSolved++;
-
-        localStorage.setItem(
-            "challengesSolved",
-            challengesSolved
-        );
-
         result.innerHTML = `
 
-            <div class="result"
-                 style="color:#4ade80">
+            <div
+                class="result"
+                style="color:#4ade80">
 
                 🎉 CORRECT!
 
                 <br><br>
 
-                ⭐ +10 XP
+                +10 XP ⭐
 
                 <br><br>
 
-                ${escapeHtml(explanation)}
+                ${escapeHtml(
+                    explanation
+                )}
+
+                <br><br>
+
+                <button
+                    class="primary"
+                    onclick="showQuizQuestion()">
+
+                    NEXT QUESTION →
+
+                </button>
 
             </div>
 
@@ -1048,18 +1478,32 @@ function checkAnswer(
 
         result.innerHTML = `
 
-            <div class="result"
-                 style="color:#fb7185">
+            <div
+                class="result"
+                style="color:#fb7185">
 
                 ❌ Not quite!
 
                 <br><br>
 
-                ${escapeHtml(explanation)}
+                ${escapeHtml(
+                    explanation
+                )}
+
+                <br><br>
+
+                <button
+                    class="primary"
+                    onclick="showQuizQuestion()">
+
+                    TRY ANOTHER →
+
+                </button>
 
             </div>
 
         `;
+
     }
 }
 
@@ -1070,10 +1514,6 @@ function checkAnswer(
 
 async function openCodeChallenge() {
 
-    showModal(`
-        <h2>⏳ Loading Challenge...</h2>
-    `);
-
     try {
 
         if (!codeData.length) {
@@ -1083,15 +1523,12 @@ async function openCodeChallenge() {
                     "/api/code-challenges"
                 );
 
-            if (!response.ok) {
-                throw new Error();
-            }
-
             codeData =
                 await response.json();
+
         }
 
-        const challenge =
+        let challenge =
             codeData[
                 Math.floor(
                     Math.random() *
@@ -1099,28 +1536,28 @@ async function openCodeChallenge() {
                 )
             ];
 
+
         let html = `
 
-            <h2>💻 Code Challenge</h2>
+            <h2>
+                💻 Code Challenge
+            </h2>
 
             <p style="
                 color:#aaa;
                 margin:15px 0;
             ">
-                ${escapeHtml(challenge.question)}
+                ${escapeHtml(
+                    challenge.question
+                )}
             </p>
 
-            <pre style="
-                background:#050507;
-                padding:18px;
-                border-radius:12px;
-                overflow:auto;
-                color:#d8b4fe;
-            ">${escapeHtml(challenge.code)}</pre>
-
-            <div id="codeOptions">
+            <pre class="example">${escapeHtml(
+                challenge.code
+            )}</pre>
 
         `;
+
 
         challenge.options.forEach(
             (option, index) => {
@@ -1128,62 +1565,44 @@ async function openCodeChallenge() {
                 html += `
 
                     <button
-                        class="option code-option"
-                        data-index="${index}">
+                        class="option"
+                        onclick="checkCodeAnswer(
+                            ${index},
+                            ${challenge.answer},
+                            ${JSON.stringify(
+                                challenge.explanation
+                            )}
+                        )">
 
-                        ${String.fromCharCode(65 + index)}.
+                        ${String.fromCharCode(
+                            65 + index
+                        )}.
                         ${escapeHtml(option)}
 
                     </button>
 
                 `;
+
             }
         );
 
+
         html += `
-
-            </div>
-
             <div id="codeResult"></div>
-
         `;
 
         showModal(html);
 
-        document
-            .querySelectorAll(".code-option")
-            .forEach(button => {
-
-                button.addEventListener(
-                    "click",
-                    function() {
-
-                        checkCodeAnswer(
-                            Number(
-                                this.dataset.index
-                            ),
-                            challenge.answer,
-                            challenge.explanation
-                        );
-
-                    }
-                );
-
-            });
-
     } catch (error) {
-
-        console.error(error);
 
         showModal(`
 
-            <h2>⚠️ Challenge unavailable</h2>
-
-            <p style="color:#aaa;margin-top:15px;">
-                Code challenge data could not be loaded.
-            </p>
+            <h2>
+                ⚠️ Challenge unavailable
+            </h2>
 
         `);
+
     }
 }
 
@@ -1199,40 +1618,44 @@ function checkCodeAnswer(
             "codeResult"
         );
 
-    document
-        .querySelectorAll(".code-option")
-        .forEach(
-            button => {
-                button.disabled = true;
-                button.style.opacity = "0.6";
-            }
-        );
-
     if (selected === correct) {
 
         addXP(15);
 
-        challengesSolved++;
+        solvedChallenges++;
 
         localStorage.setItem(
-            "challengesSolved",
-            challengesSolved
+            "codequest_challenges",
+            solvedChallenges
         );
 
         result.innerHTML = `
 
-            <div class="result"
-                 style="color:#4ade80">
+            <div
+                class="result"
+                style="color:#4ade80">
 
-                🧠 CORRECT!
-
-                <br><br>
-
-                ⭐ +15 XP
+                🧠 Correct!
 
                 <br><br>
 
-                ${escapeHtml(explanation)}
+                +15 XP ⭐
+
+                <br><br>
+
+                ${escapeHtml(
+                    explanation
+                )}
+
+                <br><br>
+
+                <button
+                    class="primary"
+                    onclick="openCodeChallenge()">
+
+                    NEXT CHALLENGE →
+
+                </button>
 
             </div>
 
@@ -1242,18 +1665,32 @@ function checkCodeAnswer(
 
         result.innerHTML = `
 
-            <div class="result"
-                 style="color:#fb7185">
+            <div
+                class="result"
+                style="color:#fb7185">
 
-                ❌ INCORRECT
+                ❌ Incorrect
 
                 <br><br>
 
-                ${escapeHtml(explanation)}
+                ${escapeHtml(
+                    explanation
+                )}
+
+                <br><br>
+
+                <button
+                    class="primary"
+                    onclick="openCodeChallenge()">
+
+                    TRY ANOTHER →
+
+                </button>
 
             </div>
 
         `;
+
     }
 }
 
@@ -1264,10 +1701,6 @@ function checkCodeAnswer(
 
 async function openErrorFinder() {
 
-    showModal(`
-        <h2>⏳ Loading Error Finder...</h2>
-    `);
-
     try {
 
         if (!errorData.length) {
@@ -1277,15 +1710,12 @@ async function openErrorFinder() {
                     "/api/error-finder"
                 );
 
-            if (!response.ok) {
-                throw new Error();
-            }
-
             errorData =
                 await response.json();
+
         }
 
-        const challenge =
+        let challenge =
             errorData[
                 Math.floor(
                     Math.random() *
@@ -1293,28 +1723,28 @@ async function openErrorFinder() {
                 )
             ];
 
+
         let html = `
 
-            <h2>🔍 Error Finder</h2>
+            <h2>
+                🔍 Error Finder
+            </h2>
 
             <p style="
                 color:#aaa;
                 margin:15px 0;
             ">
-                ${escapeHtml(challenge.question)}
+                ${escapeHtml(
+                    challenge.question
+                )}
             </p>
 
-            <pre style="
-                background:#050507;
-                padding:18px;
-                border-radius:12px;
-                overflow:auto;
-                color:#fca5a5;
-            ">${escapeHtml(challenge.code)}</pre>
-
-            <div id="errorOptions">
+            <pre class="example">${escapeHtml(
+                challenge.code
+            )}</pre>
 
         `;
+
 
         challenge.options.forEach(
             (option, index) => {
@@ -1322,62 +1752,44 @@ async function openErrorFinder() {
                 html += `
 
                     <button
-                        class="option error-option"
-                        data-index="${index}">
+                        class="option"
+                        onclick="checkError(
+                            ${index},
+                            ${challenge.answer},
+                            ${JSON.stringify(
+                                challenge.explanation
+                            )}
+                        )">
 
-                        ${String.fromCharCode(65 + index)}.
+                        ${String.fromCharCode(
+                            65 + index
+                        )}.
                         ${escapeHtml(option)}
 
                     </button>
 
                 `;
+
             }
         );
 
+
         html += `
-
-            </div>
-
             <div id="errorResult"></div>
-
         `;
 
         showModal(html);
 
-        document
-            .querySelectorAll(".error-option")
-            .forEach(button => {
-
-                button.addEventListener(
-                    "click",
-                    function() {
-
-                        checkError(
-                            Number(
-                                this.dataset.index
-                            ),
-                            challenge.answer,
-                            challenge.explanation
-                        );
-
-                    }
-                );
-
-            });
-
     } catch (error) {
-
-        console.error(error);
 
         showModal(`
 
-            <h2>⚠️ Error Finder unavailable</h2>
-
-            <p style="color:#aaa;margin-top:15px;">
-                Error Finder data could not be loaded.
-            </p>
+            <h2>
+                ⚠️ Error Finder unavailable
+            </h2>
 
         `);
+
     }
 }
 
@@ -1393,40 +1805,44 @@ function checkError(
             "errorResult"
         );
 
-    document
-        .querySelectorAll(".error-option")
-        .forEach(
-            button => {
-                button.disabled = true;
-                button.style.opacity = "0.6";
-            }
-        );
-
     if (selected === correct) {
 
         addXP(20);
 
-        challengesSolved++;
+        solvedChallenges++;
 
         localStorage.setItem(
-            "challengesSolved",
-            challengesSolved
+            "codequest_challenges",
+            solvedChallenges
         );
 
         result.innerHTML = `
 
-            <div class="result"
-                 style="color:#4ade80">
+            <div
+                class="result"
+                style="color:#4ade80">
 
                 🔥 ERROR FOUND!
 
                 <br><br>
 
-                ⭐ +20 XP
+                +20 XP ⭐
 
                 <br><br>
 
-                ${escapeHtml(explanation)}
+                ${escapeHtml(
+                    explanation
+                )}
+
+                <br><br>
+
+                <button
+                    class="primary"
+                    onclick="openErrorFinder()">
+
+                    NEXT ERROR →
+
+                </button>
 
             </div>
 
@@ -1436,24 +1852,28 @@ function checkError(
 
         result.innerHTML = `
 
-            <div class="result"
-                 style="color:#fb7185">
+            <div
+                class="result"
+                style="color:#fb7185">
 
-                ❌ KEEP LOOKING!
+                ❌ Keep looking!
 
                 <br><br>
 
-                ${escapeHtml(explanation)}
+                ${escapeHtml(
+                    explanation
+                )}
 
             </div>
 
         `;
+
     }
 }
 
 
 /* =====================================================
-   CAREER ASSISTANT
+   CAREER
 ===================================================== */
 
 function careerAssistant() {
@@ -1473,55 +1893,38 @@ function careerAssistant() {
         </p>
 
         <button
-            class="option career-option"
-            data-type="developer">
+            class="option"
+            onclick="careerResult('developer')">
 
             💻 Software Developer
 
         </button>
 
         <button
-            class="option career-option"
-            data-type="data">
+            class="option"
+            onclick="careerResult('data')">
 
             📊 Data / AI Career
 
         </button>
 
         <button
-            class="option career-option"
-            data-type="web">
+            class="option"
+            onclick="careerResult('web')">
 
             🌐 Web Developer
 
         </button>
 
         <button
-            class="option career-option"
-            data-type="app">
+            class="option"
+            onclick="careerResult('app')">
 
             📱 App Developer
 
         </button>
 
     `);
-
-    document
-        .querySelectorAll(".career-option")
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                function() {
-
-                    careerResult(
-                        this.dataset.type
-                    );
-
-                }
-            );
-
-        });
 }
 
 
@@ -1530,54 +1933,55 @@ function careerResult(type) {
     const ideas = {
 
         developer:
-            "Learn C/C++ → OOP → Java/Python → DSA → Git → Projects → Internship.",
+            "C/C++ → OOP → DSA → Java/Python → Git → Projects → Internship",
 
         data:
-            "Learn Python → Excel → SQL → Statistics → Pandas → Data Projects.",
+            "Python → Excel → SQL → Statistics → Pandas → Data Projects",
 
         web:
-            "Learn HTML → CSS → JavaScript → Flask → APIs → Full Stack Projects.",
+            "HTML → CSS → JavaScript → Flask → APIs → Full Stack Projects",
 
         app:
-            "Learn Java/Kotlin → Android → APIs → Databases → Publish Projects."
+            "Java/Kotlin → Android → APIs → Databases → App Projects"
 
     };
+
 
     showModal(`
 
         <h2>
-            🧠 Your Suggested Path
+            🧠 Suggested Learning Path
         </h2>
 
-        <p style="
-            color:#c084fc;
-            line-height:1.8;
-            margin-top:20px;
-        ">
-            ${escapeHtml(ideas[type])}
-        </p>
+        <div class="lesson-box">
+
+            <p style="
+                color:#c084fc;
+                font-size:18px;
+            ">
+
+                ${escapeHtml(
+                    ideas[type]
+                )}
+
+            </p>
+
+        </div>
 
         <button
             class="primary"
-            id="careerClose">
+            onclick="closeModal()">
 
             START MY JOURNEY 🚀
 
         </button>
 
     `);
-
-    document
-        .getElementById("careerClose")
-        .addEventListener(
-            "click",
-            closeModal
-        );
 }
 
 
 /* =====================================================
-   COMPILER
+   COMPILER PLACEHOLDER
 ===================================================== */
 
 function compiler() {
@@ -1592,14 +1996,16 @@ function compiler() {
             color:#aaa;
             margin:15px 0;
         ">
-            Your browser-based coding playground.
+
+            Write code here.
+
         </p>
 
         <textarea
-            id="compilerCode"
+            id="codeEditor"
             style="
                 width:100%;
-                min-height:230px;
+                min-height:250px;
                 background:#050507;
                 color:#d8b4fe;
                 border:1px solid #33333d;
@@ -1613,7 +2019,7 @@ function compiler() {
 
         <button
             class="primary"
-            id="runCompiler">
+            onclick="runCompiler()">
 
             ▶ RUN CODE
 
@@ -1622,42 +2028,28 @@ function compiler() {
         <div id="compilerResult"></div>
 
     `);
+}
 
-    document
-        .getElementById("runCompiler")
-        .addEventListener(
-            "click",
-            function() {
 
-                const code =
-                    document
-                    .getElementById(
-                        "compilerCode"
-                    )
-                    .value;
+function runCompiler() {
 
-                document
-                    .getElementById(
-                        "compilerResult"
-                    )
-                    .innerHTML = `
+    document.getElementById(
+        "compilerResult"
+    ).innerHTML = `
 
-                    <div class="result">
+        <div class="result">
 
-                        🚧 Compiler engine will be
-                        connected in the next update.
+            🚧 Compiler engine is the next upgrade.
 
-                        <br><br>
+            <br><br>
 
-                        Your code has been captured
-                        successfully.
+            The editor is ready. The actual
+            execution engine can be connected
+            next.
 
-                    </div>
+        </div>
 
-                `;
-
-            }
-        );
+    `;
 }
 
 
@@ -1676,41 +2068,56 @@ function showProgress() {
             🏆 My Progress
         </h2>
 
-        <div class="result">
+        <div class="stats-grid">
 
-            ⭐ XP:
-            ${xp}
+            <div class="stat">
 
-            <br><br>
+                ⭐ XP
 
-            🎯 Level:
-            ${level}
+                <strong>
+                    ${xp}
+                </strong>
 
-            <br><br>
+            </div>
 
-            📚 Courses Started:
-            ${coursesStarted}
+            <div class="stat">
 
-            <br><br>
+                🎯 Level
 
-            📖 Chapters Completed:
-            ${completedChapters}
+                <strong>
+                    ${level}
+                </strong>
 
-            <br><br>
+            </div>
 
-            🧠 Challenges Solved:
-            ${challengesSolved}
+            <div class="stat">
+
+                📚 Chapters
+
+                <strong>
+                    ${completedChapters.length}
+                </strong>
+
+            </div>
+
+            <div class="stat">
+
+                🧠 Challenges
+
+                <strong>
+                    ${solvedChallenges}
+                </strong>
+
+            </div>
 
         </div>
 
-        <p style="
-            color:#777;
-            margin-top:15px;
-            line-height:1.6;
-        ">
+        <div class="result">
+
             Keep learning and completing
-            challenges to increase your XP.
-        </p>
+            challenges to increase your XP! 🚀
+
+        </div>
 
     `);
 }
@@ -1738,118 +2145,9 @@ function escapeHtml(text) {
 }
 
 
-function escapeAttribute(text) {
-
-    return escapeHtml(text);
-}
-
-
 /* =====================================================
-   BUTTON EVENTS
+   CLOSE MODAL
 ===================================================== */
-
-/* Course buttons */
-
-document
-    .querySelectorAll(".start-course")
-    .forEach(button => {
-
-        button.addEventListener(
-            "click",
-            function() {
-
-                const course =
-                    this.dataset.course;
-
-                openCourse(course);
-
-            }
-        );
-
-    });
-
-
-/* Practice Arena */
-
-document
-    .getElementById("quizBtn")
-    .addEventListener(
-        "click",
-        openQuiz
-    );
-
-document
-    .getElementById("codeBtn")
-    .addEventListener(
-        "click",
-        openCodeChallenge
-    );
-
-document
-    .getElementById("errorBtn")
-    .addEventListener(
-        "click",
-        openErrorFinder
-    );
-
-document
-    .getElementById("careerBtn")
-    .addEventListener(
-        "click",
-        careerAssistant
-    );
-
-document
-    .getElementById("compilerBtn")
-    .addEventListener(
-        "click",
-        compiler
-    );
-
-document
-    .getElementById("progressBtn")
-    .addEventListener(
-        "click",
-        showProgress
-    );
-
-
-/* Dynamic chapter buttons */
-
-document
-    .getElementById("modalContent")
-    .addEventListener(
-        "click",
-        function(event) {
-
-            const chapter =
-                event.target.closest(
-                    ".chapter-btn"
-                );
-
-            if (chapter) {
-
-                startChapter(
-                    chapter.dataset.chapter
-                );
-
-            }
-
-        }
-    );
-
-
-/* Close button */
-
-document
-    .getElementById("closeBtn")
-    .addEventListener(
-        "click",
-        closeModal
-    );
-
-
-/* Click outside modal */
 
 document
     .getElementById("modal")
@@ -1865,13 +2163,6 @@ document
 
         }
     );
-
-
-/* =====================================================
-   START APP
-===================================================== */
-
-updateXPDisplay();
 
 </script>
 
