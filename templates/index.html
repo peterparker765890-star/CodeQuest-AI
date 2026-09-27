@@ -1,360 +1,1417 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>CodeQuest AI</title>
+<title>CodeQuest AI</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
+<style>
 
-        body {
-            background: #08080c;
-            color: white;
-        }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-        .header {
-            padding: 28px 20px;
-            background: linear-gradient(135deg, #11111a, #1b1029);
-            border-bottom: 1px solid #29223a;
-        }
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background:
+        radial-gradient(circle at top right, #25104d 0%, transparent 35%),
+        radial-gradient(circle at bottom left, #101b3d 0%, transparent 35%),
+        #07070b;
+    color: white;
+    min-height: 100vh;
+}
 
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-        }
+/* ---------------- HEADER ---------------- */
 
-        .logo span {
-            color: #a855f7;
-        }
+header {
+    padding: 24px 7%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #25252e;
+    position: sticky;
+    top: 0;
+    background: rgba(7,7,11,.88);
+    backdrop-filter: blur(15px);
+    z-index: 10;
+}
 
-        .tagline {
-            margin-top: 7px;
-            color: #aaa;
-            font-size: 14px;
-        }
+.logo {
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: .5px;
+}
 
-        .container {
-            max-width: 1000px;
-            margin: auto;
-            padding: 22px;
-        }
+.logo span {
+    color: #a855f7;
+}
 
-        .hero {
-            background: linear-gradient(135deg, #17121f, #241238);
-            padding: 25px;
-            border-radius: 20px;
-            margin-bottom: 25px;
-            border: 1px solid #3b2455;
-        }
+.status {
+    font-size: 12px;
+    color: #4ade80;
+}
 
-        .hero h1 {
-            font-size: 26px;
-            margin-bottom: 10px;
-        }
+/* ---------------- MAIN ---------------- */
 
-        .hero p {
-            color: #bbb;
-            line-height: 1.5;
-        }
+.container {
+    width: 86%;
+    max-width: 1200px;
+    margin: auto;
+}
 
-        .hero button {
-            margin-top: 18px;
-            background: #a855f7;
-            color: white;
-            border: none;
-            padding: 13px 20px;
-            border-radius: 12px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+/* HERO */
 
-        .section-title {
-            margin: 28px 0 15px;
-            font-size: 21px;
-        }
+.hero {
+    padding: 65px 0 35px;
+}
 
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-            gap: 14px;
-        }
+.hero small {
+    color: #a855f7;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
 
-        .feature {
-            background: #121218;
-            padding: 20px;
-            border-radius: 17px;
-            border: 1px solid #25252d;
-            cursor: pointer;
-            transition: 0.2s;
-        }
+.hero h1 {
+    font-size: clamp(38px, 7vw, 72px);
+    line-height: 1;
+    margin: 14px 0;
+}
 
-        .feature:hover {
-            transform: translateY(-3px);
-            border-color: #a855f7;
-        }
+.gradient {
+    background: linear-gradient(
+        90deg,
+        #a855f7,
+        #ec4899,
+        #6366f1
+    );
 
-        .feature-icon {
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
+    -webkit-background-clip: text;
+    color: transparent;
+}
 
-        .feature h3 {
-            margin-bottom: 7px;
-        }
+.hero p {
+    max-width: 650px;
+    color: #a1a1aa;
+    font-size: 17px;
+    line-height: 1.6;
+}
 
-        .feature p {
-            color: #999;
-            font-size: 13px;
-            line-height: 1.4;
-        }
+/* ---------------- PLAYER CARD ---------------- */
 
-        .subjects {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 14px;
-        }
+.player-card {
+    margin: 30px 0;
+    padding: 24px;
+    border: 1px solid #2a2a35;
+    border-radius: 22px;
 
-        .subject {
-            background: #111116;
-            padding: 18px;
-            border-radius: 16px;
-            border: 1px solid #25252d;
-        }
+    background:
+        linear-gradient(
+            135deg,
+            rgba(168,85,247,.16),
+            rgba(30,30,40,.6)
+        );
 
-        .subject h3 {
-            margin-bottom: 8px;
-        }
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
 
-        .subject p {
-            color: #999;
-            font-size: 13px;
-            line-height: 1.4;
-            margin-bottom: 12px;
-        }
+.player-title {
+    font-size: 13px;
+    color: #a1a1aa;
+}
 
-        .level {
-            display: inline-block;
-            font-size: 11px;
-            background: #2a1738;
-            color: #c084fc;
-            padding: 5px 9px;
-            border-radius: 20px;
-        }
+.player-level {
+    font-size: 25px;
+    font-weight: bold;
+    margin-top: 6px;
+}
 
-        .start {
-            margin-top: 13px;
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 9px;
-            background: #24242c;
-            color: white;
-            cursor: pointer;
-        }
+.xp {
+    color: #c084fc;
+}
 
-        .start:hover {
-            background: #a855f7;
-        }
+.progress {
+    width: 230px;
+    height: 8px;
+    background: #27272f;
+    border-radius: 10px;
+    margin-top: 12px;
+    overflow: hidden;
+}
 
-        .footer {
-            text-align: center;
-            color: #666;
-            padding: 35px 10px;
-            font-size: 12px;
-        }
+.progress div {
+    height: 100%;
+    width: 35%;
+    background: linear-gradient(
+        90deg,
+        #a855f7,
+        #ec4899
+    );
+}
 
-        #message {
-            display: none;
-            margin-top: 15px;
-            background: #17171e;
-            padding: 15px;
-            border-radius: 12px;
-            color: #ccc;
-        }
-    </style>
+/* ---------------- FEATURE GRID ---------------- */
+
+.section-title {
+    margin: 45px 0 20px;
+    font-size: 25px;
+}
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(180px, 1fr)
+    );
+
+    gap: 15px;
+}
+
+.feature {
+    padding: 22px;
+    border: 1px solid #292933;
+    border-radius: 18px;
+    background: #111116;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.feature:hover {
+    transform: translateY(-4px);
+    border-color: #a855f7;
+}
+
+.feature-icon {
+    font-size: 30px;
+}
+
+.feature h3 {
+    margin-top: 12px;
+}
+
+.feature p {
+    color: #92929c;
+    font-size: 13px;
+    margin-top: 7px;
+    line-height: 1.5;
+}
+
+/* ---------------- COURSES ---------------- */
+
+.courses {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(250px, 1fr));
+
+    gap: 18px;
+}
+
+.course {
+    border: 1px solid #292933;
+    border-radius: 20px;
+    padding: 22px;
+    background: rgba(17,17,22,.92);
+
+    transition: .2s;
+}
+
+.course:hover {
+    transform: translateY(-5px);
+    border-color: #7c3aed;
+}
+
+.course-icon {
+    font-size: 34px;
+}
+
+.course h3 {
+    margin: 12px 0 6px;
+}
+
+.course p {
+    color: #92929c;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.level {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 5px 9px;
+    border-radius: 20px;
+    background: #211536;
+    color: #c084fc;
+    font-size: 11px;
+}
+
+.course button,
+.primary {
+    border: none;
+    margin-top: 18px;
+    padding: 11px 16px;
+    border-radius: 10px;
+
+    background: linear-gradient(
+        90deg,
+        #7c3aed,
+        #a855f7
+    );
+
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* ---------------- MODAL ---------------- */
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0,0,0,.75);
+
+    z-index: 100;
+
+    padding: 30px;
+    overflow-y: auto;
+}
+
+.modal-box {
+    max-width: 700px;
+    margin: 40px auto;
+
+    background: #111116;
+    border: 1px solid #343442;
+    border-radius: 22px;
+    padding: 28px;
+}
+
+.close {
+    float: right;
+    font-size: 25px;
+    cursor: pointer;
+    color: #aaa;
+}
+
+.chapter {
+    padding: 15px;
+    margin-top: 9px;
+
+    border: 1px solid #292933;
+    border-radius: 12px;
+
+    background: #0b0b0f;
+
+    cursor: pointer;
+}
+
+.chapter:hover {
+    border-color: #a855f7;
+}
+
+/* ---------------- QUIZ ---------------- */
+
+.quiz-question {
+    font-size: 20px;
+    margin: 20px 0;
+}
+
+.option {
+    width: 100%;
+    padding: 14px;
+    margin: 7px 0;
+
+    border: 1px solid #30303a;
+    background: #17171d;
+    color: white;
+
+    border-radius: 10px;
+    text-align: left;
+
+    cursor: pointer;
+}
+
+.option:hover {
+    border-color: #a855f7;
+}
+
+.result {
+    margin-top: 18px;
+    padding: 15px;
+    border-radius: 12px;
+    background: #191922;
+}
+
+/* ---------------- FOOTER ---------------- */
+
+footer {
+    margin-top: 70px;
+    padding: 30px;
+    text-align: center;
+
+    border-top: 1px solid #25252e;
+
+    color: #777;
+    font-size: 13px;
+}
+
+/* ---------------- MOBILE ---------------- */
+
+@media(max-width:600px) {
+
+    header {
+        padding: 18px;
+    }
+
+    .container {
+        width: 92%;
+    }
+
+    .hero {
+        padding-top: 45px;
+    }
+
+    .player-card {
+        flex-direction: column;
+    }
+
+    .progress {
+        width: 100%;
+    }
+
+}
+
+</style>
 </head>
 
 <body>
 
-<header class="header">
-    <div class="logo">🎮 Code<span>Quest</span> AI</div>
-    <div class="tagline">
-        Learn • Practice • Play • Build
+<header>
+
+    <div class="logo">
+        ⚡ <span>CodeQuest</span> AI
     </div>
+
+    <div class="status">
+        ● ONLINE
+    </div>
+
 </header>
+
 
 <main class="container">
 
-    <section class="hero">
-        <h1>🚀 Your Coding Journey Starts Here</h1>
+<section class="hero">
+
+    <small>LEARN • PRACTICE • PLAY • BUILD</small>
+
+    <h1>
+        Become a
+        <span class="gradient">
+            Better Coder.
+        </span>
+    </h1>
+
+    <p>
+        A beginner-friendly coding platform where you can
+        learn computer skills, practice programming,
+        solve challenges, find errors and prepare for your
+        future career — completely free.
+    </p>
+
+</section>
+
+
+<!-- PLAYER -->
+
+<section class="player-card">
+
+    <div>
+
+        <div class="player-title">
+            YOUR CODING JOURNEY
+        </div>
+
+        <div class="player-level">
+            Level 1 — Code Explorer 🚀
+        </div>
+
+        <div class="xp">
+            ⭐ 0 XP
+        </div>
+
+    </div>
+
+    <div>
+
+        <div class="player-title">
+            NEXT LEVEL
+        </div>
+
+        <div class="progress">
+            <div></div>
+        </div>
+
+        <div class="player-title">
+            35 / 100 XP
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- FEATURES -->
+
+<h2 class="section-title">
+    🎮 Practice Arena
+</h2>
+
+<section class="features">
+
+    <div class="feature"
+         onclick="openQuiz()">
+
+        <div class="feature-icon">
+            🧠
+        </div>
+
+        <h3>Quiz Arena</h3>
 
         <p>
-            A beginner-friendly learning platform where you can
-            learn computer skills, practice programming, solve quizzes,
-            find coding errors and prepare for your future career.
+            Answer questions and earn XP.
         </p>
 
-        <button onclick="startLearning()">
-            ▶ START LEARNING
-        </button>
-
-        <div id="message"></div>
-    </section>
+    </div>
 
 
-    <h2 class="section-title">⚡ Quick Access</h2>
+    <div class="feature"
+         onclick="openCodeChallenge()">
 
-    <section class="features">
-
-        <div class="feature" onclick="featureMessage('Quiz Arena')">
-            <div class="feature-icon">🧠</div>
-            <h3>Quiz Arena</h3>
-            <p>
-                Answer coding questions and test your knowledge.
-            </p>
+        <div class="feature-icon">
+            💻
         </div>
 
-        <div class="feature" onclick="featureMessage('Code Challenge')">
-            <div class="feature-icon">💻</div>
-            <h3>Code Challenge</h3>
-            <p>
-                Predict the output and choose the correct answer.
-            </p>
+        <h3>Code Challenge</h3>
+
+        <p>
+            Predict program output.
+        </p>
+
+    </div>
+
+
+    <div class="feature"
+         onclick="openErrorFinder()">
+
+        <div class="feature-icon">
+            🔍
         </div>
 
-        <div class="feature" onclick="featureMessage('Error Finder')">
-            <div class="feature-icon">🔍</div>
-            <h3>Error Finder</h3>
-            <p>
-                Find mistakes in code and understand why they happen.
-            </p>
+        <h3>Error Finder</h3>
+
+        <p>
+            Find bugs and understand them.
+        </p>
+
+    </div>
+
+
+    <div class="feature"
+         onclick="careerAssistant()">
+
+        <div class="feature-icon">
+            🤖
         </div>
 
-        <div class="feature" onclick="featureMessage('AI Career Assistant')">
-            <div class="feature-icon">🤖</div>
-            <h3>AI Career Assistant</h3>
-            <p>
-                Get project, internship and placement ideas.
-            </p>
+        <h3>AI Career</h3>
+
+        <p>
+            Projects, internships and placement ideas.
+        </p>
+
+    </div>
+
+
+    <div class="feature"
+         onclick="compiler()">
+
+        <div class="feature-icon">
+            ▶️
         </div>
 
-        <div class="feature" onclick="featureMessage('Online Compiler')">
-            <div class="feature-icon">▶️</div>
-            <h3>Online Compiler</h3>
-            <p>
-                Write code, run it and learn from the result.
-            </p>
+        <h3>Online Compiler</h3>
+
+        <p>
+            Write code and experiment.
+        </p>
+
+    </div>
+
+
+    <div class="feature"
+         onclick="showProgress()">
+
+        <div class="feature-icon">
+            🏆
         </div>
 
-        <div class="feature" onclick="featureMessage('Progress')">
-            <div class="feature-icon">🏆</div>
-            <h3>My Progress</h3>
-            <p>
-                Track your learning journey and achievements.
-            </p>
-        </div>
+        <h3>My Progress</h3>
 
-    </section>
+        <p>
+            Track your learning journey.
+        </p>
+
+    </div>
+
+</section>
 
 
-    <h2 class="section-title">📚 Learn Anything</h2>
+<!-- COURSES -->
 
-    <section class="subjects">
+<h2 class="section-title">
+    📚 Learn Anything
+</h2>
 
-        {% for subject in subjects %}
+<section class="courses">
 
-        <div class="subject">
+{% for key, course in courses.items() %}
 
-            <h3>{{ subject.name }}</h3>
+<div class="course">
 
-            <p>
-                {{ subject.description }}
-            </p>
+    <div class="course-icon">
+        {{ course.icon }}
+    </div>
 
-            <span class="level">
-                {{ subject.level }}
-            </span>
+    <h3>
+        {{ key }}
+    </h3>
 
-            <button
-                class="start"
-                onclick="openSubject('{{ subject.name }}')">
+    <p>
+        {{ course.description }}
+    </p>
 
-                START COURSE →
-            </button>
+    <span class="level">
+        {{ course.level }}
+    </span>
 
-        </div>
+    <br>
 
-        {% endfor %}
+    <button onclick="openCourse(
+        '{{ key|replace(\"'\", \"\\\\'\") }}'
+    )">
 
-    </section>
+        START COURSE →
+
+    </button>
+
+</div>
+
+{% endfor %}
+
+</section>
 
 </main>
 
 
-<footer class="footer">
+<footer>
+
     CodeQuest AI • Learn today. Build tomorrow. 🚀
+
 </footer>
+
+
+<!-- ===================================================== -->
+<!-- MODAL -->
+<!-- ===================================================== -->
+
+<div id="modal" class="modal">
+
+    <div class="modal-box">
+
+        <span class="close"
+              onclick="closeModal()">
+            ×
+        </span>
+
+        <div id="modalContent"></div>
+
+    </div>
+
+</div>
 
 
 <script>
 
-function startLearning() {
+let quizData = [];
+let codeData = [];
+let errorData = [];
 
-    document.getElementById("message").style.display = "block";
 
-    document.getElementById("message").innerHTML =
-        "🔥 Great choice! Start with Computer Basics if you're completely new, or choose any course below.";
+// =====================================================
+// MODAL
+// =====================================================
 
-    window.scrollTo({
-        top: document.body.scrollHeight,
-        behavior: "smooth"
-    });
+function showModal(content) {
+
+    document.getElementById(
+        "modalContent"
+    ).innerHTML = content;
+
+    document.getElementById(
+        "modal"
+    ).style.display = "block";
 }
 
 
-function featureMessage(feature) {
+function closeModal() {
 
-    const message =
-        document.getElementById("message");
-
-    message.style.display = "block";
-
-    message.innerHTML =
-        "🚧 <b>" + feature +
-        "</b> is being prepared for the next version.";
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
+    document.getElementById(
+        "modal"
+    ).style.display = "none";
 }
 
 
-function openSubject(subject) {
+// =====================================================
+// COURSE
+// =====================================================
 
-    const message =
-        document.getElementById("message");
+async function openCourse(name) {
 
-    message.style.display = "block";
+    const response =
+        await fetch(
+            "/api/course/" +
+            encodeURIComponent(name)
+        );
 
-    message.innerHTML =
-        "📚 <b>" + subject +
-        "</b><br><br>" +
-        "Your learning path will start from the basics and gradually move toward advanced concepts, quizzes and coding challenges.";
+    const course =
+        await response.json();
 
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
+    let html = `
+
+        <h2>
+            ${course.icon}
+            ${name}
+        </h2>
+
+        <p style="
+            color:#aaa;
+            margin-top:10px;
+        ">
+            ${course.description}
+        </p>
+
+        <h3 style="
+            margin-top:25px;
+        ">
+            📖 Learning Path
+        </h3>
+
+    `;
+
+    course.chapters.forEach(
+        (chapter, index) => {
+
+            html += `
+
+                <div class="chapter"
+                     onclick="startChapter(
+                        '${chapter.replace(
+                            /'/g,
+                            "\\'"
+                        )}'
+                     )">
+
+                    ${index + 1}.
+                    ${chapter}
+
+                    <span style="
+                        float:right;
+                        color:#a855f7;
+                    ">
+                        →
+                    </span>
+
+                </div>
+
+            `;
+        }
+    );
+
+    showModal(html);
 }
+
+
+// =====================================================
+// CHAPTER
+// =====================================================
+
+function startChapter(chapter) {
+
+    showModal(`
+
+        <h2>
+            📖 ${chapter}
+        </h2>
+
+        <p style="
+            color:#aaa;
+            line-height:1.7;
+            margin-top:18px;
+        ">
+
+        Welcome to this lesson! 🎯
+
+        <br><br>
+
+        CodeQuest will teach this topic
+        step-by-step using simple explanations,
+        examples, questions and coding challenges.
+
+        <br><br>
+
+        🚧 Interactive lesson system is being
+        developed for the next update.
+
+        </p>
+
+        <button
+            class="primary"
+            onclick="closeModal()">
+
+            GOT IT 🚀
+
+        </button>
+
+    `);
+}
+
+
+// =====================================================
+// QUIZ
+// =====================================================
+
+async function openQuiz() {
+
+    if (!quizData.length) {
+
+        const response =
+            await fetch("/api/quiz");
+
+        quizData =
+            await response.json();
+    }
+
+    let question =
+        quizData[
+            Math.floor(
+                Math.random() *
+                quizData.length
+            )
+        ];
+
+    let html = `
+
+        <h2>
+            🧠 Quiz Arena
+        </h2>
+
+        <div class="quiz-question">
+            ${question.question}
+        </div>
+
+    `;
+
+    question.options.forEach(
+        (option, index) => {
+
+            html += `
+
+                <button
+                    class="option"
+                    onclick="checkAnswer(
+                        ${index},
+                        ${question.answer},
+                        '${question.explanation}'
+                    )">
+
+                    ${String.fromCharCode(
+                        65 + index
+                    )}.
+                    ${option}
+
+                </button>
+
+            `;
+        }
+    );
+
+    html += `
+        <div id="quizResult"></div>
+    `;
+
+    showModal(html);
+}
+
+
+function checkAnswer(
+    selected,
+    correct,
+    explanation
+) {
+
+    const result =
+        document.getElementById(
+            "quizResult"
+        );
+
+    if (selected === correct) {
+
+        result.innerHTML = `
+
+            <div class="result"
+                 style="color:#4ade80">
+
+                🎉 CORRECT!
+
+                <br><br>
+
+                +10 XP ⭐
+
+                <br><br>
+
+                ${explanation}
+
+            </div>
+
+        `;
+
+    } else {
+
+        result.innerHTML = `
+
+            <div class="result"
+                 style="color:#fb7185">
+
+                ❌ Not quite!
+
+                <br><br>
+
+                ${explanation}
+
+            </div>
+
+        `;
+    }
+}
+
+
+// =====================================================
+// CODE CHALLENGE
+// =====================================================
+
+async function openCodeChallenge() {
+
+    if (!codeData.length) {
+
+        const response =
+            await fetch(
+                "/api/code-challenges"
+            );
+
+        codeData =
+            await response.json();
+    }
+
+    const challenge =
+        codeData[
+            Math.floor(
+                Math.random() *
+                codeData.length
+            )
+        ];
+
+    let html = `
+
+        <h2>
+            💻 Code Challenge
+        </h2>
+
+        <p style="
+            color:#aaa;
+            margin:15px 0;
+        ">
+            ${challenge.question}
+        </p>
+
+        <pre style="
+            background:#050507;
+            padding:18px;
+            border-radius:12px;
+            overflow:auto;
+            color:#d8b4fe;
+        ">${escapeHtml(
+            challenge.code
+        )}</pre>
+
+    `;
+
+    challenge.options.forEach(
+        (option, index) => {
+
+            html += `
+
+                <button
+                    class="option"
+                    onclick="checkCodeAnswer(
+                        ${index},
+                        ${challenge.answer},
+                        '${challenge.explanation}'
+                    )">
+
+                    ${String.fromCharCode(
+                        65 + index
+                    )}.
+                    ${option}
+
+                </button>
+
+            `;
+        }
+    );
+
+    html += `
+        <div id="codeResult"></div>
+    `;
+
+    showModal(html);
+}
+
+
+function checkCodeAnswer(
+    selected,
+    correct,
+    explanation
+) {
+
+    const result =
+        document.getElementById(
+            "codeResult"
+        );
+
+    if (selected === correct) {
+
+        result.innerHTML = `
+
+            <div class="result"
+                 style="color:#4ade80">
+
+                🧠 Correct!
+
+                <br><br>
+
+                +15 XP ⭐
+
+                <br><br>
+
+                ${explanation}
+
+            </div>
+
+        `;
+
+    } else {
+
+        result.innerHTML = `
+
+            <div class="result"
+                 style="color:#fb7185">
+
+                ❌ Incorrect
+
+                <br><br>
+
+                ${explanation}
+
+            </div>
+
+        `;
+    }
+}
+
+
+// =====================================================
+// ERROR FINDER
+// =====================================================
+
+async function openErrorFinder() {
+
+    if (!errorData.length) {
+
+        const response =
+            await fetch(
+                "/api/error-finder"
+            );
+
+        errorData =
+            await response.json();
+    }
+
+    const challenge =
+        errorData[
+            Math.floor(
+                Math.random() *
+                errorData.length
+            )
+        ];
+
+    let html = `
+
+        <h2>
+            🔍 Error Finder
+        </h2>
+
+        <p style="
+            color:#aaa;
+            margin:15px 0;
+        ">
+            ${challenge.question}
+        </p>
+
+        <pre style="
+            background:#050507;
+            padding:18px;
+            border-radius:12px;
+            overflow:auto;
+            color:#fca5a5;
+        ">${escapeHtml(
+            challenge.code
+        )}</pre>
+
+    `;
+
+    challenge.options.forEach(
+        (option, index) => {
+
+            html += `
+
+                <button
+                    class="option"
+                    onclick="checkError(
+                        ${index},
+                        ${challenge.answer},
+                        '${challenge.explanation}'
+                    )">
+
+                    ${String.fromCharCode(
+                        65 + index
+                    )}.
+                    ${option}
+
+                </button>
+
+            `;
+        }
+    );
+
+    html += `
+        <div id="errorResult"></div>
+    `;
+
+    showModal(html);
+}
+
+
+function checkError(
+    selected,
+    correct,
+    explanation
+) {
+
+    const result =
+        document.getElementById(
+            "errorResult"
+        );
+
+    if (selected === correct) {
+
+        result.innerHTML = `
+
+            <div class="result"
+                 style="color:#4ade80">
+
+                🔥 ERROR FOUND!
+
+                <br><br>
+
+                +20 XP ⭐
+
+                <br><br>
+
+                ${explanation}
+
+            </div>
+
+        `;
+
+    } else {
+
+        result.innerHTML = `
+
+            <div class="result"
+                 style="color:#fb7185">
+
+                ❌ Keep looking!
+
+                <br><br>
+
+                ${explanation}
+
+            </div>
+
+        `;
+    }
+}
+
+
+// =====================================================
+// CAREER ASSISTANT
+// =====================================================
+
+function careerAssistant() {
+
+    showModal(`
+
+        <h2>
+            🤖 CodeQuest AI Career Assistant
+        </h2>
+
+        <p style="
+            color:#aaa;
+            line-height:1.7;
+            margin-top:18px;
+        ">
+
+        Tell us what you want to become:
+
+        </p>
+
+        <button
+            class="option"
+            onclick="careerResult('developer')">
+
+            💻 Software Developer
+
+        </button>
+
+        <button
+            class="option"
+            onclick="careerResult('data')">
+
+            📊 Data / AI Career
+
+        </button>
+
+        <button
+            class="option"
+            onclick="careerResult('web')">
+
+            🌐 Web Developer
+
+        </button>
+
+        <button
+            class="option"
+            onclick="careerResult('app')">
+
+            📱 App Developer
+
+        </button>
+
+    `);
+}
+
+
+function careerResult(type) {
+
+    const ideas = {
+
+        developer:
+            "Learn C/C++ → OOP → Java/Python → DSA → Git → Projects → Internship.",
+
+        data:
+            "Learn Python → Excel → SQL → Statistics → Pandas → Data Projects.",
+
+        web:
+            "Learn HTML → CSS → JavaScript → Flask → APIs → Full Stack Projects.",
+
+        app:
+            "Learn Java/Kotlin → Android → APIs → Databases → Publish Projects."
+    };
+
+    showModal(`
+
+        <h2>
+            🧠 Your Suggested Path
+        </h2>
+
+        <p style="
+            color:#c084fc;
+            line-height:1.8;
+            margin-top:20px;
+        ">
+
+            ${ideas[type]}
+
+        </p>
+
+        <button
+            class="primary"
+            onclick="closeModal()">
+
+            START MY JOURNEY 🚀
+
+        </button>
+
+    `);
+}
+
+
+// =====================================================
+// COMPILER
+// =====================================================
+
+function compiler() {
+
+    showModal(`
+
+        <h2>
+            ▶️ Online Compiler
+        </h2>
+
+        <p style="
+            color:#aaa;
+            margin:15px 0;
+        ">
+
+            Your browser-based coding playground.
+
+        </p>
+
+        <textarea
+            style="
+                width:100%;
+                min-height:230px;
+                background:#050507;
+                color:#d8b4fe;
+                border:1px solid #33333d;
+                border-radius:12px;
+                padding:15px;
+                font-family:monospace;
+                resize:vertical;
+            "
+            placeholder="Write your code here..."
+        ></textarea>
+
+        <button
+            class="primary"
+            onclick="
+                alert(
+                    'Compiler engine will be connected in the next update 🚀'
+                )
+            ">
+
+            ▶ RUN CODE
+
+        </button>
+
+    `);
+}
+
+
+// =====================================================
+// PROGRESS
+// =====================================================
+
+function showProgress() {
+
+    showModal(`
+
+        <h2>
+            🏆 My Progress
+        </h2>
+
+        <div class="result">
+
+            ⭐ XP: 0
+
+            <br><br>
+
+            🎯 Level: Code Explorer
+
+            <br><br>
+
+            🔥 Streak: 0 days
+
+            <br><br>
+
+            📚 Courses Started: 0
+
+            <br><br>
+
+            🧠 Challenges Solved: 0
+
+        </div>
+
+        <p style="
+            color:#777;
+            margin-top:15px;
+        ">
+
+            Complete quizzes and challenges
+            to build your profile.
+
+        </p>
+
+    `);
+}
+
+
+// =====================================================
+// SECURITY / DISPLAY
+// =====================================================
+
+function escapeHtml(text) {
+
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+// Close modal when clicking outside
+
+document.getElementById(
+    "modal"
+).addEventListener(
+    "click",
+    function(event) {
+
+        if (event.target === this) {
+            closeModal();
+        }
+
+    }
+);
 
 </script>
 
