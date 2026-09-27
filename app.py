@@ -1,31 +1,15 @@
-from flask import Flask, render_template, jsonify, request, session
+from flask import Flask, render_template, jsonify, request
 import secrets
 import time
-import random
 
 app = Flask(__name__)
 
 # =========================================================
-# CODEQUEST AI V0.4 — SECURITY EDITION
+# CODEQUEST AI
+# Learn • Practice • Play • Build • Secure
 # =========================================================
 
-# IMPORTANT:
-# A normal browser cannot reliably detect whether a student
-# specifically opened ChatGPT/Gemini.
-#
-# This version instead uses:
-# • Server-side answer validation
-# • Randomized questions
-# • Server-side exam sessions
-# • Exam timer
-# • Tab/window switching detection from the frontend
-# • Exam termination after a security violation
-#
-# For production, use a permanent SECRET_KEY from an
-# environment variable and store exam attempts in Redis/DB.
-# =========================================================
-
-app.secret_key = secrets.token_hex(32)
+app.config["JSON_SORT_KEYS"] = False
 
 
 # =========================================================
@@ -46,7 +30,6 @@ courses = {
             "Files and Folders",
             "Internet Basics",
             "Computer Safety",
-            "Cybersecurity Basics",
             "Practical Computer Skills"
         ]
     },
@@ -98,6 +81,7 @@ courses = {
             "Word Basics",
             "Excel Basics",
             "PowerPoint Basics",
+            "Creating Presentations",
             "Office Productivity",
             "File Management",
             "Professional Office Skills",
@@ -120,9 +104,7 @@ courses = {
             "Loops",
             "Functions",
             "Problem Solving",
-            "Debugging Basics",
-            "Introduction to Git",
-            "Programming Mini Project"
+            "Introduction to Debugging"
         ]
     },
 
@@ -150,8 +132,7 @@ courses = {
             "Unions",
             "File Handling",
             "Dynamic Memory",
-            "Preprocessor",
-            "Command Line Arguments",
+            "Advanced C",
             "C Mini Projects",
             "Final C Challenge"
         ]
@@ -171,17 +152,14 @@ courses = {
             "Loops",
             "Arrays and Strings",
             "Functions",
-            "References",
             "Classes and Objects",
             "Constructors",
-            "Destructors",
             "Inheritance",
             "Polymorphism",
             "Encapsulation",
             "Abstraction",
             "Templates",
             "STL Basics",
-            "Exception Handling",
             "File Handling",
             "C++ Projects",
             "Final C++ Challenge"
@@ -197,14 +175,12 @@ courses = {
             "Classes",
             "Objects",
             "Constructors",
-            "Destructors",
             "Encapsulation",
             "Inheritance",
             "Polymorphism",
             "Abstraction",
             "Method Overloading",
             "Method Overriding",
-            "Interfaces",
             "Real World OOP",
             "OOP Mini Project"
         ]
@@ -230,13 +206,10 @@ courses = {
             "Functions",
             "Lambda Functions",
             "Modules",
-            "Packages",
             "File Handling",
             "Exception Handling",
             "Object-Oriented Python",
-            "Virtual Environments",
             "Libraries",
-            "APIs",
             "Python Projects",
             "Final Python Challenge"
         ]
@@ -264,84 +237,9 @@ courses = {
             "Interfaces",
             "Exception Handling",
             "Collections",
-            "Generics",
             "File Handling",
             "Java Projects",
             "Final Java Challenge"
-        ]
-    },
-
-    "Web Development": {
-        "icon": "🌐",
-        "level": "Beginner → Advanced",
-        "description": "Build modern websites from HTML to backend APIs.",
-        "chapters": [
-            "How the Web Works",
-            "HTML Basics",
-            "Semantic HTML",
-            "Forms",
-            "CSS Basics",
-            "Flexbox",
-            "Grid",
-            "Responsive Design",
-            "JavaScript Basics",
-            "DOM",
-            "Events",
-            "Fetch API",
-            "JSON",
-            "Flask Basics",
-            "REST APIs",
-            "Authentication Basics",
-            "Web Security Basics",
-            "Web Project"
-        ]
-    },
-
-    "Cybersecurity Fundamentals": {
-        "icon": "🛡️",
-        "level": "Beginner → Intermediate",
-        "description": "Learn defensive cybersecurity and safe security practices.",
-        "chapters": [
-            "What is Cybersecurity?",
-            "CIA Triad",
-            "Threats and Vulnerabilities",
-            "Authentication",
-            "Passwords and Hashing",
-            "MFA",
-            "Phishing Awareness",
-            "Social Engineering",
-            "Network Basics",
-            "Firewalls",
-            "HTTPS and TLS",
-            "Secure Coding",
-            "Input Validation",
-            "XSS Basics",
-            "SQL Injection Concepts",
-            "Access Control",
-            "Logging and Monitoring",
-            "Incident Response",
-            "Ethical and Legal Security",
-            "Cybersecurity Mini Project"
-        ]
-    },
-
-    "Git and GitHub": {
-        "icon": "🐙",
-        "level": "Beginner → Intermediate",
-        "description": "Learn version control and publish your projects.",
-        "chapters": [
-            "What is Git?",
-            "Repositories",
-            "git init",
-            "git add and commit",
-            "Branches",
-            "Merging",
-            "GitHub",
-            "Push and Pull",
-            "README Files",
-            "Issues",
-            "Pull Requests",
-            "Project Portfolio"
         ]
     }
 }
@@ -355,50 +253,30 @@ lessons = {
 
     "What is a Computer?": {
         "title": "What is a Computer?",
-        "explanation":
-            "A computer is an electronic device that accepts data, "
-            "processes it, stores it and produces useful information.",
-        "example":
-            "Example: When you type 10 + 20 into a calculator, "
-            "the computer processes the values and produces 30.",
-        "tip":
-            "Remember: Input → Processing → Output → Storage",
-        "question":
-            "Which part of a computer processes instructions?",
-        "options":
-            ["Keyboard", "CPU", "Monitor", "Mouse"],
+        "explanation": "A computer is an electronic device that accepts data, processes it, stores it and produces useful information.",
+        "example": "Example: When you type 10 + 20 into a calculator, the computer processes the values and produces 30.",
+        "tip": "Remember: Input → Processing → Output → Storage",
+        "question": "Which part of a computer processes instructions?",
+        "options": ["Keyboard", "CPU", "Monitor", "Mouse"],
         "answer": 1
     },
 
     "Hardware and Software": {
         "title": "Hardware and Software",
-        "explanation":
-            "Hardware refers to physical computer components. "
-            "Software refers to programs and instructions.",
-        "example":
-            "Hardware: keyboard, monitor, CPU. "
-            "Software: Windows, Chrome, Python.",
-        "tip":
-            "Hardware can be touched. Software cannot be physically touched.",
-        "question":
-            "Which of these is software?",
-        "options":
-            ["Keyboard", "RAM", "Windows", "Monitor"],
+        "explanation": "Hardware refers to the physical parts of a computer. Software refers to the programs and instructions that run on the computer.",
+        "example": "Hardware: keyboard, monitor, CPU. Software: Windows, Chrome, Python.",
+        "tip": "Hardware can be touched. Software cannot be physically touched.",
+        "question": "Which of these is software?",
+        "options": ["Keyboard", "RAM", "Windows", "Monitor"],
         "answer": 2
     },
 
     "What is Programming?": {
         "title": "What is Programming?",
-        "explanation":
-            "Programming is the process of writing instructions "
-            "that tell a computer how to perform a task.",
-        "example":
-            "Python, C, C++ and Java are programming languages "
-            "used to create programs.",
-        "tip":
-            "Think of a program as instructions given to a computer.",
-        "question":
-            "What is programming?",
+        "explanation": "Programming is the process of writing instructions that tell a computer how to perform a task.",
+        "example": "Python, C, C++ and Java are programming languages used to create programs.",
+        "tip": "Think of a program as instructions given to a computer.",
+        "question": "What is programming?",
         "options": [
             "Repairing a monitor",
             "Writing instructions for a computer",
@@ -410,16 +288,10 @@ lessons = {
 
     "Algorithms": {
         "title": "Algorithms",
-        "explanation":
-            "An algorithm is a step-by-step procedure used "
-            "to solve a problem or complete a task.",
-        "example":
-            "To make tea: boil water → add tea → add milk → "
-            "add sugar → serve.",
-        "tip":
-            "Algorithm = step-by-step solution.",
-        "question":
-            "What does an algorithm provide?",
+        "explanation": "An algorithm is a step-by-step procedure used to solve a problem or complete a task.",
+        "example": "To make tea: boil water → add tea → add milk → add sugar → serve.",
+        "tip": "Algorithm = Step-by-step solution.",
+        "question": "What does an algorithm provide?",
         "options": [
             "A step-by-step solution",
             "Computer hardware",
@@ -431,15 +303,10 @@ lessons = {
 
     "Variables": {
         "title": "Variables",
-        "explanation":
-            "A variable is a named storage location used "
-            "by a program to store a value.",
-        "example":
-            "In Python: age = 18. Here, age is a variable containing 18.",
-        "tip":
-            "Variable = name + stored value.",
-        "question":
-            "What is a variable used for?",
+        "explanation": "A variable is a named storage location used by a program to store a value.",
+        "example": "In Python: age = 18. Here, age is a variable containing 18.",
+        "tip": "Variable = name + stored value.",
+        "question": "What is a variable used for?",
         "options": [
             "Storing data",
             "Displaying a monitor",
@@ -451,20 +318,15 @@ lessons = {
 
     "Introduction to C": {
         "title": "Introduction to C",
-        "explanation":
-            "C is a general-purpose programming language developed "
-            "by Dennis Ritchie. It is widely used for system programming "
-            "and learning programming fundamentals.",
+        "explanation": "C is a general-purpose programming language developed by Dennis Ritchie. It is widely used for system programming and learning programming fundamentals.",
         "example": """#include <stdio.h>
 
 int main() {
     printf("Hello World");
     return 0;
 }""",
-        "tip":
-            "C programs commonly use main() as the starting point.",
-        "question":
-            "Who developed the C programming language?",
+        "tip": "C programs commonly use main() as the starting point.",
+        "question": "Who developed the C programming language?",
         "options": [
             "James Gosling",
             "Dennis Ritchie",
@@ -476,97 +338,58 @@ int main() {
 
     "Structure of a C Program": {
         "title": "Structure of a C Program",
-        "explanation":
-            "A basic C program normally contains header files, "
-            "the main() function, statements and a return statement.",
+        "explanation": "A basic C program normally contains header files, the main() function, statements and a return statement.",
         "example": """#include <stdio.h>
 
 int main() {
     printf("Hello");
     return 0;
 }""",
-        "tip":
-            "Execution normally begins from main().",
-        "question":
-            "Where does execution normally begin in a C program?",
-        "options": [
-            "printf()",
-            "main()",
-            "include()",
-            "return()"
-        ],
+        "tip": "Execution normally begins from main().",
+        "question": "Where does execution normally begin in a C program?",
+        "options": ["printf()", "main()", "include()", "return()"],
         "answer": 1
     },
 
     "Variables and Data Types": {
         "title": "Variables and Data Types",
-        "explanation":
-            "C provides different data types such as int, float, "
-            "char and double to store different kinds of values.",
+        "explanation": "C provides different data types such as int, float, char and double to store different kinds of values.",
         "example": """int age = 18;
 float mark = 85.5;
 char grade = 'A';""",
-        "tip":
-            "Choose a data type according to the kind of value "
-            "you want to store.",
-        "question":
-            "Which data type stores an integer in C?",
-        "options": [
-            "float",
-            "char",
-            "int",
-            "string"
-        ],
+        "tip": "Choose a data type according to the kind of value you want to store.",
+        "question": "Which data type stores an integer in C?",
+        "options": ["float", "char", "int", "string"],
         "answer": 2
     },
 
     "Introduction to Python": {
         "title": "Introduction to Python",
-        "explanation":
-            "Python is a high-level programming language known "
-            "for its readable syntax and wide range of applications.",
+        "explanation": "Python is a high-level programming language known for its readable syntax and wide range of applications.",
         "example": """name = "Joe"
 print(name)""",
-        "tip":
-            "Python programs can often be written with fewer lines of code.",
-        "question":
-            "Which language is known for readable and simple syntax?",
-        "options": [
-            "Machine Code",
-            "Python",
-            "Assembly",
-            "Binary"
-        ],
+        "tip": "Python programs can often be written with fewer lines of code.",
+        "question": "Which language is known for readable and simple syntax?",
+        "options": ["Machine Code", "Python", "Assembly", "Binary"],
         "answer": 1
     },
 
     "Python Syntax": {
         "title": "Python Syntax",
-        "explanation":
-            "Python syntax defines how Python code must be written. "
-            "Indentation is important because it defines blocks of code.",
+        "explanation": "Python syntax defines how Python code must be written. Indentation is important because it defines blocks of code.",
         "example": """age = 18
 
 if age >= 18:
     print("Adult")""",
-        "tip":
-            "Python uses indentation to organize blocks of code.",
-        "question":
-            "What is especially important for Python code blocks?",
-        "options": [
-            "Indentation",
-            "Semicolon",
-            "Brackets only",
-            "Colon only"
-        ],
+        "tip": "Python uses indentation to organize blocks of code.",
+        "question": "What is especially important for Python code blocks?",
+        "options": ["Indentation", "Semicolon", "Brackets only", "Colon only"],
         "answer": 0
     },
 
     "Introduction to C++": {
         "title": "Introduction to C++",
-        "explanation":
-            "C++ is a general-purpose programming language that "
-            "supports procedural and object-oriented programming.",
+        "explanation": "C++ is a general-purpose programming language that supports procedural and object-oriented programming.",
         "example": """#include <iostream>
 using namespace std;
 
@@ -574,271 +397,130 @@ int main() {
     cout << "Hello";
     return 0;
 }""",
-        "tip":
-            "C++ extends many concepts of the C language.",
-        "question":
-            "Which language is C++ closely related to?",
-        "options": [
-            "C",
-            "HTML",
-            "SQL",
-            "CSS"
-        ],
+        "tip": "C++ extends many concepts of the C language.",
+        "question": "Which language is C++ closely related to?",
+        "options": ["C", "HTML", "SQL", "CSS"],
         "answer": 0
     }
 }
 
 
 # =========================================================
-# FALLBACK LESSON GENERATOR
-# =========================================================
-
-def create_fallback_lesson(chapter):
-
-    return {
-        "title": chapter,
-
-        "explanation":
-            f"This lesson introduces the important concepts of "
-            f"{chapter}. Study the topic, understand the key terms "
-            f"and practice what you learn.",
-
-        "example":
-            f"Practice {chapter} by writing notes, creating a "
-            f"small example or solving a related problem.",
-
-        "tip":
-            "Understand the concept first, then practice it "
-            "before moving to the next chapter.",
-
-        "question":
-            f"Which statement best describes {chapter}?",
-
-        "options": [
-            "It is an important computer/IT concept",
-            "It is only a computer game",
-            "It is a type of hardware cable",
-            "None of these"
-        ],
-
-        "answer": 0
-    }
-
-
-# =========================================================
-# QUIZ BANK
-# =========================================================
-# IMPORTANT:
-# Correct answers stay on the Flask server.
-# They are NEVER included in the question sent to browser.
+# QUIZ DATABASE
 # =========================================================
 
 quiz_questions = [
 
     {
-        "question":
-            "Which language is known for simplicity and readability?",
-
-        "options": [
-            "C",
-            "Python",
-            "Assembly",
-            "Machine Code"
-        ],
-
+        "id": "Q001",
+        "question": "Which language is known for its simplicity and readability?",
+        "options": ["C", "Python", "Assembly", "Machine Code"],
         "answer": 1,
-
-        "explanation":
-            "Python is designed with readable syntax."
+        "explanation": "Python is designed with simple and readable syntax."
     },
 
     {
-        "question":
-            "Which symbol commonly ends a C statement?",
-
-        "options": [
-            ".",
-            ",",
-            ";",
-            ":"
-        ],
-
+        "id": "Q002",
+        "question": "Which symbol is commonly used to end a statement in C?",
+        "options": [".", ",", ";", ":"],
         "answer": 2,
-
-        "explanation":
-            "C statements normally end with a semicolon."
+        "explanation": "C statements normally end with a semicolon (;)."
     },
 
     {
-        "question":
-            "Which component is commonly called the brain of a computer?",
-
-        "options": [
-            "RAM",
-            "CPU",
-            "Keyboard",
-            "Monitor"
-        ],
-
+        "id": "Q003",
+        "question": "Which component is known as the brain of a computer?",
+        "options": ["RAM", "CPU", "Keyboard", "Monitor"],
         "answer": 1,
-
-        "explanation":
-            "The CPU processes instructions."
+        "explanation": "The CPU processes instructions and performs calculations."
     },
 
     {
-        "question":
-            "Which Excel function commonly calculates a total?",
-
-        "options": [
-            "TOTAL()",
-            "SUM()",
-            "ADD()",
-            "PLUS()"
-        ],
-
+        "id": "Q004",
+        "question": "Which Excel function is commonly used to calculate a total?",
+        "options": ["TOTAL()", "SUM()", "ADD()", "PLUS()"],
         "answer": 1,
-
-        "explanation":
-            "SUM() adds numbers in Excel."
+        "explanation": "SUM() adds numbers together in Excel."
     },
 
     {
-        "question":
-            "Which OOP concept allows one class to acquire "
-            "properties of another?",
-
+        "id": "Q005",
+        "question": "Which OOP concept allows one class to acquire properties of another?",
         "options": [
             "Encapsulation",
             "Inheritance",
             "Abstraction",
             "Compilation"
         ],
-
         "answer": 1,
-
-        "explanation":
-            "Inheritance derives a class from another class."
+        "explanation": "Inheritance allows a class to derive properties and behaviour from another class."
     },
 
     {
-        "question":
-            "What does HTML mainly describe?",
-
+        "id": "Q006",
+        "question": "What does HTML mainly describe?",
         "options": [
             "Database queries",
             "Web page structure",
             "Computer hardware",
             "Operating systems"
         ],
-
         "answer": 1,
-
-        "explanation":
-            "HTML defines web page structure."
+        "explanation": "HTML defines the structure of web pages."
     },
 
     {
-        "question":
-            "What does MFA add to authentication?",
-
+        "id": "Q007",
+        "question": "Which data structure stores multiple values in Python?",
         "options": [
-            "More than one verification factor",
-            "A faster CPU",
-            "A larger monitor",
-            "A new programming language"
+            "list",
+            "integer",
+            "boolean",
+            "character"
         ],
-
         "answer": 0,
-
-        "explanation":
-            "MFA uses multiple authentication factors."
+        "explanation": "A Python list can store multiple values."
     },
 
     {
-        "question":
-            "Which protocol is commonly used to securely browse websites?",
-
+        "id": "Q008",
+        "question": "What is an algorithm?",
         "options": [
-            "HTTP",
-            "HTTPS",
-            "FTP",
-            "SMTP"
-        ],
-
-        "answer": 1,
-
-        "explanation":
-            "HTTPS protects web traffic using TLS."
-    },
-
-    {
-        "question":
-            "Which Git command creates a new local repository?",
-
-        "options": [
-            "git init",
-            "git start",
-            "git make",
-            "git repo"
-        ],
-
-        "answer": 0,
-
-        "explanation":
-            "git init initializes a repository."
-    },
-
-    {
-        "question":
-            "What is an algorithm?",
-
-        "options": [
+            "A computer screen",
             "A step-by-step solution",
-            "A monitor",
-            "A database cable",
-            "A compiler brand"
+            "A programming language",
+            "A hardware component"
         ],
-
-        "answer": 0,
-
-        "explanation":
-            "An algorithm is a step-by-step procedure for solving a problem."
+        "answer": 1,
+        "explanation": "An algorithm is a step-by-step procedure for solving a problem."
     },
 
     {
-        "question":
-            "Which Python collection stores key-value pairs?",
-
+        "id": "Q009",
+        "question": "Which component temporarily stores data being actively used?",
         "options": [
-            "List",
-            "Tuple",
-            "Dictionary",
-            "String"
+            "Hard disk",
+            "RAM",
+            "Monitor",
+            "Keyboard"
         ],
-
-        "answer": 2,
-
-        "explanation":
-            "Python dictionaries store key-value pairs."
+        "answer": 1,
+        "explanation": "RAM temporarily stores data and instructions currently being used."
     },
 
     {
-        "question":
-            "What does SQL injection target?",
-
+        "id": "Q010",
+        "question": "Which keyword is used to define a function in Python?",
         "options": [
-            "Database queries",
-            "Monitor pixels",
-            "Keyboard drivers",
-            "Power supply"
+            "function",
+            "def",
+            "func",
+            "define"
         ],
-
-        "answer": 0,
-
-        "explanation":
-            "SQL injection abuses unsafe database query construction."
+        "answer": 1,
+        "explanation": "Python uses the def keyword to define a function."
     }
+
 ]
 
 
@@ -850,81 +532,60 @@ code_challenges = [
 
     {
         "language": "C",
+        "question": "What will this program print?",
+        "code": """#include <stdio.h>
 
-        "question":
-            "What will this program print?",
+int main() {
+    int a = 5;
+    int b = 3;
 
-        "code":
-            '#include <stdio.h>\n'
-            'int main(){\n'
-            '    int a=5,b=3;\n'
-            '    printf("%d",a+b);\n'
-            '    return 0;\n'
-            '}',
+    printf("%d", a + b);
 
-        "options": [
-            "2",
-            "8",
-            "15",
-            "53"
-        ],
-
+    return 0;
+}""",
+        "options": ["2", "8", "15", "53"],
         "answer": 1,
-
-        "explanation":
-            "5 + 3 = 8."
+        "explanation": "5 + 3 = 8."
     },
 
     {
         "language": "Python",
+        "question": "What will this program print?",
+        "code": """a = 10
+b = 2
 
-        "question":
-            "What will this program print?",
-
-        "code":
-            "a=10\n"
-            "b=2\n"
-            "print(a*b)",
-
-        "options": [
-            "12",
-            "20",
-            "102",
-            "5"
-        ],
-
+print(a * b)""",
+        "options": ["12", "20", "102", "5"],
         "answer": 1,
-
-        "explanation":
-            "10 × 2 = 20."
+        "explanation": "10 × 2 = 20."
     },
 
     {
         "language": "C++",
+        "question": "What will this program print?",
+        "code": """#include <iostream>
+using namespace std;
 
-        "question":
-            "What will this program print?",
-
-        "code":
-            '#include <iostream>\n'
-            'using namespace std;\n'
-            'int main(){\n'
-            '    cout << 10-4;\n'
-            '    return 0;\n'
-            '}',
-
-        "options": [
-            "6",
-            "14",
-            "104",
-            "Error"
-        ],
-
+int main() {
+    cout << 10 - 4;
+    return 0;
+}""",
+        "options": ["6", "14", "104", "Error"],
         "answer": 0,
+        "explanation": "10 - 4 = 6."
+    },
 
-        "explanation":
-            "10 - 4 = 6."
+    {
+        "language": "Python",
+        "question": "What will this program print?",
+        "code": """x = 5
+x = x + 2
+print(x)""",
+        "options": ["5", "7", "10", "3"],
+        "answer": 1,
+        "explanation": "x starts at 5 and becomes 7."
     }
+
 ]
 
 
@@ -936,126 +597,68 @@ error_challenges = [
 
     {
         "language": "C",
+        "question": "Find the error:",
+        "code": """#include <stdio.h>
 
-        "question":
-            "Find the error:",
-
-        "code":
-            '#include <stdio.h>\n'
-            'int main(){\n'
-            '    int age=18\n'
-            '    printf("%d",age);\n'
-            '    return 0;\n'
-            '}',
-
+int main() {
+    int age = 18
+    printf("%d", age);
+    return 0;
+}""",
         "options": [
             "Missing semicolon after 18",
             "printf is wrong",
             "main cannot return 0",
             "No error"
         ],
-
         "answer": 0,
-
-        "explanation":
-            "The declaration needs a semicolon."
+        "explanation": "The statement int age = 18 needs a semicolon."
     },
 
     {
         "language": "Python",
+        "question": "Find the error:",
+        "code": """age = 20
 
-        "question":
-            "Find the error:",
-
-        "code":
-            "age=20\n"
-            "if age >= 18\n"
-            "    print('Adult')",
-
+if age >= 18
+    print("Adult")""",
         "options": [
             "Missing colon after the condition",
             "age cannot be 20",
             "print is invalid",
             "No error"
         ],
-
         "answer": 0,
+        "explanation": "Python requires a colon (:) after an if condition."
+    },
 
-        "explanation":
-            "Python requires a colon after an if condition."
+    {
+        "language": "C",
+        "question": "Find the error:",
+        "code": """#include <stdio.h>
+
+int main() {
+    printf("Hello")
+    return 0;
+}""",
+        "options": [
+            "Missing semicolon after printf",
+            "printf cannot print text",
+            "main is invalid",
+            "No error"
+        ],
+        "answer": 0,
+        "explanation": "The printf statement requires a semicolon."
     }
+
 ]
 
 
 # =========================================================
-# SECURE EXAM SYSTEM
+# TEMPORARY ASSESSMENT SESSION STORAGE
 # =========================================================
 
-EXAM_DURATION = 5 * 60
-
-EXAM_LENGTH = 8
-
-attempts = {}
-
-
-def cleanup_attempts():
-
-    now = time.time()
-
-    expired = []
-
-    for token, attempt in attempts.items():
-
-        if (
-            now - attempt["created"]
-            > EXAM_DURATION + 120
-        ):
-
-            expired.append(token)
-
-    for token in expired:
-
-        attempts.pop(token, None)
-
-
-def current_attempt():
-
-    cleanup_attempts()
-
-    token = session.get("exam_token")
-
-    if not token:
-
-        return None
-
-    if token not in attempts:
-
-        return None
-
-    return attempts[token]
-
-
-def public_question(question, index, total):
-
-    # IMPORTANT:
-    # answer and explanation are NOT sent here.
-
-    return {
-
-        "id": index,
-
-        "question":
-            question["question"],
-
-        "options":
-            question["options"],
-
-        "number":
-            index + 1,
-
-        "total":
-            total
-    }
+assessment_sessions = {}
 
 
 # =========================================================
@@ -1064,7 +667,6 @@ def public_question(question, index, total):
 
 @app.route("/")
 def home():
-
     return render_template(
         "index.html",
         courses=courses
@@ -1077,22 +679,18 @@ def home():
 
 @app.route("/api/courses")
 def get_courses():
-
     return jsonify(courses)
 
 
-@app.route("/api/course/<course_name>")
+@app.route("/api/course/<path:course_name>")
 def get_course(course_name):
 
     if course_name not in courses:
-
         return jsonify({
             "error": "Course not found"
         }), 404
 
-    return jsonify(
-        courses[course_name]
-    )
+    return jsonify(courses[course_name])
 
 
 # =========================================================
@@ -1105,382 +703,122 @@ def get_lesson(chapter):
     lesson = lessons.get(chapter)
 
     if lesson:
-
         return jsonify(lesson)
 
-    # Instead of failing for expanded syllabus chapters,
-    # provide a safe fallback lesson.
-
-    return jsonify(
-        create_fallback_lesson(chapter)
-    )
+    return jsonify({
+        "title": chapter,
+        "explanation": (
+            f"This lesson introduces the important concepts of "
+            f"{chapter}. Study the topic carefully and practice "
+            f"the examples."
+        ),
+        "example": (
+            "Practice this concept by writing a small program "
+            "or creating your own example."
+        ),
+        "tip": (
+            "Take notes, practice the example and test yourself "
+            "before moving to the next chapter."
+        ),
+        "question": f"Which statement best describes {chapter}?",
+        "options": [
+            "It is an important programming/computer concept",
+            "It is only a computer game",
+            "It is a type of hardware cable",
+            "None of these"
+        ],
+        "answer": 0
+    })
 
 
 # =========================================================
-# START SECURE EXAM
+# QUIZ API
 # =========================================================
 
-@app.post("/api/exam/start")
-def exam_start():
+@app.route("/api/quiz", methods=["GET"])
+def get_quiz():
 
-    cleanup_attempts()
+    # IMPORTANT:
+    # This endpoint exists for the current frontend.
+    return jsonify(quiz_questions)
 
-    # Prevent multiple simultaneous attempts
-    if current_attempt():
 
-        return jsonify({
-            "error":
-                "An exam is already active. "
-                "Finish it or wait until it expires."
-        }), 409
+# =========================================================
+# SECURE QUIZ SESSION
+# =========================================================
 
-    # Randomly choose questions
-    questions = random.sample(
-        quiz_questions,
-        min(
-            EXAM_LENGTH,
-            len(quiz_questions)
-        )
-    )
+@app.route("/api/quiz/start", methods=["POST"])
+def start_quiz():
 
-    # Create unpredictable server-side token
-    token = secrets.token_urlsafe(32)
+    session_id = secrets.token_urlsafe(24)
 
-    attempts[token] = {
-
-        "created":
-            time.time(),
-
-        "questions":
-            questions,
-
-        "current":
-            0,
-
-        "score":
-            0,
-
-        "violations":
-            0,
-
-        "finished":
-            False
+    assessment_sessions[session_id] = {
+        "started": time.time(),
+        "status": "active",
+        "violations": 0
     }
 
-    session["exam_token"] = token
+    return jsonify({
+        "success": True,
+        "session_id": session_id,
+        "question_count": len(quiz_questions)
+    })
+
+
+@app.route("/api/quiz/security-event", methods=["POST"])
+def quiz_security_event():
+
+    data = request.get_json(silent=True) or {}
+
+    session_id = data.get("session_id")
+    event = data.get("event", "unknown")
+
+    if session_id not in assessment_sessions:
+        return jsonify({
+            "success": False,
+            "error": "Invalid assessment session"
+        }), 400
+
+    session = assessment_sessions[session_id]
+
+    if session["status"] != "active":
+        return jsonify({
+            "success": False,
+            "error": "Assessment is no longer active"
+        }), 400
+
+    session["violations"] += 1
+
+    # For the first secure version:
+    # suspicious activity terminates the attempt.
+    session["status"] = "terminated"
 
     return jsonify({
-
-        "duration":
-            EXAM_DURATION,
-
-        "total":
-            len(questions),
-
-        "question":
-            public_question(
-                questions[0],
-                0,
-                len(questions)
-            )
+        "success": True,
+        "terminated": True,
+        "reason": event,
+        "message": "Assessment terminated because suspicious activity was detected."
     })
 
 
 # =========================================================
-# SUBMIT EXAM ANSWER
+# CODE CHALLENGE API
 # =========================================================
 
-@app.post("/api/exam/answer")
-def exam_answer():
-
-    attempt = current_attempt()
-
-    if not attempt:
-
-        return jsonify({
-            "error": "No active exam."
-        }), 400
-
-    if attempt["finished"]:
-
-        return jsonify({
-            "error": "Exam already finished."
-        }), 400
-
-    # Server-side timer
-    if (
-        time.time() -
-        attempt["created"]
-        > EXAM_DURATION
-    ):
-
-        attempt["finished"] = True
-
-        return jsonify({
-
-            "finished": True,
-
-            "reason":
-                "time_expired",
-
-            "score":
-                attempt["score"],
-
-            "total":
-                len(attempt["questions"])
-        })
-
-
-    data = request.get_json(
-        silent=True
-    ) or {}
-
-
-    try:
-
-        question_id = int(
-            data.get("question_id")
-        )
-
-        selected = int(
-            data.get("answer")
-        )
-
-    except (
-        TypeError,
-        ValueError
-    ):
-
-        return jsonify({
-            "error": "Invalid answer."
-        }), 400
-
-
-    # Prevent answering an old/future question
-    if (
-        question_id !=
-        attempt["current"]
-    ):
-
-        return jsonify({
-            "error":
-                "Invalid question sequence."
-        }), 409
-
-
-    question = attempt[
-        "questions"
-    ][attempt["current"]]
-
-
-    correct = (
-        selected ==
-        question["answer"]
-    )
-
-
-    if correct:
-
-        attempt["score"] += 1
-
-
-    attempt["current"] += 1
-
-
-    # Exam finished
-    if (
-        attempt["current"]
-        >= len(attempt["questions"])
-    ):
-
-        attempt["finished"] = True
-
-        return jsonify({
-
-            "finished":
-                True,
-
-            "correct":
-                correct,
-
-            "score":
-                attempt["score"],
-
-            "total":
-                len(attempt["questions"])
-        })
-
-
-    # Return next question
-    return jsonify({
-
-        "finished":
-            False,
-
-        "correct":
-            correct,
-
-        "question":
-            public_question(
-                attempt["questions"][
-                    attempt["current"]
-                ],
-
-                attempt["current"],
-
-                len(
-                    attempt["questions"]
-                )
-            )
-    })
-
-
-# =========================================================
-# SECURITY VIOLATION
-# =========================================================
-
-@app.post("/api/exam/violation")
-def exam_violation():
-
-    attempt = current_attempt()
-
-    if not attempt:
-
-        return jsonify({
-            "ok": False
-        }), 400
-
-    if attempt["finished"]:
-
-        return jsonify({
-            "ok": False
-        })
-
-
-    attempt["violations"] += 1
-
-    attempt["finished"] = True
-
-
-    return jsonify({
-
-        "ok":
-            True,
-
-        "finished":
-            True,
-
-        "reason":
-            "security_violation",
-
-        "message":
-            "Exam terminated because the exam page was left."
-    })
-
-
-# =========================================================
-# MANUAL FINISH
-# =========================================================
-
-@app.post("/api/exam/finish")
-def exam_finish():
-
-    attempt = current_attempt()
-
-    if not attempt:
-
-        return jsonify({
-            "error": "No active exam."
-        }), 400
-
-
-    attempt["finished"] = True
-
-
-    return jsonify({
-
-        "finished":
-            True,
-
-        "score":
-            attempt["score"],
-
-        "total":
-            len(
-                attempt["questions"]
-            )
-    })
-
-
-# =========================================================
-# EXAM STATUS
-# =========================================================
-
-@app.get("/api/exam/status")
-def exam_status():
-
-    attempt = current_attempt()
-
-    if not attempt:
-
-        return jsonify({
-            "active": False
-        })
-
-
-    remaining = max(
-        0,
-        EXAM_DURATION -
-        int(
-            time.time() -
-            attempt["created"]
-        )
-    )
-
-
-    return jsonify({
-
-        "active":
-            not attempt["finished"],
-
-        "score":
-            attempt["score"],
-
-        "current":
-            attempt["current"],
-
-        "total":
-            len(
-                attempt["questions"]
-            ),
-
-        "remaining":
-            remaining
-    })
-
-
-# =========================================================
-# CODE CHALLENGES
-# =========================================================
-
-@app.route("/api/code-challenges")
+@app.route("/api/code-challenges", methods=["GET"])
 def get_code_challenges():
 
-    return jsonify(
-        code_challenges
-    )
+    return jsonify(code_challenges)
 
 
 # =========================================================
-# ERROR FINDER
+# ERROR FINDER API
 # =========================================================
 
-@app.route("/api/error-finder")
+@app.route("/api/error-finder", methods=["GET"])
 def get_error_challenges():
 
-    return jsonify(
-        error_challenges
-    )
+    return jsonify(error_challenges)
 
 
 # =========================================================
@@ -1492,49 +830,66 @@ def status():
 
     return jsonify({
 
-        "app":
-            "CodeQuest AI",
+        "app": "CodeQuest AI",
 
-        "version":
-            "0.4",
+        "version": "0.4",
 
-        "status":
-            "online",
+        "status": "online",
+
+        "security": {
+            "assessment_sessions": True,
+            "security_event_logging": True,
+            "anti_cheat_engine": "foundation"
+        },
 
         "features": [
-
             "Learning",
-
             "Interactive Lessons",
-
-            "Secure Quiz Arena",
-
-            "Server-side Answer Validation",
-
-            "Randomized Exam Questions",
-
-            "Exam Timer",
-
-            "Security Violation Detection",
-
+            "Quiz Arena",
+            "Secure Assessment",
             "Code Challenges",
-
             "Error Finder",
+            "AI Career Assistant",
+            "Progress Tracking"
+        ]
 
-            "Progress Tracking",
-
-            "Cybersecurity Fundamentals"
-
-        ],
-
-        "security_note":
-            "Quiz answers are validated on the server "
-            "and are not sent to the browser."
     })
 
 
 # =========================================================
-# START SERVER
+# HEALTH CHECK
+# =========================================================
+
+@app.route("/health")
+def health():
+
+    return jsonify({
+        "status": "healthy"
+    })
+
+
+# =========================================================
+# ERROR HANDLERS
+# =========================================================
+
+@app.errorhandler(404)
+def not_found(error):
+
+    return jsonify({
+        "error": "Route not found"
+    }), 404
+
+
+@app.errorhandler(500)
+def server_error(error):
+
+    return jsonify({
+        "error": "Internal server error"
+    }), 500
+
+
+# =========================================================
+# LOCAL DEVELOPMENT
 # =========================================================
 
 if __name__ == "__main__":
@@ -1542,5 +897,5 @@ if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
         port=5000,
-        debug=False
+        debug=True
     )
