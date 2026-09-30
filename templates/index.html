@@ -1,19 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#090914">
 <meta name="description" content="CodeQuest AI - Learn, Practice, Play and Build">
+
 <title>CodeQuest AI</title>
 
 <!-- =========================================================
      FIREBASE
 ========================================================= -->
+
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 
+
 <style>
+
 *{
     box-sizing:border-box;
     margin:0;
@@ -44,9 +49,22 @@ body{
     font-family:Arial,Helvetica,sans-serif;
     color:var(--text);
     background:
-        radial-gradient(circle at 10% 0%,rgba(139,92,246,.20),transparent 28%),
-        radial-gradient(circle at 90% 10%,rgba(56,189,248,.13),transparent 25%),
-        linear-gradient(180deg,#070711,#090914 55%,#06060d);
+        radial-gradient(
+            circle at 10% 0%,
+            rgba(139,92,246,.20),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 90% 10%,
+            rgba(56,189,248,.13),
+            transparent 25%
+        ),
+        linear-gradient(
+            180deg,
+            #070711,
+            #090914 55%,
+            #06060d
+        );
 }
 
 button,
@@ -65,7 +83,7 @@ button{
 }
 
 /* =========================================================
-   TOP NAV
+   NAVBAR
 ========================================================= */
 
 .navbar{
@@ -88,7 +106,6 @@ button{
     gap:12px;
     font-size:21px;
     font-weight:900;
-    letter-spacing:.4px;
 }
 
 .logo{
@@ -128,6 +145,12 @@ button{
 .btn:hover{
     transform:translateY(-1px);
     border-color:rgba(139,92,246,.6);
+}
+
+.btn:disabled{
+    opacity:.5;
+    cursor:not-allowed;
+    transform:none;
 }
 
 .btn-primary{
@@ -195,6 +218,7 @@ button{
     font-weight:1000;
     background:linear-gradient(90deg,#fff,#c4b5fd,#67e8f9);
     -webkit-background-clip:text;
+    background-clip:text;
     color:transparent;
 }
 
@@ -215,7 +239,7 @@ button{
 }
 
 /* =========================================================
-   DASHBOARD
+   MAIN
 ========================================================= */
 
 .container{
@@ -223,6 +247,10 @@ button{
     margin:auto;
     padding:25px 24px 60px;
 }
+
+/* =========================================================
+   STATS
+========================================================= */
 
 .stats{
     display:grid;
@@ -235,7 +263,11 @@ button{
     border:1px solid var(--border);
     border-radius:18px;
     background:
-        linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.015));
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.045),
+            rgba(255,255,255,.015)
+        );
     box-shadow:0 15px 40px rgba(0,0,0,.18);
 }
 
@@ -294,7 +326,11 @@ button{
     border:1px solid var(--border);
     border-radius:20px;
     background:
-        linear-gradient(145deg,rgba(20,20,40,.96),rgba(12,12,24,.96));
+        linear-gradient(
+            145deg,
+            rgba(20,20,40,.96),
+            rgba(12,12,24,.96)
+        );
     padding:21px;
     transition:.25s;
 }
@@ -338,30 +374,7 @@ button{
 }
 
 /* =========================================================
-   PROGRESS
-========================================================= */
-
-.progress-wrap{
-    margin-top:15px;
-}
-
-.progress-bar{
-    height:8px;
-    overflow:hidden;
-    background:#24243b;
-    border-radius:999px;
-}
-
-.progress-fill{
-    height:100%;
-    width:0;
-    border-radius:999px;
-    background:linear-gradient(90deg,var(--purple),var(--blue));
-    transition:.3s;
-}
-
-/* =========================================================
-   COURSE MODAL
+   MODAL
 ========================================================= */
 
 .modal{
@@ -416,6 +429,10 @@ button{
 .modal-body{
     padding:22px;
 }
+
+/* =========================================================
+   COURSE
+========================================================= */
 
 .chapter-list{
     display:grid;
@@ -692,6 +709,7 @@ pre{
 .achievement-icon{
     width:48px;
     height:48px;
+    flex-shrink:0;
     display:grid;
     place-items:center;
     border-radius:14px;
@@ -704,7 +722,7 @@ pre{
 }
 
 /* =========================================================
-   LOGIN MODAL
+   LOGIN
 ========================================================= */
 
 .login-box{
@@ -733,10 +751,15 @@ pre{
     margin-top:24px;
     padding:14px;
     border-radius:13px;
-    border:1px solid var(--border);
+    border:1px solid #ddd;
     background:#fff;
     color:#111;
     font-weight:900;
+    transition:.2s;
+}
+
+.google-btn:hover{
+    transform:translateY(-2px);
 }
 
 .login-status{
@@ -776,6 +799,7 @@ pre{
 ========================================================= */
 
 @media(max-width:900px){
+
     .stats{
         grid-template-columns:repeat(2,1fr);
     }
@@ -787,11 +811,17 @@ pre{
     .quiz-layout{
         grid-template-columns:1fr;
     }
+
 }
 
 @media(max-width:600px){
+
     .navbar{
         padding:0 12px;
+    }
+
+    .brand{
+        font-size:17px;
     }
 
     .brand small{
@@ -838,11 +868,19 @@ pre{
     .modal-box{
         max-height:95vh;
     }
+
+    .chapter-top{
+        align-items:flex-start;
+    }
+
 }
+
 </style>
 </head>
 
+
 <body>
+
 
 <!-- =========================================================
      NAVBAR
@@ -851,26 +889,63 @@ pre{
 <header class="navbar">
 
     <div class="brand">
-        <div class="logo">⚡</div>
+
+        <div class="logo">
+            ⚡
+        </div>
 
         <div>
             CodeQuest AI
-            <small>LEARN • PRACTICE • PLAY • BUILD</small>
+
+            <small>
+                LEARN • PRACTICE • PLAY • BUILD
+            </small>
         </div>
+
     </div>
+
 
     <div class="nav-actions">
 
         <div id="loggedOutActions">
-            <button class="btn btn-primary" onclick="openLogin()">
+
+            <button
+                class="btn btn-primary"
+                onclick="openLogin()">
+
                 🔐 Google Login
+
             </button>
+
         </div>
 
-        <div id="loggedInActions" class="user-box hidden">
-            <img id="userAvatar" class="avatar" src="" alt="User">
-            <span id="userName" class="user-name">Student</span>
-            <button class="btn btn-danger" onclick="logoutUser()">Logout</button>
+
+        <div
+            id="loggedInActions"
+            class="user-box hidden">
+
+            <img
+                id="userAvatar"
+                class="avatar"
+                src=""
+                alt="User">
+
+            <span
+                id="userName"
+                class="user-name">
+
+                Student
+
+            </span>
+
+            <button
+                class="btn btn-danger"
+                onclick="logoutUser()">
+
+                Logout
+
+            </button>
+
         </div>
 
     </div>
@@ -884,9 +959,13 @@ pre{
 
 <section class="hero">
 
-    <span class="badge">🚀 YOUR COMPUTER SCIENCE ADVENTURE</span>
+    <span class="badge">
+        🚀 YOUR COMPUTER SCIENCE ADVENTURE
+    </span>
 
-    <h1>CODEQUEST AI</h1>
+    <h1>
+        CODEQUEST AI
+    </h1>
 
     <p>
         Learn computer science from zero to job-ready through
@@ -896,16 +975,28 @@ pre{
 
     <div class="hero-actions">
 
-        <button class="btn btn-primary" onclick="scrollToSection('learn')">
+        <button
+            class="btn btn-primary"
+            onclick="scrollToSection('learn')">
+
             📚 Start Learning
+
         </button>
 
-        <button class="btn" onclick="scrollToSection('quiz')">
+        <button
+            class="btn"
+            onclick="scrollToSection('quiz')">
+
             🧠 Quiz Arena
+
         </button>
 
-        <button class="btn" onclick="scrollToSection('compiler')">
+        <button
+            class="btn"
+            onclick="scrollToSection('compiler')">
+
             💻 C Compiler
+
         </button>
 
     </div>
@@ -914,35 +1005,103 @@ pre{
 
 
 <!-- =========================================================
-     DASHBOARD
+     MAIN
 ========================================================= -->
 
 <main class="container">
 
+
+<!-- =========================================================
+     DASHBOARD
+========================================================= -->
+
 <section class="stats">
 
     <div class="stat">
-        <div class="stat-icon">⚡</div>
-        <div id="xpValue" class="stat-value">0</div>
-        <div class="stat-label">XP</div>
+
+        <div class="stat-icon">
+            ⚡
+        </div>
+
+        <div
+            id="xpValue"
+            class="stat-value">
+
+            0
+
+        </div>
+
+        <div class="stat-label">
+            XP
+        </div>
+
     </div>
 
-    <div class="stat">
-        <div class="stat-icon">🏆</div>
-        <div id="levelValue" class="stat-value">Level 1</div>
-        <div id="levelName" class="stat-label">Code Explorer</div>
-    </div>
 
     <div class="stat">
-        <div class="stat-icon">🔥</div>
-        <div id="streakValue" class="stat-value">0</div>
-        <div class="stat-label">Day Streak</div>
+
+        <div class="stat-icon">
+            🏆
+        </div>
+
+        <div
+            id="levelValue"
+            class="stat-value">
+
+            Level 1
+
+        </div>
+
+        <div
+            id="levelName"
+            class="stat-label">
+
+            Code Explorer
+
+        </div>
+
     </div>
 
+
     <div class="stat">
-        <div class="stat-icon">📚</div>
-        <div id="completedValue" class="stat-value">0</div>
-        <div class="stat-label">Lessons Completed</div>
+
+        <div class="stat-icon">
+            🔥
+        </div>
+
+        <div
+            id="streakValue"
+            class="stat-value">
+
+            0
+
+        </div>
+
+        <div class="stat-label">
+            Day Streak
+        </div>
+
+    </div>
+
+
+    <div class="stat">
+
+        <div class="stat-icon">
+            📚
+        </div>
+
+        <div
+            id="completedValue"
+            class="stat-value">
+
+            0
+
+        </div>
+
+        <div class="stat-label">
+            Lessons Completed
+        </div>
+
     </div>
 
 </section>
@@ -952,25 +1111,45 @@ pre{
      LEARNING
 ========================================================= -->
 
-<section id="learn" class="section">
+<section
+    id="learn"
+    class="section">
 
     <div class="section-head">
 
         <div>
-            <div class="section-title">📚 Learning Universe</div>
+
+            <div class="section-title">
+                📚 Learning Universe
+            </div>
+
             <div class="section-sub">
                 Follow the path from computer basics to advanced technology.
             </div>
+
         </div>
 
     </div>
 
-    <div id="courseGrid" class="grid">
+
+    <div
+        id="courseGrid"
+        class="grid">
 
         <div class="card">
-            <div class="card-icon">⏳</div>
-            <h3>Loading courses...</h3>
-            <p>Please wait.</p>
+
+            <div class="card-icon">
+                ⏳
+            </div>
+
+            <h3>
+                Loading courses...
+            </h3>
+
+            <p>
+                Please wait.
+            </p>
+
         </div>
 
     </div>
@@ -982,32 +1161,54 @@ pre{
      QUIZ
 ========================================================= -->
 
-<section id="quiz" class="section">
+<section
+    id="quiz"
+    class="section">
 
     <div class="section-head">
 
         <div>
-            <div class="section-title">🧠 Quiz Arena</div>
+
+            <div class="section-title">
+                🧠 Quiz Arena
+            </div>
+
             <div class="section-sub">
                 Easy questions • XP rewards • Smart anti-malpractice system
             </div>
+
         </div>
 
-        <button class="btn btn-primary" onclick="startQuiz()">
+
+        <button
+            class="btn btn-primary"
+            onclick="startQuiz()">
+
             ▶ Start Quiz
+
         </button>
 
     </div>
 
+
     <div id="quizContainer">
 
         <div class="card">
-            <div class="card-icon">🎯</div>
-            <h3>Ready for the challenge?</h3>
+
+            <div class="card-icon">
+                🎯
+            </div>
+
+            <h3>
+                Ready for the challenge?
+            </h3>
+
             <p>
-                Start a short 10-question quiz. Stay on the quiz screen,
+                Start a short 10-question quiz.
+                Stay on the quiz screen,
                 answer the questions and earn XP.
             </p>
+
         </div>
 
     </div>
@@ -1019,51 +1220,90 @@ pre{
      COMPILER
 ========================================================= -->
 
-<section id="compiler" class="section">
+<section
+    id="compiler"
+    class="section">
 
     <div class="section-head">
 
         <div>
-            <div class="section-title">💻 C Code Lab</div>
+
+            <div class="section-title">
+                💻 C Code Lab
+            </div>
+
             <div class="section-sub">
                 Write C code, run it and inspect compiler/runtime errors.
             </div>
+
         </div>
 
     </div>
 
+
     <div class="compiler">
 
         <div class="compiler-head">
-            <strong>⚙️ Online C Compiler</strong>
-            <span class="level">C / GCC</span>
+
+            <strong>
+                ⚙️ Online C Compiler
+            </strong>
+
+            <span class="level">
+                C / GCC
+            </span>
+
         </div>
 
-        <textarea id="cCode" class="editor" spellcheck="false">#include <stdio.h>
+
+        <textarea
+            id="cCode"
+            class="editor"
+            spellcheck="false">#include <stdio.h>
 
 int main() {
     printf("Hello, CodeQuest AI!");
     return 0;
 }</textarea>
 
+
         <div class="compiler-controls">
 
-            <button class="btn btn-primary" onclick="runCCode()">
+            <button
+                class="btn btn-primary"
+                onclick="runCCode()">
+
                 ▶ Run Code
+
             </button>
 
-            <button class="btn" onclick="loadCExample()">
+
+            <button
+                class="btn"
+                onclick="loadCExample()">
+
                 📄 Example
+
             </button>
 
-            <button class="btn" onclick="clearCompiler()">
+
+            <button
+                class="btn"
+                onclick="clearCompiler()">
+
                 🧹 Clear
+
             </button>
 
         </div>
 
-        <div id="compilerOutput" class="compiler-output">
-Output will appear here...
+
+        <div
+            id="compilerOutput"
+            class="compiler-output">
+
+            Output will appear here...
+
         </div>
 
     </div>
@@ -1075,23 +1315,37 @@ Output will appear here...
      CAREER
 ========================================================= -->
 
-<section id="career" class="section">
+<section
+    id="career"
+    class="section">
 
     <div class="section-head">
 
         <div>
-            <div class="section-title">🚀 Career Guide</div>
+
+            <div class="section-title">
+                🚀 Career Guide
+            </div>
+
             <div class="section-sub">
                 Understand internships, placements, projects and developer careers.
             </div>
+
         </div>
 
     </div>
 
-    <div id="careerGrid" class="grid">
+
+    <div
+        id="careerGrid"
+        class="grid">
 
         <div class="card">
-            <h3>Loading career guide...</h3>
+
+            <h3>
+                Loading career guide...
+            </h3>
+
         </div>
 
     </div>
@@ -1103,22 +1357,35 @@ Output will appear here...
      ACHIEVEMENTS
 ========================================================= -->
 
-<section id="achievements" class="section">
+<section
+    id="achievements"
+    class="section">
 
     <div class="section-head">
 
         <div>
-            <div class="section-title">🏅 Achievements</div>
+
+            <div class="section-title">
+                🏅 Achievements
+            </div>
+
             <div class="section-sub">
                 Unlock badges by learning and practicing.
             </div>
+
         </div>
 
     </div>
 
-    <div id="achievementGrid" class="grid"></div>
+
+    <div
+        id="achievementGrid"
+        class="grid">
+
+    </div>
 
 </section>
+
 
 </main>
 
@@ -1127,7 +1394,9 @@ Output will appear here...
      LOGIN MODAL
 ========================================================= -->
 
-<div id="loginModal" class="modal">
+<div
+    id="loginModal"
+    class="modal">
 
     <div class="login-box">
 
@@ -1135,23 +1404,42 @@ Output will appear here...
             class="close"
             style="float:right"
             onclick="closeLogin()">
+
             ×
+
         </button>
 
-        <div style="font-size:50px">🚀</div>
 
-        <h2>Enter CodeQuest</h2>
+        <div style="font-size:50px">
+            🚀
+        </div>
+
+
+        <h2>
+            Enter CodeQuest
+        </h2>
+
 
         <p>
             Sign in with your Google account to continue your
             learning adventure.
         </p>
 
-        <button class="google-btn" onclick="loginWithGoogle()">
+
+        <button
+            class="google-btn"
+            onclick="loginWithGoogle()">
+
             🔵 Continue with Google
+
         </button>
 
-        <div id="loginStatus" class="login-status"></div>
+
+        <div
+            id="loginStatus"
+            class="login-status">
+
+        </div>
 
     </div>
 
@@ -1162,24 +1450,48 @@ Output will appear here...
      COURSE MODAL
 ========================================================= -->
 
-<div id="courseModal" class="modal">
+<div
+    id="courseModal"
+    class="modal">
 
     <div class="modal-box">
 
         <div class="modal-head">
 
             <div>
-                <strong id="courseModalTitle">Course</strong>
-                <div id="courseModalSub"
-                     style="color:#9ca3af;font-size:12px;margin-top:4px">
+
+                <strong id="courseModalTitle">
+                    Course
+                </strong>
+
+                <div
+                    id="courseModalSub"
+                    style="
+                        color:#9ca3af;
+                        font-size:12px;
+                        margin-top:4px">
+
                 </div>
+
             </div>
 
-            <button class="close" onclick="closeCourse()">×</button>
+
+            <button
+                class="close"
+                onclick="closeCourse()">
+
+                ×
+
+            </button>
 
         </div>
 
-        <div id="courseModalBody" class="modal-body"></div>
+
+        <div
+            id="courseModalBody"
+            class="modal-body">
+
+        </div>
 
     </div>
 
@@ -1187,26 +1499,47 @@ Output will appear here...
 
 
 <!-- =========================================================
-     QUIZ FULLSCREEN MODAL
+     QUIZ MODAL
 ========================================================= -->
 
-<div id="quizModal" class="modal">
+<div
+    id="quizModal"
+    class="modal">
 
     <div class="modal-box">
 
         <div class="modal-head">
 
             <div>
-                <strong>🧠 Quiz Arena</strong>
-                <div id="quizSecurityText"
-                     style="color:#9ca3af;font-size:12px;margin-top:4px">
+
+                <strong>
+                    🧠 Quiz Arena
+                </strong>
+
+                <div
+                    id="quizSecurityText"
+                    style="
+                        color:#9ca3af;
+                        font-size:12px;
+                        margin-top:4px">
+
                     Stay on this screen.
+
                 </div>
+
             </div>
 
-            <button class="close" onclick="attemptCloseQuiz()">×</button>
+
+            <button
+                class="close"
+                onclick="attemptCloseQuiz()">
+
+                ×
+
+            </button>
 
         </div>
+
 
         <div class="modal-body">
 
@@ -1223,30 +1556,45 @@ Output will appear here...
      TOAST
 ========================================================= -->
 
-<div id="toast" class="toast"></div>
+<div
+    id="toast"
+    class="toast">
+
+</div>
 
 
 <script>
+
 "use strict";
+
 
 /* =========================================================
    FIREBASE CONFIGURATION
-
-   IMPORTANT:
-   Keep the Firebase configuration from your existing
-   working CodeQuest AI HTML here.
-
-   Replace ONLY the values below with your Firebase project's
-   existing configuration.
 ========================================================= */
 
 const firebaseConfig = {
-    apiKey: "YOUR_EXISTING_FIREBASE_API_KEY",
-    authDomain: "YOUR_EXISTING_FIREBASE_AUTH_DOMAIN",
-    projectId: "YOUR_EXISTING_FIREBASE_PROJECT_ID",
-    storageBucket: "YOUR_EXISTING_FIREBASE_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_EXISTING_FIREBASE_MESSAGING_SENDER_ID",
-    appId: "YOUR_EXISTING_FIREBASE_APP_ID"
+
+    apiKey:
+        "AIzaSyDINYVF59k4gpq1GXFN4UUxGbcs5KxYGrw",
+
+    authDomain:
+        "codequest-ai-69884.firebaseapp.com",
+
+    projectId:
+        "codequest-ai-69884",
+
+    storageBucket:
+        "codequest-ai-69884.firebasestorage.app",
+
+    messagingSenderId:
+        "834925219358",
+
+    appId:
+        "1:834925219358:web:f836451b4db67e1e3fa80f",
+
+    measurementId:
+        "G-ETRG49NSKC"
+
 };
 
 
@@ -1256,125 +1604,384 @@ const firebaseConfig = {
 
 let firebaseReady = false;
 let auth = null;
+let currentUser = null;
+
 
 try {
 
-    if (
-        firebaseConfig.apiKey &&
-        !firebaseConfig.apiKey.includes("YOUR_EXISTING")
-    ) {
+    firebase.initializeApp(firebaseConfig);
 
-        firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth();
 
-        auth = firebase.auth();
+    firebaseReady = true;
 
-        firebaseReady = true;
 
-        auth.onAuthStateChanged(function(user){
+    auth.onAuthStateChanged(async function(user) {
 
-            if(user){
-                showLoggedInUser(user);
-            }else{
-                showLoggedOutUser();
+        currentUser = user || null;
+
+
+        if(user){
+
+            showLoggedInUser(user);
+
+            /*
+             * Give every Google account its own
+             * CodeQuest local progress.
+             */
+
+            setPlayerStorageForUser(user.uid);
+
+            loadPlayer();
+
+
+            /*
+             * Optional Flask backend synchronization.
+             *
+             * If /api/firebase-login exists,
+             * the Firebase ID token will be sent to it.
+             *
+             * If the backend route does not exist,
+             * Google login still works normally.
+             */
+
+            try {
+
+                const token =
+                    await user.getIdToken();
+
+                const response =
+                    await fetch(
+                        "/api/firebase-login",
+                        {
+                            method:"POST",
+
+                            headers:{
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            credentials:"same-origin",
+
+                            body:JSON.stringify({
+                                idToken:token
+                            })
+                        }
+                    );
+
+                if(!response.ok){
+
+                    console.warn(
+                        "Firebase backend sync unavailable."
+                    );
+
+                }
+
+            }catch(backendError){
+
+                console.warn(
+                    "Backend Firebase sync unavailable:",
+                    backendError
+                );
+
+            }
+
+
+        }else{
+
+            showLoggedOutUser();
+
+            currentUser = null;
+
+            setPlayerStorageForUser("guest");
+
+            loadPlayer();
+
+        }
+
+    });
+
+
+    /*
+     * Google redirect result.
+     *
+     * This runs after Google sends the user back
+     * to CodeQuest AI.
+     */
+
+    auth.getRedirectResult()
+
+        .then(function(result){
+
+            if(
+                result &&
+                result.user
+            ){
+
+                showToast(
+                    "🔐 Google login successful!"
+                );
+
+                closeLogin();
+
+            }
+
+        })
+
+        .catch(function(error){
+
+            console.error(
+                "Google redirect login error:",
+                error
+            );
+
+            const status =
+                document.getElementById(
+                    "loginStatus"
+                );
+
+            if(status){
+
+                status.textContent =
+                    error.message ||
+                    "Google login failed.";
+
             }
 
         });
 
-    }
 
 }catch(error){
 
-    console.error("Firebase initialization error:", error);
+    console.error(
+        "Firebase initialization error:",
+        error
+    );
+
+    firebaseReady = false;
 
 }
 
 
 /* =========================================================
-   LOCAL PLAYER DATA
+   PLAYER STORAGE
 ========================================================= */
 
-const STORAGE_KEY = "codequest_player_v1";
+let currentUid = "guest";
+
+
+function storageKey(){
+
+    return "codequest_player_" +
+           currentUid;
+
+}
+
+
+function setPlayerStorageForUser(uid){
+
+    currentUid =
+        uid || "guest";
+
+}
+
 
 let player = {
+
     xp:0,
+
     completed:[],
+
     streak:0,
+
     lastVisit:"",
+
     achievements:[]
+
 };
+
 
 function loadPlayer(){
 
     try{
 
-        const saved = localStorage.getItem(STORAGE_KEY);
+        const saved =
+            localStorage.getItem(
+                storageKey()
+            );
+
 
         if(saved){
-            const parsed = JSON.parse(saved);
+
+            const parsed =
+                JSON.parse(saved);
+
 
             player = {
-                ...player,
+
+                xp:0,
+
+                completed:[],
+
+                streak:0,
+
+                lastVisit:"",
+
+                achievements:[],
+
                 ...parsed
+
             };
+
+
+            if(
+                !Array.isArray(
+                    player.completed
+                )
+            ){
+
+                player.completed = [];
+
+            }
+
+
+            if(
+                !Array.isArray(
+                    player.achievements
+                )
+            ){
+
+                player.achievements = [];
+
+            }
+
+        }else{
+
+            player = {
+
+                xp:0,
+
+                completed:[],
+
+                streak:0,
+
+                lastVisit:"",
+
+                achievements:[]
+
+            };
+
         }
 
     }catch(error){
 
-        console.error("Player data error:",error);
+        console.error(
+            "Player data error:",
+            error
+        );
 
     }
 
+
     updateStreak();
+
     updateDashboard();
+
     renderAchievements();
+
 }
 
 
 function savePlayer(){
 
     try{
+
         localStorage.setItem(
-            STORAGE_KEY,
+
+            storageKey(),
+
             JSON.stringify(player)
+
         );
+
     }catch(error){
-        console.error(error);
+
+        console.error(
+            "Save player error:",
+            error
+        );
+
     }
 
 }
 
 
+/* =========================================================
+   STREAK
+========================================================= */
+
 function updateStreak(){
 
-    const today = new Date().toISOString().slice(0,10);
+    const today =
+        new Date()
+            .toISOString()
+            .slice(0,10);
+
 
     if(!player.lastVisit){
 
         player.streak = 1;
+
         player.lastVisit = today;
 
-    }else if(player.lastVisit !== today){
+    }
 
-        const last = new Date(player.lastVisit);
-        const now = new Date(today);
+    else if(
+        player.lastVisit !== today
+    ){
+
+        const last =
+            new Date(
+                player.lastVisit
+            );
+
+        const now =
+            new Date(today);
+
 
         const difference =
             Math.floor(
-                (now-last)/(1000*60*60*24)
+
+                (
+                    now - last
+                ) /
+                (
+                    1000 *
+                    60 *
+                    60 *
+                    24
+                )
+
             );
+
 
         if(difference === 1){
 
             player.streak += 1;
 
-        }else if(difference > 1){
+        }
+
+        else if(difference > 1){
 
             player.streak = 1;
 
         }
 
+
         player.lastVisit = today;
+
     }
+
 
     savePlayer();
 
@@ -1382,48 +1989,106 @@ function updateStreak(){
 
 
 /* =========================================================
-   XP / LEVEL
+   LEVEL SYSTEM
 ========================================================= */
 
 const LEVELS = [
-    {xp:0,name:"Code Explorer"},
-    {xp:100,name:"Logic Builder"},
-    {xp:250,name:"Bug Hunter"},
-    {xp:500,name:"Code Warrior"},
-    {xp:900,name:"Algorithm Master"},
-    {xp:1400,name:"Software Crafter"},
-    {xp:2000,name:"Tech Adventurer"},
-    {xp:3000,name:"CodeQuest Legend"}
+
+    {
+        xp:0,
+        name:"Code Explorer"
+    },
+
+    {
+        xp:100,
+        name:"Logic Builder"
+    },
+
+    {
+        xp:250,
+        name:"Bug Hunter"
+    },
+
+    {
+        xp:500,
+        name:"Code Warrior"
+    },
+
+    {
+        xp:900,
+        name:"Algorithm Master"
+    },
+
+    {
+        xp:1400,
+        name:"Software Crafter"
+    },
+
+    {
+        xp:2000,
+        name:"Tech Adventurer"
+    },
+
+    {
+        xp:3000,
+        name:"CodeQuest Legend"
+    }
+
 ];
 
 
 function getLevel(){
 
-    let current = LEVELS[0];
+    let current =
+        LEVELS[0];
 
-    for(const level of LEVELS){
 
-        if(player.xp >= level.xp){
+    for(
+        const level of LEVELS
+    ){
+
+        if(
+            player.xp >=
+            level.xp
+        ){
+
             current = level;
+
         }
 
     }
 
+
     return current;
+
 }
 
 
 function addXP(amount,reason){
 
-    player.xp += Number(amount) || 0;
+    const value =
+        Number(amount) || 0;
+
+
+    player.xp += value;
+
 
     savePlayer();
 
     updateDashboard();
 
+
     if(reason){
-        showToast("⚡ +" + amount + " XP — " + reason);
+
+        showToast(
+            "⚡ +" +
+            value +
+            " XP — " +
+            reason
+        );
+
     }
+
 
     checkAchievements();
 
@@ -1432,24 +2097,58 @@ function addXP(amount,reason){
 
 function updateDashboard(){
 
-    const level = getLevel();
+    const level =
+        getLevel();
 
-    document.getElementById("xpValue").textContent =
+
+    document
+        .getElementById(
+            "xpValue"
+        )
+        .textContent =
         player.xp;
 
-    document.getElementById("levelName").textContent =
+
+    document
+        .getElementById(
+            "levelName"
+        )
+        .textContent =
         level.name;
 
+
     const levelIndex =
-        LEVELS.findIndex(x => x.name === level.name);
+        LEVELS.findIndex(
+            x =>
+            x.name ===
+            level.name
+        );
 
-    document.getElementById("levelValue").textContent =
-        "Level " + (levelIndex+1);
 
-    document.getElementById("streakValue").textContent =
+    document
+        .getElementById(
+            "levelValue"
+        )
+        .textContent =
+        "Level " +
+        (
+            levelIndex + 1
+        );
+
+
+    document
+        .getElementById(
+            "streakValue"
+        )
+        .textContent =
         player.streak;
 
-    document.getElementById("completedValue").textContent =
+
+    document
+        .getElementById(
+            "completedValue"
+        )
+        .textContent =
         player.completed.length;
 
 }
@@ -1465,48 +2164,77 @@ const ACHIEVEMENTS = [
         id:"first-lesson",
         icon:"📚",
         title:"First Step",
-        description:"Complete your first lesson.",
-        test:()=>player.completed.length >= 1
+        description:
+            "Complete your first lesson.",
+        test:
+            () =>
+            player.completed.length >= 1
     },
+
 
     {
         id:"five-lessons",
         icon:"🔥",
         title:"Getting Serious",
-        description:"Complete 5 lessons.",
-        test:()=>player.completed.length >= 5
+        description:
+            "Complete 5 lessons.",
+        test:
+            () =>
+            player.completed.length >= 5
     },
+
 
     {
         id:"first-quiz",
         icon:"🧠",
         title:"Quiz Rookie",
-        description:"Complete a quiz.",
-        test:()=>player.achievements.includes("quiz-complete")
+        description:
+            "Complete a quiz.",
+        test:
+            () =>
+            player.achievements
+                .includes(
+                    "quiz-complete"
+                )
     },
+
 
     {
         id:"perfect-quiz",
         icon:"💎",
         title:"Perfect Run",
-        description:"Get a perfect quiz score.",
-        test:()=>player.achievements.includes("perfect-quiz")
+        description:
+            "Get a perfect quiz score.",
+        test:
+            () =>
+            player.achievements
+                .includes(
+                    "perfect-quiz"
+                )
     },
+
 
     {
         id:"hundred-xp",
         icon:"⚡",
         title:"XP Hunter",
-        description:"Earn 100 XP.",
-        test:()=>player.xp >= 100
+        description:
+            "Earn 100 XP.",
+        test:
+            () =>
+            player.xp >= 100
     },
+
 
     {
         id:"five-hundred-xp",
         icon:"👑",
         title:"Quest Master",
-        description:"Earn 500 XP.",
-        test:()=>player.xp >= 500
+        description:
+            "Earn 500 XP.",
+        test:
+            () =>
+            player.xp >= 500
     }
 
 ];
@@ -1516,29 +2244,48 @@ function checkAchievements(){
 
     let changed = false;
 
-    for(const achievement of ACHIEVEMENTS){
+
+    for(
+        const achievement of
+        ACHIEVEMENTS
+    ){
 
         if(
+
             achievement.test() &&
-            !player.achievements.includes(achievement.id)
+
+            !player.achievements
+                .includes(
+                    achievement.id
+                )
+
         ){
 
-            player.achievements.push(achievement.id);
+            player.achievements.push(
+                achievement.id
+            );
 
             changed = true;
 
+
             showToast(
+
                 "🏅 Achievement unlocked: " +
                 achievement.title
+
             );
 
         }
 
     }
 
+
     if(changed){
+
         savePlayer();
+
         renderAchievements();
+
     }
 
 }
@@ -1547,37 +2294,77 @@ function checkAchievements(){
 function renderAchievements(){
 
     const grid =
-        document.getElementById("achievementGrid");
+        document.getElementById(
+            "achievementGrid"
+        );
+
+
+    if(!grid){
+        return;
+    }
+
 
     grid.innerHTML = "";
 
-    for(const achievement of ACHIEVEMENTS){
+
+    for(
+        const achievement of
+        ACHIEVEMENTS
+    ){
 
         const unlocked =
             achievement.test();
 
+
         const card =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
+
 
         card.className =
             "card achievement " +
-            (unlocked ? "" : "locked");
+            (
+                unlocked
+                ? ""
+                : "locked"
+            );
+
 
         card.innerHTML = `
+
             <div class="achievement-icon">
+
                 ${achievement.icon}
+
             </div>
 
             <div>
-                <h3>${escapeHTML(achievement.title)}</h3>
+
+                <h3>
+                    ${escapeHTML(
+                        achievement.title
+                    )}
+                </h3>
+
                 <p>
-                    ${escapeHTML(achievement.description)}
+                    ${escapeHTML(
+                        achievement.description
+                    )}
                 </p>
+
                 <small>
-                    ${unlocked ? "✓ Unlocked" : "🔒 Locked"}
+                    ${
+                        unlocked
+                        ? "✓ Unlocked"
+                        : "🔒 Locked"
+                    }
                 </small>
+
             </div>
+
         `;
+
 
         grid.appendChild(card);
 
@@ -1587,14 +2374,33 @@ function renderAchievements(){
 
 
 /* =========================================================
-   FIREBASE LOGIN
+   LOGIN
 ========================================================= */
 
 function openLogin(){
 
-    document
-        .getElementById("loginModal")
-        .classList.add("active");
+    const modal =
+        document.getElementById(
+            "loginModal"
+        );
+
+
+    const status =
+        document.getElementById(
+            "loginStatus"
+        );
+
+
+    if(status){
+
+        status.textContent = "";
+
+    }
+
+
+    modal.classList.add(
+        "active"
+    );
 
 }
 
@@ -1602,8 +2408,12 @@ function openLogin(){
 function closeLogin(){
 
     document
-        .getElementById("loginModal")
-        .classList.remove("active");
+        .getElementById(
+            "loginModal"
+        )
+        .classList.remove(
+            "active"
+        );
 
 }
 
@@ -1611,62 +2421,120 @@ function closeLogin(){
 async function loginWithGoogle(){
 
     const status =
-        document.getElementById("loginStatus");
+        document.getElementById(
+            "loginStatus"
+        );
 
-    if(!firebaseReady){
+
+    if(
+        !firebaseReady ||
+        !auth
+    ){
 
         status.textContent =
-            "Firebase configuration is not connected. Keep your existing Firebase configuration in this file.";
+            "Firebase is not initialized. Please refresh the page and try again.";
 
         return;
 
     }
 
+
     try{
+
+        status.textContent =
+            "Opening Google sign-in...";
+
 
         const provider =
             new firebase.auth.GoogleAuthProvider();
 
+
         provider.setCustomParameters({
-            prompt:"select_account"
+
+            prompt:
+                "select_account"
+
         });
 
-        await auth.signInWithPopup(provider);
 
-        closeLogin();
+        /*
+         * Redirect authentication is used instead
+         * of popup authentication.
+         *
+         * This works better on mobile browsers.
+         */
 
-        showToast("🔐 Google login successful!");
+        await auth
+            .signInWithRedirect(
+                provider
+            );
 
-    }catch(error){
+    }
 
-        console.error(error);
+    catch(error){
+
+        console.error(
+            "Google login failed:",
+            error
+        );
+
 
         status.textContent =
             error.message ||
-            "Google login failed.";
+            "Google login failed. Please try again.";
 
     }
 
 }
 
 
-function logoutUser(){
+async function logoutUser(){
 
-    if(!firebaseReady){
+    if(
+        !firebaseReady ||
+        !auth
+    ){
+
         return;
+
     }
 
-    auth.signOut()
-        .then(function(){
 
-            showToast("Logged out successfully.");
+    try{
 
-        })
-        .catch(function(error){
+        await auth.signOut();
 
-            console.error(error);
 
-        });
+        currentUser = null;
+
+
+        setPlayerStorageForUser(
+            "guest"
+        );
+
+
+        loadPlayer();
+
+
+        showToast(
+            "👋 Logged out successfully."
+        );
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Logout error:",
+            error
+        );
+
+
+        showToast(
+            "Logout failed. Please try again."
+        );
+
+    }
 
 }
 
@@ -1674,20 +2542,37 @@ function logoutUser(){
 function showLoggedInUser(user){
 
     document
-        .getElementById("loggedOutActions")
-        .classList.add("hidden");
+        .getElementById(
+            "loggedOutActions"
+        )
+        .classList.add(
+            "hidden"
+        );
+
 
     document
-        .getElementById("loggedInActions")
-        .classList.remove("hidden");
+        .getElementById(
+            "loggedInActions"
+        )
+        .classList.remove(
+            "hidden"
+        );
+
 
     document
-        .getElementById("userName")
+        .getElementById(
+            "userName"
+        )
         .textContent =
-        user.displayName || "Student";
+        user.displayName ||
+        "Student";
+
 
     const avatar =
-        document.getElementById("userAvatar");
+        document.getElementById(
+            "userAvatar"
+        );
+
 
     avatar.src =
         user.photoURL ||
@@ -1699,12 +2584,21 @@ function showLoggedInUser(user){
 function showLoggedOutUser(){
 
     document
-        .getElementById("loggedOutActions")
-        .classList.remove("hidden");
+        .getElementById(
+            "loggedOutActions"
+        )
+        .classList.remove(
+            "hidden"
+        );
+
 
     document
-        .getElementById("loggedInActions")
-        .classList.add("hidden");
+        .getElementById(
+            "loggedInActions"
+        )
+        .classList.add(
+            "hidden"
+        );
 
 }
 
@@ -1718,17 +2612,23 @@ function scrollToSection(id){
     const element =
         document.getElementById(id);
 
+
     if(element){
+
         element.scrollIntoView({
-            behavior:"smooth"
+
+            behavior:
+                "smooth"
+
         });
+
     }
 
 }
 
 
 /* =========================================================
-   COURSE API
+   COURSES
 ========================================================= */
 
 let courses = [];
@@ -1737,36 +2637,108 @@ let courses = [];
 async function loadCourses(){
 
     const grid =
-        document.getElementById("courseGrid");
+        document.getElementById(
+            "courseGrid"
+        );
+
 
     try{
 
         const response =
-            await fetch("/api/courses",{
-                cache:"no-store"
-            });
+            await fetch(
+                "/api/courses",
+                {
+                    cache:
+                        "no-store"
+                }
+            );
+
 
         if(!response.ok){
-            throw new Error("Course API failed");
+
+            throw new Error(
+                "Course API failed: " +
+                response.status
+            );
+
         }
 
-        courses =
+
+        const data =
             await response.json();
+
+
+        /*
+         * Supports both:
+         *
+         * [
+         *   {...}
+         * ]
+         *
+         * and:
+         *
+         * {
+         *   courses:[...]
+         * }
+         */
+
+        if(
+            Array.isArray(data)
+        ){
+
+            courses = data;
+
+        }
+
+        else if(
+            data &&
+            Array.isArray(
+                data.courses
+            )
+        ){
+
+            courses =
+                data.courses;
+
+        }
+
+        else{
+
+            courses = [];
+
+        }
+
 
         renderCourses();
 
-    }catch(error){
+    }
 
-        console.error(error);
+    catch(error){
+
+        console.error(
+            "Course error:",
+            error
+        );
+
 
         grid.innerHTML = `
+
             <div class="card">
-                <div class="card-icon">⚠️</div>
-                <h3>Courses unavailable</h3>
+
+                <div class="card-icon">
+                    ⚠️
+                </div>
+
+                <h3>
+                    Courses unavailable
+                </h3>
+
                 <p>
                     The Flask course API could not be reached.
                 </p>
+
             </div>
+
         `;
 
     }
@@ -1777,56 +2749,133 @@ async function loadCourses(){
 function renderCourses(){
 
     const grid =
-        document.getElementById("courseGrid");
+        document.getElementById(
+            "courseGrid"
+        );
+
 
     grid.innerHTML = "";
 
-    courses.forEach((course,index)=>{
 
-        const card =
-            document.createElement("div");
+    if(!courses.length){
 
-        card.className = "card";
+        grid.innerHTML = `
 
-        const chapterCount =
-            Array.isArray(course.chapters)
-            ? course.chapters.length
-            : 0;
+            <div class="card">
 
-        card.innerHTML = `
-            <div class="card-icon">
-                ${escapeHTML(course.icon || "📘")}
-            </div>
+                <div class="card-icon">
+                    📚
+                </div>
 
-            <h3>${escapeHTML(course.title)}</h3>
+                <h3>
+                    No courses available
+                </h3>
 
-            <p>
-                ${escapeHTML(course.description || "")}
-            </p>
-
-            <div class="card-footer">
-
-                <span class="level">
-                    ${escapeHTML(course.level || "Beginner")}
-                </span>
-
-                <span style="color:#9ca3af;font-size:12px">
-                    ${chapterCount} lessons
-                </span>
+                <p>
+                    Add courses to the Flask API.
+                </p>
 
             </div>
 
-            <button
-                class="btn btn-primary"
-                style="width:100%;margin-top:15px"
-                onclick="openCourse(${index})">
-                🚀 Enter Course
-            </button>
         `;
 
-        grid.appendChild(card);
+        return;
 
-    });
+    }
+
+
+    courses.forEach(
+        (course,index) => {
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "card";
+
+
+            const chapters =
+                Array.isArray(
+                    course.chapters
+                )
+                ? course.chapters
+                : [];
+
+
+            card.innerHTML = `
+
+                <div class="card-icon">
+
+                    ${escapeHTML(
+                        course.icon ||
+                        "📘"
+                    )}
+
+                </div>
+
+
+                <h3>
+                    ${escapeHTML(
+                        course.title ||
+                        "Course"
+                    )}
+                </h3>
+
+
+                <p>
+                    ${escapeHTML(
+                        course.description ||
+                        ""
+                    )}
+                </p>
+
+
+                <div class="card-footer">
+
+                    <span class="level">
+
+                        ${escapeHTML(
+                            course.level ||
+                            "Beginner"
+                        )}
+
+                    </span>
+
+
+                    <span
+                        style="
+                            color:#9ca3af;
+                            font-size:12px">
+
+                        ${chapters.length}
+                        lessons
+
+                    </span>
+
+                </div>
+
+
+                <button
+                    class="btn btn-primary"
+                    style="
+                        width:100%;
+                        margin-top:15px"
+                    onclick="openCourse(${index})">
+
+                    🚀 Enter Course
+
+                </button>
+
+            `;
+
+
+            grid.appendChild(card);
+
+        }
+    );
 
 }
 
@@ -1837,109 +2886,219 @@ function renderCourses(){
 
 function openCourse(index){
 
-    const course = courses[index];
+    const course =
+        courses[index];
+
 
     if(!course){
         return;
     }
 
-    document
-        .getElementById("courseModalTitle")
-        .textContent =
-        course.icon + " " + course.title;
+
+    const chapters =
+        Array.isArray(
+            course.chapters
+        )
+        ? course.chapters
+        : [];
+
 
     document
-        .getElementById("courseModalSub")
+        .getElementById(
+            "courseModalTitle"
+        )
         .textContent =
-        course.level + " • " +
-        course.chapters.length +
+        (
+            course.icon ||
+            "📘"
+        ) +
+        " " +
+        (
+            course.title ||
+            "Course"
+        );
+
+
+    document
+        .getElementById(
+            "courseModalSub"
+        )
+        .textContent =
+        (
+            course.level ||
+            "Beginner"
+        ) +
+        " • " +
+        chapters.length +
         " lessons";
 
+
     const body =
-        document.getElementById("courseModalBody");
+        document.getElementById(
+            "courseModalBody"
+        );
+
 
     body.innerHTML = "";
 
+
     const list =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
-    list.className = "chapter-list";
 
-    course.chapters.forEach((chapter,chapterIndex)=>{
+    list.className =
+        "chapter-list";
 
-        const chapterBox =
-            document.createElement("div");
 
-        chapterBox.className = "chapter";
+    chapters.forEach(
+        (chapter,chapterIndex) => {
 
-        const safeId =
-            "chapter-" +
-            index +
-            "-" +
-            chapterIndex;
+            const chapterBox =
+                document.createElement(
+                    "div"
+                );
 
-        const completed =
-            player.completed.includes(
-                course.id + "::" + chapter.title
+
+            chapterBox.className =
+                "chapter";
+
+
+            const safeId =
+                "chapter-" +
+                index +
+                "-" +
+                chapterIndex;
+
+
+            const chapterTitle =
+                chapter.title ||
+                "Lesson " +
+                (
+                    chapterIndex + 1
+                );
+
+
+            const completed =
+                player.completed.includes(
+
+                    (
+                        course.id ||
+                        course.title ||
+                        "course"
+                    ) +
+                    "::" +
+                    chapterTitle
+
+                );
+
+
+            chapterBox.innerHTML = `
+
+                <div class="chapter-top">
+
+                    <div class="chapter-title">
+
+                        ${chapterIndex + 1}.
+                        ${escapeHTML(
+                            chapterTitle
+                        )}
+
+                    </div>
+
+
+                    <button
+                        class="btn"
+                        onclick="toggleChapter('${safeId}')">
+
+                        ${
+                            completed
+                            ? "✓ Completed"
+                            : "Open"
+                        }
+
+                    </button>
+
+                </div>
+
+
+                <div
+                    id="${safeId}"
+                    class="chapter-content">
+
+                    <div class="lesson">
+
+                        ${escapeHTML(
+                            chapter.lesson ||
+                            "Lesson content coming soon."
+                        )}
+
+                    </div>
+
+
+                    <div class="code-title">
+
+                        💻 Coding Example
+
+                    </div>
+
+
+                    <div class="code-box">
+
+                        <pre>${escapeHTML(
+                            chapter.sample ||
+                            "// Coding example coming soon."
+                        )}</pre>
+
+                    </div>
+
+
+                    <button
+                        class="btn btn-primary"
+                        style="margin-top:15px"
+                        onclick="completeLesson(
+                            '${escapeJS(
+                                course.id ||
+                                course.title ||
+                                "course"
+                            )}',
+                            '${escapeJS(
+                                chapterTitle
+                            )}'
+                        )">
+
+                        ${
+                            completed
+                            ? "✓ Lesson Completed"
+                            : "⚡ Complete Lesson +20 XP"
+                        }
+
+                    </button>
+
+                </div>
+
+            `;
+
+
+            list.appendChild(
+                chapterBox
             );
 
-        chapterBox.innerHTML = `
-            <div class="chapter-top">
+        }
+    );
 
-                <div class="chapter-title">
-                    ${chapterIndex+1}.
-                    ${escapeHTML(chapter.title)}
-                </div>
-
-                <button
-                    class="btn"
-                    onclick="toggleChapter('${safeId}')">
-                    ${completed ? "✓ Completed" : "Open"}
-                </button>
-
-            </div>
-
-            <div
-                id="${safeId}"
-                class="chapter-content">
-
-                <div class="lesson">
-                    ${escapeHTML(chapter.lesson || "")}
-                </div>
-
-                <div class="code-title">
-                    💻 Coding Example
-                </div>
-
-                <div class="code-box">
-                    <pre>${escapeHTML(
-                        chapter.sample ||
-                        "// Coding example coming soon."
-                    )}</pre>
-                </div>
-
-                <button
-                    class="btn btn-primary"
-                    style="margin-top:15px"
-                    onclick="completeLesson(
-                        '${escapeJS(course.id)}',
-                        '${escapeJS(chapter.title)}'
-                    )">
-                    ${completed ? "✓ Lesson Completed" : "⚡ Complete Lesson +20 XP"}
-                </button>
-
-            </div>
-        `;
-
-        list.appendChild(chapterBox);
-
-    });
 
     body.appendChild(list);
 
+
     document
-        .getElementById("courseModal")
-        .classList.add("active");
+        .getElementById(
+            "courseModal"
+        )
+        .classList.add(
+            "active"
+        );
 
 }
 
@@ -1949,8 +3108,14 @@ function toggleChapter(id){
     const element =
         document.getElementById(id);
 
+
     if(element){
-        element.parentElement.classList.toggle("open");
+
+        element.parentElement
+            .classList.toggle(
+                "open"
+            );
+
     }
 
 }
@@ -1959,30 +3124,55 @@ function toggleChapter(id){
 function closeCourse(){
 
     document
-        .getElementById("courseModal")
-        .classList.remove("active");
+        .getElementById(
+            "courseModal"
+        )
+        .classList.remove(
+            "active"
+        );
 
 }
 
 
-function completeLesson(courseId,chapterTitle){
+function completeLesson(
+    courseId,
+    chapterTitle
+){
 
     const key =
-        courseId + "::" + chapterTitle;
+        courseId +
+        "::" +
+        chapterTitle;
 
-    if(player.completed.includes(key)){
 
-        showToast("Already completed ✓");
+    if(
+        player.completed.includes(
+            key
+        )
+    ){
+
+        showToast(
+            "Already completed ✓"
+        );
 
         return;
 
     }
 
-    player.completed.push(key);
+
+    player.completed.push(
+        key
+    );
+
 
     savePlayer();
 
-    addXP(20,"Lesson completed");
+
+    addXP(
+        20,
+        "Lesson completed"
+    );
+
 
     updateDashboard();
 
@@ -1992,7 +3182,7 @@ function completeLesson(courseId,chapterTitle){
 
 
 /* =========================================================
-   QUIZ SYSTEM
+   QUIZ
 ========================================================= */
 
 let allQuestions = [];
@@ -2005,44 +3195,87 @@ let quizTimer = null;
 let quizSeconds = 30;
 
 let quizRunning = false;
+
 let quizViolations = 0;
+
 let quizInactivityTimer = null;
-let lastActivity = Date.now();
+
+let lastActivity =
+    Date.now();
+
 
 const MAX_VIOLATIONS = 3;
-const INACTIVITY_LIMIT = 60000;
+
+const INACTIVITY_LIMIT =
+    60000;
 
 
 async function startQuiz(){
 
-    if(!allQuestions.length){
+    if(
+        quizRunning
+    ){
+
+        return;
+
+    }
+
+
+    if(
+        !allQuestions.length
+    ){
 
         try{
 
             const response =
-                await fetch("/api/quiz",{
-                    cache:"no-store"
-                });
+                await fetch(
+                    "/api/quiz",
+                    {
+                        cache:
+                            "no-store"
+                    }
+                );
+
 
             if(!response.ok){
-                throw new Error("Quiz API unavailable");
+
+                throw new Error(
+                    "Quiz API unavailable"
+                );
+
             }
+
 
             const data =
                 await response.json();
 
+
             allQuestions =
-                Array.isArray(data.questions)
+                Array.isArray(
+                    data.questions
+                )
                 ? data.questions
-                : [];
+                : (
+                    Array.isArray(data)
+                    ? data
+                    : []
+                );
 
-        }catch(error){
 
-            console.error(error);
+        }
+
+        catch(error){
+
+            console.error(
+                "Quiz error:",
+                error
+            );
+
 
             showToast(
                 "Quiz service is unavailable."
             );
+
 
             return;
 
@@ -2050,48 +3283,89 @@ async function startQuiz(){
 
     }
 
-    if(!allQuestions.length){
 
-        showToast("No quiz questions available.");
+    if(
+        !allQuestions.length
+    ){
+
+        showToast(
+            "No quiz questions available."
+        );
+
 
         return;
 
     }
 
+
     const unique = [];
 
-    const seen = new Set();
+    const seen =
+        new Set();
 
-    for(const question of allQuestions){
+
+    for(
+        const question
+        of allQuestions
+    ){
 
         const key =
-            String(question.question || "").trim();
+            String(
+                question.question ||
+                ""
+            )
+            .trim();
 
-        if(!seen.has(key)){
+
+        if(
+            key &&
+            !seen.has(key)
+        ){
 
             seen.add(key);
 
-            unique.push(question);
+            unique.push(
+                question
+            );
 
         }
 
     }
 
+
     shuffle(unique);
 
+
     quizQuestions =
-        unique.slice(0,10);
+        unique.slice(
+            0,
+            Math.min(
+                10,
+                unique.length
+            )
+        );
+
 
     quizIndex = 0;
+
     quizScore = 0;
+
     quizViolations = 0;
+
     quizRunning = true;
 
+
     document
-        .getElementById("quizModal")
-        .classList.add("active");
+        .getElementById(
+            "quizModal"
+        )
+        .classList.add(
+            "active"
+        );
+
 
     renderQuizQuestion();
+
 
     requestQuizFullscreen();
 
@@ -2106,7 +3380,11 @@ function renderQuizQuestion(){
         return;
     }
 
-    if(quizIndex >= quizQuestions.length){
+
+    if(
+        quizIndex >=
+        quizQuestions.length
+    ){
 
         finishQuiz();
 
@@ -2114,109 +3392,174 @@ function renderQuizQuestion(){
 
     }
 
+
     const question =
-        quizQuestions[quizIndex];
+        quizQuestions[
+            quizIndex
+        ];
+
 
     quizAnswered = false;
 
     quizSeconds = 30;
 
+
     const container =
-        document.getElementById("quizGame");
+        document.getElementById(
+            "quizGame"
+        );
+
 
     container.innerHTML = `
+
         <div class="quiz-layout">
 
             <div class="quiz-main">
 
                 <div class="quiz-meta">
-                    <span>
-                        Question ${quizIndex+1}
-                        / ${quizQuestions.length}
-                    </span>
 
                     <span>
-                        ${escapeHTML(question.topic || "Computer Science")}
+
+                        Question
+                        ${quizIndex + 1}
+                        /
+                        ${quizQuestions.length}
+
                     </span>
+
+
+                    <span>
+
+                        ${escapeHTML(
+                            question.topic ||
+                            "Computer Science"
+                        )}
+
+                    </span>
+
                 </div>
+
 
                 <div class="quiz-question">
-                    ${escapeHTML(question.question || "")}
+
+                    ${escapeHTML(
+                        question.question ||
+                        ""
+                    )}
+
                 </div>
 
-                <div id="options" class="options"></div>
+
+                <div
+                    id="options"
+                    class="options">
+
+                </div>
+
 
                 <div
                     id="quizViolation"
                     class="violation hidden">
+
                 </div>
+
 
                 <div class="quiz-bottom">
 
                     <span
                         id="quizTimer"
                         class="timer">
+
                         30s
+
                     </span>
+
 
                     <button
                         id="nextBtn"
                         class="btn btn-primary hidden"
                         onclick="nextQuestion()">
+
                         Next →
+
                     </button>
 
                 </div>
 
             </div>
 
+
             <aside class="quiz-side">
 
-                <h3>🛡️ Safe Quiz</h3>
+                <h3>
+                    🛡️ Safe Quiz
+                </h3>
 
-                <p style="
-                    color:#9ca3af;
-                    font-size:12px;
-                    line-height:1.7;
-                    margin-top:10px">
+
+                <p
+                    style="
+                        color:#9ca3af;
+                        font-size:12px;
+                        line-height:1.7;
+                        margin-top:10px">
+
                     Stay on this quiz screen.
                     Leaving the tab, switching windows,
                     exiting fullscreen or remaining inactive
                     can create a violation.
+
                 </p>
 
-                <div style="margin-top:20px">
 
-                    <div style="
-                        color:#9ca3af;
-                        font-size:12px">
+                <div
+                    style="margin-top:20px">
+
+                    <div
+                        style="
+                            color:#9ca3af;
+                            font-size:12px">
+
                         Score
+
                     </div>
 
-                    <div id="liveScore"
-                         style="
-                         font-size:30px;
-                         font-weight:900;
-                         margin-top:4px">
+
+                    <div
+                        id="liveScore"
+                        style="
+                            font-size:30px;
+                            font-weight:900;
+                            margin-top:4px">
+
                         ${quizScore}
+
                     </div>
 
                 </div>
 
-                <div style="margin-top:20px">
 
-                    <div style="
-                        color:#9ca3af;
-                        font-size:12px">
+                <div
+                    style="margin-top:20px">
+
+                    <div
+                        style="
+                            color:#9ca3af;
+                            font-size:12px">
+
                         Violations
+
                     </div>
 
-                    <div id="violationCount"
-                         style="
-                         font-size:25px;
-                         font-weight:900;
-                         margin-top:4px">
+
+                    <div
+                        id="violationCount"
+                        style="
+                            font-size:25px;
+                            font-weight:900;
+                            margin-top:4px">
+
                         ${quizViolations}/${MAX_VIOLATIONS}
+
                     </div>
 
                 </div>
@@ -2224,161 +3567,305 @@ function renderQuizQuestion(){
             </aside>
 
         </div>
+
     `;
 
+
     const options =
-        document.getElementById("options");
+        document.getElementById(
+            "options"
+        );
+
 
     const shuffledOptions =
-        [...(question.options || [])];
+        Array.isArray(
+            question.options
+        )
+        ? [...question.options]
+        : [];
 
-    shuffle(shuffledOptions);
 
-    shuffledOptions.forEach(option=>{
+    shuffle(
+        shuffledOptions
+    );
 
-        const button =
-            document.createElement("button");
 
-        button.className = "option";
+    shuffledOptions.forEach(
+        option => {
 
-        button.textContent = option;
+            const button =
+                document.createElement(
+                    "button"
+                );
 
-        button.onclick =
-            ()=>answerQuestion(option,button);
 
-        options.appendChild(button);
+            button.className =
+                "option";
 
-    });
+
+            button.textContent =
+                option;
+
+
+            button.onclick =
+                () =>
+                answerQuestion(
+                    option,
+                    button
+                );
+
+
+            options.appendChild(
+                button
+            );
+
+        }
+    );
+
 
     startQuestionTimer();
 
 }
 
 
-function answerQuestion(answer,button){
+function answerQuestion(
+    answer,
+    button
+){
 
-    if(quizAnswered || !quizRunning){
+    if(
+        quizAnswered ||
+        !quizRunning
+    ){
+
         return;
+
     }
+
 
     quizAnswered = true;
 
-    clearInterval(quizTimer);
+
+    clearInterval(
+        quizTimer
+    );
+
 
     const question =
-        quizQuestions[quizIndex];
+        quizQuestions[
+            quizIndex
+        ];
+
 
     const correct =
         String(answer) ===
-        String(question.answer);
+        String(
+            question.answer
+        );
+
 
     document
-        .querySelectorAll(".option")
-        .forEach(option=>{
+        .querySelectorAll(
+            ".option"
+        )
+        .forEach(
+            option => {
 
-            option.disabled = true;
+                option.disabled =
+                    true;
 
-            if(
-                option.textContent ===
-                String(question.answer)
-            ){
 
-                option.classList.add("correct");
+                if(
+                    option.textContent ===
+                    String(
+                        question.answer
+                    )
+                ){
+
+                    option.classList
+                        .add(
+                            "correct"
+                        );
+
+                }
 
             }
+        );
 
-        });
 
     if(correct){
 
         quizScore++;
 
-        button.classList.add("correct");
 
-        addXP(10,"Correct quiz answer");
+        button.classList.add(
+            "correct"
+        );
 
-    }else{
 
-        button.classList.add("wrong");
+        addXP(
+            10,
+            "Correct quiz answer"
+        );
 
     }
 
-    document
-        .getElementById("liveScore")
-        .textContent = quizScore;
+    else{
 
-    document
-        .getElementById("nextBtn")
-        .classList.remove("hidden");
+        button.classList.add(
+            "wrong"
+        );
+
+    }
+
+
+    const liveScore =
+        document.getElementById(
+            "liveScore"
+        );
+
+
+    if(liveScore){
+
+        liveScore.textContent =
+            quizScore;
+
+    }
+
+
+    const next =
+        document.getElementById(
+            "nextBtn"
+        );
+
+
+    if(next){
+
+        next.classList.remove(
+            "hidden"
+        );
+
+    }
 
 }
 
 
 function startQuestionTimer(){
 
-    clearInterval(quizTimer);
+    clearInterval(
+        quizTimer
+    );
+
 
     quizSeconds = 30;
 
+
     const timer =
-        document.getElementById("quizTimer");
+        document.getElementById(
+            "quizTimer"
+        );
+
 
     quizTimer =
-        setInterval(function(){
+        setInterval(
+            function(){
 
-            quizSeconds--;
+                quizSeconds--;
 
-            if(timer){
 
-                timer.textContent =
-                    quizSeconds + "s";
+                if(timer){
 
-                timer.classList.toggle(
-                    "warning",
-                    quizSeconds <= 10
-                );
+                    timer.textContent =
+                        quizSeconds +
+                        "s";
 
-                timer.classList.toggle(
-                    "danger",
-                    quizSeconds <= 5
-                );
 
-            }
+                    timer.classList.toggle(
+                        "warning",
+                        quizSeconds <= 10
+                    );
 
-            if(quizSeconds <= 0){
 
-                clearInterval(quizTimer);
-
-                if(!quizAnswered){
-
-                    quizAnswered = true;
-
-                    document
-                        .querySelectorAll(".option")
-                        .forEach(option=>{
-                            option.disabled = true;
-                        });
-
-                    document
-                        .getElementById("nextBtn")
-                        .classList.remove("hidden");
-
-                    showToast(
-                        "⏰ Time up!"
+                    timer.classList.toggle(
+                        "danger",
+                        quizSeconds <= 5
                     );
 
                 }
 
-            }
 
-        },1000);
+                if(
+                    quizSeconds <= 0
+                ){
+
+                    clearInterval(
+                        quizTimer
+                    );
+
+
+                    if(
+                        !quizAnswered
+                    ){
+
+                        quizAnswered =
+                            true;
+
+
+                        document
+                            .querySelectorAll(
+                                ".option"
+                            )
+                            .forEach(
+                                option => {
+
+                                    option.disabled =
+                                        true;
+
+                                }
+                            );
+
+
+                        const next =
+                            document
+                                .getElementById(
+                                    "nextBtn"
+                                );
+
+
+                        if(next){
+
+                            next.classList
+                                .remove(
+                                    "hidden"
+                                );
+
+                        }
+
+
+                        showToast(
+                            "⏰ Time up!"
+                        );
+
+                    }
+
+                }
+
+            },
+            1000
+        );
 
 }
 
 
 function nextQuestion(){
 
+    if(!quizRunning){
+        return;
+    }
+
+
     quizIndex++;
+
 
     renderQuizQuestion();
 
@@ -2389,30 +3876,73 @@ function finishQuiz(){
 
     quizRunning = false;
 
-    clearInterval(quizTimer);
-    clearInterval(quizInactivityTimer);
+
+    clearInterval(
+        quizTimer
+    );
+
+
+    clearInterval(
+        quizInactivityTimer
+    );
+
 
     exitQuizFullscreen();
 
-    player.achievements.push("quiz-complete");
 
     if(
-        quizScore === quizQuestions.length &&
-        !player.achievements.includes("perfect-quiz")
+        !player.achievements
+            .includes(
+                "quiz-complete"
+            )
     ){
 
-        player.achievements.push("perfect-quiz");
-
-        addXP(100,"Perfect quiz");
-
-    }else{
-
-        addXP(
-            25 + (quizScore * 5),
-            "Quiz completed"
+        player.achievements.push(
+            "quiz-complete"
         );
 
     }
+
+
+    if(
+
+        quizScore ===
+        quizQuestions.length &&
+
+        !player.achievements
+            .includes(
+                "perfect-quiz"
+            )
+
+    ){
+
+        player.achievements.push(
+            "perfect-quiz"
+        );
+
+
+        addXP(
+            100,
+            "Perfect quiz"
+        );
+
+    }
+
+    else{
+
+        addXP(
+
+            25 +
+            (
+                quizScore * 5
+            ),
+
+            "Quiz completed"
+
+        );
+
+    }
+
 
     savePlayer();
 
@@ -2420,42 +3950,76 @@ function finishQuiz(){
 
     renderAchievements();
 
+
     const percentage =
         Math.round(
-            (quizScore / quizQuestions.length)*100
+
+            (
+                quizScore /
+                quizQuestions.length
+            ) *
+            100
+
         );
 
+
     document
-        .getElementById("quizGame")
+        .getElementById(
+            "quizGame"
+        )
         .innerHTML = `
+
             <div class="result">
 
                 <div style="font-size:60px">
-                    ${percentage >= 80 ? "🏆" : "🎯"}
+
+                    ${
+                        percentage >= 80
+                        ? "🏆"
+                        : "🎯"
+                    }
+
                 </div>
 
-                <h2 style="margin-top:10px">
+
+                <h2
+                    style="margin-top:10px">
+
                     Quiz Complete!
+
                 </h2>
 
+
                 <div class="result-score">
-                    ${quizScore}/${quizQuestions.length}
+
+                    ${quizScore}/
+                    ${quizQuestions.length}
+
                 </div>
 
-                <p style="
-                    color:#9ca3af;
-                    margin-top:10px">
-                    ${percentage}% correct
+
+                <p
+                    style="
+                        color:#9ca3af;
+                        margin-top:10px">
+
+                    ${percentage}%
+                    correct
+
                 </p>
+
 
                 <button
                     class="btn btn-primary"
                     style="margin-top:25px"
                     onclick="closeQuiz()">
+
                     Continue Quest
+
                 </button>
 
             </div>
+
         `;
 
 }
@@ -2471,6 +4035,7 @@ function attemptCloseQuiz(){
 
     }
 
+
     addQuizViolation(
         "You tried to leave the active quiz."
     );
@@ -2482,32 +4047,52 @@ function closeQuiz(){
 
     quizRunning = false;
 
-    clearInterval(quizTimer);
-    clearInterval(quizInactivityTimer);
+
+    clearInterval(
+        quizTimer
+    );
+
+
+    clearInterval(
+        quizInactivityTimer
+    );
+
 
     exitQuizFullscreen();
 
+
     document
-        .getElementById("quizModal")
-        .classList.remove("active");
+        .getElementById(
+            "quizModal"
+        )
+        .classList.remove(
+            "active"
+        );
 
 }
 
 
 /* =========================================================
-   QUIZ ANTI-MALPRACTICE
+   QUIZ SECURITY
 ========================================================= */
 
-function addQuizViolation(reason){
+function addQuizViolation(
+    reason
+){
 
     if(!quizRunning){
         return;
     }
 
+
     quizViolations++;
 
+
     const message =
-        document.getElementById("quizViolation");
+        document.getElementById(
+            "quizViolation"
+        );
+
 
     if(message){
 
@@ -2519,12 +4104,19 @@ function addQuizViolation(reason){
             "/" +
             MAX_VIOLATIONS;
 
-        message.classList.remove("hidden");
+
+        message.classList.remove(
+            "hidden"
+        );
 
     }
 
+
     const count =
-        document.getElementById("violationCount");
+        document.getElementById(
+            "violationCount"
+        );
+
 
     if(count){
 
@@ -2535,17 +4127,26 @@ function addQuizViolation(reason){
 
     }
 
+
     showToast(
+
         "⚠️ Quiz violation " +
         quizViolations +
         "/" +
         MAX_VIOLATIONS
+
     );
 
-    if(quizViolations >= MAX_VIOLATIONS){
+
+    if(
+        quizViolations >=
+        MAX_VIOLATIONS
+    ){
 
         terminateQuiz(
+
             "Quiz terminated because the maximum number of security violations was reached."
+
         );
 
     }
@@ -2556,8 +4157,10 @@ function addQuizViolation(reason){
 function handleVisibilityChange(){
 
     if(
+
         quizRunning &&
         document.hidden
+
     ){
 
         addQuizViolation(
@@ -2585,8 +4188,10 @@ function handleWindowBlur(){
 function handleFullscreenChange(){
 
     if(
+
         quizRunning &&
         !document.fullscreenElement
+
     ){
 
         addQuizViolation(
@@ -2603,14 +4208,19 @@ function requestQuizFullscreen(){
     const element =
         document.documentElement;
 
+
     if(
+
         document.fullscreenEnabled &&
         !document.fullscreenElement
+
     ){
 
         element
             .requestFullscreen()
-            .catch(()=>{});
+            .catch(
+                () => {}
+            );
 
     }
 
@@ -2619,11 +4229,15 @@ function requestQuizFullscreen(){
 
 function exitQuizFullscreen(){
 
-    if(document.fullscreenElement){
+    if(
+        document.fullscreenElement
+    ){
 
         document
             .exitFullscreen()
-            .catch(()=>{});
+            .catch(
+                () => {}
+            );
 
     }
 
@@ -2632,36 +4246,54 @@ function exitQuizFullscreen(){
 
 function startInactivityMonitor(){
 
-    lastActivity = Date.now();
+    lastActivity =
+        Date.now();
 
-    clearInterval(quizInactivityTimer);
+
+    clearInterval(
+        quizInactivityTimer
+    );
+
 
     quizInactivityTimer =
-        setInterval(function(){
+        setInterval(
 
-            if(!quizRunning){
-                return;
-            }
+            function(){
 
-            const inactive =
-                Date.now() -
-                lastActivity;
+                if(
+                    !quizRunning
+                ){
 
-            if(
-                inactive >=
-                INACTIVITY_LIMIT
-            ){
+                    return;
 
-                lastActivity =
-                    Date.now();
+                }
 
-                addQuizViolation(
-                    "No activity was detected for 60 seconds."
-                );
 
-            }
+                const inactive =
+                    Date.now() -
+                    lastActivity;
 
-        },5000);
+
+                if(
+                    inactive >=
+                    INACTIVITY_LIMIT
+                ){
+
+                    lastActivity =
+                        Date.now();
+
+
+                    addQuizViolation(
+                        "No activity was detected for 60 seconds."
+                    );
+
+                }
+
+            },
+
+            5000
+
+        );
 
 }
 
@@ -2680,15 +4312,23 @@ function resetActivity(){
     "keydown",
     "touchstart",
     "scroll"
-].forEach(event=>{
+].forEach(
+    event => {
 
-    document.addEventListener(
-        event,
-        resetActivity,
-        {passive:true}
-    );
+        document.addEventListener(
 
-});
+            event,
+
+            resetActivity,
+
+            {
+                passive:true
+            }
+
+        );
+
+    }
+);
 
 
 document.addEventListener(
@@ -2696,10 +4336,12 @@ document.addEventListener(
     handleVisibilityChange
 );
 
+
 window.addEventListener(
     "blur",
     handleWindowBlur
 );
+
 
 document.addEventListener(
     "fullscreenchange",
@@ -2707,43 +4349,71 @@ document.addEventListener(
 );
 
 
-function terminateQuiz(reason){
+function terminateQuiz(
+    reason
+){
 
     quizRunning = false;
 
-    clearInterval(quizTimer);
-    clearInterval(quizInactivityTimer);
+
+    clearInterval(
+        quizTimer
+    );
+
+
+    clearInterval(
+        quizInactivityTimer
+    );
+
 
     exitQuizFullscreen();
 
+
     document
-        .getElementById("quizGame")
+        .getElementById(
+            "quizGame"
+        )
         .innerHTML = `
+
             <div class="result">
 
                 <div style="font-size:60px">
                     🚫
                 </div>
 
-                <h2 style="margin-top:10px">
+
+                <h2
+                    style="margin-top:10px">
+
                     Quiz Terminated
+
                 </h2>
 
-                <p style="
-                    color:#fca5a5;
-                    margin-top:12px;
-                    line-height:1.6">
-                    ${escapeHTML(reason)}
+
+                <p
+                    style="
+                        color:#fca5a5;
+                        margin-top:12px;
+                        line-height:1.6">
+
+                    ${escapeHTML(
+                        reason
+                    )}
+
                 </p>
+
 
                 <button
                     class="btn btn-primary"
                     style="margin-top:25px"
                     onclick="closeQuiz()">
+
                     Return to Dashboard
+
                 </button>
 
             </div>
+
         `;
 
 }
@@ -2759,27 +4429,71 @@ let careers = [];
 async function loadCareers(){
 
     const grid =
-        document.getElementById("careerGrid");
+        document.getElementById(
+            "careerGrid"
+        );
+
 
     try{
 
         const response =
-            await fetch("/api/careers",{
-                cache:"no-store"
-            });
+            await fetch(
+                "/api/careers",
+                {
+                    cache:
+                        "no-store"
+                }
+            );
+
 
         if(!response.ok){
-            throw new Error("Career API failed");
+
+            throw new Error(
+                "Career API failed"
+            );
+
         }
 
-        careers =
+
+        const data =
             await response.json();
 
-        renderCareers();
 
-    }catch(error){
+        careers =
+            Array.isArray(data)
+            ? data
+            : (
+                Array.isArray(
+                    data.careers
+                )
+                ? data.careers
+                : []
+            );
 
-        console.error(error);
+
+        if(
+            !careers.length
+        ){
+
+            renderDefaultCareerGuide();
+
+        }
+
+        else{
+
+            renderCareers();
+
+        }
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Career error:",
+            error
+        );
+
 
         renderDefaultCareerGuide();
 
@@ -2791,100 +4505,149 @@ async function loadCareers(){
 function renderCareers(){
 
     const grid =
-        document.getElementById("careerGrid");
+        document.getElementById(
+            "careerGrid"
+        );
+
 
     grid.innerHTML = "";
 
-    careers.forEach(career=>{
 
-        const card =
-            document.createElement("div");
+    careers.forEach(
+        career => {
 
-        card.className = "card";
+            const card =
+                document.createElement(
+                    "div"
+                );
 
-        card.innerHTML = `
-            <div class="card-icon">
-                ${escapeHTML(
-                    String(career.title || "🚀")
-                        .slice(0,2)
-                )}
-            </div>
 
-            <h3>
-                ${escapeHTML(career.title || "Career Guide")}
-            </h3>
+            card.className =
+                "card";
 
-            <div class="career-content">
-                ${escapeHTML(career.content || "")}
-            </div>
 
-            <div class="tip-list">
+            card.innerHTML = `
 
-                <div class="tip">
-                    💡 Build real projects.
+                <div class="card-icon">
+
+                    ${escapeHTML(
+                        String(
+                            career.icon ||
+                            "🚀"
+                        )
+                    )}
+
                 </div>
 
-                <div class="tip">
-                    🐙 Keep your GitHub active.
+
+                <h3>
+
+                    ${escapeHTML(
+                        career.title ||
+                        "Career Guide"
+                    )}
+
+                </h3>
+
+
+                <div class="career-content">
+
+                    ${escapeHTML(
+                        career.content ||
+                        ""
+                    )}
+
                 </div>
 
-                <div class="tip">
-                    🎯 Practice coding and interviews.
+
+                <div class="tip-list">
+
+                    <div class="tip">
+                        💡 Build real projects.
+                    </div>
+
+                    <div class="tip">
+                        🐙 Keep your GitHub active.
+                    </div>
+
+                    <div class="tip">
+                        🎯 Practice coding and interviews.
+                    </div>
+
                 </div>
 
-            </div>
-        `;
+            `;
 
-        grid.appendChild(card);
 
-    });
+            grid.appendChild(
+                card
+            );
+
+        }
+    );
 
 }
 
 
 function renderDefaultCareerGuide(){
 
-    const fallback = [
+    careers = [
 
         {
-            title:"🎓 Internship Strategy",
+            title:
+                "🎓 Internship Strategy",
+
             content:
-            "Build 2–4 meaningful projects, learn Git and GitHub, prepare a simple resume, practice coding and apply consistently. A project that solves a real problem is easier to discuss during interviews."
+                "Build 2–4 meaningful projects, learn Git and GitHub, prepare a simple resume, practice coding and apply consistently. A project that solves a real problem is easier to discuss during interviews."
         },
 
-        {
-            title:"💼 Placement Strategy",
-            content:
-            "Prepare C/C++, Python or Java, DSA, OOP, DBMS, SQL, Operating Systems, Computer Networks and your projects. Practice explaining your code clearly."
-        },
 
         {
-            title:"🚀 Project Strategy",
+            title:
+                "💼 Placement Strategy",
+
             content:
-            "Do not only copy tutorial projects. Add your own features, solve a real problem, deploy the project and document it with screenshots and a README."
+                "Prepare C/C++, Python or Java, DSA, OOP, DBMS, SQL, Operating Systems, Computer Networks and your projects. Practice explaining your code clearly."
         },
 
-        {
-            title:"🐙 GitHub Strategy",
-            content:
-            "Use meaningful repository names, write README files, add screenshots, explain technologies and keep your important projects organized."
-        },
 
         {
-            title:"📄 Resume Strategy",
+            title:
+                "🚀 Project Strategy",
+
             content:
-            "Keep the resume clear and focused. Highlight education, technical skills, projects, achievements, certifications and links to your portfolio."
+                "Do not only copy tutorial projects. Add your own features, solve a real problem, deploy the project and document it with screenshots and a README."
         },
 
+
         {
-            title:"🧠 Interview Strategy",
+            title:
+                "🐙 GitHub Strategy",
+
             content:
-            "Practice explaining your projects, algorithms and technical decisions. If you do not know an answer, explain what you understand and how you would find the answer."
+                "Use meaningful repository names, write README files, add screenshots, explain technologies and keep your important projects organized."
+        },
+
+
+        {
+            title:
+                "📄 Resume Strategy",
+
+            content:
+                "Keep the resume clear and focused. Highlight education, technical skills, projects, achievements, certifications and links to your portfolio."
+        },
+
+
+        {
+            title:
+                "🧠 Interview Strategy",
+
+            content:
+                "Practice explaining your projects, algorithms and technical decisions. If you do not know an answer, explain what you understand and how you would find the answer."
         }
 
     ];
 
-    careers = fallback;
 
     renderCareers();
 
@@ -2897,7 +4660,10 @@ function renderDefaultCareerGuide(){
 
 function loadCExample(){
 
-    document.getElementById("cCode").value =
+    document.getElementById(
+        "cCode"
+    ).value =
+
 `#include <stdio.h>
 
 int main() {
@@ -2917,9 +4683,22 @@ int main() {
 
 function clearCompiler(){
 
-    document.getElementById("cCode").value = "";
+    document.getElementById(
+        "cCode"
+    ).value = "";
 
-    document.getElementById("compilerOutput").textContent =
+
+    const output =
+        document.getElementById(
+            "compilerOutput"
+        );
+
+
+    output.className =
+        "compiler-output";
+
+
+    output.textContent =
         "Output will appear here...";
 
 }
@@ -2928,116 +4707,147 @@ function clearCompiler(){
 async function runCCode(){
 
     const code =
-        document.getElementById("cCode").value.trim();
+        document.getElementById(
+            "cCode"
+        ).value.trim();
+
 
     const output =
-        document.getElementById("compilerOutput");
+        document.getElementById(
+            "compilerOutput"
+        );
+
 
     if(!code){
 
         output.className =
             "compiler-output output-error";
 
+
         output.textContent =
             "Please enter C code.";
+
 
         return;
 
     }
 
+
     output.className =
         "compiler-output";
+
 
     output.textContent =
         "⏳ Compiling and running your C program...";
 
+
     try{
 
-        /*
-          IMPORTANT:
-
-          Your current app.py does not yet contain /api/compile.
-
-          This frontend expects:
-
-          POST /api/compile
-
-          JSON:
-          {
-              "code": "..."
-          }
-
-          Response:
-          {
-              "success": true,
-              "output": "...",
-              "error": "..."
-          }
-
-          Once that Flask route is added, this button becomes
-          the real CodeQuest C compiler.
-        */
-
         const response =
-            await fetch("/api/compile",{
-                method:"POST",
-                headers:{
-                    "Content-Type":"application/json"
-                },
-                body:JSON.stringify({
-                    code:code
-                })
-            });
+            await fetch(
+                "/api/compile",
+                {
+                    method:"POST",
 
-        const data =
-            await response.json();
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            code:code
+                        })
+                }
+            );
+
+
+        let data;
+
+
+        try{
+
+            data =
+                await response.json();
+
+        }
+
+        catch(jsonError){
+
+            throw new Error(
+                "Compiler server returned an invalid response."
+            );
+
+        }
+
 
         if(!response.ok){
 
             throw new Error(
+
                 data.error ||
                 data.message ||
                 "Compiler request failed."
+
             );
 
         }
+
 
         if(data.success){
 
             output.className =
                 "compiler-output output-success";
 
+
             output.textContent =
                 data.output ||
                 "Program executed successfully with no output.";
 
-            addXP(5,"Code executed");
 
-        }else{
+            addXP(
+                5,
+                "Code executed"
+            );
+
+        }
+
+        else{
 
             output.className =
                 "compiler-output output-error";
 
+
             output.textContent =
                 data.error ||
                 data.output ||
+                data.compile_output ||
                 "Compilation or runtime error.";
 
         }
 
-    }catch(error){
+    }
 
-        console.error(error);
+    catch(error){
+
+        console.error(
+            "Compiler error:",
+            error
+        );
+
 
         output.className =
             "compiler-output output-error";
 
+
         output.textContent =
-            "Compiler service is not connected yet.\n\n" +
-            "Your C code editor is working, but the Flask " +
-            "/api/compile endpoint must be connected to a " +
-            "sandboxed C execution service before arbitrary C " +
-            "code can safely run.";
+
+            "❌ Compiler service error\n\n" +
+
+            (
+                error.message ||
+                "Unable to connect to /api/compile."
+            );
 
     }
 
@@ -3050,10 +4860,21 @@ async function runCCode(){
 
 function shuffle(array){
 
-    for(let i=array.length-1;i>0;i--){
+    for(
+        let i =
+            array.length - 1;
+
+        i > 0;
+
+        i--
+    ){
 
         const j =
-            Math.floor(Math.random()*(i+1));
+            Math.floor(
+                Math.random() *
+                (i + 1)
+            );
+
 
         [
             array[i],
@@ -3071,23 +4892,63 @@ function shuffle(array){
 
 function escapeHTML(value){
 
-    return String(value ?? "")
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
+    return String(
+        value ?? ""
+    )
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 
 }
 
 
 function escapeJS(value){
 
-    return String(value ?? "")
-        .replace(/\\/g,"\\\\")
-        .replace(/'/g,"\\'")
-        .replace(/\n/g,"\\n")
-        .replace(/\r/g,"\\r");
+    return String(
+        value ?? ""
+    )
+
+        .replace(
+            /\\/g,
+            "\\\\"
+        )
+
+        .replace(
+            /'/g,
+            "\\'"
+        )
+
+        .replace(
+            /\n/g,
+            "\\n"
+        )
+
+        .replace(
+            /\r/g,
+            "\\r"
+        );
 
 }
 
@@ -3095,25 +4956,159 @@ function escapeJS(value){
 function showToast(message){
 
     const toast =
-        document.getElementById("toast");
+        document.getElementById(
+            "toast"
+        );
+
+
+    if(!toast){
+        return;
+    }
+
 
     toast.textContent =
         message;
 
-    toast.classList.add("show");
+
+    toast.classList.add(
+        "show"
+    );
+
 
     clearTimeout(
         window.__toastTimer
     );
 
+
     window.__toastTimer =
-        setTimeout(function(){
+        setTimeout(
 
-            toast.classList.remove("show");
+            function(){
 
-        },3000);
+                toast.classList.remove(
+                    "show"
+                );
+
+            },
+
+            3000
+
+        );
 
 }
+
+
+/* =========================================================
+   MODAL CLICK OUTSIDE SUPPORT
+========================================================= */
+
+document.addEventListener(
+    "click",
+    function(event){
+
+        const loginModal =
+            document.getElementById(
+                "loginModal"
+            );
+
+
+        const courseModal =
+            document.getElementById(
+                "courseModal"
+            );
+
+
+        /*
+         * Login modal can close by clicking
+         * outside the login box.
+         */
+
+        if(
+            event.target ===
+            loginModal
+        ){
+
+            closeLogin();
+
+        }
+
+
+        /*
+         * Course modal can close by clicking
+         * outside the course box.
+         */
+
+        if(
+            event.target ===
+            courseModal
+        ){
+
+            closeCourse();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   ESC KEY
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        if(
+            event.key ===
+            "Escape"
+        ){
+
+            const loginModal =
+                document.getElementById(
+                    "loginModal"
+                );
+
+
+            if(
+                loginModal.classList
+                    .contains(
+                        "active"
+                    )
+            ){
+
+                closeLogin();
+
+            }
+
+
+            if(
+                !quizRunning
+            ){
+
+                const courseModal =
+                    document.getElementById(
+                        "courseModal"
+                    );
+
+
+                if(
+                    courseModal.classList
+                        .contains(
+                            "active"
+                        )
+                ){
+
+                    closeCourse();
+
+                }
+
+            }
+
+        }
+
+    }
+);
 
 
 /* =========================================================
@@ -3124,18 +5119,25 @@ document.addEventListener(
     "DOMContentLoaded",
     function(){
 
+        /*
+         * Start with guest storage.
+         *
+         * Firebase will automatically switch
+         * to the Google user's UID after login.
+         */
+
+        setPlayerStorageForUser(
+            "guest"
+        );
+
+
         loadPlayer();
+
 
         loadCourses();
 
-        loadCareers();
 
-        /*
-           If Firebase is not configured yet, the interface
-           still loads normally. Google login will display a
-           configuration message instead of producing a
-           JavaScript crash.
-        */
+        loadCareers();
 
     }
 );
