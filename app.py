@@ -1,33 +1,133 @@
 from flask import Flask, render_template, jsonify, request, session
+from werkzeug.security import generate_password_hash, check_password_hash
+from functools import wraps
+from datetime import datetime, date, timedelta
+import sqlite3
 import os
+import json
 import random
+import uuid
+import urllib.request
+import urllib.error
 
 # ============================================================
 # CODEQUEST AI
 # LEARN • PRACTICE • PLAY • BUILD
-# Stable Flask Backend
+# Production-style Flask backend
 # ============================================================
 
 app = Flask(__name__)
 
-# ============================================================
-# CONFIGURATION
-# ============================================================
-
 app.secret_key = os.environ.get(
     "SECRET_KEY",
-    "codequest-ai-development-secret-change-this"
+    "change-this-secret-key-in-render"
 )
 
-app.config.update(
-    SESSION_COOKIE_HTTPONLY=True,
-    SESSION_COOKIE_SAMESITE="Lax",
-    SESSION_COOKIE_SECURE=os.environ.get("RENDER", "").lower() == "true"
-)
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+
+if os.environ.get("COOKIE_SECURE", "false").lower() == "true":
+    app.config["SESSION_COOKIE_SECURE"] = True
+
 
 # ============================================================
-# COURSE DATA
+# DATABASE
 # ============================================================
+
+# For Render:
+# Set DATABASE_PATH to a location on your persistent disk.
+#
+# Example:
+# DATABASE_PATH=/var/data/codequest.db
+#
+# Local development:
+# codequest.db
+
+DATABASE_PATH = os.environ.get(
+    "DATABASE_PATH",
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "codequest.db")
+)
+
+
+def get_db():
+    db = sqlite3.connect(DATABASE_PATH)
+    db.row_factory = sqlite3.Row
+    return db
+
+
+def init_db():
+    db = get_db()
+
+    db.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            password_hash TEXT,
+            firebase_uid TEXT UNIQUE,
+            created_at TEXT NOT NULL,
+            last_login TEXT
+        )
+    """)
+
+    db.execute("""
+        CREATE TABLE IF NOT EXISTS progress (
+            user_id INTEGER PRIMARY KEY,
+            xp INTEGER DEFAULT 0,
+            points INTEGER DEFAULT 0,
+            streak INTEGER DEFAULT 0,
+            last_active TEXT,
+            completed_lessons TEXT DEFAULT '[]',
+            achievements TEXT DEFAULT '[]',
+            quizzes_completed INTEGER DEFAULT 0,
+            quizzes_passed INTEGER DEFAULT 0,
+            best_quiz_score INTEGER DEFAULT 0,
+            malpractice_events INTEGER DEFAULT 0,
+            FOREIGN KEY(user_id) REFERENCES users(id)
+        )
+    """)
+
+    db.execute("""
+        CREATE TABLE IF NOT EXISTS quiz_attempts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            score INTEGER,
+            total INTEGER,
+            xp_earned INTEGER,
+            terminated INTEGER DEFAULT 0,
+            reason TEXT,
+            created_at TEXT NOT NULL,
+            FOREIGN KEY(user_id) REFERENCES users(id)
+        )
+    """)
+
+    db.execute("""
+        CREATE TABLE IF NOT EXISTS activity_log (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            event_type TEXT,
+            details TEXT,
+            created_at TEXT NOT NULL,
+            FOREIGN KEY(user_id) REFERENCES users(id)
+        )
+    """)
+
+    db.commit()
+    db.close()
+
+
+# ============================================================
+# COURSE CONTENT
+# ============================================================
+
+def chapter(title, lesson, sample, difficulty="Beginner"):
+    return {
+        "title": title,
+        "lesson": lesson,
+        "sample": sample,
+        "difficulty": difficulty
+    }
+
 
 courses = [
 
@@ -38,1111 +138,1338 @@ courses = [
         "level": "Beginner",
         "description": "Understand computers from absolute zero.",
         "chapters": [
-            {
-                "title": "What is a Computer?",
-                "lesson": """
-A computer is an electronic device that accepts data as input,
-processes the data according to instructions, stores information,
-and produces useful output.
 
-A computer works through four basic stages:
+            chapter(
+                "What is a Computer?",
+                "A computer is an electronic machine that accepts input, processes data, stores information and produces output.",
+                """#include <stdio.h>
 
-Input → Processing → Storage → Output
+int main() {
+    printf("Hello, CodeQuest AI!");
+    return 0;
+}"""
+            ),
 
-For example, when you type your name using a keyboard, the
-keyboard provides input. The CPU processes the information and
-the result appears on the monitor.
+            chapter(
+                "Hardware and Software",
+                "Hardware is the physical part of a computer. Software is a set of instructions that tells hardware what to do.",
+                """#include <stdio.h>
 
-Computers are used in education, banking, hospitals, engineering,
-business, communication, entertainment and science.
+int main() {
+    printf("Hardware: Keyboard, CPU, RAM");
+    printf("\\nSoftware: Windows, Python, Chrome");
+    return 0;
+}"""
+            ),
 
-Understanding computer fundamentals is important before learning
-programming.
-""",
-                "sample": "Input → Processing → Output",
-                "quiz": [
-                    {
-                        "q": "Which device is mainly used to display output?",
-                        "options": [
-                            "Keyboard",
-                            "Monitor",
-                            "Mouse",
-                            "Scanner"
-                        ],
-                        "answer": "Monitor"
-                    },
-                    {
-                        "q": "What is the main processing unit of a computer?",
-                        "options": [
-                            "CPU",
-                            "Keyboard",
-                            "Monitor",
-                            "Printer"
-                        ],
-                        "answer": "CPU"
-                    }
-                ]
-            },
-            {
-                "title": "Hardware and Software",
-                "lesson": """
-Hardware refers to the physical parts of a computer that we can
-see and touch.
+            chapter(
+                "CPU",
+                "The CPU executes instructions and performs calculations. It is commonly called the brain of the computer.",
+                """#include <stdio.h>
 
-Examples include keyboard, mouse, monitor, RAM, SSD and
-motherboard.
+int main() {
+    int a = 10;
+    int b = 20;
 
-Software is a collection of programs and instructions that tells
-hardware what to do.
+    printf("Result = %d", a + b);
 
-Examples include operating systems, browsers, media players and
-applications.
-""",
-                "sample": "Hardware = Physical parts\nSoftware = Programs",
-                "quiz": [
-                    {
-                        "q": "Which one is hardware?",
-                        "options": [
-                            "Windows",
-                            "Chrome",
-                            "Keyboard",
-                            "Python"
-                        ],
-                        "answer": "Keyboard"
-                    }
-                ]
-            },
-            {
-                "title": "CPU, RAM and Storage",
-                "lesson": """
-The CPU executes instructions and performs calculations.
+    return 0;
+}"""
+            ),
 
-RAM is temporary working memory used by currently running
-programs.
+            chapter(
+                "RAM and Storage",
+                "RAM temporarily stores data being actively used. Storage such as SSD keeps data for long-term use.",
+                """#include <stdio.h>
 
-SSD and HDD are storage devices that keep data even after the
-computer is turned off.
+int main() {
+    int numbers[3] = {10, 20, 30};
 
-Remember:
+    printf("%d", numbers[1]);
 
-CPU → Processes
-RAM → Temporarily holds active data
-SSD/HDD → Stores data
-""",
-                "sample": "CPU + RAM + Storage = Core computer components",
-                "quiz": []
-            },
-            {
-                "title": "Operating Systems",
-                "lesson": """
-An operating system is system software that manages computer
-hardware and provides an environment for applications.
+    return 0;
+}"""
+            ),
 
-Examples include Windows, Linux, macOS, Android and iOS.
+            chapter(
+                "Operating System Basics",
+                "An operating system manages hardware and provides an environment for applications.",
+                """#include <stdio.h>
 
-Operating systems manage files, memory, processes, devices,
-security and user interaction.
-""",
-                "sample": "Windows • Linux • Android • macOS",
-                "quiz": []
-            },
-            {
-                "title": "Files, Folders and Extensions",
-                "lesson": """
-Files contain information while folders organize files.
-
-Common extensions include:
-
-.txt  → Text
-.jpg  → Image
-.mp4  → Video
-.pdf  → Document
-.py   → Python
-.c    → C
-.html → Web page
-""",
-                "sample": "program.py → Python source file",
-                "quiz": []
-            }
+int main() {
+    printf("Operating systems manage computer resources.");
+    return 0;
+}"""
+            )
         ]
     },
+
 
     {
         "id": "ms-office",
-        "title": "MS Office",
+        "title": "MS Office & Productivity",
         "icon": "📊",
         "level": "Beginner",
-        "description": "Learn Word, Excel and PowerPoint.",
+        "description": "Learn practical Word, Excel and PowerPoint skills.",
         "chapters": [
-            {
-                "title": "MS Word",
-                "lesson": """
-Microsoft Word is a word-processing application used to create
-documents.
 
-It is useful for assignments, resumes, reports, applications and
-project documentation.
-""",
-                "sample": "Create → Format → Save → Export PDF",
-                "quiz": []
-            },
-            {
-                "title": "MS Excel",
-                "lesson": """
-Microsoft Excel is a spreadsheet application used to organize,
-calculate and analyze data.
+            chapter(
+                "MS Word Basics",
+                "Learn documents, formatting, headings, tables and professional document creation.",
+                """# Simple productivity example
 
-Excel uses rows, columns and cells.
+name = "CodeQuest AI"
+print("Project:", name)
+"""
+            ),
 
-Common functions include SUM, AVERAGE, COUNT, MAX and MIN.
-""",
-                "sample": "=SUM(A1:A10)\n=AVERAGE(B1:B10)",
-                "quiz": []
-            },
-            {
-                "title": "MS PowerPoint",
-                "lesson": """
-PowerPoint is used to create presentations.
+            chapter(
+                "Excel Basics",
+                "Excel is useful for calculations, tables, data analysis and charts.",
+                """marks = [80, 75, 90, 85]
 
-A good presentation should have clear headings, short points,
-useful visuals and logical flow.
-""",
-                "sample": "Title → Problem → Solution → Demo → Conclusion",
-                "quiz": []
-            }
+average = sum(marks) / len(marks)
+
+print("Average:", average)
+"""
+            ),
+
+            chapter(
+                "Excel Formulas",
+                "Formulas allow spreadsheets to automatically calculate values.",
+                """marks = [80, 75, 90]
+
+total = sum(marks)
+average = total / len(marks)
+
+print("Total:", total)
+print("Average:", average)
+"""
+            ),
+
+            chapter(
+                "PowerPoint",
+                "PowerPoint is used to create presentations using slides, text, images, diagrams and charts.",
+                """topics = [
+    "Introduction",
+    "Problem",
+    "Solution",
+    "Conclusion"
+]
+
+for topic in topics:
+    print("Slide:", topic)
+"""
+            )
         ]
     },
 
+
     {
-        "id": "github",
+        "id": "git-github",
         "title": "Git & GitHub",
         "icon": "🐙",
         "level": "Beginner",
-        "description": "Learn version control and build a developer portfolio.",
+        "description": "Learn version control and real project workflow.",
         "chapters": [
-            {
-                "title": "What is Git?",
-                "lesson": """
-Git is a distributed version-control system used to track changes
-in source code.
 
-Git helps developers maintain project history and collaborate
-safely.
-""",
-                "sample": "git init",
-                "quiz": []
-            },
-            {
-                "title": "What is GitHub?",
-                "lesson": """
-GitHub is a platform for hosting Git repositories and
-collaborating on software projects.
-
-Students can use GitHub as a technical portfolio.
-""",
-                "sample": """git add .
+            chapter(
+                "What is Git?",
+                "Git is a version control system used to track changes in source code.",
+                """git init
+git status
+git add .
 git commit -m "Initial commit"
-git push""",
-                "quiz": []
-            },
-            {
-                "title": "GitHub Portfolio",
-                "lesson": """
-A useful GitHub project should contain source code and a README.
+"""
+            ),
 
-A README can explain:
+            chapter(
+                "What is GitHub?",
+                "GitHub is a platform where developers store, collaborate on and share software projects.",
+                """git remote add origin YOUR_REPOSITORY_URL
+git branch -M main
+git push -u origin main
+"""
+            ),
 
-• What the project does
-• Features
-• Technologies
-• Installation
-• Screenshots
-• Live demo
-""",
-                "sample": "README + screenshots + source code + live demo",
-                "quiz": []
-            }
+            chapter(
+                "Branches",
+                "Branches allow developers to work on features without directly changing the main branch.",
+                """git checkout -b feature-login
+
+git add .
+git commit -m "Add login feature"
+"""
+            ),
+
+            chapter(
+                "Pull Requests",
+                "Pull requests allow developers to propose and review changes before merging them.",
+                """# Typical workflow
+
+git checkout -b feature
+git add .
+git commit -m "Add feature"
+git push origin feature
+"""
+            )
         ]
     },
+
 
     {
         "id": "c-programming",
         "title": "C Programming",
         "icon": "⚙️",
         "level": "Beginner",
-        "description": "Build strong programming fundamentals using C.",
+        "description": "Build strong programming fundamentals with C.",
         "chapters": [
-            {
-                "title": "What is C Language?",
-                "lesson": """
-C is a general-purpose programming language.
 
-It teaches important programming concepts such as variables,
-data types, operators, conditions, loops, functions, arrays,
-pointers and memory.
-
-Basic workflow:
-
-Problem → Algorithm → Code → Compilation → Execution → Output
-""",
-                "sample": """#include <stdio.h>
+            chapter(
+                "C Hello World",
+                "Every C program starts with a main function. printf() displays output.",
+                """#include <stdio.h>
 
 int main() {
     printf("Hello World");
     return 0;
-}""",
-                "quiz": [
-                    {
-                        "q": "Which function is the starting point of a C program?",
-                        "options": [
-                            "start()",
-                            "main()",
-                            "run()",
-                            "begin()"
-                        ],
-                        "answer": "main()"
-                    },
-                    {
-                        "q": "Which header is commonly used for printf()?",
-                        "options": [
-                            "stdio.h",
-                            "math.h",
-                            "string.h",
-                            "stdlib.h"
-                        ],
-                        "answer": "stdio.h"
-                    }
-                ]
-            },
-            {
-                "title": "Variables and Data Types",
-                "lesson": """
-A variable is a named memory location used to store a value.
+}"""
+            ),
 
-int → Whole numbers
-float → Decimal numbers
-double → Higher precision decimal values
-char → Single character
-""",
-                "sample": """int age = 18;
-float mark = 92.5;
-char grade = 'A';""",
-                "quiz": []
-            },
-            {
-                "title": "Operators",
-                "lesson": """
-Operators perform operations on values.
+            chapter(
+                "Variables",
+                "Variables store values that a program can use and modify.",
+                """#include <stdio.h>
 
-Arithmetic:
-+ - * / %
+int main() {
+    int age = 18;
+    float height = 5.8;
 
-Relational:
-> < >= <= == !=
+    printf("%d\\n", age);
+    printf("%.1f", height);
 
-Logical:
-&& || !
+    return 0;
+}"""
+            ),
 
-Assignment:
-= += -= *= /=
-""",
-                "sample": "int result = a + b;",
-                "quiz": []
-            },
-            {
-                "title": "if, else and Conditions",
-                "lesson": """
-Conditional statements allow programs to make decisions.
-""",
-                "sample": """if (age >= 18) {
-    printf("Eligible");
-} else {
-    printf("Not Eligible");
-}""",
-                "quiz": []
-            },
-            {
-                "title": "Loops",
-                "lesson": """
-Loops repeat a block of code.
+            chapter(
+                "Input and Output",
+                "scanf() can receive input from the user while printf() displays output.",
+                """#include <stdio.h>
 
-C provides:
+int main() {
+    int age;
 
-• for
-• while
-• do-while
-""",
-                "sample": """for(int i = 1; i <= 10; i++) {
-    printf("%d\\n", i);
-}""",
-                "quiz": []
-            },
-            {
-                "title": "Functions",
-                "lesson": """
-A function is a reusable block of code designed to perform a
-specific task.
-""",
-                "sample": """int add(int a, int b) {
+    printf("Enter age: ");
+    scanf("%d", &age);
+
+    printf("Age = %d", age);
+
+    return 0;
+}"""
+            ),
+
+            chapter(
+                "If Else",
+                "Conditional statements allow programs to make decisions.",
+                """#include <stdio.h>
+
+int main() {
+    int mark = 75;
+
+    if (mark >= 50) {
+        printf("Pass");
+    } else {
+        printf("Fail");
+    }
+
+    return 0;
+}"""
+            ),
+
+            chapter(
+                "Loops",
+                "Loops repeat a block of code multiple times.",
+                """#include <stdio.h>
+
+int main() {
+    for (int i = 1; i <= 5; i++) {
+        printf("%d\\n", i);
+    }
+
+    return 0;
+}"""
+            ),
+
+            chapter(
+                "Functions",
+                "Functions divide a program into reusable blocks.",
+                """#include <stdio.h>
+
+int add(int a, int b) {
     return a + b;
-}""",
-                "quiz": []
-            },
-            {
-                "title": "Arrays",
-                "lesson": """
-An array stores multiple values of the same data type under one
-name.
-""",
-                "sample": "int marks[3] = {80, 90, 95};",
-                "quiz": []
-            },
-            {
-                "title": "Pointers",
-                "lesson": """
-A pointer is a variable that stores the memory address of
-another variable.
-""",
-                "sample": """int x = 10;
-int *p = &x;""",
-                "quiz": []
-            }
+}
+
+int main() {
+    printf("%d", add(10, 20));
+    return 0;
+}"""
+            ),
+
+            chapter(
+                "Arrays",
+                "Arrays store multiple values of the same type.",
+                """#include <stdio.h>
+
+int main() {
+    int marks[] = {80, 75, 90};
+
+    for (int i = 0; i < 3; i++) {
+        printf("%d\\n", marks[i]);
+    }
+
+    return 0;
+}"""
+            ),
+
+            chapter(
+                "Pointers",
+                "Pointers store memory addresses and are an important part of C.",
+                """#include <stdio.h>
+
+int main() {
+    int value = 50;
+    int *ptr = &value;
+
+    printf("Value = %d\\n", value);
+    printf("Pointer value = %d", *ptr);
+
+    return 0;
+}"""
+            )
         ]
     },
+
 
     {
         "id": "cpp",
         "title": "C++ Programming",
         "icon": "🚀",
-        "level": "Intermediate",
-        "description": "Learn object-oriented programming with C++.",
+        "level": "Beginner",
+        "description": "Move from C fundamentals into modern C++.",
         "chapters": [
-            {
-                "title": "Introduction to C++",
-                "lesson": """
-C++ is a general-purpose programming language that supports
-procedural and object-oriented programming.
-""",
-                "sample": """#include <iostream>
+
+            chapter(
+                "C++ Basics",
+                "C++ supports procedural, object-oriented and generic programming.",
+                """#include <iostream>
 using namespace std;
 
 int main() {
-    cout << "Hello World";
+    cout << "Hello C++";
     return 0;
-}""",
-                "quiz": []
-            },
-            {
-                "title": "Classes and Objects",
-                "lesson": """
-A class is a blueprint for creating objects.
+}"""
+            ),
 
-An object is an instance of a class.
-""",
-                "sample": """class Student {
+            chapter(
+                "Classes and Objects",
+                "Classes define objects and their properties and behaviours.",
+                """#include <iostream>
+using namespace std;
+
+class Student {
 public:
     string name;
-};""",
-                "quiz": []
-            }
+
+    void show() {
+        cout << "Student: " << name;
+    }
+};
+
+int main() {
+    Student s;
+    s.name = "Joe";
+    s.show();
+
+    return 0;
+}"""
+            ),
+
+            chapter(
+                "Inheritance",
+                "Inheritance allows one class to reuse properties and behaviour from another class.",
+                """#include <iostream>
+using namespace std;
+
+class Animal {
+public:
+    void eat() {
+        cout << "Eating";
+    }
+};
+
+class Dog : public Animal {
+};
+
+int main() {
+    Dog d;
+    d.eat();
+
+    return 0;
+}"""
+            )
         ]
     },
+
 
     {
         "id": "python",
         "title": "Python Programming",
         "icon": "🐍",
         "level": "Beginner",
-        "description": "Learn Python from fundamentals to practical development.",
+        "description": "Learn Python from basics to practical programming.",
         "chapters": [
-            {
-                "title": "What is Python?",
-                "lesson": """
-Python is a high-level general-purpose programming language known
-for readable syntax.
 
-It is widely used in web development, automation, data analysis,
-artificial intelligence and machine learning.
-""",
-                "sample": 'print("Hello World")',
-                "quiz": []
-            },
-            {
-                "title": "Variables and Data Types",
-                "lesson": """
-Python variables store values.
+            chapter(
+                "Python Basics",
+                "Python is a high-level programming language known for readable syntax.",
+                """print("Hello CodeQuest AI")"""
+            ),
 
-Common types include integers, floating-point values, strings,
-lists, tuples, dictionaries and sets.
-""",
-                "sample": """name = "Student"
+            chapter(
+                "Variables and Data Types",
+                "Python variables can store numbers, strings, lists and many other values.",
+                """name = "CodeQuest"
 age = 18
-mark = 95.5
+score = 95.5
 
-print(name, age, mark)""",
-                "quiz": []
-            },
-            {
-                "title": "Conditions and Loops",
-                "lesson": """
-Python uses if, elif and else for decisions.
+print(name)
+print(age)
+print(score)
+"""
+            ),
 
-for and while are used for repetition.
-""",
-                "sample": """for i in range(1, 6):
-    print(i)""",
-                "quiz": []
-            }
+            chapter(
+                "Conditions",
+                "if, elif and else allow Python programs to make decisions.",
+                """mark = 82
+
+if mark >= 50:
+    print("Pass")
+else:
+    print("Fail")
+"""
+            ),
+
+            chapter(
+                "Loops",
+                "Loops repeat instructions efficiently.",
+                """for i in range(1, 6):
+    print(i)
+"""
+            ),
+
+            chapter(
+                "Functions",
+                "Functions are reusable blocks of code.",
+                """def add(a, b):
+    return a + b
+
+result = add(10, 20)
+print(result)
+"""
+            ),
+
+            chapter(
+                "Lists and Dictionaries",
+                "Lists store ordered collections while dictionaries store key-value pairs.",
+                """student = {
+    "name": "Joe",
+    "department": "IT",
+    "year": 1
+}
+
+print(student["name"])
+"""
+            )
         ]
     },
+
 
     {
         "id": "web-development",
         "title": "Web Development",
         "icon": "🌐",
         "level": "Beginner",
-        "description": "Build websites and web applications.",
+        "description": "Build websites and understand frontend development.",
         "chapters": [
-            {
-                "title": "HTML",
-                "lesson": """
-HTML stands for HyperText Markup Language.
 
-It defines the structure of a web page.
-""",
-                "sample": """<!DOCTYPE html>
+            chapter(
+                "HTML",
+                "HTML defines the structure of a web page.",
+                """<!DOCTYPE html>
 <html>
 <body>
-<h1>Hello World</h1>
-<p>My first webpage.</p>
-</body>
-</html>""",
-                "quiz": []
-            },
-            {
-                "title": "CSS",
-                "lesson": """
-CSS stands for Cascading Style Sheets.
 
-It controls the visual appearance of web pages.
-""",
-                "sample": """body {
+<h1>Hello CodeQuest AI</h1>
+<p>My first webpage.</p>
+
+</body>
+</html>"""
+            ),
+
+            chapter(
+                "CSS",
+                "CSS controls the appearance and layout of webpages.",
+                """body {
+    background: #111827;
+    color: white;
     font-family: Arial;
-    margin: 0;
-}""",
-                "quiz": []
-            },
-            {
-                "title": "JavaScript",
-                "lesson": """
-JavaScript adds behaviour and interactivity to web pages.
-""",
-                "sample": """document.getElementById("btn")
-    .addEventListener("click", function() {
-        alert("Hello!");
-    });""",
-                "quiz": []
-            }
+}
+
+h1 {
+    color: #a855f7;
+}"""
+            ),
+
+            chapter(
+                "JavaScript",
+                "JavaScript adds logic and interactivity to webpages.",
+                """const button = document.querySelector("#btn");
+
+button.addEventListener("click", () => {
+    alert("Hello CodeQuest!");
+});
+"""
+            ),
+
+            chapter(
+                "DOM",
+                "The Document Object Model allows JavaScript to read and modify HTML elements.",
+                """document.getElementById("title").textContent =
+    "CodeQuest AI";
+"""
+            ),
+
+            chapter(
+                "Fetch API",
+                "Fetch allows a webpage to communicate with backend APIs.",
+                """fetch("/api/stats")
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+    });
+"""
+            )
         ]
     },
+
 
     {
         "id": "dbms",
         "title": "DBMS & SQL",
         "icon": "🗄️",
-        "level": "Intermediate",
+        "level": "Beginner",
         "description": "Understand databases and SQL.",
         "chapters": [
-            {
-                "title": "What is a Database?",
-                "lesson": """
-A database is an organized collection of information that can be
-stored, searched and updated efficiently.
 
-A DBMS is software used to create and manage databases.
-""",
-                "sample": "Database → Tables → Rows → Columns",
-                "quiz": []
-            },
-            {
-                "title": "SQL Basics",
-                "lesson": """
-SQL is used to communicate with relational databases.
+            chapter(
+                "What is DBMS?",
+                "A database management system stores, organizes and retrieves structured information.",
+                """CREATE TABLE students (
+    id INTEGER,
+    name TEXT,
+    department TEXT
+);"""
+            ),
 
-Important commands include SELECT, INSERT, UPDATE and DELETE.
-""",
-                "sample": """SELECT name, mark
+            chapter(
+                "SQL SELECT",
+                "SELECT retrieves information from database tables.",
+                """SELECT *
+FROM students;"""
+            ),
+
+            chapter(
+                "WHERE",
+                "WHERE filters rows according to a condition.",
+                """SELECT *
 FROM students
-WHERE mark >= 80;""",
-                "quiz": []
-            }
+WHERE department = 'IT';"""
+            ),
+
+            chapter(
+                "INSERT",
+                "INSERT adds new records to a table.",
+                """INSERT INTO students
+(id, name, department)
+VALUES
+(1, 'Joe', 'IT');"""
+            ),
+
+            chapter(
+                "JOIN",
+                "JOIN combines related information from multiple tables.",
+                """SELECT students.name, courses.course_name
+FROM students
+JOIN courses
+ON students.id = courses.student_id;"""
+            )
         ]
     },
+
 
     {
         "id": "dsa",
         "title": "Data Structures & Algorithms",
         "icon": "🧠",
         "level": "Intermediate",
-        "description": "Develop problem-solving and coding skills.",
+        "description": "Develop problem-solving and coding interview skills.",
         "chapters": [
-            {
-                "title": "What is an Algorithm?",
-                "lesson": """
-An algorithm is a finite sequence of clear steps used to solve a
-problem.
-""",
-                "sample": "Input → Algorithm → Output",
-                "quiz": []
-            },
-            {
-                "title": "Arrays and Searching",
-                "lesson": """
-Searching means finding a particular value inside a collection.
 
-Linear search checks elements one by one.
+            chapter(
+                "Algorithm Basics",
+                "An algorithm is a finite sequence of steps used to solve a problem.",
+                """def find_largest(numbers):
+    largest = numbers[0]
 
-Binary search is faster but requires sorted data.
-""",
-                "sample": "Linear Search → O(n)\nBinary Search → O(log n)",
-                "quiz": []
-            },
-            {
-                "title": "Sorting",
-                "lesson": """
-Sorting arranges data in a particular order.
+    for number in numbers:
+        if number > largest:
+            largest = number
 
-Examples include bubble sort, selection sort, insertion sort,
-merge sort and quicksort.
-""",
-                "sample": "[5,2,4,1] → [1,2,4,5]",
-                "quiz": []
-            }
+    return largest
+
+print(find_largest([10, 25, 7, 30]))
+"""
+            ),
+
+            chapter(
+                "Arrays",
+                "Arrays provide indexed access to collections of values.",
+                """numbers = [10, 20, 30, 40]
+
+print(numbers[0])
+print(numbers[2])
+"""
+            ),
+
+            chapter(
+                "Stack",
+                "A stack follows LIFO: Last In, First Out.",
+                """stack = []
+
+stack.append("A")
+stack.append("B")
+stack.append("C")
+
+print(stack.pop())
+"""
+            ),
+
+            chapter(
+                "Queue",
+                "A queue generally follows FIFO: First In, First Out.",
+                """from collections import deque
+
+queue = deque()
+
+queue.append("A")
+queue.append("B")
+
+print(queue.popleft())
+"""
+            ),
+
+            chapter(
+                "Searching",
+                "Searching algorithms locate values inside data structures.",
+                """numbers = [10, 20, 30, 40]
+
+target = 30
+
+if target in numbers:
+    print("Found")
+else:
+    print("Not found")
+"""
+            ),
+
+            chapter(
+                "Sorting",
+                "Sorting arranges data according to a chosen order.",
+                """numbers = [5, 2, 8, 1, 3]
+
+numbers.sort()
+
+print(numbers)
+"""
+            )
         ]
     },
+
 
     {
         "id": "operating-systems",
         "title": "Operating Systems",
         "icon": "🖥️",
         "level": "Intermediate",
-        "description": "Understand processes, memory and operating systems.",
+        "description": "Understand processes, memory and operating system concepts.",
         "chapters": [
-            {
-                "title": "Processes and Threads",
-                "lesson": """
-A process is a program in execution.
 
-A thread is a smaller execution unit within a process.
-""",
-                "sample": "Application → Process → Threads",
-                "quiz": []
-            }
+            chapter(
+                "Processes",
+                "A process is a program that is currently being executed.",
+                """# Conceptual Python example
+
+import os
+
+print("Current process ID:", os.getpid())
+"""
+            ),
+
+            chapter(
+                "Threads",
+                "Threads allow multiple execution paths inside a process.",
+                """import threading
+
+def task():
+    print("Running task")
+
+thread = threading.Thread(target=task)
+thread.start()
+thread.join()
+"""
+            ),
+
+            chapter(
+                "Memory Management",
+                "Operating systems manage memory allocation and protection.",
+                """numbers = [10, 20, 30]
+
+print("Memory-managed collection:", numbers)
+"""
+            )
         ]
     },
+
 
     {
         "id": "computer-networks",
         "title": "Computer Networks",
-        "icon": "🌐",
+        "icon": "🌍",
         "level": "Intermediate",
-        "description": "Understand how computers communicate.",
+        "description": "Learn networking from basic concepts to practical web communication.",
         "chapters": [
-            {
-                "title": "What is a Network?",
-                "lesson": """
-A computer network connects devices so that they can communicate
-and share resources.
 
-Important concepts include IP addresses, DNS, HTTP, HTTPS,
-TCP, UDP, routers, switches and ports.
-""",
-                "sample": "Device → Router → Internet → Server",
-                "quiz": []
-            }
+            chapter(
+                "Network Basics",
+                "A computer network connects devices so they can exchange information.",
+                """import socket
+
+print(socket.gethostname())
+"""
+            ),
+
+            chapter(
+                "IP Address",
+                "An IP address identifies a device/interface on a network.",
+                """import socket
+
+hostname = socket.gethostname()
+ip = socket.gethostbyname(hostname)
+
+print("Host:", hostname)
+print("IP:", ip)
+"""
+            ),
+
+            chapter(
+                "HTTP",
+                "HTTP is a protocol used for communication between web clients and servers.",
+                """from urllib.request import urlopen
+
+response = urlopen("https://example.com")
+
+print(response.status)
+"""
+            ),
+
+            chapter(
+                "Client and Server",
+                "Clients request resources or services while servers respond to those requests.",
+                """# Client concept
+
+import requests
+
+response = requests.get(
+    "https://example.com"
+)
+
+print(response.status_code)
+"""
+            )
         ]
     },
+
 
     {
         "id": "cybersecurity",
         "title": "Cybersecurity",
         "icon": "🔐",
         "level": "Intermediate",
-        "description": "Learn fundamentals of protecting systems and data.",
+        "description": "Learn safe and responsible cybersecurity fundamentals.",
         "chapters": [
-            {
-                "title": "Introduction to Cybersecurity",
-                "lesson": """
-Cybersecurity is the practice of protecting computers, networks,
-applications and data from unauthorized access, damage or misuse.
 
-The three classic security goals are:
+            chapter(
+                "Cybersecurity Basics",
+                "Cybersecurity protects systems, networks and information from unauthorized access and damage.",
+                """password = "example"
 
-Confidentiality
-Integrity
-Availability
-""",
-                "sample": "CIA → Confidentiality + Integrity + Availability",
-                "quiz": []
-            }
+if len(password) >= 8:
+    print("Password length is acceptable")
+else:
+    print("Use a longer password")
+"""
+            ),
+
+            chapter(
+                "Password Security",
+                "Strong passwords should be long, unique and difficult to guess.",
+                """import hashlib
+
+password = "example-password"
+
+hashed = hashlib.sha256(
+    password.encode()
+).hexdigest()
+
+print(hashed)
+"""
+            ),
+
+            chapter(
+                "Phishing Awareness",
+                "Phishing attempts to trick users into revealing sensitive information.",
+                """message = "Urgent! Click this unknown link!"
+
+if "unknown" in message.lower():
+    print("Be careful: verify the source")
+"""
+            )
         ]
     },
+
 
     {
         "id": "ai-ml",
         "title": "AI & Machine Learning",
         "icon": "🤖",
-        "level": "Advanced",
-        "description": "Understand modern AI concepts and machine learning.",
+        "level": "Intermediate",
+        "description": "Understand artificial intelligence and machine learning concepts.",
         "chapters": [
-            {
-                "title": "What is Artificial Intelligence?",
-                "lesson": """
-Artificial Intelligence is a field of computing focused on
-building systems that perform tasks that normally require
-human-like intelligence.
 
-Machine learning is a major area of AI where systems learn
-patterns from data.
-""",
-                "sample": "Data → Training → Model → Prediction",
-                "quiz": []
-            }
+            chapter(
+                "What is AI?",
+                "Artificial intelligence refers to computer systems performing tasks that normally require aspects of human intelligence.",
+                """print("Input data")
+print("AI model")
+print("Prediction")
+"""
+            ),
+
+            chapter(
+                "Machine Learning",
+                "Machine learning allows systems to learn patterns from data.",
+                """data = [10, 20, 30, 40]
+
+average = sum(data) / len(data)
+
+print("Simple learned statistic:", average)
+"""
+            ),
+
+            chapter(
+                "Training Data",
+                "Training data is used by a machine learning algorithm to learn patterns.",
+                """training_data = [
+    {"hours": 2, "score": 50},
+    {"hours": 4, "score": 70},
+    {"hours": 6, "score": 90}
+]
+
+for item in training_data:
+    print(item)
+"""
+            ),
+
+            chapter(
+                "AI Projects",
+                "Practical projects are one of the best ways to understand AI concepts.",
+                """project = {
+    "name": "Student Assistant",
+    "input": "Question",
+    "output": "Answer"
+}
+
+print(project)
+"""
+            )
+        ]
+    },
+
+
+    {
+        "id": "cloud-devops",
+        "title": "Cloud & DevOps",
+        "icon": "☁️",
+        "level": "Intermediate",
+        "description": "Learn deployment, cloud concepts and software delivery.",
+        "chapters": [
+
+            chapter(
+                "Cloud Computing",
+                "Cloud computing provides computing resources over networks instead of requiring everything to run locally.",
+                """import os
+
+port = os.environ.get("PORT", "10000")
+
+print("Application port:", port)
+"""
+            ),
+
+            chapter(
+                "Environment Variables",
+                "Environment variables allow configuration to remain outside source code.",
+                """import os
+
+secret = os.environ.get("SECRET_KEY")
+
+if secret:
+    print("Secret configured")
+else:
+    print("Secret not configured")
+"""
+            ),
+
+            chapter(
+                "Deployment Basics",
+                "Deployment makes an application available for real users.",
+                """# Typical production command
+
+gunicorn app:app
+"""
+            )
+        ]
+    },
+
+
+    {
+        "id": "software-development",
+        "title": "Software Development",
+        "icon": "🛠️",
+        "level": "Intermediate",
+        "description": "Understand how real software projects are planned and built.",
+        "chapters": [
+
+            chapter(
+                "Software Development Life Cycle",
+                "The SDLC includes requirements, design, development, testing, deployment and maintenance.",
+                """stages = [
+    "Requirements",
+    "Design",
+    "Development",
+    "Testing",
+    "Deployment"
+]
+
+for stage in stages:
+    print(stage)
+"""
+            ),
+
+            chapter(
+                "APIs",
+                "APIs allow different software systems to communicate.",
+                """fetch("/api/courses")
+    .then(response => response.json())
+    .then(data => console.log(data));
+"""
+            ),
+
+            chapter(
+                "Debugging",
+                "Debugging is the process of finding and fixing problems in software.",
+                """def divide(a, b):
+    if b == 0:
+        return "Cannot divide by zero"
+
+    return a / b
+
+print(divide(10, 2))
+print(divide(10, 0))
+"""
+            ),
+
+            chapter(
+                "Testing",
+                "Testing checks whether software behaves as expected.",
+                """def add(a, b):
+    return a + b
+
+assert add(2, 3) == 5
+
+print("Test passed")
+"""
+            )
         ]
     }
 ]
 
 
 # ============================================================
-# QUIZ DATA
+# EXTENDED ROADMAP
 # ============================================================
 
-quiz_topics = [
-
-    ("Computer Basics",
-     "What is the main processing unit of a computer?",
-     ["CPU", "RAM", "SSD", "Monitor"], "CPU"),
-
-    ("Computer Basics",
-     "Which memory is temporary?",
-     ["RAM", "SSD", "HDD", "ROM"], "RAM"),
-
-    ("Computer Basics",
-     "Which device is used for typing?",
-     ["Keyboard", "Monitor", "Printer", "Speaker"], "Keyboard"),
-
-    ("Computer Basics",
-     "Which is an operating system?",
-     ["Windows", "HTML", "Python", "SQL"], "Windows"),
-
-    ("Computer Basics",
-     "Which is permanent storage?",
-     ["SSD", "RAM", "Cache", "Register"], "SSD"),
-
-    ("MS Office",
-     "Which application is mainly used for documents?",
-     ["Word", "Excel", "PowerPoint", "Paint"], "Word"),
-
-    ("MS Office",
-     "Which application is mainly used for spreadsheets?",
-     ["Excel", "Word", "PowerPoint", "Notepad"], "Excel"),
-
-    ("MS Office",
-     "Which function adds numbers in Excel?",
-     ["SUM", "ADDALL", "TOTALNUM", "PLUS"], "SUM"),
-
-    ("MS Office",
-     "Which application is mainly used for presentations?",
-     ["PowerPoint", "Word", "Excel", "Access"], "PowerPoint"),
-
-    ("MS Office",
-     "What is a spreadsheet cell?",
-     [
-         "Intersection of row and column",
-         "A file",
-         "A slide",
-         "A paragraph"
-     ],
-     "Intersection of row and column"),
-
-    ("GitHub",
-     "Which command initializes a Git repository?",
-     ["git init", "git start", "git create", "git open"], "git init"),
-
-    ("GitHub",
-     "Which command records changes in Git history?",
-     ["git commit", "git save", "git record", "git history"], "git commit"),
-
-    ("GitHub",
-     "What is GitHub mainly used for?",
-     [
-         "Code collaboration and hosting",
-         "Video editing",
-         "Gaming",
-         "Email"
-     ],
-     "Code collaboration and hosting"),
-
-    ("GitHub",
-     "Which file commonly documents a project?",
-     [
-         "README.md",
-         "MAIN.exe",
-         "START.css",
-         "DOC.run"
-     ],
-     "README.md"),
-
-    ("GitHub",
-     "Which command uploads commits to a remote repository?",
-     ["git push", "git upload", "git send", "git transfer"],
-     "git push"),
-
-    ("C",
-     "Which function starts a normal C program?",
-     ["main()", "start()", "run()", "begin()"], "main()"),
-
-    ("C",
-     "Which header provides printf()?",
-     ["stdio.h", "string.h", "math.h", "time.h"], "stdio.h"),
-
-    ("C",
-     "Which symbol terminates a C statement?",
-     [";", ":", ".", ","], ";"),
-
-    ("C",
-     "Which type stores a whole number?",
-     ["int", "float", "char", "double"], "int"),
-
-    ("C",
-     "Which loop is useful when the number of repetitions is known?",
-     ["for", "switch", "if", "goto"], "for"),
-
-    ("C++",
-     "Which feature is central to C++ OOP?",
-     ["Classes", "HTML", "SQL", "DNS"], "Classes"),
-
-    ("C++",
-     "Which object is an instance of a class?",
-     ["Object", "Compiler", "Header", "Loop"], "Object"),
-
-    ("C++",
-     "Which stream is commonly used for output?",
-     ["cout", "cin", "print", "out"], "cout"),
-
-    ("C++",
-     "Which stream is commonly used for input?",
-     ["cin", "cout", "input", "read"], "cin"),
-
-    ("C++",
-     "Which concept hides internal implementation?",
-     [
-         "Encapsulation",
-         "Compilation",
-         "Iteration",
-         "Sorting"
-     ],
-     "Encapsulation"),
-
-    ("Python",
-     "Which keyword defines a function?",
-     ["def", "function", "fun", "define"], "def"),
-
-    ("Python",
-     "Which symbol starts a comment?",
-     ["#", "//", "/*", "--"], "#"),
-
-    ("Python",
-     "Which function displays output?",
-     ["print()", "display()", "show()", "output()"], "print()"),
-
-    ("Python",
-     "Which type stores key-value pairs?",
-     ["dict", "list", "tuple", "set"], "dict"),
-
-    ("Python",
-     "Which keyword is used for a loop over a sequence?",
-     ["for", "repeat", "loop", "iterate"], "for"),
-
-    ("Web",
-     "What does HTML define?",
-     [
-         "Web page structure",
-         "Database",
-         "Operating system",
-         "Network"
-     ],
-     "Web page structure"),
-
-    ("Web",
-     "What does CSS control?",
-     [
-         "Presentation and styling",
-         "Database queries",
-         "CPU",
-         "Memory"
-     ],
-     "Presentation and styling"),
-
-    ("Web",
-     "Which language adds browser interactivity?",
-     ["JavaScript", "SQL", "C", "Bash"], "JavaScript"),
-
-    ("Web",
-     "Which tag creates a heading?",
-     ["h1", "p", "div", "img"], "h1"),
-
-    ("Web",
-     "Which protocol is commonly used for secure web communication?",
-     ["HTTPS", "FTP", "SMTP", "SSH"], "HTTPS"),
-
-    ("DBMS",
-     "What does SQL manage?",
-     [
-         "Relational database data",
-         "Images only",
-         "CPU",
-         "RAM"
-     ],
-     "Relational database data"),
-
-    ("DBMS",
-     "Which SQL command reads data?",
-     ["SELECT", "GET", "READ", "FETCHALL"], "SELECT"),
-
-    ("DBMS",
-     "Which command adds rows?",
-     ["INSERT", "ADD", "APPENDROW", "PUT"], "INSERT"),
-
-    ("DBMS",
-     "Which command changes existing data?",
-     ["UPDATE", "CHANGE", "EDIT", "MODIFYROW"], "UPDATE"),
-
-    ("DBMS",
-     "Which command removes rows?",
-     ["DELETE", "REMOVE", "DROPROW", "CLEAR"], "DELETE"),
-
-    ("DSA",
-     "What is an algorithm?",
-     [
-         "Steps to solve a problem",
-         "A computer part",
-         "A database",
-         "An OS"
-     ],
-     "Steps to solve a problem"),
-
-    ("DSA",
-     "Which search requires sorted data?",
-     [
-         "Binary search",
-         "Linear search",
-         "Random search",
-         "Sequential scan"
-     ],
-     "Binary search"),
-
-    ("DSA",
-     "What does O(n) describe?",
-     [
-         "Growth of algorithm work",
-         "Memory brand",
-         "Programming language",
-         "Database"
-     ],
-     "Growth of algorithm work"),
-
-    ("DSA",
-     "Which structure follows FIFO?",
-     ["Queue", "Stack", "Tree", "Graph"], "Queue"),
-
-    ("DSA",
-     "Which structure follows LIFO?",
-     ["Stack", "Queue", "Tree", "Array"], "Stack"),
-
-    ("Operating Systems",
-     "What is a process?",
-     [
-         "Program in execution",
-         "File",
-         "Keyboard",
-         "Network cable"
-     ],
-     "Program in execution"),
-
-    ("Operating Systems",
-     "What is a thread?",
-     [
-         "Execution unit",
-         "Storage device",
-         "Browser",
-         "Database"
-     ],
-     "Execution unit"),
-
-    ("Operating Systems",
-     "Which manages computer resources?",
-     [
-         "Operating system",
-         "HTML",
-         "Compiler only",
-         "Browser"
-     ],
-     "Operating system"),
-
-    ("Operating Systems",
-     "What does CPU scheduling manage?",
-     [
-         "Execution of processes",
-         "Files only",
-         "Images",
-         "Web pages"
-     ],
-     "Execution of processes"),
-
-    ("Operating Systems",
-     "What is virtual memory?",
-     [
-         "Memory management technique",
-         "A browser",
-         "A programming language",
-         "A cable"
-     ],
-     "Memory management technique"),
-
-    ("Networks",
-     "What identifies a device on an IP network?",
-     ["IP address", "HTML tag", "SQL key", "CPU ID"], "IP address"),
-
-    ("Networks",
-     "What does DNS help translate?",
-     [
-         "Domain names to IP addresses",
-         "RAM to CPU",
-         "Files to folders",
-         "Code to HTML"
-     ],
-     "Domain names to IP addresses"),
-
-    ("Networks",
-     "Which protocol secures web traffic?",
-     ["HTTPS", "HTTP", "FTP", "SMTP"], "HTTPS"),
-
-    ("Networks",
-     "Which device forwards packets between networks?",
-     ["Router", "Keyboard", "Monitor", "Printer"], "Router"),
-
-    ("Networks",
-     "Which protocol is connection-oriented?",
-     ["TCP", "UDP", "DNS", "ICMP"], "TCP"),
-
-    ("Cybersecurity",
-     "What does the C in CIA represent?",
-     ["Confidentiality", "Control", "Coding", "Cloud"],
-     "Confidentiality"),
-
-    ("Cybersecurity",
-     "What is authentication?",
-     [
-         "Verifying identity",
-         "Giving permissions",
-         "Encrypting files",
-         "Deleting data"
-     ],
-     "Verifying identity"),
-
-    ("Cybersecurity",
-     "What is authorization?",
-     [
-         "Determining allowed access",
-         "Checking identity",
-         "Creating backups",
-         "Compressing files"
-     ],
-     "Determining allowed access"),
-
-    ("Cybersecurity",
-     "What protects data by transforming it?",
-     ["Encryption", "Compilation", "Sorting", "Rendering"],
-     "Encryption"),
-
-    ("Cybersecurity",
-     "What is phishing?",
-     [
-         "Fraudulent attempt to obtain information",
-         "Programming language",
-         "Database",
-         "Firewall"
-     ],
-     "Fraudulent attempt to obtain information"),
-
-    ("AI",
-     "What is AI?",
-     [
-         "Systems performing intelligent tasks",
-         "A database",
-         "A network cable",
-         "A text editor"
-     ],
-     "Systems performing intelligent tasks"),
-
-    ("AI",
-     "What does ML stand for?",
-     [
-         "Machine Learning",
-         "Machine Language",
-         "Memory Logic",
-         "Model Link"
-     ],
-     "Machine Learning"),
-
-    ("AI",
-     "What is training data?",
-     [
-         "Data used to learn patterns",
-         "Computer RAM",
-         "Operating system",
-         "Network traffic only"
-     ],
-     "Data used to learn patterns"),
-
-    ("AI",
-     "Which language is popular in ML?",
-     ["Python", "HTML", "CSS", "SQL"], "Python"),
-
-    ("AI",
-     "What does a model produce after learning?",
-     [
-         "Predictions",
-         "Keyboard input",
-         "Operating system",
-         "Hard disk"
-     ],
-     "Predictions")
+roadmap = [
+    {
+        "id": "fundamentals",
+        "title": "Computer Fundamentals",
+        "icon": "💻",
+        "description": "Computer architecture, hardware, software and operating systems."
+    },
+    {
+        "id": "productivity",
+        "title": "Productivity Tools",
+        "icon": "📊",
+        "description": "Word, Excel, PowerPoint and professional digital skills."
+    },
+    {
+        "id": "git",
+        "title": "Git & GitHub",
+        "icon": "🐙",
+        "description": "Version control, repositories, branches and collaboration."
+    },
+    {
+        "id": "c",
+        "title": "C Programming",
+        "icon": "⚙️",
+        "description": "Programming fundamentals and memory concepts."
+    },
+    {
+        "id": "cpp",
+        "title": "C++",
+        "icon": "🚀",
+        "description": "Object-oriented and modern C++ programming."
+    },
+    {
+        "id": "python",
+        "title": "Python",
+        "icon": "🐍",
+        "description": "Python programming and practical automation."
+    },
+    {
+        "id": "web",
+        "title": "Web Development",
+        "icon": "🌐",
+        "description": "HTML, CSS, JavaScript, DOM and APIs."
+    },
+    {
+        "id": "backend",
+        "title": "Backend Development",
+        "icon": "🧩",
+        "description": "Servers, APIs, authentication and databases."
+    },
+    {
+        "id": "sql",
+        "title": "DBMS & SQL",
+        "icon": "🗄️",
+        "description": "Relational databases and SQL."
+    },
+    {
+        "id": "dsa",
+        "title": "DSA",
+        "icon": "🧠",
+        "description": "Data structures, algorithms and problem solving."
+    },
+    {
+        "id": "oop",
+        "title": "Object-Oriented Programming",
+        "icon": "🧱",
+        "description": "Classes, objects, inheritance and polymorphism."
+    },
+    {
+        "id": "os",
+        "title": "Operating Systems",
+        "icon": "🖥️",
+        "description": "Processes, threads, memory and file systems."
+    },
+    {
+        "id": "networks",
+        "title": "Computer Networks",
+        "icon": "🌍",
+        "description": "Networking, HTTP, TCP/IP and client-server systems."
+    },
+    {
+        "id": "cyber",
+        "title": "Cybersecurity",
+        "icon": "🔐",
+        "description": "Security fundamentals and safe development."
+    },
+    {
+        "id": "cloud",
+        "title": "Cloud Computing",
+        "icon": "☁️",
+        "description": "Deployment and cloud infrastructure fundamentals."
+    },
+    {
+        "id": "devops",
+        "title": "DevOps",
+        "icon": "♾️",
+        "description": "CI/CD, deployment and software delivery."
+    },
+    {
+        "id": "ai",
+        "title": "Artificial Intelligence",
+        "icon": "🤖",
+        "description": "AI concepts, models and practical projects."
+    },
+    {
+        "id": "ml",
+        "title": "Machine Learning",
+        "icon": "📈",
+        "description": "Data, training, evaluation and prediction."
+    },
+    {
+        "id": "testing",
+        "title": "Software Testing",
+        "icon": "🧪",
+        "description": "Unit testing, debugging and quality assurance."
+    },
+    {
+        "id": "career",
+        "title": "Career Preparation",
+        "icon": "🎯",
+        "description": "Resume, GitHub, projects, internships and interviews."
+    }
 ]
 
 
 # ============================================================
-# BUILD QUIZ DATABASE
+# QUIZ QUESTIONS
 # ============================================================
 
-quiz_questions = []
-question_id = 1
+quiz_questions = [
 
-for topic, question, options, answer in quiz_topics:
+    {
+        "id": 1,
+        "topic": "Computer Basics",
+        "level": "Beginner",
+        "question": "What is the main processing unit of a computer?",
+        "options": ["CPU", "RAM", "SSD", "Monitor"],
+        "answer": "CPU"
+    },
 
-    for level in ("Beginner", "Intermediate", "Advanced"):
+    {
+        "id": 2,
+        "topic": "Computer Basics",
+        "level": "Beginner",
+        "question": "Which memory is temporary?",
+        "options": ["RAM", "SSD", "Hard Disk", "DVD"],
+        "answer": "RAM"
+    },
 
-        quiz_questions.append({
-            "id": question_id,
-            "topic": topic,
-            "level": level,
-            "question": question,
-            "options": list(options),
-            "answer": answer
-        })
+    {
+        "id": 3,
+        "topic": "Programming",
+        "level": "Beginner",
+        "question": "Which symbol is commonly used to end a C statement?",
+        "options": [";", ":", "#", "@"],
+        "answer": ";"
+    },
 
-        question_id += 1
+    {
+        "id": 4,
+        "topic": "Python",
+        "level": "Beginner",
+        "question": "Which function displays output in Python?",
+        "options": ["print()", "display()", "show()", "output()"],
+        "answer": "print()"
+    },
+
+    {
+        "id": 5,
+        "topic": "Web",
+        "level": "Beginner",
+        "question": "Which language structures a webpage?",
+        "options": ["HTML", "CSS", "SQL", "C"],
+        "answer": "HTML"
+    },
+
+    {
+        "id": 6,
+        "topic": "Web",
+        "level": "Beginner",
+        "question": "Which language styles webpages?",
+        "options": ["CSS", "HTML", "C++", "SQL"],
+        "answer": "CSS"
+    },
+
+    {
+        "id": 7,
+        "topic": "Web",
+        "level": "Beginner",
+        "question": "Which language adds interactivity to webpages?",
+        "options": ["JavaScript", "HTML", "SQL", "C"],
+        "answer": "JavaScript"
+    },
+
+    {
+        "id": 8,
+        "topic": "Git",
+        "level": "Beginner",
+        "question": "Which command creates a Git repository?",
+        "options": ["git init", "git start", "git create", "git new"],
+        "answer": "git init"
+    },
+
+    {
+        "id": 9,
+        "topic": "SQL",
+        "level": "Beginner",
+        "question": "Which SQL command retrieves data?",
+        "options": ["SELECT", "GET", "READ", "OPEN"],
+        "answer": "SELECT"
+    },
+
+    {
+        "id": 10,
+        "topic": "DSA",
+        "level": "Beginner",
+        "question": "Which data structure follows LIFO?",
+        "options": ["Stack", "Queue", "Array", "Graph"],
+        "answer": "Stack"
+    },
+
+    {
+        "id": 11,
+        "topic": "DSA",
+        "level": "Beginner",
+        "question": "Which data structure normally follows FIFO?",
+        "options": ["Queue", "Stack", "Tree", "Heap"],
+        "answer": "Queue"
+    },
+
+    {
+        "id": 12,
+        "topic": "AI",
+        "level": "Beginner",
+        "question": "What does AI stand for?",
+        "options": [
+            "Artificial Intelligence",
+            "Automatic Internet",
+            "Advanced Input",
+            "Application Interface"
+        ],
+        "answer": "Artificial Intelligence"
+    },
+
+    {
+        "id": 13,
+        "topic": "AI",
+        "level": "Beginner",
+        "question": "What does a trained machine-learning model commonly produce?",
+        "options": [
+            "Predictions",
+            "Keyboard",
+            "Operating System",
+            "Hard Disk"
+        ],
+        "answer": "Predictions"
+    },
+
+    {
+        "id": 14,
+        "topic": "Cybersecurity",
+        "level": "Beginner",
+        "question": "What should you do with a suspicious link?",
+        "options": [
+            "Verify it first",
+            "Open immediately",
+            "Share your password",
+            "Disable security"
+        ],
+        "answer": "Verify it first"
+    },
+
+    {
+        "id": 15,
+        "topic": "Networking",
+        "level": "Beginner",
+        "question": "What does IP identify in a network?",
+        "options": [
+            "A network interface/device",
+            "A keyboard",
+            "A programming language",
+            "A document"
+        ],
+        "answer": "A network interface/device"
+    },
+
+    {
+        "id": 16,
+        "topic": "C",
+        "level": "Beginner",
+        "question": "Which function is the starting point of a normal C program?",
+        "options": ["main()", "start()", "run()", "begin()"],
+        "answer": "main()"
+    },
+
+    {
+        "id": 17,
+        "topic": "C",
+        "level": "Beginner",
+        "question": "Which header provides printf()?",
+        "options": ["stdio.h", "stdlib.h", "string.h", "math.h"],
+        "answer": "stdio.h"
+    },
+
+    {
+        "id": 18,
+        "topic": "Python",
+        "level": "Beginner",
+        "question": "Which symbol begins a Python comment?",
+        "options": ["#", "//", "/*", "$"],
+        "answer": "#"
+    },
+
+    {
+        "id": 19,
+        "topic": "Programming",
+        "level": "Beginner",
+        "question": "What is a variable used for?",
+        "options": [
+            "Storing a value",
+            "Displaying a monitor",
+            "Connecting Wi-Fi",
+            "Formatting a disk"
+        ],
+        "answer": "Storing a value"
+    },
+
+    {
+        "id": 20,
+        "topic": "Software",
+        "level": "Beginner",
+        "question": "What is debugging?",
+        "options": [
+            "Finding and fixing software problems",
+            "Buying hardware",
+            "Creating a presentation",
+            "Formatting a drive"
+        ],
+        "answer": "Finding and fixing software problems"
+    }
+]
 
 
 # ============================================================
@@ -1150,235 +1477,954 @@ for topic, question, options, answer in quiz_topics:
 # ============================================================
 
 career_guide = [
+
     {
         "title": "🎓 Internships",
         "content": """
-Internships provide practical exposure to real development work.
+Start building your portfolio early.
 
-Useful preparation includes programming, Git, projects,
-communication, SQL and problem solving.
+1. Learn one programming language properly.
+2. Build 2–4 useful projects.
+3. Put projects on GitHub.
+4. Write a clean one-page resume.
+5. Apply consistently instead of waiting for one perfect opportunity.
+6. Learn how to explain your projects clearly.
+7. Participate in college technical events and hackathons.
+
+A small working project that you understand completely is more useful in an interview than a large project you cannot explain.
 """
     },
+
     {
         "title": "💼 Placements",
         "content": """
-A placement process may include resume screening, aptitude or
-coding tests, technical interviews, project discussions and HR
-discussions.
+A practical placement preparation plan:
 
-Useful preparation areas include programming, DSA, DBMS, OS,
-networks, OOP, SQL and Git.
+• Programming fundamentals
+• Data Structures & Algorithms
+• SQL
+• OOP
+• Operating Systems
+• Computer Networks
+• Basic system design
+• Aptitude where required
+• Communication
+• Resume projects
+• Mock interviews
+
+Practice regularly rather than trying to complete everything immediately before interviews.
 """
     },
+
     {
-        "title": "🚀 Software Developer Jobs",
+        "title": "🚀 Software Developer",
         "content": """
-Possible development paths include frontend, backend,
-full-stack, Python, Java, mobile development and QA.
+A common beginner roadmap:
+
+Year 1:
+Programming + Git + basic projects
+
+Year 2:
+DSA + web/backend + databases
+
+Year 3:
+Internships + advanced projects + interview preparation
+
+Year 4:
+Placement preparation + specialization + professional portfolio
+
+Choose one main development direction and become comfortable building real applications.
 """
     },
-    {
-        "title": "🧠 Current Skill Strategy",
-        "content": """
-Useful areas include AI-assisted development, cloud fundamentals,
-GitHub, APIs, databases, cybersecurity awareness, automation,
-web development and problem solving.
-"""
-    },
+
     {
         "title": "🐙 GitHub Portfolio",
         "content": """
-Treat GitHub as a technical portfolio.
+Your GitHub should show evidence of your skills.
 
-Include projects with README files, screenshots, technologies,
-setup instructions and explanations.
+Good project README files should explain:
+
+• Problem
+• Solution
+• Features
+• Technologies
+• Screenshots
+• Installation
+• How to use
+• Future improvements
+
+Avoid filling GitHub with copied projects that you cannot explain.
 """
     },
+
     {
         "title": "📄 Resume",
         "content": """
-A beginner resume can contain contact information, education,
-technical skills, projects, experience, certifications and
-portfolio links.
+Keep your student resume simple.
+
+Recommended structure:
+
+1. Name and contact
+2. Education
+3. Technical skills
+4. Projects
+5. Experience/internships
+6. Certifications
+7. Achievements
+
+For projects, explain what YOU built and what technologies YOU used.
 """
     },
-    {
-        "title": "🎯 Interview Preparation",
-        "content": """
-Prepare programming, OOP, DSA, SQL, DBMS, OS, networks, Git and
-your projects.
 
-Be ready to explain why you built each project and how you solved
-problems.
+    {
+        "title": "🧠 Interview Preparation",
+        "content": """
+Practice explaining:
+
+• Your strongest project
+• Why you selected the technology
+• Problems you faced
+• How you fixed bugs
+• Database design
+• Authentication
+• APIs
+• Basic DSA
+• OOP
+• SQL
+
+A strong project explanation should be understandable without reading your source code.
 """
     },
-    {
-        "title": "🌱 First-Year Strategy",
-        "content": """
-First year can focus on computer fundamentals, C/Python, Git,
-OOP, web development and SQL.
 
-Build projects while learning instead of waiting until final year.
+    {
+        "title": "🔥 Smart Career Strategy",
+        "content": """
+There is no guaranteed shortcut into a job.
+
+The practical strategy is:
+
+Learn → Build → Publish → Explain → Practice → Apply → Improve
+
+Use college time to build evidence of your ability instead of only collecting certificates.
 """
     }
 ]
 
 
 # ============================================================
-# OPTIONAL DEMO SESSION USER
+# ACHIEVEMENTS
 # ============================================================
 
-@app.route("/api/session-user", methods=["POST"])
-def set_session_user():
+ACHIEVEMENTS = {
+    "first_lesson": {
+        "title": "🌱 First Step",
+        "description": "Complete your first lesson."
+    },
 
-    """
-    Optional bridge endpoint.
+    "five_lessons": {
+        "title": "🔥 Fast Learner",
+        "description": "Complete 5 lessons."
+    },
 
-    Your Firebase frontend can send the authenticated user's basic
-    information here if you want Flask session information.
+    "ten_lessons": {
+        "title": "🚀 Knowledge Builder",
+        "description": "Complete 10 lessons."
+    },
 
-    This does NOT replace Firebase authentication.
-    Firebase remains the frontend authentication system.
-    """
+    "hundred_xp": {
+        "title": "⚡ XP Hunter",
+        "description": "Earn 100 XP."
+    },
+
+    "quiz_master": {
+        "title": "🏆 Quiz Master",
+        "description": "Score at least 80% in a quiz."
+    },
+
+    "three_day_streak": {
+        "title": "🔥 3-Day Streak",
+        "description": "Maintain a 3-day learning streak."
+    },
+
+    "five_hundred_xp": {
+        "title": "💎 XP Collector",
+        "description": "Earn 500 XP."
+    }
+}
+
+
+# ============================================================
+# GENERAL HELPERS
+# ============================================================
+
+def clean_email(email):
+    if not isinstance(email, str):
+        return ""
+    return email.strip().lower()
+
+
+def valid_email(email):
+    return (
+        isinstance(email, str)
+        and "@" in email
+        and "." in email.split("@")[-1]
+        and len(email) <= 254
+    )
+
+
+def now_iso():
+    return datetime.utcnow().isoformat(timespec="seconds")
+
+
+def get_user_by_id(user_id):
+    db = get_db()
+
+    user = db.execute(
+        "SELECT * FROM users WHERE id = ?",
+        (user_id,)
+    ).fetchone()
+
+    db.close()
+    return user
+
+
+def get_progress(user_id):
+    db = get_db()
+
+    row = db.execute(
+        "SELECT * FROM progress WHERE user_id = ?",
+        (user_id,)
+    ).fetchone()
+
+    if row is None:
+        db.execute("""
+            INSERT INTO progress (
+                user_id,
+                xp,
+                points,
+                streak,
+                last_active,
+                completed_lessons,
+                achievements
+            )
+            VALUES (?, 0, 0, 0, ?, '[]', '[]')
+        """, (user_id, date.today().isoformat()))
+
+        db.commit()
+
+        row = db.execute(
+            "SELECT * FROM progress WHERE user_id = ?",
+            (user_id,)
+        ).fetchone()
+
+    db.close()
+
+    return row
+
+
+def progress_json(row):
+    return {
+        "xp": row["xp"],
+        "points": row["points"],
+        "streak": row["streak"],
+        "completed_lessons": json.loads(row["completed_lessons"] or "[]"),
+        "achievements": json.loads(row["achievements"] or "[]"),
+        "quizzes_completed": row["quizzes_completed"],
+        "quizzes_passed": row["quizzes_passed"],
+        "best_quiz_score": row["best_quiz_score"],
+        "malpractice_events": row["malpractice_events"]
+    }
+
+
+def calculate_level(xp):
+    levels = [
+        "Code Explorer",
+        "Bug Hunter",
+        "Logic Builder",
+        "Code Warrior",
+        "System Architect",
+        "AI Pathfinder",
+        "CodeQuest Master"
+    ]
+
+    index = min(xp // 100, len(levels) - 1)
+
+    return {
+        "number": int(xp // 100) + 1,
+        "name": levels[index],
+        "next_xp": ((xp // 100) + 1) * 100,
+        "progress": xp % 100
+    }
+
+
+def add_activity(user_id, event_type, details=""):
+    db = get_db()
+
+    db.execute("""
+        INSERT INTO activity_log (
+            user_id,
+            event_type,
+            details,
+            created_at
+        )
+        VALUES (?, ?, ?, ?)
+    """, (
+        user_id,
+        event_type,
+        details,
+        now_iso()
+    ))
+
+    db.commit()
+    db.close()
+
+
+def login_required(function):
+    @wraps(function)
+    def wrapper(*args, **kwargs):
+
+        user_id = session.get("user_id")
+
+        if not user_id:
+            return jsonify({
+                "success": False,
+                "message": "Please login first."
+            }), 401
+
+        return function(*args, **kwargs)
+
+    return wrapper
+
+
+# ============================================================
+# AUTHENTICATION
+# ============================================================
+
+@app.route("/api/register", methods=["POST"])
+def register():
 
     data = request.get_json(silent=True) or {}
 
-    uid = str(data.get("uid", "")).strip()
     name = str(data.get("name", "")).strip()
-    email = str(data.get("email", "")).strip().lower()
+    email = clean_email(data.get("email", ""))
+    password = str(data.get("password", ""))
 
-    if not uid or not email:
+    if not name:
         return jsonify({
             "success": False,
-            "message": "User UID and email are required."
+            "message": "Please enter your name."
         }), 400
 
-    session["firebase_user"] = {
-        "uid": uid,
+    if not valid_email(email):
+        return jsonify({
+            "success": False,
+            "message": "Please enter a valid email address."
+        }), 400
+
+    if len(password) < 6:
+        return jsonify({
+            "success": False,
+            "message": "Password must contain at least 6 characters."
+        }), 400
+
+    db = get_db()
+
+    existing = db.execute(
+        "SELECT id FROM users WHERE email = ?",
+        (email,)
+    ).fetchone()
+
+    if existing:
+        db.close()
+
+        return jsonify({
+            "success": False,
+            "message": "An account with this email already exists."
+        }), 409
+
+    created = now_iso()
+
+    cursor = db.execute("""
+        INSERT INTO users (
+            name,
+            email,
+            password_hash,
+            created_at,
+            last_login
+        )
+        VALUES (?, ?, ?, ?, ?)
+    """, (
+        name,
+        email,
+        generate_password_hash(password),
+        created,
+        created
+    ))
+
+    user_id = cursor.lastrowid
+
+    db.execute("""
+        INSERT INTO progress (
+            user_id,
+            xp,
+            points,
+            streak,
+            last_active,
+            completed_lessons,
+            achievements
+        )
+        VALUES (?, 0, 0, 1, ?, '[]', '[]')
+    """, (
+        user_id,
+        date.today().isoformat()
+    ))
+
+    db.commit()
+    db.close()
+
+    session.clear()
+
+    session["user_id"] = user_id
+    session["user"] = {
+        "id": user_id,
         "name": name,
         "email": email
     }
 
     return jsonify({
         "success": True,
-        "user": session["firebase_user"]
+        "message": "Account created successfully.",
+        "user": session["user"]
+    }), 201
+
+
+@app.route("/api/login", methods=["POST"])
+def login():
+
+    data = request.get_json(silent=True) or {}
+
+    email = clean_email(data.get("email", ""))
+    password = str(data.get("password", ""))
+
+    if not email or not password:
+        return jsonify({
+            "success": False,
+            "message": "Email and password are required."
+        }), 400
+
+    db = get_db()
+
+    user = db.execute(
+        "SELECT * FROM users WHERE email = ?",
+        (email,)
+    ).fetchone()
+
+    if not user:
+        db.close()
+
+        return jsonify({
+            "success": False,
+            "message": "Account not found. Please register first."
+        }), 401
+
+    if not user["password_hash"]:
+        db.close()
+
+        return jsonify({
+            "success": False,
+            "message": "This account uses Google login."
+        }), 401
+
+    if not check_password_hash(user["password_hash"], password):
+        db.close()
+
+        return jsonify({
+            "success": False,
+            "message": "Incorrect password."
+        }), 401
+
+    db.execute(
+        "UPDATE users SET last_login = ? WHERE id = ?",
+        (now_iso(), user["id"])
+    )
+
+    db.commit()
+    db.close()
+
+    session.clear()
+
+    session["user_id"] = user["id"]
+
+    session["user"] = {
+        "id": user["id"],
+        "name": user["name"],
+        "email": user["email"]
+    }
+
+    return jsonify({
+        "success": True,
+        "message": "Login successful.",
+        "user": session["user"]
     })
 
 
-@app.route("/api/session-user", methods=["GET"])
-def get_session_user():
+@app.route("/api/logout", methods=["POST"])
+def logout():
 
-    user = session.get("firebase_user")
+    session.clear()
 
-    if not user:
+    return jsonify({
+        "success": True,
+        "message": "Logged out successfully."
+    })
+
+
+@app.route("/api/me")
+def current_user():
+
+    user_id = session.get("user_id")
+
+    if not user_id:
         return jsonify({
             "logged_in": False,
             "user": None
         })
 
+    user = get_user_by_id(user_id)
+
+    if not user:
+        session.clear()
+
+        return jsonify({
+            "logged_in": False,
+            "user": None
+        })
+
+    progress = get_progress(user_id)
+
     return jsonify({
         "logged_in": True,
-        "user": user
-    })
-
-
-@app.route("/api/session-user", methods=["DELETE"])
-def delete_session_user():
-
-    session.pop("firebase_user", None)
-
-    return jsonify({
-        "success": True,
-        "message": "Session cleared."
+        "user": {
+            "id": user["id"],
+            "name": user["name"],
+            "email": user["email"]
+        },
+        "progress": progress_json(progress),
+        "level": calculate_level(progress["xp"])
     })
 
 
 # ============================================================
-# MAIN PAGE
+# FIREBASE GOOGLE LOGIN HOOK
 # ============================================================
 
-@app.route("/")
-def home():
-    return render_template("index.html")
+firebase_admin = None
+firebase_auth = None
+
+try:
+    import firebase_admin
+    from firebase_admin import credentials, auth as firebase_auth
+
+    firebase_service_account = os.environ.get(
+        "FIREBASE_SERVICE_ACCOUNT_JSON"
+    )
+
+    if firebase_service_account:
+
+        credential_data = json.loads(firebase_service_account)
+
+        firebase_admin.initialize_app(
+            credentials.Certificate(credential_data)
+        )
+
+except Exception as firebase_error:
+
+    firebase_admin = None
+    firebase_auth = None
+
+
+@app.route("/api/firebase-login", methods=["POST"])
+def firebase_login():
+
+    if firebase_auth is None:
+
+        return jsonify({
+            "success": False,
+            "message": (
+                "Firebase Admin is not configured on the server. "
+                "Your existing Firebase client login can still be used, "
+                "but server-side account synchronization requires "
+                "FIREBASE_SERVICE_ACCOUNT_JSON."
+            )
+        }), 503
+
+    data = request.get_json(silent=True) or {}
+
+    id_token = str(data.get("idToken", "")).strip()
+
+    if not id_token:
+
+        return jsonify({
+            "success": False,
+            "message": "Firebase ID token is required."
+        }), 400
+
+    try:
+
+        decoded = firebase_auth.verify_id_token(id_token)
+
+        uid = decoded.get("uid")
+        email = clean_email(decoded.get("email", ""))
+
+        name = (
+            decoded.get("name")
+            or decoded.get("email")
+            or "CodeQuest User"
+        )
+
+        if not uid or not email:
+
+            return jsonify({
+                "success": False,
+                "message": "Firebase account information is incomplete."
+            }), 400
+
+        db = get_db()
+
+        user = db.execute(
+            "SELECT * FROM users WHERE firebase_uid = ?",
+            (uid,)
+        ).fetchone()
+
+        if not user:
+
+            user = db.execute(
+                "SELECT * FROM users WHERE email = ?",
+                (email,)
+            ).fetchone()
+
+        if user:
+
+            db.execute("""
+                UPDATE users
+                SET name = ?,
+                    email = ?,
+                    firebase_uid = ?,
+                    last_login = ?
+                WHERE id = ?
+            """, (
+                name,
+                email,
+                uid,
+                now_iso(),
+                user["id"]
+            ))
+
+            user_id = user["id"]
+
+        else:
+
+            cursor = db.execute("""
+                INSERT INTO users (
+                    name,
+                    email,
+                    password_hash,
+                    firebase_uid,
+                    created_at,
+                    last_login
+                )
+                VALUES (?, ?, NULL, ?, ?, ?)
+            """, (
+                name,
+                email,
+                uid,
+                now_iso(),
+                now_iso()
+            ))
+
+            user_id = cursor.lastrowid
+
+            db.execute("""
+                INSERT INTO progress (
+                    user_id,
+                    xp,
+                    points,
+                    streak,
+                    last_active,
+                    completed_lessons,
+                    achievements
+                )
+                VALUES (?, 0, 0, 1, ?, '[]', '[]')
+            """, (
+                user_id,
+                date.today().isoformat()
+            ))
+
+        db.commit()
+        db.close()
+
+        session.clear()
+
+        session["user_id"] = user_id
+
+        session["user"] = {
+            "id": user_id,
+            "name": name,
+            "email": email
+        }
+
+        return jsonify({
+            "success": True,
+            "message": "Google login successful.",
+            "user": session["user"]
+        })
+
+    except Exception:
+
+        return jsonify({
+            "success": False,
+            "message": "Invalid or expired Firebase login token."
+        }), 401
 
 
 # ============================================================
-# COURSE API
+# COURSES
 # ============================================================
 
-@app.route("/api/courses", methods=["GET"])
+@app.route("/api/courses")
 def get_courses():
 
     return jsonify(courses)
 
 
-@app.route("/api/course/<course_id>", methods=["GET"])
+@app.route("/api/course/<course_id>")
 def get_course(course_id):
 
-    course = next(
-        (
-            course
-            for course in courses
-            if course["id"] == course_id
-        ),
-        None
-    )
+    for course in courses:
 
-    if course is None:
-        return jsonify({
-            "success": False,
-            "message": "Course not found."
-        }), 404
-
-    return jsonify(course)
-
-
-# ============================================================
-# LESSON API
-# ============================================================
-
-@app.route("/api/lesson/<course_id>/<int:chapter_index>", methods=["GET"])
-def get_lesson(course_id, chapter_index):
-
-    course = next(
-        (
-            course
-            for course in courses
-            if course["id"] == course_id
-        ),
-        None
-    )
-
-    if course is None:
-        return jsonify({
-            "success": False,
-            "message": "Course not found."
-        }), 404
-
-    chapters = course.get("chapters", [])
-
-    if chapter_index < 0 or chapter_index >= len(chapters):
-        return jsonify({
-            "success": False,
-            "message": "Chapter not found."
-        }), 404
+        if course["id"] == course_id:
+            return jsonify(course)
 
     return jsonify({
-        "success": True,
-        "course": course["title"],
-        "chapter_index": chapter_index,
-        "chapter": chapters[chapter_index]
+        "success": False,
+        "message": "Course not found."
+    }), 404
+
+
+@app.route("/api/roadmap")
+def get_roadmap():
+
+    return jsonify({
+        "total": len(roadmap),
+        "roadmap": roadmap
+    })
+
+
+@app.route("/api/stats")
+def stats():
+
+    total_chapters = sum(
+        len(course["chapters"])
+        for course in courses
+    )
+
+    return jsonify({
+
+        "courses": len(courses),
+
+        "chapters": total_chapters,
+
+        "quiz_questions": len(quiz_questions),
+
+        "career_topics": len(career_guide),
+
+        "roadmap_topics": len(roadmap),
+
+        "features": [
+            "Learning",
+            "Quiz Arena",
+            "XP System",
+            "Achievements",
+            "Career Guide",
+            "C Compiler",
+            "Progress Tracking",
+            "Google Login"
+        ]
     })
 
 
 # ============================================================
-# QUIZ API
+# PROGRESS / XP
 # ============================================================
 
-@app.route("/api/quiz", methods=["GET"])
+@app.route("/api/progress")
+@login_required
+def get_user_progress():
+
+    user_id = session["user_id"]
+
+    progress = get_progress(user_id)
+
+    return jsonify({
+        "success": True,
+        "progress": progress_json(progress),
+        "level": calculate_level(progress["xp"])
+    })
+
+
+@app.route("/api/progress/lesson", methods=["POST"])
+@login_required
+def complete_lesson():
+
+    user_id = session["user_id"]
+
+    data = request.get_json(silent=True) or {}
+
+    course_id = str(data.get("course_id", "")).strip()
+    chapter_title = str(data.get("chapter_title", "")).strip()
+
+    if not course_id or not chapter_title:
+
+        return jsonify({
+            "success": False,
+            "message": "Course and chapter are required."
+        }), 400
+
+    lesson_key = f"{course_id}::{chapter_title}"
+
+    db = get_db()
+
+    row = db.execute(
+        "SELECT * FROM progress WHERE user_id = ?",
+        (user_id,)
+    ).fetchone()
+
+    completed = json.loads(
+        row["completed_lessons"] or "[]"
+    )
+
+    if lesson_key in completed:
+
+        db.close()
+
+        return jsonify({
+            "success": True,
+            "already_completed": True,
+            "message": "Lesson already completed.",
+            "progress": progress_json(row),
+            "level": calculate_level(row["xp"])
+        })
+
+    completed.append(lesson_key)
+
+    new_xp = row["xp"] + 20
+    new_points = row["points"] + 20
+
+    achievements = json.loads(
+        row["achievements"] or "[]"
+    )
+
+    def unlock(key):
+        if key not in achievements:
+            achievements.append(key)
+
+    unlock("first_lesson")
+
+    if len(completed) >= 5:
+        unlock("five_lessons")
+
+    if len(completed) >= 10:
+        unlock("ten_lessons")
+
+    if new_xp >= 100:
+        unlock("hundred_xp")
+
+    if new_xp >= 500:
+        unlock("five_hundred_xp")
+
+    today = date.today()
+    last_active = row["last_active"]
+
+    streak = row["streak"] or 0
+
+    if last_active:
+
+        try:
+
+            previous = date.fromisoformat(last_active)
+
+            if previous == today:
+                pass
+
+            elif previous == today - timedelta(days=1):
+
+                streak += 1
+
+            else:
+
+                streak = 1
+
+        except ValueError:
+
+            streak = 1
+
+    else:
+
+        streak = 1
+
+    if streak >= 3:
+        unlock("three_day_streak")
+
+    db.execute("""
+        UPDATE progress
+        SET xp = ?,
+            points = ?,
+            streak = ?,
+            last_active = ?,
+            completed_lessons = ?,
+            achievements = ?
+        WHERE user_id = ?
+    """, (
+        new_xp,
+        new_points,
+        streak,
+        today.isoformat(),
+        json.dumps(completed),
+        json.dumps(achievements),
+        user_id
+    ))
+
+    db.commit()
+
+    updated = db.execute(
+        "SELECT * FROM progress WHERE user_id = ?",
+        (user_id,)
+    ).fetchone()
+
+    db.close()
+
+    add_activity(
+        user_id,
+        "lesson_completed",
+        lesson_key
+    )
+
+    return jsonify({
+        "success": True,
+        "message": "Lesson completed!",
+        "xp_earned": 20,
+        "progress": progress_json(updated),
+        "level": calculate_level(updated["xp"])
+    })
+
+
+# ============================================================
+# QUIZ
+# ============================================================
+
+@app.route("/api/quiz")
 def get_quiz():
 
-    # Never expose correct answers to the browser.
     safe_questions = []
 
     for question in quiz_questions:
@@ -1392,133 +2438,649 @@ def get_quiz():
         })
 
     return jsonify({
-        "success": True,
         "total": len(safe_questions),
         "questions": safe_questions
     })
 
 
-@app.route("/api/quiz/random", methods=["GET"])
-def random_quiz():
+@app.route("/api/quiz/submit", methods=["POST"])
+@login_required
+def submit_quiz():
 
-    count = request.args.get("count", default=10, type=int)
-
-    # Protect the server from unreasonable requests.
-    count = max(1, min(count, 30))
-
-    selected = random.sample(
-        quiz_questions,
-        min(count, len(quiz_questions))
-    )
-
-    safe_questions = []
-
-    for question in selected:
-
-        safe_questions.append({
-            "id": question["id"],
-            "topic": question["topic"],
-            "level": question["level"],
-            "question": question["question"],
-            "options": question["options"]
-        })
-
-    return jsonify({
-        "success": True,
-        "questions": safe_questions
-    })
-
-
-@app.route("/api/quiz/check", methods=["POST"])
-def check_quiz():
+    user_id = session["user_id"]
 
     data = request.get_json(silent=True) or {}
 
-    question_id = data.get("question_id")
-    selected_answer = data.get("answer")
+    answers = data.get("answers", [])
 
-    if question_id is None or selected_answer is None:
-        return jsonify({
-            "success": False,
-            "message": "Question ID and answer are required."
-        }), 400
+    terminated = bool(data.get("terminated", False))
 
-    try:
-        question_id = int(question_id)
-    except (TypeError, ValueError):
+    termination_reason = str(
+        data.get("termination_reason", "")
+    )[:500]
+
+    if not isinstance(answers, list):
 
         return jsonify({
             "success": False,
-            "message": "Invalid question ID."
+            "message": "Invalid quiz submission."
         }), 400
 
-    question = next(
-        (
-            question
-            for question in quiz_questions
-            if question["id"] == question_id
-        ),
-        None
+    score = 0
+    total = len(answers)
+
+    question_map = {
+        str(q["id"]): q
+        for q in quiz_questions
+    }
+
+    for submitted in answers:
+
+        question_id = str(
+            submitted.get("id", "")
+        )
+
+        selected = submitted.get("answer")
+
+        question = question_map.get(question_id)
+
+        if question and selected == question["answer"]:
+
+            score += 1
+
+    xp_earned = 0
+
+    if not terminated:
+
+        xp_earned = score * 10
+
+        if total > 0:
+
+            percentage = int(
+                (score / total) * 100
+            )
+
+            if percentage >= 80:
+
+                xp_earned += 30
+
+    db = get_db()
+
+    row = db.execute(
+        "SELECT * FROM progress WHERE user_id = ?",
+        (user_id,)
+    ).fetchone()
+
+    new_xp = row["xp"] + xp_earned
+    new_points = row["points"] + xp_earned
+
+    achievements = json.loads(
+        row["achievements"] or "[]"
     )
 
-    if question is None:
-        return jsonify({
-            "success": False,
-            "message": "Question not found."
-        }), 404
+    if (
+        not terminated
+        and total > 0
+        and score / total >= 0.8
+        and "quiz_master" not in achievements
+    ):
 
-    correct = str(selected_answer) == str(question["answer"])
+        achievements.append("quiz_master")
+
+    db.execute("""
+        UPDATE progress
+        SET xp = ?,
+            points = ?,
+            quizzes_completed = quizzes_completed + 1,
+            quizzes_passed = quizzes_passed + ?,
+            best_quiz_score = MAX(best_quiz_score, ?),
+            achievements = ?,
+            malpractice_events =
+                malpractice_events + ?
+        WHERE user_id = ?
+    """, (
+        new_xp,
+        new_points,
+        1 if (
+            not terminated
+            and total > 0
+            and score / total >= 0.5
+        ) else 0,
+        int(
+            (score / total) * 100
+        ) if total else 0,
+        json.dumps(achievements),
+        1 if terminated else 0,
+        user_id
+    ))
+
+    db.execute("""
+        INSERT INTO quiz_attempts (
+            user_id,
+            score,
+            total,
+            xp_earned,
+            terminated,
+            reason,
+            created_at
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (
+        user_id,
+        score,
+        total,
+        xp_earned,
+        1 if terminated else 0,
+        termination_reason,
+        now_iso()
+    ))
+
+    db.commit()
+
+    updated = db.execute(
+        "SELECT * FROM progress WHERE user_id = ?",
+        (user_id,)
+    ).fetchone()
+
+    db.close()
+
+    add_activity(
+        user_id,
+        "quiz_completed",
+        f"{score}/{total}"
+    )
 
     return jsonify({
         "success": True,
-        "correct": correct,
-        "question_id": question_id
+        "score": score,
+        "total": total,
+        "percentage": int(
+            (score / total) * 100
+        ) if total else 0,
+        "xp_earned": xp_earned,
+        "terminated": terminated,
+        "message": (
+            "Quiz terminated because of a violation."
+            if terminated
+            else "Quiz completed successfully."
+        ),
+        "progress": progress_json(updated),
+        "level": calculate_level(updated["xp"])
     })
 
 
 # ============================================================
-# CAREER API
+# MALPRACTICE / QUIZ SECURITY
 # ============================================================
 
-@app.route("/api/careers", methods=["GET"])
+@app.route("/api/quiz/violation", methods=["POST"])
+@login_required
+def quiz_violation():
+
+    user_id = session["user_id"]
+
+    data = request.get_json(silent=True) or {}
+
+    reason = str(
+        data.get("reason", "Unknown violation")
+    )[:500]
+
+    db = get_db()
+
+    db.execute("""
+        UPDATE progress
+        SET malpractice_events =
+            malpractice_events + 1
+        WHERE user_id = ?
+    """, (user_id,))
+
+    db.commit()
+    db.close()
+
+    add_activity(
+        user_id,
+        "quiz_violation",
+        reason
+    )
+
+    return jsonify({
+        "success": True,
+        "message": "Quiz violation recorded."
+    })
+
+
+# ============================================================
+# ACHIEVEMENTS
+# ============================================================
+
+@app.route("/api/achievements")
+def get_achievements():
+
+    return jsonify({
+        "achievements": [
+            {
+                "id": key,
+                **value
+            }
+            for key, value in ACHIEVEMENTS.items()
+        ]
+    })
+
+
+# ============================================================
+# CAREER GUIDE
+# ============================================================
+
+@app.route("/api/careers")
 def get_careers():
 
     return jsonify(career_guide)
 
 
+@app.route("/api/career-roadmap")
+def career_roadmap():
+
+    return jsonify({
+
+        "steps": [
+
+            {
+                "step": 1,
+                "title": "Build Fundamentals",
+                "description": "Learn programming, Git, databases and computer science basics."
+            },
+
+            {
+                "step": 2,
+                "title": "Build Projects",
+                "description": "Create practical projects that solve real problems."
+            },
+
+            {
+                "step": 3,
+                "title": "Build GitHub",
+                "description": "Publish projects with clean README files and screenshots."
+            },
+
+            {
+                "step": 4,
+                "title": "Prepare Resume",
+                "description": "Present skills, projects and achievements clearly."
+            },
+
+            {
+                "step": 5,
+                "title": "Practice Interviews",
+                "description": "Practice DSA, SQL, OOP, projects and communication."
+            },
+
+            {
+                "step": 6,
+                "title": "Apply Consistently",
+                "description": "Apply to internships and entry-level opportunities while continuing to improve."
+            }
+
+        ]
+
+    })
+
+
 # ============================================================
-# STATISTICS API
+# PROJECT IDEAS
 # ============================================================
 
-@app.route("/api/stats", methods=["GET"])
-def stats():
+@app.route("/api/projects")
+def project_ideas():
 
-    total_chapters = sum(
-        len(course.get("chapters", []))
-        for course in courses
+    projects = [
+
+        {
+            "title": "📚 Student Study Assistant",
+            "level": "Beginner",
+            "description": "Track subjects, assignments and study sessions."
+        },
+
+        {
+            "title": "💰 Expense Tracker",
+            "level": "Beginner",
+            "description": "Record expenses and visualize monthly spending."
+        },
+
+        {
+            "title": "📝 Online Quiz Platform",
+            "level": "Intermediate",
+            "description": "Create quizzes with scores, timer and progress."
+        },
+
+        {
+            "title": "🔐 Secure Notes",
+            "level": "Intermediate",
+            "description": "Build a notes application with authentication."
+        },
+
+        {
+            "title": "🤖 AI Student Assistant",
+            "level": "Intermediate",
+            "description": "Build an educational assistant around useful student workflows."
+        },
+
+        {
+            "title": "🚀 Full Stack College Portal",
+            "level": "Advanced",
+            "description": "Combine authentication, database, APIs and dashboards."
+        }
+
+    ]
+
+    return jsonify(projects)
+
+
+# ============================================================
+# C COMPILER
+# ============================================================
+
+"""
+The browser should POST:
+
+{
+    "code": "#include <stdio.h> ...",
+    "input": "..."
+}
+
+to:
+
+/api/compile
+
+This backend does NOT execute arbitrary C code directly on the
+Flask server. That would be unsafe.
+
+Instead, configure an external sandbox/execution service using:
+
+JUDGE0_URL
+JUDGE0_API_KEY       optional depending on your provider
+JUDGE0_HOST          optional
+"""
+
+JUDGE0_URL = os.environ.get(
+    "JUDGE0_URL",
+    ""
+).strip().rstrip("/")
+
+JUDGE0_API_KEY = os.environ.get(
+    "JUDGE0_API_KEY",
+    ""
+).strip()
+
+JUDGE0_HOST = os.environ.get(
+    "JUDGE0_HOST",
+    ""
+).strip()
+
+
+def judge0_request(code, stdin_data):
+
+    if not JUDGE0_URL:
+
+        return {
+            "success": False,
+            "configured": False,
+            "error": (
+                "C compiler backend is not configured yet. "
+                "Set JUDGE0_URL on the server."
+            )
+        }
+
+    payload = {
+        "source_code": code,
+        "language_id": 50,
+        "stdin": stdin_data
+    }
+
+    body = json.dumps(payload).encode("utf-8")
+
+    url = (
+        JUDGE0_URL +
+        "/submissions?wait=true"
+    )
+
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    if JUDGE0_API_KEY:
+        headers["X-Auth-Token"] = JUDGE0_API_KEY
+
+    if JUDGE0_HOST:
+        headers["X-RapidAPI-Host"] = JUDGE0_HOST
+        headers["X-RapidAPI-Key"] = JUDGE0_API_KEY
+
+    request_object = urllib.request.Request(
+        url,
+        data=body,
+        headers=headers,
+        method="POST"
+    )
+
+    try:
+
+        with urllib.request.urlopen(
+            request_object,
+            timeout=20
+        ) as response:
+
+            raw = response.read().decode(
+                "utf-8",
+                errors="replace"
+            )
+
+            result = json.loads(raw)
+
+            stdout = result.get("stdout") or ""
+            stderr = result.get("stderr") or ""
+            compile_output = (
+                result.get("compile_output")
+                or ""
+            )
+
+            message = result.get("message") or ""
+
+            if compile_output:
+
+                return {
+                    "success": False,
+                    "status": result.get("status"),
+                    "output": stdout,
+                    "error": compile_output,
+                    "message": message
+                }
+
+            if stderr:
+
+                return {
+                    "success": False,
+                    "status": result.get("status"),
+                    "output": stdout,
+                    "error": stderr,
+                    "message": message
+                }
+
+            return {
+                "success": True,
+                "status": result.get("status"),
+                "output": stdout,
+                "error": "",
+                "message": message
+            }
+
+    except urllib.error.HTTPError as error:
+
+        try:
+            details = error.read().decode(
+                "utf-8",
+                errors="replace"
+            )
+        except Exception:
+            details = ""
+
+        return {
+            "success": False,
+            "error": (
+                f"Compiler service returned HTTP "
+                f"{error.code}."
+            ),
+            "details": details[:1000]
+        }
+
+    except Exception as error:
+
+        return {
+            "success": False,
+            "error": (
+                "Unable to connect to the compiler service."
+            ),
+            "details": str(error)[:500]
+        }
+
+
+@app.route("/api/compile", methods=["POST"])
+@login_required
+def compile_code():
+
+    data = request.get_json(silent=True) or {}
+
+    code = str(
+        data.get("code", "")
+    )
+
+    stdin_data = str(
+        data.get("input", "")
+    )
+
+    if not code.strip():
+
+        return jsonify({
+            "success": False,
+            "error": "Please enter C code."
+        }), 400
+
+    if len(code) > 50000:
+
+        return jsonify({
+            "success": False,
+            "error": "Code is too large."
+        }), 413
+
+    if len(stdin_data) > 10000:
+
+        return jsonify({
+            "success": False,
+            "error": "Input is too large."
+        }), 413
+
+    result = judge0_request(
+        code,
+        stdin_data
+    )
+
+    add_activity(
+        session["user_id"],
+        "code_compilation",
+        "C program executed"
+    )
+
+    return jsonify(result)
+
+
+# ============================================================
+# USER ACTIVITY
+# ============================================================
+
+@app.route("/api/activity", methods=["POST"])
+@login_required
+def activity():
+
+    data = request.get_json(silent=True) or {}
+
+    event_type = str(
+        data.get("event", "activity")
+    )[:100]
+
+    details = str(
+        data.get("details", "")
+    )[:500]
+
+    add_activity(
+        session["user_id"],
+        event_type,
+        details
     )
 
     return jsonify({
-        "success": True,
-        "courses": len(courses),
-        "chapters": total_chapters,
-        "quiz_questions": len(quiz_questions),
-        "career_topics": len(career_guide)
+        "success": True
     })
 
 
 # ============================================================
-# HEALTH CHECK
+# HEALTH
 # ============================================================
 
-@app.route("/health", methods=["GET"])
+@app.route("/health")
 def health():
 
+    database_ok = False
+
+    try:
+
+        db = get_db()
+
+        db.execute(
+            "SELECT 1"
+        ).fetchone()
+
+        db.close()
+
+        database_ok = True
+
+    except Exception:
+        database_ok = False
+
     return jsonify({
+
         "status": "ok",
+
         "application": "CodeQuest AI",
-        "version": "1.0-stable"
+
+        "database": (
+            "connected"
+            if database_ok
+            else "error"
+        ),
+
+        "courses": len(courses),
+
+        "chapters": sum(
+            len(course["chapters"])
+            for course in courses
+        ),
+
+        "quiz_questions": len(quiz_questions),
+
+        "compiler": (
+            "configured"
+            if JUDGE0_URL
+            else "not_configured"
+        )
+
     })
+
+
+# ============================================================
+# HOME
+# ============================================================
+
+@app.route("/")
+def home():
+    return render_template("index.html")
 
 
 # ============================================================
@@ -1528,10 +3090,16 @@ def health():
 @app.errorhandler(404)
 def not_found(error):
 
-    return jsonify({
-        "success": False,
-        "error": "Route not found"
-    }), 404
+    if request.path.startswith("/api/"):
+
+        return jsonify({
+            "success": False,
+            "error": "API route not found."
+        }), 404
+
+    return render_template(
+        "index.html"
+    )
 
 
 @app.errorhandler(405)
@@ -1539,7 +3107,7 @@ def method_not_allowed(error):
 
     return jsonify({
         "success": False,
-        "error": "Method not allowed"
+        "error": "Method not allowed."
     }), 405
 
 
@@ -1548,17 +3116,25 @@ def server_error(error):
 
     return jsonify({
         "success": False,
-        "error": "Internal server error"
+        "error": "Internal server error."
     }), 500
 
 
 # ============================================================
-# LOCAL / RENDER STARTUP
+# STARTUP
 # ============================================================
+
+init_db()
+
 
 if __name__ == "__main__":
 
-    port = int(os.environ.get("PORT", 10000))
+    port = int(
+        os.environ.get(
+            "PORT",
+            10000
+        )
+    )
 
     app.run(
         host="0.0.0.0",
