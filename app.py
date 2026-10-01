@@ -1,59 +1,21 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request
 import os
 import json
+import random
 import sqlite3
-import secrets
-import time
-import urllib.request
-import urllib.error
+import requests
+from datetime import datetime
 
 # ============================================================
 # CODEQUEST AI
 # Learn • Practice • Play • Build
-# Backend V1.0
+# Backend v2.0
 # ============================================================
 
 app = Flask(__name__)
 
-app.config["SECRET_KEY"] = os.environ.get(
-    "SECRET_KEY",
-    "codequest-ai-development-secret-change-me"
-)
-
-DATABASE_PATH = os.environ.get(
-    "DATABASE_PATH",
-    "codequest.db"
-)
-
-# ============================================================
-# OPTIONAL FIREBASE ADMIN
-# ============================================================
-
-firebase_ready = False
-firebase_auth = None
-
-try:
-    import firebase_admin
-    from firebase_admin import credentials, auth as firebase_auth_module
-
-    firebase_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT_JSON")
-
-    if firebase_json:
-        try:
-            service_account_info = json.loads(firebase_json)
-
-            if not firebase_admin._apps:
-                cred = credentials.Certificate(service_account_info)
-                firebase_admin.initialize_app(cred)
-
-            firebase_auth = firebase_auth_module
-            firebase_ready = True
-
-        except Exception as firebase_error:
-            print("Firebase Admin initialization failed:", firebase_error)
-
-except Exception as firebase_import_error:
-    print("Firebase Admin not installed:", firebase_import_error)
+DATABASE_PATH = os.getenv("DATABASE_PATH", "codequest.db")
+WANDBOX_URL = "https://wandbox.org/api/compile.json"
 
 
 # ============================================================
@@ -61,92 +23,67 @@ except Exception as firebase_import_error:
 # ============================================================
 
 def get_db():
-    connection = sqlite3.connect(DATABASE_PATH)
-    connection.row_factory = sqlite3.Row
-    return connection
+    conn = sqlite3.connect(DATABASE_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
 
 
 def init_db():
-    db = get_db()
+    conn = get_db()
 
-    db.executescript("""
-    CREATE TABLE IF NOT EXISTS users (
-        uid TEXT PRIMARY KEY,
-        name TEXT,
-        email TEXT,
-        photo_url TEXT,
-        xp INTEGER DEFAULT 0,
-        level INTEGER DEFAULT 1,
-        streak INTEGER DEFAULT 0,
-        last_activity TEXT,
-        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-        updated_at TEXT DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE IF NOT EXISTS progress (
-        uid TEXT,
-        lesson_id TEXT,
-        course_id TEXT,
-        completed INTEGER DEFAULT 0,
-        completed_at TEXT,
-        PRIMARY KEY(uid, lesson_id)
-    );
-
-    CREATE TABLE IF NOT EXISTS quiz_attempts (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        uid TEXT,
-        score INTEGER,
-        total INTEGER,
-        xp_earned INTEGER DEFAULT 0,
-        created_at TEXT DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE IF NOT EXISTS activity_log (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        uid TEXT,
-        activity TEXT,
-        xp INTEGER DEFAULT 0,
-        created_at TEXT DEFAULT CURRENT_TIMESTAMP
-    );
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            uid TEXT PRIMARY KEY,
+            email TEXT,
+            name TEXT,
+            photo TEXT,
+            created_at TEXT
+        )
     """)
 
-    db.commit()
-    db.close()
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS progress (
+            uid TEXT,
+            course_id TEXT,
+            chapter_index INTEGER,
+            completed INTEGER DEFAULT 0,
+            PRIMARY KEY(uid, course_id, chapter_index)
+        )
+    """)
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS quiz_attempts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            uid TEXT,
+            score INTEGER,
+            total INTEGER,
+            created_at TEXT
+        )
+    """)
+
+    conn.commit()
+    conn.close()
 
 
 init_db()
 
 
 # ============================================================
-# COURSE HELPERS
+# HELPER
 # ============================================================
 
-def lesson(
-    lesson_id,
-    title,
-    explanation,
-    example="",
-    key_points=None
-):
+def lesson(title, explanation, example=None, practice=None):
     return {
-        "id": lesson_id,
         "title": title,
         "lesson": explanation,
-        "sample": example,
-        "key_points": key_points or []
+        "sample": example or "",
+        "practice": practice or ""
     }
 
 
-def course(
-    course_id,
-    title,
-    icon,
-    level,
-    description,
-    chapters
-):
+def course(cid, title, icon, level, description, chapters):
     return {
-        "id": course_id,
+        "id": cid,
         "title": title,
         "icon": icon,
         "level": level,
@@ -156,13 +93,13 @@ def course(
 
 
 # ============================================================
-# MASSIVE COURSE LIBRARY
+# COMPLETE COURSE SYLLABUS
 # ============================================================
 
 courses = [
 
 # ============================================================
-# 1. COMPUTER BASICS
+# 1 COMPUTER BASICS
 # ============================================================
 
 course(
@@ -170,139 +107,120 @@ course(
     "Computer Basics",
     "💻",
     "Beginner",
-    "Understand computers from the ground up before learning programming.",
+    "Build a strong foundation in computers before entering programming and software development.",
     [
 
         lesson(
-            "cb-01",
             "What is a Computer?",
-            """
-A computer is an electronic device that accepts data as input, processes that data according to instructions, stores information when required, and produces useful output. The important point is that a computer is not simply a machine for doing calculations. Modern computers are used for communication, entertainment, education, banking, software development, scientific research, artificial intelligence and thousands of other activities.
+            """A computer is an electronic machine that accepts data, processes it according to instructions, stores information, and produces useful output.
 
-A simple way to understand a computer is through the input-process-output model. When you type something using a keyboard, the keyboard provides input. The processor and software process that input. The computer may store the information in memory or storage, and finally the result appears on a screen or another output device.
+Almost every digital system you use follows this basic idea. When you type a message, the keyboard provides input, the processor handles the instructions, memory temporarily holds the information, and the screen displays the result.
 
-For example, when you open CodeQuest AI and click a lesson, your phone or computer receives your touch as input, the browser processes the website code, the server may process an API request, and the final lesson appears on your screen as output.
-            """,
-            """
-Input → Processing → Output
+Understanding this input-process-output-storage cycle is important because programming is essentially the process of giving a computer precise instructions to perform useful tasks.
+
+Real-world example:
+When you calculate 25 + 75 using a calculator application, the numbers are input, the processor performs the calculation, and the answer 100 becomes the output.
+
+Think of a computer as a very fast instruction-following machine. It does not independently understand what you mean. It executes instructions according to rules.""",
+
+            """Input → Processing → Output
+
+Keyboard → CPU → Monitor
 
 Example:
-Keyboard → CPU/Software → Monitor
-Mouse → CPU/Software → Screen
-Microphone → CPU/Software → Speakers
-            """,
-            [
-                "A computer accepts input.",
-                "A computer processes data.",
-                "A computer can store information.",
-                "A computer produces output."
-            ]
+10 + 20
+        → Processing
+        → 30""",
+
+            "Identify five examples of computers you use in daily life."
         ),
 
         lesson(
-            "cb-02",
             "Hardware and Software",
-            """
-Computer hardware refers to the physical components that you can touch. Examples include the CPU, RAM, motherboard, keyboard, mouse, monitor and storage drive. Software is the collection of programs and instructions that tell hardware what to do.
+            """Hardware refers to the physical components of a computer that you can touch. Examples include the keyboard, monitor, motherboard, processor, RAM and storage drive.
 
-Hardware without software cannot perform useful tasks by itself, while software requires hardware to execute its instructions. For example, a web browser is software, but it needs a processor, memory and storage to run.
+Software is a collection of instructions that tells hardware what to do. Windows, web browsers, games, mobile applications and programming tools are examples of software.
 
-When you write a Python program, the Python interpreter is software. The CPU, RAM and storage inside your computer are hardware that allow that software to execute.
-            """,
-            """
-Hardware:
+Hardware and software depend on each other. A powerful processor without software has little practical use, while software cannot execute without suitable hardware.
+
+For example, when you open a browser, the browser software requests resources from the operating system, which communicates with hardware such as RAM, CPU and storage.""",
+
+            """Hardware:
 CPU
 RAM
-SSD
 Keyboard
+SSD
 Monitor
 
 Software:
 Windows
 Chrome
-Python
 VS Code
-            """
+Python""",
+
+            "List five hardware components and five software applications."
         ),
 
         lesson(
-            "cb-03",
-            "CPU and Processing",
-            """
-The Central Processing Unit, commonly called the CPU or processor, executes instructions and performs calculations. It is often described as the brain of the computer, although technically it is better understood as the component responsible for executing machine instructions.
+            "CPU and Processor",
+            """The Central Processing Unit, commonly called the CPU, executes instructions and performs calculations.
 
-A CPU contains processing components such as the arithmetic logic unit, control unit and registers. Modern processors also contain multiple cores, allowing several instruction streams to be processed efficiently.
+A processor contains components such as the control unit and arithmetic and logic unit. Modern CPUs also contain multiple cores, allowing several tasks to be processed concurrently.
 
-When a program calculates 25 + 75, the program's instructions eventually become machine-level operations that the processor executes.
-            """,
-            """
-int a = 25;
-int b = 75;
-int result = a + b;
+CPU performance is influenced by factors such as architecture, number of cores, clock frequency, cache and workload. A higher clock speed alone does not automatically mean one processor is faster in every task.
 
-printf("%d", result);
-            """
+For a programmer, understanding the CPU helps explain why algorithms, loops and inefficient programs can affect performance.""",
+
+            """Example:
+
+Program:
+Calculate 10 + 20
+
+CPU receives instruction
+        ↓
+Performs calculation
+        ↓
+Produces 30""",
+
+            "Explain why a CPU is called the brain of a computer."
         ),
 
         lesson(
-            "cb-04",
-            "RAM and Memory",
-            """
-RAM stands for Random Access Memory. It is temporary working memory used by programs while they are running. When you open a browser, game or coding application, the operating system loads the necessary program data into RAM so that the CPU can access it quickly.
+            "RAM and Storage",
+            """RAM and storage are both used to hold information, but they serve different purposes.
 
-RAM is volatile, which means its contents normally disappear when the device loses power. This is different from SSD or hard-disk storage, which keeps data after the computer is turned off.
+RAM is temporary working memory. Programs currently running use RAM because it provides fast access to data. When the computer is powered off, information stored only in RAM is lost.
 
-More RAM can allow a system to keep more active applications and data available at the same time, although performance also depends on the CPU, storage and software.
-            """,
-            """
-Example:
+Storage devices such as SSDs and hard drives retain files even after shutdown.
 
-Opening:
-Chrome
-VS Code
-Music player
+For example, when you open a Python project, the project files remain on storage, but the running Python editor and its active data are loaded into RAM.""",
 
-All three applications require RAM while they are running.
-            """
+            """Storage:
+project.py
+↓
+RAM
+↓
+CPU
+↓
+Program execution""",
+
+            "Explain the difference between RAM and SSD storage."
         ),
 
         lesson(
-            "cb-05",
-            "Storage: HDD and SSD",
-            """
-Storage is used to keep data for longer periods. Hard disk drives use magnetic disks and mechanical components, while solid-state drives use flash memory and have no spinning disks.
-
-SSDs are generally much faster for starting operating systems and applications because they provide low-latency access to stored data. Storage capacity is measured using units such as GB and TB.
-
-Your source code, photographs, videos, documents and installed applications are normally stored on persistent storage rather than RAM.
-            """,
-            """
-Example:
-
-512 GB SSD
-├── Windows
-├── VS Code
-├── Python
-├── Projects
-└── Personal files
-            """
-        ),
-
-        lesson(
-            "cb-06",
             "Operating Systems",
-            """
-An operating system is system software that manages computer hardware and provides services for applications. Windows, Linux, Android and macOS are examples of operating systems.
+            """An operating system is system software that manages computer hardware and provides services to applications.
 
-The operating system manages processes, memory, files, devices, permissions and networking. When you open an application, the operating system creates and manages the process and allocates resources to it.
+Windows, Linux, macOS, Android and iOS are examples of operating systems.
 
-For a programmer, understanding operating systems is important because software ultimately runs on top of operating-system services.
-            """,
-            """
-Application
-    ↓
+The operating system manages processes, memory, files, devices, permissions and networking.
+
+When you open a program, you normally do not directly tell the CPU where every instruction should be placed. The operating system manages those resources for you.""",
+
+            """Application
+     ↓
 Operating System
-    ↓
+     ↓
 Hardware
 
 Example:
@@ -310,174 +228,418 @@ Chrome
 ↓
 Windows
 ↓
-CPU + RAM + SSD + Network
-            """
+CPU + RAM + Network""",
+
+            "Name three operating systems and one device where each is commonly used."
         ),
 
         lesson(
-            "cb-07",
-            "Files and Folders",
-            """
-A file is a named collection of data stored by a computer. A folder is used to organize files and other folders. Operating systems use paths to identify where files are located.
+            "Files, Folders and Extensions",
+            """A file is a collection of stored information. A folder is used to organize files.
 
-For programmers, understanding paths is important because programs frequently read configuration files, source code, images and databases. A relative path starts from the current working directory, while an absolute path identifies a location from the root of the file system.
-            """,
-            """
-project/
+File extensions usually indicate the type of content or the application associated with it.
+
+For example, .txt represents text, .jpg commonly represents an image, .py represents Python source code and .html represents an HTML document.
+
+Understanding files and folders is essential for programming because projects usually contain many source files, configuration files, assets and documentation.""",
+
+            """project/
 ├── app.py
 ├── index.html
 ├── style.css
-└── images/
-    └── logo.png
-            """
+└── README.md""",
+
+            "Create a folder structure for a small Python project."
         ),
 
         lesson(
-            "cb-08",
-            "Binary and Data Representation",
-            """
-Computers ultimately represent information using binary values. Binary uses two symbols: 0 and 1. Individual binary digits are called bits, and groups of eight bits form a byte.
+            "Binary and Digital Data",
+            """Computers fundamentally process digital information using binary values.
 
-Numbers, text, images, audio and video are all represented using combinations of binary data. Programming languages hide most of this complexity from beginners, but understanding binary becomes useful when learning networking, memory, cybersecurity and computer architecture.
-            """,
-            """
-Decimal 5 = Binary 101
+Binary uses two symbols: 0 and 1. A single binary digit is called a bit. Eight bits form one byte.
+
+Text, images, audio and video are ultimately represented using numerical data that computers can process.
+
+You do not normally need to manually convert every piece of data into binary, because programming languages and operating systems handle those conversions for you. However, understanding binary becomes useful when learning memory, networking, encoding and cybersecurity.""",
+
+            """Decimal 5
 
 Binary:
-1×4 + 0×2 + 1×1 = 5
-            """
-        ),
+101
 
-        lesson(
-            "cb-09",
-            "Input and Output Devices",
-            """
-Input devices allow users or other systems to provide data to a computer. Examples include keyboards, mice, cameras, microphones and touchscreens.
+Because:
+4 + 0 + 1 = 5""",
 
-Output devices communicate processed information back to the user. Examples include monitors, speakers and printers. Some devices perform both roles. A touchscreen, for example, displays output while also accepting touch input.
-            """,
-            """
-Touchscreen:
-Touch → Input
-Display → Output
-            """
-        ),
-
-        lesson(
-            "cb-10",
-            "Internet and the Web",
-            """
-The Internet is a global network of interconnected computer networks. The World Wide Web is one service that operates over the Internet. Websites communicate using protocols such as HTTP and HTTPS.
-
-When you open a website, your device communicates with a server. DNS can translate a domain name into an IP address, a connection is established, and HTTP requests and responses transfer information between the browser and server.
-            """,
-            """
-Browser
-   ↓ HTTP request
-Internet
-   ↓
-Web Server
-   ↓ HTTP response
-Browser
-            """
+            "Convert decimal 10 into binary."
         )
     ]
 ),
 
 # ============================================================
-# 2. PRODUCTIVITY
+# 2 WINDOWS
 # ============================================================
 
 course(
-    "productivity",
-    "Digital Productivity",
-    "📊",
+    "windows",
+    "Windows & Digital Skills",
+    "🪟",
     "Beginner",
-    "Learn practical computer productivity and professional digital skills.",
+    "Learn practical Windows skills required for college, programming and everyday computer use.",
     [
 
         lesson(
-            "prod-01",
-            "Word Processing",
-            """
-Word processors are applications used to create and format documents. Microsoft Word and similar applications provide tools for headings, paragraphs, tables, images, page layout and document collaboration.
+            "Windows Desktop",
+            """The Windows desktop provides access to applications, files, system settings and common tools.
 
-For an IT student, word processing is useful for lab records, project documentation, resumes, reports and assignments. Good formatting is not merely decoration; consistent headings and spacing make information easier to understand.
-            """,
-            """
-Professional document structure:
+The Start menu, taskbar, notification area, desktop shortcuts and File Explorer form some of the most frequently used parts of the Windows interface.
 
-Title
-↓
-Introduction
-↓
-Main Content
-↓
-Tables / Figures
-↓
-Conclusion
-            """
+Learning the desktop efficiently saves time when working on programming projects because developers repeatedly switch between editors, terminals, browsers and folders.""",
+
+            """Useful shortcuts:
+
+Win + E → File Explorer
+Win + R → Run
+Alt + Tab → Switch apps
+Ctrl + Shift + Esc → Task Manager""",
+
+            "Practice opening File Explorer and Task Manager using keyboard shortcuts."
         ),
 
         lesson(
-            "prod-02",
-            "Spreadsheets",
-            """
-Spreadsheets organize information in rows and columns and can perform calculations using formulas. They are useful for marks, budgets, attendance, experiments, project planning and data analysis.
+            "File Explorer",
+            """File Explorer allows you to browse, create, move, copy, rename and delete files and folders.
 
-A spreadsheet formula can reference other cells, meaning that changing an input automatically updates related calculations. This introduces an important programming concept: data and operations can be connected.
-            """,
-            """
-A1 = 50
-A2 = 70
+A programmer should become comfortable navigating directories because coding projects depend heavily on correct file locations.
 
-A3:
-=AVERAGE(A1:A2)
-            """
+For example, when running a Python application from a terminal, the terminal must usually be positioned in the correct project directory.""",
+
+            """C:\\Users\\Student\\Documents\\CodeQuest\\
+
+    app.py
+    requirements.txt
+    templates\\
+    static\\""",
+
+            "Create a folder named CodeProjects and create three subfolders."
         ),
 
         lesson(
-            "prod-03",
-            "Presentations",
-            """
-Presentation software is used to communicate ideas visually. A good technical presentation normally contains a clear problem, explanation, evidence or demonstration, and conclusion.
+            "Windows Terminal and Command Prompt",
+            """A terminal allows you to interact with the operating system using commands rather than graphical controls.
 
-For engineering students, presentation skills are useful when explaining projects, research, technical concepts and software demonstrations.
-            """,
-            """
-Presentation flow:
+Developers use terminals for installing packages, running programs, managing Git repositories, starting servers and automating tasks.
 
-Problem
-→ Idea
-→ Technology
-→ Demonstration
-→ Result
-→ Future scope
-            """
+Learning basic commands early makes later programming and Git lessons much easier.""",
+
+            """cd CodeProjects
+dir
+
+Python example:
+python app.py""",
+
+            "Open Command Prompt and navigate into a folder using cd."
         ),
 
         lesson(
-            "prod-04",
-            "Professional File Organization",
-            """
-Good file organization becomes increasingly important as projects grow. Instead of keeping every file in one directory, related files should be grouped logically.
+            "Installing Software Safely",
+            """Software should be downloaded from trusted sources whenever possible.
 
-A consistent naming convention makes projects easier to maintain and share with teammates. This habit becomes especially useful when working with Git and GitHub.
-            """,
-            """
-CodeQuestAI/
-├── backend/
-├── frontend/
-├── assets/
-├── docs/
-└── README.md
-            """
+Before installing a development tool, check its official documentation, supported operating system and system requirements.
+
+Developers commonly install editors, programming languages, Git, database tools and browsers.
+
+Avoid downloading unknown executable files simply because a website claims they are required.""",
+
+            """Typical development setup:
+
+Browser
+↓
+VS Code
+↓
+Python / C / Java
+↓
+Git
+↓
+Project""",
+
+            "List the development tools you expect to use during college."
         )
     ]
 ),
 
 # ============================================================
-# 3. GIT
+# 3 WORD
+# ============================================================
+
+course(
+    "ms-word",
+    "Microsoft Word",
+    "📝",
+    "Beginner",
+    "Learn professional document creation for assignments, reports, resumes and project documentation.",
+    [
+
+        lesson(
+            "Creating a Professional Document",
+            """Microsoft Word is commonly used to create assignments, reports, resumes and documentation.
+
+A professional document is more than typing text. It should have consistent headings, readable spacing, appropriate fonts, page structure and clear organization.
+
+For college work, styles and headings are particularly useful because they allow long documents to remain consistent.""",
+
+            """Example structure:
+
+PROJECT REPORT
+
+1. Introduction
+2. Objectives
+3. Methodology
+4. Results
+5. Conclusion""",
+
+            "Create a one-page project report using headings."
+        ),
+
+        lesson(
+            "Formatting and Styles",
+            """Formatting controls how information appears on a page. Styles provide a consistent way to apply headings, titles and body text.
+
+Instead of manually changing every heading, a document can use Heading 1, Heading 2 and normal text styles.
+
+This becomes especially useful for long technical documentation.""",
+
+            """Title
+↓
+Heading 1
+↓
+Heading 2
+↓
+Body paragraph""",
+
+            "Create three heading levels in a Word document."
+        ),
+
+        lesson(
+            "Tables and Technical Documentation",
+            """Tables allow structured information to be presented clearly.
+
+Students commonly use tables for experiment readings, comparison charts, project requirements and schedules.
+
+A good table should have meaningful column headings and consistent formatting rather than excessive decoration.""",
+
+            """| Component | Purpose |
+| CPU | Processing |
+| RAM | Temporary memory |
+| SSD | Storage |""",
+
+            "Create a hardware comparison table."
+        )
+    ]
+),
+
+# ============================================================
+# 4 EXCEL
+# ============================================================
+
+course(
+    "ms-excel",
+    "Microsoft Excel",
+    "📊",
+    "Beginner",
+    "Learn spreadsheets, formulas, functions, charts and practical data analysis.",
+    [
+
+        lesson(
+            "Spreadsheet Fundamentals",
+            """Excel organizes information into rows and columns. The intersection of a row and column is called a cell.
+
+Cells can contain text, numbers, dates and formulas.
+
+Spreadsheets are useful for marks, budgets, attendance, inventory, calculations and simple data analysis.""",
+
+            """A1 = 10
+A2 = 20
+
+A3:
+=A1+A2
+
+Result:
+30""",
+
+            "Create a marks sheet for five students."
+        ),
+
+        lesson(
+            "Formulas and Functions",
+            """Excel formulas allow calculations to be performed automatically.
+
+Functions such as SUM, AVERAGE, MAX and MIN provide ready-made operations.
+
+The important concept is that formulas can reference cells. When the underlying data changes, the result can update automatically.""",
+
+            """=SUM(B2:B6)
+
+=AVERAGE(B2:B6)
+
+=MAX(B2:B6)
+
+=MIN(B2:B6)""",
+
+            "Calculate total and average marks for five subjects."
+        ),
+
+        lesson(
+            "Charts and Data Visualization",
+            """Charts convert numerical information into visual patterns.
+
+Bar charts are useful for comparisons, line charts are useful for changes over time, and pie charts can represent proportions.
+
+Choosing the appropriate chart is more important than simply making a colorful chart.""",
+
+            """Monthly Sales
+
+Jan █████
+Feb ███████
+Mar █████████
+Apr ██████""",
+
+            "Create a chart showing monthly sales."
+        )
+    ]
+),
+
+# ============================================================
+# 5 POWERPOINT
+# ============================================================
+
+course(
+    "powerpoint",
+    "Microsoft PowerPoint",
+    "🎨",
+    "Beginner",
+    "Create clean presentations for college seminars, projects and technical demonstrations.",
+    [
+
+        lesson(
+            "Presentation Structure",
+            """A presentation should guide the audience through a clear story.
+
+A typical technical presentation can contain a title, problem statement, objectives, methodology, results and conclusion.
+
+Slides should support the speaker rather than contain every sentence the speaker plans to say.""",
+
+            """Slide 1 → Title
+Slide 2 → Problem
+Slide 3 → Solution
+Slide 4 → Demo
+Slide 5 → Conclusion""",
+
+            "Design a five-slide presentation for a software project."
+        ),
+
+        lesson(
+            "Visual Design",
+            """Good presentation design uses consistent typography, spacing and visual hierarchy.
+
+Avoid filling slides with large paragraphs. Use short points, diagrams, screenshots and meaningful visuals when they improve understanding.
+
+Consistency makes a presentation easier for an audience to follow.""",
+
+            """Bad:
+One huge paragraph
+
+Better:
+• Problem
+• Cause
+• Solution
+• Result""",
+
+            "Convert one paragraph-heavy slide into a clean presentation slide."
+        )
+    ]
+),
+
+# ============================================================
+# 6 INTERNET
+# ============================================================
+
+course(
+    "internet",
+    "Internet, Email & Online Tools",
+    "🌐",
+    "Beginner",
+    "Understand how the web, browsers, email, URLs, search and online services work.",
+    [
+
+        lesson(
+            "What is the Internet?",
+            """The Internet is a global network of interconnected computer networks.
+
+When you open a website, your device communicates with remote servers through networking infrastructure.
+
+The Internet and the World Wide Web are related but not identical. The Web is one service that operates over the Internet.""",
+
+            """Your phone
+   ↓
+Wi-Fi / Mobile Network
+   ↓
+Internet
+   ↓
+Web Server
+   ↓
+Website""",
+
+            "Explain the difference between Internet and Web."
+        ),
+
+        lesson(
+            "How a Website Opens",
+            """When you enter a website address, several steps occur before the page appears.
+
+The browser identifies the destination, DNS can translate a domain name into an IP address, a connection is established, and the server sends data back.
+
+The browser then interprets HTML, CSS and JavaScript to display the page.""",
+
+            """example.com
+↓
+DNS
+↓
+IP address
+↓
+Server
+↓
+HTML/CSS/JS
+↓
+Browser""",
+
+            "Describe the basic journey from entering a URL to seeing a webpage."
+        ),
+
+        lesson(
+            "Email and Digital Communication",
+            """Email is an electronic messaging system used for personal, academic and professional communication.
+
+Professional emails should have a clear subject, appropriate greeting, concise message and useful closing.
+
+Students should also understand attachments, CC, BCC, spam and phishing.""",
+
+            """Subject:
+Project Submission - CodeQuest AI
+
+Body:
+Hello Sir,
+
+I have attached the project report.
+
+Thank you.""",
+
+            "Write a professional email requesting project feedback."
+        )
+    ]
+),
+
+# ============================================================
+# 7 GIT
 # ============================================================
 
 course(
@@ -489,285 +651,299 @@ course(
     [
 
         lesson(
-            "git-01",
-            "What is Git?",
-            """
-Git is a distributed version-control system used to track changes in files. Instead of manually creating folders such as project-final, project-final2 and project-final-real, Git records the history of changes.
+            "Why Version Control Exists",
+            """Imagine modifying a project for several weeks and accidentally deleting an important section. Version control allows developers to track changes and return to previous versions.
 
-This allows developers to experiment, compare versions and return to earlier states when necessary. Git is one of the most important tools in modern software development.
-            """,
-            """
+Git records changes to files and allows developers to create meaningful checkpoints called commits.
+
+This is one reason Git has become an important part of modern software development.""",
+
+            """Project
+↓
 git init
+↓
 git add .
-git commit -m "Initial project"
-            """
+↓
+git commit
+↓
+History""",
+
+            "Create a Git repository for a small project."
         ),
 
         lesson(
-            "git-02",
-            "Repositories",
-            """
-A Git repository is a project whose files and change history are managed by Git. A repository can exist locally on your computer and can also be hosted on platforms such as GitHub.
+            "Git Basic Workflow",
+            """A common Git workflow involves modifying files, reviewing changes, staging them and creating a commit.
 
-Repositories make it possible to track who changed what, when changes were made and how the project evolved.
-            """,
-            """
-Local project
-     ↓
-Git repository
-     ↓
-GitHub repository
-            """
-        ),
+The staging area allows you to choose what should be included in the next commit.
 
-        lesson(
-            "git-03",
-            "Commit",
-            """
-A commit is a saved snapshot of project changes. Good commit messages explain what changed rather than simply saying 'update'.
+Understanding this workflow is more useful than memorizing commands without understanding what they do.""",
 
-Frequent meaningful commits make debugging and collaboration easier because developers can understand the history of the project.
-            """,
-            """
+            """git status
 git add .
-git commit -m "Fix quiz API"
-            """
+git commit -m "Add login page"
+git log""",
+
+            "Make two commits in a practice repository."
         ),
 
         lesson(
-            "git-04",
-            "Branches",
-            """
-A branch allows developers to work on a separate line of development without immediately changing the main version. This is useful for developing features, fixing bugs and testing ideas.
+            "GitHub Repositories",
+            """GitHub provides remote hosting for Git repositories and adds collaboration features such as issues, pull requests and project discussions.
 
-A feature can be developed in a branch and merged into the main branch after it has been reviewed.
-            """,
-            """
-git checkout -b quiz-improvements
-            """
+A GitHub repository can also act as a portfolio demonstrating your projects and development progress.
+
+A good repository should normally contain a useful README and understandable project structure.""",
+
+            """Local project
+     ↓
+     Git
+     ↓
+   GitHub
+     ↓
+Portfolio / Collaboration""",
+
+            "Create a README for one of your projects."
         ),
 
         lesson(
-            "git-05",
-            "GitHub",
-            """
-GitHub is a platform for hosting Git repositories and collaborating on software projects. Developers use GitHub for source code, issues, pull requests, documentation and project discussions.
+            "Branches and Pull Requests",
+            """Branches allow developers to work on changes without immediately modifying the main development line.
 
-For a college student, a well-organized GitHub profile can also demonstrate practical project experience.
-            """,
-            """
-git remote add origin YOUR_REPOSITORY
-git push -u origin main
-            """
+A pull request provides a place to review proposed changes before merging them.
+
+This workflow becomes important when multiple developers work on the same project.""",
+
+            """main
+ │
+ ├── feature-login
+ │
+ └── feature-dashboard""",
+
+            "Create a feature branch and merge it into main."
         )
     ]
 ),
 
 # ============================================================
-# 4. C
+# 8 C
 # ============================================================
 
 course(
-    "c-programming",
+    "c",
     "C Programming",
     "🔵",
-    "Beginner",
-    "Build strong programming fundamentals using C.",
+    "Beginner → Intermediate",
+    "Build programming fundamentals using C, from variables to pointers and data structures.",
     [
 
         lesson(
-            "c-01",
             "Your First C Program",
-            """
-C is a compiled programming language widely used for systems programming, embedded systems, operating systems and performance-sensitive software. Learning C gives students a strong understanding of variables, memory, control flow and program structure.
+            """C is a compiled programming language that gives programmers relatively direct control over memory and system resources.
 
-A C program normally contains a main function where execution begins. The printf function can display information on the console.
-            """,
+A C program begins execution from the main function.
+
+The preprocessor directive #include <stdio.h> provides declarations for standard input/output functions such as printf.
+
+Learning C gives a strong foundation for understanding programming fundamentals, memory and data structures.""",
+
             """#include <stdio.h>
 
 int main() {
-    printf("Hello, CodeQuest AI!");
+    printf("Hello, CodeQuest!");
     return 0;
-}"""
+}""",
+
+            "Change the program so it prints your name."
         ),
 
         lesson(
-            "c-02",
             "Variables and Data Types",
-            """
-A variable is a named location used to store a value. C requires variables to have a data type such as int, float, double or char.
+            """A variable is a named storage location used by a program to hold a value.
 
-Choosing the correct data type tells the compiler what kind of value the variable will contain and how operations on that value should be interpreted.
-            """,
+The data type tells the compiler what kind of value the variable is expected to contain.
+
+For example, int is commonly used for whole numbers, float for decimal values and char for a character.
+
+Choosing appropriate data types helps a program represent information correctly.""",
+
             """int age = 18;
-float mark = 92.5;
+float height = 5.8;
 char grade = 'A';
 
-printf("%d %.1f %c", age, mark, grade);"""
+printf("%d", age);""",
+
+            "Create variables representing your age, percentage and grade."
         ),
 
         lesson(
-            "c-03",
-            "Operators",
-            """
-Operators allow programs to perform calculations and comparisons. Arithmetic operators include +, -, *, / and %. Relational operators compare values, while logical operators combine conditions.
+            "Input with scanf",
+            """Programs become interactive when they accept information from the user.
 
-Understanding operators is essential because almost every useful program performs calculations or makes decisions based on comparisons.
-            """,
-            """int a = 10;
-int b = 3;
+The scanf function can read formatted input from standard input. When reading into a variable, scanf generally needs the variable's address, which is why the address-of operator & is commonly used.
 
-printf("%d\n", a + b);
-printf("%d\n", a % b);"""
+This lesson is an important bridge between fixed-output programs and interactive applications.""",
+
+            """#include <stdio.h>
+
+int main() {
+    int a, b;
+
+    printf("Enter two numbers: ");
+    scanf("%d %d", &a, &b);
+
+    printf("Sum = %d", a + b);
+
+    return 0;
+}""",
+
+            "Modify the program to calculate multiplication."
         ),
 
         lesson(
-            "c-04",
-            "If Else",
-            """
-Conditional statements allow a program to choose between different actions. The if statement executes code when a condition is true, while else handles the alternative.
+            "Conditional Statements",
+            """Programs often need to make decisions.
 
-This is one of the foundations of programming logic because real applications constantly make decisions based on input and state.
-            """,
-            """int mark = 82;
+An if statement executes code when a condition is true. else provides an alternative path.
 
-if (mark >= 50) {
-    printf("Pass");
+This concept is fundamental to almost every programming language because real applications constantly make decisions based on data.""",
+
+            """int age = 20;
+
+if (age >= 18) {
+    printf("Adult");
 } else {
-    printf("Fail");
-}"""
+    printf("Minor");
+}""",
+
+            "Write a program that checks whether a number is positive, negative or zero."
         ),
 
         lesson(
-            "c-05",
             "Loops",
-            """
-Loops repeat a section of code. C provides for, while and do-while loops. Loops are useful when a task must be repeated without writing the same statements many times.
+            """Loops allow a program to repeat instructions without writing the same code repeatedly.
 
-For example, printing numbers from 1 to 100 manually would be inefficient. A loop can perform the same task with a few lines.
-            """,
-            """for (int i = 1; i <= 10; i++) {
-    printf("%d\n", i);
-}"""
+The for loop is useful when the number of repetitions is known. while is useful when repetition depends on a condition.
+
+Loops are used everywhere from processing arrays to handling repeated user input.""",
+
+            """for (int i = 1; i <= 5; i++) {
+    printf("%d\\n", i);
+}""",
+
+            "Print the multiplication table of 7."
         ),
 
         lesson(
-            "c-06",
-            "Functions",
-            """
-Functions divide a program into reusable blocks. A function can accept inputs called parameters and may return a result.
+            "Arrays",
+            """An array stores multiple values of the same type in contiguous memory locations.
 
-Breaking large programs into functions makes code easier to read, test and maintain.
-            """,
+Instead of creating separate variables for ten marks, an array can store them under one variable name and use an index to access individual values.
+
+Arrays are fundamental to later topics such as strings, sorting and data structures.""",
+
+            """int marks[5] = {
+    80, 75, 91, 68, 88
+};
+
+printf("%d", marks[2]);""",
+
+            "Calculate the average of five numbers stored in an array."
+        ),
+
+        lesson(
+            "Functions",
+            """Functions divide a program into reusable blocks.
+
+A function can receive input through parameters and return a result.
+
+Using functions makes programs easier to understand, test and maintain because large problems can be divided into smaller responsibilities.""",
+
             """int add(int a, int b) {
     return a + b;
 }
 
-int main() {
-    printf("%d", add(10, 20));
-    return 0;
-}"""
+int result = add(10, 20);""",
+
+            "Create a function that returns the square of a number."
         ),
 
         lesson(
-            "c-07",
-            "Arrays",
-            """
-An array stores multiple values of the same data type in contiguous memory. Instead of creating separate variables for ten marks, an array allows the program to store them under one name and access each value using an index.
-            """,
-            """int marks[5] = {80, 75, 91, 68, 88};
-
-for (int i = 0; i < 5; i++) {
-    printf("%d\n", marks[i]);
-}"""
-        ),
-
-        lesson(
-            "c-08",
             "Pointers",
-            """
-A pointer is a variable that stores a memory address. Pointers are one of the concepts that makes C powerful because they allow programs to work directly with memory.
+            """A pointer is a variable capable of storing a memory address.
 
-The address-of operator & obtains an address, while * can be used to access the value stored at that address.
-            """,
-            """int x = 25;
+Pointers are one of C's most powerful concepts because they allow programs to work directly with memory and are heavily used with arrays, strings, dynamic memory and data structures.
+
+The address-of operator & obtains an address, while * can be used to access the value at an address.""",
+
+            """int x = 10;
 int *p = &x;
 
-printf("%d\n", x);
-printf("%d\n", *p);"""
+printf("%d", *p);""",
+
+            "Explain what p and *p represent in the example."
         ),
 
         lesson(
-            "c-09",
             "Structures",
-            """
-Structures allow programmers to combine different types of data into one custom data type. This is useful for representing real-world entities such as students, employees or products.
+            """A structure allows multiple related values of different data types to be grouped into one custom type.
 
-A student record could contain a name, roll number and mark in one structure.
-            """,
+For example, a student record might contain a name, roll number and percentage.
+
+Structures are useful for representing real-world entities in C programs.""",
+
             """struct Student {
-    char name[30];
-    int mark;
+    char name[50];
+    int roll;
+    float mark;
 };
 
-struct Student s = {"Joe", 92};
+struct Student s1;""",
 
-printf("%s %d", s.name, s.mark);"""
-        ),
-
-        lesson(
-            "c-10",
-            "File Handling",
-            """
-Programs often need to store information permanently. C provides file-handling functions for opening, reading, writing and closing files.
-
-This introduces the important difference between temporary variables in memory and persistent information stored on a disk.
-            """,
-            """FILE *file = fopen("data.txt", "w");
-
-if (file != NULL) {
-    fprintf(file, "CodeQuest AI");
-    fclose(file);
-}"""
+            "Create a structure representing a book."
         )
     ]
 ),
 
 # ============================================================
-# 5. C++
+# 9 C++
 # ============================================================
 
 course(
     "cpp",
     "C++ Programming",
-    "🟣",
+    "🔷",
     "Intermediate",
-    "Learn object-oriented and modern C++ programming.",
+    "Move from procedural programming toward object-oriented and modern C++ programming.",
     [
 
         lesson(
-            "cpp-01",
-            "C++ Basics",
-            """
-C++ extends the C programming language with features such as classes, objects, templates and a large standard library. It is widely used in systems software, game development, competitive programming and performance-sensitive applications.
-            """,
+            "C++ Fundamentals",
+            """C++ extends the C programming tradition with features such as classes, objects, references, templates and the Standard Library.
+
+It can support procedural, object-oriented and generic programming styles.
+
+Understanding C++ becomes especially useful when learning object-oriented programming and performance-oriented software.""",
+
             """#include <iostream>
 using namespace std;
 
 int main() {
     cout << "Hello C++";
     return 0;
-}"""
+}""",
+
+            "Write a C++ program that prints three lines."
         ),
 
         lesson(
-            "cpp-02",
             "Classes and Objects",
-            """
-A class defines the structure and behavior of objects. Object-oriented programming allows related data and operations to be grouped together.
+            """A class defines a structure containing data and behavior. An object is an instance created from that class.
 
-For example, a Student class can contain a student's name and methods that display information about that student.
-            """,
+This allows software to model real-world or conceptual entities.
+
+For example, a Student class could contain a name and methods for displaying student information.""",
+
             """class Student {
 public:
     string name;
@@ -775,184 +951,188 @@ public:
     void show() {
         cout << name;
     }
-};"""
+};""",
+
+            "Create a Book class with title and price."
         ),
 
         lesson(
-            "cpp-03",
-            "Constructors",
-            """
-A constructor is a special member function that runs when an object is created. Constructors are commonly used to initialize an object's data.
+            "Inheritance",
+            """Inheritance allows one class to derive properties and behavior from another class.
 
-This prevents objects from being created in an incomplete or invalid initial state.
-            """,
-            """class Student {
+It can be useful when multiple classes share common characteristics.
+
+For example, Vehicle could provide common functionality while Car and Bike extend it with specialized behavior.""",
+
+            """class Vehicle {
 public:
-    string name;
-
-    Student(string n) {
-        name = n;
+    void start() {
+        cout << "Starting";
     }
-};"""
+};
+
+class Car : public Vehicle {
+};""",
+
+            "Create a simple parent and child class."
         ),
 
         lesson(
-            "cpp-04",
-            "STL",
-            """
-The C++ Standard Template Library provides reusable data structures and algorithms. Containers such as vector, map and set save programmers from implementing common structures from scratch.
+            "STL and Vectors",
+            """The C++ Standard Template Library provides reusable containers and algorithms.
 
-Learning STL is particularly useful for problem solving and technical interviews.
-            """,
+vector is a dynamic array that can grow as elements are added.
+
+Using the Standard Library can reduce the amount of low-level code developers need to write themselves.""",
+
             """#include <vector>
-using namespace std;
 
-vector<int> numbers = {10, 20, 30};
+vector<int> numbers = {
+    10, 20, 30
+};
 
-for (int x : numbers) {
-    cout << x << endl;
-}"""
+numbers.push_back(40);""",
+
+            "Create a vector containing five numbers."
         )
     ]
 ),
 
 # ============================================================
-# 6. PYTHON
+# 10 PYTHON
 # ============================================================
 
 course(
     "python",
     "Python Programming",
     "🐍",
-    "Beginner → Intermediate",
-    "Learn Python for automation, development, data and AI.",
+    "Beginner → Advanced",
+    "Learn Python from fundamentals through practical programming concepts.",
     [
 
         lesson(
-            "py-01",
-            "Python Introduction",
-            """
-Python is a high-level programming language known for readable syntax and a large ecosystem of libraries. It is used for web development, automation, data analysis, artificial intelligence, testing and many other tasks.
+            "Python Fundamentals",
+            """Python is a high-level programming language known for readable syntax and a large ecosystem of libraries.
 
-Python is popular among beginners because programs can often express an idea using relatively few lines of code.
-            """,
-            """name = "CodeQuest AI"
-print("Welcome to", name)"""
+It is widely used in automation, web development, data analysis, artificial intelligence and scripting.
+
+Python's simple syntax makes it useful for beginners while its ecosystem allows developers to build complex systems.""",
+
+            """name = "CodeQuest"
+
+print("Welcome to", name)""",
+
+            "Create a Python program that prints your name and college."
         ),
 
         lesson(
-            "py-02",
-            "Variables",
-            """
-Python variables refer to objects and do not require the programmer to declare a traditional static type for every variable. Python determines the type of an object at runtime.
+            "Variables and Types",
+            """Python variables refer to objects rather than requiring you to explicitly declare a type in the same way as C.
 
-This makes Python convenient for rapid development, although programmers still need to understand the kinds of values they are working with.
-            """,
-            """name = "Joe"
-age = 18
-mark = 92.5
+Common built-in types include int, float, str, bool, list, tuple, set and dict.
 
-print(name)
-print(age)
-print(mark)"""
+Python determines the type associated with a value at runtime.""",
+
+            """age = 18
+name = "Joe"
+percentage = 87.5
+student = True""",
+
+            "Create variables representing a student profile."
         ),
 
         lesson(
-            "py-03",
             "Conditions",
-            """
-Conditional statements allow Python programs to make decisions. The if, elif and else keywords let a program choose different code paths based on conditions.
+            """Conditional statements allow Python programs to choose different paths.
 
-This same basic idea appears in web applications, games, automation scripts and data-processing programs.
-            """,
-            """mark = 85
+Comparison operators produce Boolean results, which can then be used by if, elif and else.
 
-if mark >= 90:
+Decision-making is essential for everything from simple validation to application business logic.""",
+
+            """marks = 85
+
+if marks >= 90:
     print("Excellent")
-elif mark >= 50:
+elif marks >= 50:
     print("Pass")
 else:
-    print("Needs improvement")"""
+    print("Needs improvement")""",
+
+            "Create a grade calculator."
         ),
 
         lesson(
-            "py-04",
             "Loops",
-            """
-Loops allow Python programs to repeat operations. The for loop is commonly used to iterate through sequences, while the while loop repeats while a condition remains true.
+            """Loops repeat operations.
 
-Loops are particularly useful when processing collections of data.
-            """,
+Python's for loop is commonly used to iterate over sequences, while while repeats code as long as a condition remains true.
+
+Iteration is a core programming concept and appears in almost every practical program.""",
+
             """for number in range(1, 6):
-    print(number)"""
+    print(number)""",
+
+            "Print numbers from 1 to 20 and identify even numbers."
         ),
 
         lesson(
-            "py-05",
-            "Functions",
-            """
-Functions package reusable logic into named blocks. A function can receive parameters and return a value.
-
-Using functions prevents duplicated code and makes larger Python applications easier to organize.
-            """,
-            """def add(a, b):
-    return a + b
-
-result = add(10, 20)
-print(result)"""
-        ),
-
-        lesson(
-            "py-06",
             "Lists and Dictionaries",
-            """
-Lists store ordered collections of values, while dictionaries store key-value pairs. These structures are fundamental to Python programming and are used heavily when processing API responses, configuration data and application state.
-            """,
+            """Lists store ordered collections of values. Dictionaries store key-value pairs.
+
+These structures are heavily used in practical Python programs because they can represent collections of records and configuration data.
+
+For example, a dictionary can represent one student's profile.""",
+
             """student = {
-    "name": "Joe",
-    "mark": 92
+    "name": "Arun",
+    "age": 18,
+    "mark": 91
 }
 
-print(student["name"])
-print(student["mark"])"""
+print(student["name"])""",
+
+            "Create a dictionary representing a product."
         ),
 
         lesson(
-            "py-07",
-            "Exception Handling",
-            """
-Programs can encounter errors while running, such as invalid input or missing files. Python provides try and except blocks so programs can handle expected runtime problems without immediately terminating.
-            """,
-            """try:
-    number = int(input("Enter number: "))
-    print(100 / number)
-except ValueError:
-    print("Invalid number")
-except ZeroDivisionError:
-    print("Cannot divide by zero")"""
+            "Functions",
+            """Functions allow reusable pieces of logic to be separated from the rest of a program.
+
+Parameters allow a function to receive data, while return sends a result back to the caller.
+
+Good function design improves readability and reduces duplicated code.""",
+
+            """def calculate_total(a, b):
+    return a + b
+
+result = calculate_total(10, 20)
+print(result)""",
+
+            "Create a function that calculates simple interest."
         ),
 
         lesson(
-            "py-08",
-            "Modules",
-            """
-A module is a Python file containing reusable code. Python also includes a large standard library, and thousands of third-party packages are available through the Python ecosystem.
+            "File Handling",
+            """Programs often need to store information outside memory.
 
-Modules allow large applications to be divided into manageable components.
-            """,
-            """import math
+Python provides file-handling tools for reading and writing text files.
 
-print(math.sqrt(144))"""
+Using with open(...) is recommended because Python automatically handles closing the file when the block finishes.""",
+
+            """with open("notes.txt", "w") as file:
+    file.write("CodeQuest AI")""",
+
+            "Create a text file and store three lines in it."
         ),
 
         lesson(
-            "py-09",
             "Object-Oriented Python",
-            """
-Python supports object-oriented programming through classes and objects. A class can combine data and behavior into a reusable structure.
+            """Python supports object-oriented programming using classes and objects.
 
-Object-oriented design becomes useful as applications become larger and contain many related entities.
-            """,
+Classes can contain attributes and methods, allowing programs to model entities and their behavior.
+
+Object-oriented design becomes increasingly useful as applications become larger.""",
+
             """class Student:
     def __init__(self, name):
         self.name = name
@@ -960,751 +1140,746 @@ Object-oriented design becomes useful as applications become larger and contain 
     def show(self):
         print(self.name)
 
-student = Student("Joe")
-student.show()"""
+s = Student("Arun")
+s.show()""",
+
+            "Create a class representing a bank account."
         )
     ]
 ),
 
 # ============================================================
-# 7. WEB
+# 11 JAVA
 # ============================================================
 
 course(
-    "web-development",
-    "Web Development",
+    "java",
+    "Java Programming",
+    "☕",
+    "Intermediate",
+    "Learn Java fundamentals and object-oriented programming.",
+    [
+
+        lesson(
+            "Java Fundamentals",
+            """Java is a general-purpose programming language widely used for enterprise software, backend systems and many other applications.
+
+Java programs are commonly compiled into bytecode that runs on the Java Virtual Machine.
+
+This architecture contributes to Java's portability across supported platforms.""",
+
+            """public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello Java");
+    }
+}""",
+
+            "Modify the program to print your name."
+        ),
+
+        lesson(
+            "Classes and Objects",
+            """Java is strongly associated with object-oriented programming.
+
+Classes define data and behavior, while objects are instances of those classes.
+
+Encapsulation allows implementation details to be controlled through methods and access modifiers.""",
+
+            """class Student {
+    String name;
+
+    void show() {
+        System.out.println(name);
+    }
+}""",
+
+            "Create a Java Book class."
+        ),
+
+        lesson(
+            "Arrays and Collections",
+            """Java arrays have a fixed size, while collection classes such as ArrayList provide more flexible ways to manage groups of objects.
+
+Understanding collections is important because practical applications constantly process groups of data.""",
+
+            """ArrayList<String> names =
+    new ArrayList<>();
+
+names.add("Arun");
+names.add("Kumar");""",
+
+            "Create an ArrayList containing five student names."
+        )
+    ]
+),
+
+# ============================================================
+# 12 HTML CSS
+# ============================================================
+
+course(
+    "html-css",
+    "HTML & CSS",
     "🌐",
     "Beginner → Intermediate",
-    "Learn how modern websites and web applications are built.",
+    "Build the structure and visual appearance of modern web pages.",
     [
 
         lesson(
-            "web-01",
-            "HTML",
-            """
-HTML provides the structure of a web page. Elements describe headings, paragraphs, links, images, forms and other content.
+            "HTML Structure",
+            """HTML describes the structure and meaning of content on a webpage.
 
-HTML does not primarily control visual appearance or application logic. CSS handles presentation while JavaScript provides behavior.
-            """,
+Elements such as headings, paragraphs, links, images, forms and sections allow browsers to understand and display content.
+
+HTML is not primarily a programming language. It is a markup language used to structure documents.""",
+
             """<!DOCTYPE html>
 <html>
+<head>
+    <title>My Page</title>
+</head>
 <body>
     <h1>CodeQuest AI</h1>
-    <p>Learn. Practice. Play. Build.</p>
+    <p>Learn. Practice. Build.</p>
 </body>
-</html>"""
+</html>""",
+
+            "Create a webpage containing your name and three hobbies."
         ),
 
         lesson(
-            "web-02",
-            "CSS",
-            """
-CSS controls the visual presentation of HTML. It can change colors, spacing, typography, layouts, animations and responsive behavior.
+            "CSS Basics",
+            """CSS controls the visual presentation of HTML.
 
-Modern websites often use CSS Grid and Flexbox to create layouts that adapt to different screen sizes.
-            """,
-            """.card {
-    padding: 20px;
-    border-radius: 16px;
+It can change colors, spacing, typography, borders, layouts and responsive behavior.
+
+Separating structure from presentation makes websites easier to maintain.""",
+
+            """body {
+    font-family: Arial;
 }
 
-.card h2 {
-    margin-bottom: 10px;
-}"""
+h1 {
+    font-size: 32px;
+    margin-bottom: 20px;
+}""",
+
+            "Style your HTML page with a custom font and spacing."
         ),
 
         lesson(
-            "web-03",
-            "JavaScript",
-            """
-JavaScript adds behavior to web pages. It can respond to user actions, modify the page, communicate with servers and manage application state.
+            "Flexbox",
+            """Flexbox provides a powerful method for arranging elements along one or two dimensions.
 
-For example, CodeQuest AI uses JavaScript to open lessons, start quizzes and communicate with Flask API endpoints.
-            """,
-            """document
-    .getElementById("quizBtn")
-    .addEventListener("click", function() {
-        console.log("Quiz started");
-    });"""
+It is commonly used for navigation bars, cards, buttons and responsive layouts.
+
+Properties such as justify-content and align-items control how elements are positioned.""",
+
+            """.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}""",
+
+            "Create a row of three cards using Flexbox."
         ),
 
         lesson(
-            "web-04",
-            "DOM",
-            """
-The Document Object Model represents the HTML page as a structure that JavaScript can access and modify.
+            "Responsive Design",
+            """Websites are viewed on many screen sizes. Responsive design allows layouts to adapt to phones, tablets and desktops.
 
-This allows JavaScript to change text, attributes, classes and elements after the page has loaded.
-            """,
-            """const title = document.getElementById("title");
-title.textContent = "CodeQuest AI";"""
-        ),
+Media queries can apply different CSS rules depending on screen characteristics.
 
-        lesson(
-            "web-05",
-            "Fetch API",
-            """
-Web applications frequently need data from a backend server. JavaScript's fetch API can send HTTP requests and process responses.
+A mobile-friendly interface is particularly important because many users access websites primarily from phones.""",
 
-This is how a frontend can request courses or quiz questions without completely reloading the page.
-            """,
-            """fetch("/api/quiz")
-    .then(response => response.json())
-    .then(data => {
-        console.log(data.questions);
-    });"""
-        ),
+            """@media (max-width: 600px) {
+    .cards {
+        flex-direction: column;
+    }
+}""",
 
-        lesson(
-            "web-06",
-            "REST APIs",
-            """
-An API provides a defined way for software components to communicate. REST-style web APIs commonly use HTTP methods such as GET and POST.
-
-A frontend might use GET to retrieve courses and POST to submit progress or source code.
-            """,
-            """GET  /api/courses
-GET  /api/quiz
-POST /api/progress/lesson
-POST /api/compile"""
+            "Make a three-column layout become one column on small screens."
         )
     ]
 ),
 
 # ============================================================
-# 8. DBMS
+# 13 JAVASCRIPT
 # ============================================================
 
 course(
-    "dbms-sql",
-    "DBMS & SQL",
-    "🗄️",
-    "Beginner → Intermediate",
-    "Learn databases, SQL and application data management.",
+    "javascript",
+    "JavaScript",
+    "⚡",
+    "Intermediate",
+    "Make websites interactive and learn browser-side programming.",
     [
 
         lesson(
-            "db-01",
+            "JavaScript Basics",
+            """JavaScript is a programming language widely used to add behavior and interactivity to web pages.
+
+Unlike HTML and CSS, JavaScript can make decisions, process data and respond to user actions.
+
+It can run in browsers and also in server-side environments such as Node.js.""",
+
+            """let name = "CodeQuest";
+
+console.log("Hello " + name);""",
+
+            "Create a JavaScript variable containing your name."
+        ),
+
+        lesson(
+            "DOM Manipulation",
+            """The Document Object Model represents a webpage as objects that JavaScript can access and modify.
+
+This allows JavaScript to change text, styles, attributes and page elements in response to user actions.""",
+
+            """document
+    .getElementById("title")
+    .textContent = "Welcome!";""",
+
+            "Create a button that changes a heading."
+        ),
+
+        lesson(
+            "Events",
+            """Events represent actions such as clicks, keyboard input and mouse movement.
+
+JavaScript event listeners allow programs to respond to those actions.
+
+Interactive web applications are largely built from combinations of events, state and UI updates.""",
+
+            """button.addEventListener(
+    "click",
+    function() {
+        alert("Button clicked!");
+    }
+);""",
+
+            "Create a button that displays a message when clicked."
+        ),
+
+        lesson(
+            "Fetch and APIs",
+            """Modern websites frequently communicate with backend services using APIs.
+
+The Fetch API allows JavaScript to request data from a server and process the response.
+
+This is how frontend applications can obtain user information, products, quiz questions and many other types of data without manually embedding everything into the page.""",
+
+            """fetch("/api/courses")
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+    });""",
+
+            "Fetch JSON from a test API and display one value."
+        )
+    ]
+),
+
+# ============================================================
+# 14 SQL
+# ============================================================
+
+course(
+    "sql",
+    "DBMS & SQL",
+    "🗄️",
+    "Intermediate",
+    "Learn databases, tables, SQL queries and data relationships.",
+    [
+
+        lesson(
             "What is a Database?",
-            """
-A database is an organized collection of data that can be stored, searched and updated efficiently. Applications use databases to persist information such as users, products, orders, messages and learning progress.
+            """A database is an organized system for storing and retrieving information.
 
-For CodeQuest AI, a database can store a student's completed lessons, XP and quiz history.
-            """,
-            """
-users
-----------------
-uid | name | xp
+Applications use databases for users, products, orders, messages, scores and many other types of data.
 
-progress
-----------------
-uid | lesson | completed
-            """
+A DBMS provides tools for creating, querying and managing databases.""",
+
+            """Application
+     ↓
+Database API
+     ↓
+DBMS
+     ↓
+Tables""",
+
+            "List three applications that require databases."
         ),
 
         lesson(
-            "db-02",
-            "Tables",
-            """
-A relational database stores information in tables. A table consists of rows and columns. Each row normally represents one record, while each column represents a property of that record.
-            """,
-            """CREATE TABLE students (
-    id INTEGER PRIMARY KEY,
-    name TEXT,
-    mark INTEGER
-);"""
+            "Tables and Records",
+            """A relational database stores information in tables containing rows and columns.
+
+A row usually represents one record, while a column represents an attribute.
+
+For example, a students table could contain student_id, name, department and percentage.""",
+
+            """students
+
+id | name  | mark
+1  | Arun  | 87
+2  | Ravi  | 91""",
+
+            "Design a table for storing books."
         ),
 
         lesson(
-            "db-03",
-            "SELECT",
-            """
-The SELECT statement retrieves information from a database. Conditions can be added using WHERE, and results can be sorted using ORDER BY.
+            "SQL SELECT",
+            """SQL allows applications and developers to retrieve information from relational databases.
 
-Querying data is one of the most common operations performed by application backends.
-            """,
+SELECT is used to retrieve data. WHERE can restrict the rows returned.
+
+Understanding filtering is essential when working with large datasets.""",
+
             """SELECT name, mark
 FROM students
-WHERE mark >= 50
-ORDER BY mark DESC;"""
+WHERE mark >= 80;""",
+
+            "Write a query that returns students with marks above 90."
         ),
 
         lesson(
-            "db-04",
             "INSERT UPDATE DELETE",
-            """
-Databases must support changes as well as reading data. INSERT adds records, UPDATE changes existing records, and DELETE removes records.
+            """Databases must support more than reading data.
 
-Applications normally validate input before performing these operations.
-            """,
-            """INSERT INTO students(name, mark)
-VALUES ('Joe', 92);
+INSERT creates records, UPDATE modifies records and DELETE removes records.
+
+These operations must be used carefully because an incorrect update or delete condition can affect many records.""",
+
+            """INSERT INTO students
+(name, mark)
+VALUES ('Arun', 90);
 
 UPDATE students
 SET mark = 95
-WHERE name = 'Joe';"""
-        ),
+WHERE name = 'Arun';""",
 
-        lesson(
-            "db-05",
-            "Primary Keys",
-            """
-A primary key uniquely identifies a row. Using a unique identifier prevents ambiguity when several records have similar names or other properties.
-
-In real applications, IDs are often used to connect related tables.
-            """,
-            """CREATE TABLE users (
-    id INTEGER PRIMARY KEY,
-    email TEXT UNIQUE
-);"""
-        ),
-
-        lesson(
-            "db-06",
-            "SQL Injection",
-            """
-SQL injection occurs when untrusted user input is incorrectly inserted into SQL statements. Attackers may manipulate the query so that it performs unintended operations.
-
-Parameterized queries are an important defense because they separate SQL structure from user-provided values.
-            """,
-            """cursor.execute(
-    "SELECT * FROM users WHERE email = ?",
-    (email,)
-)"""
+            "Write an INSERT statement for a new product."
         )
     ]
 ),
 
 # ============================================================
-# 9. DSA
+# 15 DSA
 # ============================================================
 
 course(
     "dsa",
     "Data Structures & Algorithms",
     "🧩",
-    "Intermediate",
-    "Develop problem-solving skills and understand efficient algorithms.",
+    "Intermediate → Advanced",
+    "Learn how to organize data and design efficient solutions.",
     [
 
         lesson(
-            "dsa-01",
             "What is an Algorithm?",
-            """
-An algorithm is a finite sequence of steps used to solve a problem. Good algorithms are clear, correct and efficient.
+            """An algorithm is a finite sequence of steps designed to solve a problem.
 
-For example, finding the largest number in an array can be solved by scanning every element and remembering the largest value encountered so far.
-            """,
-            """int max = numbers[0];
+A good algorithm should be understandable, correct and appropriate for the problem.
 
-for (int i = 1; i < n; i++) {
-    if (numbers[i] > max)
-        max = numbers[i];
-}"""
+Programming languages implement algorithms, but the underlying problem-solving idea is separate from the language.""",
+
+            """Problem:
+Find the largest number.
+
+1. Start with first number.
+2. Compare next number.
+3. Replace largest when necessary.
+4. Continue until finished.""",
+
+            "Write steps for finding the smallest value in a list."
         ),
 
         lesson(
-            "dsa-02",
-            "Arrays",
-            """
-Arrays store elements in an ordered structure. They provide fast access by index, making them useful when positions are important.
+            "Time Complexity",
+            """Time complexity describes how the amount of work performed by an algorithm changes as input size increases.
 
-The trade-off is that inserting or removing elements in the middle may require shifting other elements.
-            """,
-            """int numbers[] = {10, 20, 30, 40};
+Big O notation is commonly used to describe an upper-bound growth rate.
 
-printf("%d", numbers[2]);"""
+For example, scanning every element of an array is generally O(n), while repeatedly dividing the search space in half can lead to O(log n) behavior.""",
+
+            """Linear search:
+
+10 → 20 → 30 → 40 → 50
+                  ↑
+             search 40
+
+Worst case: O(n)""",
+
+            "Explain why checking every array element is O(n)."
         ),
 
         lesson(
-            "dsa-03",
-            "Linked Lists",
-            """
-A linked list consists of nodes connected using references or pointers. Unlike arrays, linked-list nodes do not have to occupy consecutive memory locations.
+            "Stacks and Queues",
+            """A stack follows Last In, First Out. A queue generally follows First In, First Out.
 
-Linked lists are useful for learning dynamic data structures and pointer-based relationships.
-            """,
-            """struct Node {
-    int data;
-    struct Node *next;
-};"""
+Stacks appear in function calls, undo systems and expression processing.
+
+Queues are useful for scheduling, task processing and many real-world waiting systems.""",
+
+            """STACK
+
+push 10
+push 20
+push 30
+
+pop → 30""",
+
+            "Give two real-world examples of stacks and queues."
         ),
 
         lesson(
-            "dsa-04",
-            "Stacks",
-            """
-A stack follows the Last In, First Out principle. The most recently added element is removed first.
+            "Searching and Sorting",
+            """Searching finds information in a collection, while sorting arranges information according to an ordering rule.
 
-Stacks are used in function calls, undo operations, expression evaluation and many algorithms.
-            """,
-            """
-push(10)
-push(20)
-pop() → 20
-            """
-        ),
+Linear search is simple but may inspect many values. Binary search can be much faster but requires sorted data.
 
-        lesson(
-            "dsa-05",
-            "Queues",
-            """
-A queue generally follows the First In, First Out principle. The first item added is normally the first item removed.
+Sorting algorithms differ in complexity and implementation characteristics.""",
 
-Queues are useful for task scheduling, printer jobs, buffering and breadth-first search.
-            """,
-            """
-enqueue(A)
-enqueue(B)
-dequeue() → A
-            """
-        ),
+            """Sorted:
 
-        lesson(
-            "dsa-06",
-            "Searching",
-            """
-Searching means finding a desired value in a collection. Linear search checks elements one by one, while binary search repeatedly divides a sorted search range.
+10 20 30 40 50 60
 
-Choosing the right algorithm can make a major difference as data size grows.
-            """,
-            """int low = 0;
-int high = n - 1;
+Binary search
+       ↓
+      30""",
 
-while (low <= high) {
-    int mid = (low + high) / 2;
-    ...
-}"""
-        ),
-
-        lesson(
-            "dsa-07",
-            "Sorting",
-            """
-Sorting arranges data according to an ordering rule. Common algorithms include bubble sort, insertion sort, merge sort and quicksort.
-
-Learning sorting algorithms teaches important ideas about comparisons, loops, recursion and algorithm efficiency.
-            """,
-            """for (int i = 0; i < n - 1; i++) {
-    for (int j = 0; j < n - i - 1; j++) {
-        if (a[j] > a[j + 1]) {
-            int t = a[j];
-            a[j] = a[j + 1];
-            a[j + 1] = t;
-        }
-    }
-}"""
-        ),
-
-        lesson(
-            "dsa-08",
-            "Big O",
-            """
-Big O notation describes how an algorithm's resource requirements grow as the input size increases. It helps developers reason about scalability.
-
-For example, a single loop over n elements is commonly O(n), while a nested loop over n elements can be O(n²).
-            """,
-            """
-One loop:
-O(n)
-
-Nested loops:
-O(n²)
-
-Binary search:
-O(log n)
-            """
+            "Explain why binary search requires sorted data."
         )
     ]
 ),
 
 # ============================================================
-# 10. OPERATING SYSTEM
+# 16 OPERATING SYSTEMS
 # ============================================================
 
 course(
-    "operating-systems",
+    "os",
     "Operating Systems",
     "⚙️",
     "Intermediate",
-    "Understand processes, memory, files and operating-system fundamentals.",
+    "Understand processes, memory, files and operating system concepts.",
     [
 
         lesson(
-            "os-01",
-            "Processes",
-            """
-A process is a running instance of a program. When you open an application, the operating system creates and manages a process containing the program's execution state and resources.
+            "Processes and Programs",
+            """A program is a collection of instructions stored on a system. When it is executed, the operating system creates a process representing the running instance.
 
-Multiple processes can run at the same time, with the operating system coordinating CPU access.
-            """,
-            """
-Program:
-CodeQuest.exe
+A process requires resources such as memory and CPU time.
+
+Understanding processes helps explain multitasking and application behavior.""",
+
+            """Program:
+chrome.exe
 
 Running instance:
-Process #4210
-            """
+Process
+
+Multiple tabs may involve multiple processes or threads.""",
+
+            "Explain the difference between a program and a process."
         ),
 
         lesson(
-            "os-02",
-            "Threads",
-            """
-A thread is an execution path within a process. A process can contain multiple threads that share certain resources.
-
-Multithreading can allow applications to perform independent tasks concurrently, although shared data must be managed carefully.
-            """,
-            """
-Application
-├── UI thread
-├── Network thread
-└── Worker thread
-            """
-        ),
-
-        lesson(
-            "os-03",
             "Memory Management",
-            """
-Operating systems manage memory so that processes can run without incorrectly interfering with each other. Concepts such as virtual memory allow applications to work with an address space that is managed by the operating system.
+            """Operating systems manage memory so multiple applications can operate without directly interfering with one another.
 
-Memory management is closely connected to performance, security and process isolation.
-            """,
-            """
-Application
+Modern systems use virtual memory and memory protection mechanisms.
+
+Programmers still need to understand memory because inefficient allocation, leaks and invalid access can cause serious problems.""",
+
+            """Application
 ↓
-Virtual memory
+Virtual Memory
 ↓
-Physical RAM
-            """
+Physical RAM""",
+
+            "Explain why memory protection is important."
         ),
 
         lesson(
-            "os-04",
             "File Systems",
-            """
-A file system defines how files and directories are organized and stored. Different operating systems can use different file-system technologies.
+            """A file system determines how data is organized and accessed on storage devices.
 
-File systems maintain metadata such as names, locations, sizes and permissions.
-            """,
-            """
-/home/student/projects/codequest/
-            """
+Different operating systems can support different file systems.
+
+File permissions, directories and metadata are important concepts for both normal users and developers.""",
+
+            """Drive
+├── Users
+├── Programs
+└── Projects""",
+
+            "Explain why a file system is needed."
         )
     ]
 ),
 
 # ============================================================
-# 11. NETWORKS
+# 17 NETWORKING
 # ============================================================
 
 course(
-    "networks",
+    "networking",
     "Computer Networks",
-    "🌍",
+    "🌐",
     "Intermediate",
-    "Understand how computers communicate across networks and the Internet.",
+    "Understand how computers communicate across local and global networks.",
     [
 
         lesson(
-            "net-01",
-            "What is a Network?",
-            """
-A computer network connects devices so they can exchange information and share resources. Networks range from small local networks to the global Internet.
+            "Network Fundamentals",
+            """A computer network connects devices so they can exchange information and share resources.
 
-Applications depend heavily on networking. Web browsing, messaging, cloud storage and multiplayer games all require communication between devices.
-            """,
-            """
-Phone
-  ↓
+Networks may be small, such as a home network, or extremely large, such as the Internet.
+
+Networking knowledge is important for developers because modern applications communicate with servers and external services.""",
+
+            """Phone
+ ↓
 Wi-Fi Router
-  ↓
+ ↓
 Internet
-  ↓
-Server
-            """
+ ↓
+Server""",
+
+            "Describe your device's path to an online website."
         ),
 
         lesson(
-            "net-02",
             "IP Addresses",
-            """
-An IP address identifies a network interface using the addressing system of a particular IP version. IPv4 uses 32-bit addresses, while IPv6 uses much larger 128-bit addresses.
+            """An IP address identifies a network interface using an addressing system.
 
-Devices and services use IP addressing so network packets can be delivered toward their destinations.
-            """,
-            """
-IPv4 example:
-192.168.1.10
-            """
+IPv4 commonly uses four decimal numbers separated by dots, while IPv6 provides a much larger address space.
+
+Applications use network addressing to communicate with other devices and services.""",
+
+            """IPv4 example:
+
+192.168.1.10""",
+
+            "Explain what an IP address is used for."
         ),
 
         lesson(
-            "net-03",
-            "DNS",
-            """
-Domain Name System translates human-friendly domain names into information such as IP addresses. Without DNS, users would frequently need to remember numerical addresses instead of names.
-
-When you type a website address, your device may first need to resolve the domain before communicating with the server.
-            """,
-            """
-codequest-ai-2gsx.onrender.com
-          ↓ DNS
-IP address
-          ↓
-Web server
-            """
-        ),
-
-        lesson(
-            "net-04",
-            "HTTP and HTTPS",
-            """
-HTTP is an application-layer protocol used for transferring web resources. HTTPS uses HTTP over an encrypted TLS connection, helping protect data while it travels between the client and server.
-
-Modern web applications should use HTTPS for authentication and other sensitive communication.
-            """,
-            """GET /api/courses HTTP/1.1
-Host: example.com"""
-        ),
-
-        lesson(
-            "net-05",
             "TCP and UDP",
-            """
-TCP provides a connection-oriented transport mechanism with reliability and ordered delivery. UDP is connectionless and has lower protocol overhead, making it useful in scenarios where speed or application-controlled delivery is important.
+            """TCP provides reliable, ordered communication and includes mechanisms for handling delivery.
 
-The choice depends on the requirements of the application.
-            """,
-            """
-TCP:
-Web connections
-File transfer
+UDP is connectionless and has lower protocol overhead, making it useful for applications where speed or timely delivery is important.
+
+The appropriate protocol depends on the application's requirements.""",
+
+            """TCP:
+Reliable communication
 
 UDP:
-Some real-time applications
-Streaming scenarios
-            """
+Low-overhead communication""",
+
+            "Give one example where reliable delivery is important."
+        ),
+
+        lesson(
+            "HTTP and HTTPS",
+            """HTTP is a protocol used for communication between clients and web servers.
+
+HTTPS uses TLS to protect HTTP traffic from being read or modified by unauthorized parties during transmission.
+
+Modern web applications depend heavily on HTTP-based APIs.""",
+
+            """Browser
+   ↓ HTTPS
+Web Server
+   ↓
+Response""",
+
+            "Explain one difference between HTTP and HTTPS."
         )
     ]
 ),
 
 # ============================================================
-# 12. CYBERSECURITY
+# 18 CYBERSECURITY
 # ============================================================
 
 course(
     "cybersecurity",
     "Cybersecurity",
-    "🛡️",
+    "🔐",
     "Intermediate",
-    "Learn defensive security fundamentals and secure development.",
+    "Learn security fundamentals, threats, authentication and defensive practices.",
     [
 
         lesson(
-            "sec-01",
-            "What is Cybersecurity?",
-            """
-Cybersecurity is the practice of protecting systems, networks, applications and information from unauthorized access, disruption, modification or destruction.
+            "CIA Triad",
+            """The CIA triad describes three important security goals: confidentiality, integrity and availability.
 
-Security is not a single feature. It involves authentication, authorization, secure coding, monitoring, backups, updates and careful handling of sensitive information.
-            """,
-            """
-User
- ↓ authentication
-Application
- ↓ authorization
-Database
-            """
+Confidentiality means information should only be accessible to authorized parties.
+
+Integrity means information should not be changed improperly.
+
+Availability means authorized users should be able to access systems when needed.""",
+
+            """Confidentiality → Who can see it?
+Integrity → Was it changed?
+Availability → Can I access it?""",
+
+            "Give a real-world example of each CIA principle."
         ),
 
         lesson(
-            "sec-02",
-            "Authentication",
-            """
-Authentication answers the question: who are you? Common mechanisms include passwords, authentication applications, security keys and federated identity providers.
+            "Passwords and Authentication",
+            """Authentication determines whether a person or system is who they claim to be.
 
-CodeQuest AI uses Google/Firebase Authentication so that the application does not need to manage users' Google passwords itself.
-            """,
-            """
-Google Account
-      ↓
-Firebase Authentication
-      ↓
-CodeQuest AI
-            """
+Strong authentication practices include long unique passwords and, where available, multi-factor authentication.
+
+Applications should never store user passwords as plain text. Password storage normally uses secure password hashing mechanisms.""",
+
+            """Password
+   ↓
+Secure hashing
+   ↓
+Stored representation""",
+
+            "Explain why storing plain-text passwords is dangerous."
         ),
 
         lesson(
-            "sec-03",
-            "Authorization",
-            """
-Authorization determines what an authenticated user is allowed to do. Authentication and authorization are different concepts.
+            "Phishing",
+            """Phishing attempts to trick people into revealing information or performing an unsafe action.
 
-For example, a student may be authenticated but still not have permission to access an administrator-only dashboard.
-            """,
-            """
-Authenticated? YES
+Messages may imitate trusted organizations and create urgency.
 
-Role:
-student
+A good defensive habit is to verify the destination, sender and context rather than trusting a message simply because it looks professional.""",
 
-Allowed:
-learn
-quiz
-progress
+            """Fake message
+     ↓
+Urgency
+     ↓
+Fake link
+     ↓
+Credential theft""",
 
-Not allowed:
-admin settings
-            """
+            "List three warning signs of a phishing message."
         ),
 
         lesson(
-            "sec-04",
-            "Hashing",
-            """
-Hashing transforms input data into a fixed-size representation. Secure password systems normally use specialized password-hashing algorithms rather than storing plaintext passwords.
+            "Secure Software Basics",
+            """Developers are responsible for more than making software functional.
 
-Hashing is different from encryption because a secure hash is designed to be one-way.
-            """,
-            """
-password
-   ↓
-password-hashing algorithm
-   ↓
-stored password verifier
-            """
-        ),
+Applications should validate input, protect credentials, use secure communication, enforce authorization and avoid exposing sensitive information in logs or error messages.
 
-        lesson(
-            "sec-05",
-            "Secure Input",
-            """
-Applications should treat external input as untrusted. Users can submit unexpected values, malicious strings or oversized data.
+Security should be considered during design rather than added only after an application is finished.""",
 
-Validation, parameterized database queries, output encoding and safe API design help reduce common security risks.
-            """,
-            """
-User input
+            """User Input
    ↓
-Validate
-   ↓
-Sanitize / safely encode
+Validation
    ↓
 Application
-            """
+   ↓
+Database""",
+
+            "List three security practices a web developer should follow."
         )
     ]
 ),
 
 # ============================================================
-# 13. AI / ML
+# 19 AI
 # ============================================================
 
 course(
     "ai-ml",
     "AI & Machine Learning",
     "🤖",
-    "Intermediate",
-    "Understand artificial intelligence and practical machine learning concepts.",
+    "Intermediate → Advanced",
+    "Understand artificial intelligence, machine learning, data and model training.",
     [
 
         lesson(
-            "ai-01",
-            "What is AI?",
-            """
-Artificial intelligence is a broad field concerned with creating systems that perform tasks commonly associated with intelligent behavior, such as perception, language processing, reasoning and decision support.
+            "What is Artificial Intelligence?",
+            """Artificial intelligence refers broadly to systems designed to perform tasks that traditionally require aspects of human intelligence.
 
-AI systems can use rules, search algorithms, machine learning and other techniques depending on the problem.
-            """,
-            """
-Input
+Examples include language processing, image recognition, recommendation systems and decision-support systems.
+
+AI is a broad field containing multiple approaches rather than being one single technology.""",
+
+            """Data
  ↓
-AI system
+AI System
  ↓
-Prediction / decision / generated result
-            """
+Prediction / Generation / Decision""",
+
+            "List three AI systems you interact with in daily life."
         ),
 
         lesson(
-            "ai-02",
             "Machine Learning",
-            """
-Machine learning is a family of methods where models learn patterns from data rather than being explicitly programmed with every individual rule.
+            """Machine learning is a family of techniques where systems learn patterns from data rather than relying entirely on explicitly written rules.
 
-A model is trained using examples and then evaluated on data to determine how well it generalizes.
-            """,
-            """
-Training data
-      ↓
-ML algorithm
-      ↓
+A model is trained using data and then evaluated on examples.
+
+The quality and representativeness of training data can strongly affect the resulting system.""",
+
+            """Training Data
+     ↓
+Machine Learning
+     ↓
 Model
-      ↓
-New input
-      ↓
-Prediction
-            """
-        ),
-
-        lesson(
-            "ai-03",
-            "Supervised Learning",
-            """
-Supervised learning uses training examples that include target labels or values. Classification predicts categories, while regression predicts numerical values.
-
-For example, a model might learn from examples of houses and their prices and then estimate the price of another house.
-            """,
-            """
-Features:
-area
-rooms
-location
-
-Target:
-price
-            """
-        ),
-
-        lesson(
-            "ai-04",
-            "Neural Networks",
-            """
-Neural networks are computational models composed of connected units arranged in layers. During training, the model adjusts parameters so that its outputs become closer to desired results.
-
-Neural networks are widely used in computer vision, language processing, speech and other machine-learning applications.
-            """,
-            """
-Input layer
      ↓
-Hidden layers
-     ↓
-Output layer
-            """
+Prediction""",
+
+            "Explain the difference between traditional rules and machine learning."
         ),
 
         lesson(
-            "ai-05",
-            "Generative AI",
-            """
-Generative AI refers to systems that generate new content such as text, images, audio or code based on learned patterns and user instructions.
+            "Training and Testing",
+            """A dataset is often divided so that a model can be trained on one portion and evaluated on data it did not directly train on.
 
-Large language models are one example. They process sequences of tokens and generate responses based on their learned representations and the provided context.
-            """,
-            """
-Prompt
- ↓
-AI model
- ↓
-Generated response
-            """
+This helps determine whether the model learned useful patterns rather than simply memorizing its training examples.
+
+Evaluation metrics depend on the specific problem.""",
+
+            """Dataset
+  ↓
+Training Set
+  ↓
+Model
+
+Test Set
+  ↓
+Evaluation""",
+
+            "Explain why testing a model on training data alone can be misleading."
+        ),
+
+        lesson(
+            "AI Applications",
+            """AI is used in many areas including search, recommendation systems, document processing, computer vision, robotics and software development.
+
+When evaluating an AI system, developers should consider accuracy, reliability, security, privacy and the consequences of incorrect outputs.
+
+AI systems are tools that require appropriate data, evaluation and human oversight.""",
+
+            """AI examples:
+
+Chatbots
+Recommendation
+Image recognition
+Fraud detection
+Code assistance""",
+
+            "Choose one AI application and explain what data it might need."
         )
     ]
 ),
 
 # ============================================================
-# 14. CLOUD
+# 20 CLOUD
 # ============================================================
 
 course(
@@ -1712,103 +1887,84 @@ course(
     "Cloud Computing",
     "☁️",
     "Intermediate",
-    "Learn how applications use remote computing infrastructure.",
+    "Understand cloud services, deployment and scalable infrastructure.",
     [
 
         lesson(
-            "cloud-01",
             "What is Cloud Computing?",
-            """
-Cloud computing provides computing resources such as servers, storage, databases and networking through remote infrastructure. Instead of purchasing and maintaining every physical server yourself, you can use cloud services according to your needs.
+            """Cloud computing provides computing resources through network-accessible services.
 
-A deployed Flask application running on Render is an example of an application hosted on remote infrastructure.
-            """,
-            """
-Your browser
-     ↓
+Instead of purchasing and maintaining every server yourself, a cloud provider can provide compute, storage, databases and networking resources.
+
+Cloud services can be scaled according to application requirements.""",
+
+            """User
+ ↓
 Internet
-     ↓
-Cloud platform
-     ↓
-Flask application
-            """
+ ↓
+Cloud Server
+ ↓
+Application""",
+
+            "Give three examples of resources a cloud provider can provide."
         ),
 
         lesson(
-            "cloud-02",
-            "IaaS PaaS SaaS",
-            """
-Cloud services are often described using models such as Infrastructure as a Service, Platform as a Service and Software as a Service.
+            "Virtual Machines",
+            """A virtual machine provides an isolated software environment that behaves like a computer.
 
-IaaS provides infrastructure resources, PaaS provides an environment for deploying applications, and SaaS delivers complete software to end users.
-            """,
-            """
-IaaS → virtual machines
-PaaS → application deployment platform
-SaaS → ready-to-use application
-            """
+Virtualization allows multiple virtual machines to run on physical infrastructure.
+
+Developers can use virtual machines for development, testing and production workloads.""",
+
+            """Physical Server
+├── VM 1
+├── VM 2
+└── VM 3""",
+
+            "Explain why virtualization can be useful."
         ),
 
         lesson(
-            "cloud-03",
-            "Deployment",
-            """
-Deployment means making an application available in an environment where users can access it. A typical deployment includes source code, dependencies, configuration, a process manager and networking.
+            "Cloud Storage",
+            """Cloud storage allows applications and users to store files on remote infrastructure.
 
-Continuous deployment can automatically rebuild an application after changes are pushed to a repository.
-            """,
-            """
-GitHub
- ↓
-Build
- ↓
-Install dependencies
- ↓
-Start Gunicorn
- ↓
-Live application
-            """
-        ),
+Different storage systems are optimized for different use cases such as objects, blocks or files.
 
-        lesson(
-            "cloud-04",
-            "Environment Variables",
-            """
-Environment variables allow configuration values to be supplied outside the source code. They are useful for database locations, API credentials, secret keys and deployment-specific settings.
+Cloud storage is commonly used for backups, media, documents and application assets.""",
 
-Sensitive credentials should not be committed directly into a public repository.
-            """,
-            """DATABASE_PATH=/var/data/codequest.db
-SECRET_KEY=...
-FIREBASE_SERVICE_ACCOUNT_JSON=..."""
+            """Application
+    ↓
+Cloud Storage
+    ↓
+Files / Objects""",
+
+            "Give two possible uses of cloud storage."
         )
     ]
 ),
 
 # ============================================================
-# 15. DEVOPS
+# 21 DEVOPS
 # ============================================================
 
 course(
     "devops",
-    "DevOps & Software Engineering",
+    "DevOps & Software Development",
     "🚀",
-    "Intermediate",
-    "Learn professional software development and deployment practices.",
+    "Intermediate → Advanced",
+    "Learn how modern software is built, tested, deployed and maintained.",
     [
 
         lesson(
-            "dev-01",
             "Software Development Lifecycle",
-            """
-Software development normally involves multiple stages such as requirements, design, implementation, testing, deployment and maintenance.
+            """Software development normally involves multiple stages such as planning, design, implementation, testing, deployment and maintenance.
 
-Understanding the lifecycle helps developers think beyond simply writing code. A production application must also be tested, monitored, documented and maintained.
-            """,
-            """
-Requirement
+The exact workflow differs between teams, but thinking about software as a lifecycle helps developers understand that writing code is only one part of delivering a product.""",
+
+            """Idea
  ↓
-Design
+Plan
  ↓
 Code
  ↓
@@ -1816,204 +1972,163 @@ Test
  ↓
 Deploy
  ↓
-Maintain
-            """
+Maintain""",
+
+            "Describe the lifecycle of a college software project."
         ),
 
         lesson(
-            "dev-02",
             "Testing",
-            """
-Testing checks whether software behaves as expected. Unit tests focus on small pieces of code, integration tests check interactions between components, and broader system tests examine complete workflows.
+            """Testing helps developers detect incorrect behavior before software reaches users.
 
-Testing is especially valuable when applications become large enough that manual checking is no longer sufficient.
-            """,
-            """
-Input
- ↓
-Function
- ↓
-Expected result
-       =
-Actual result
-            """
+Unit tests focus on small pieces of functionality, while integration tests examine how components work together.
+
+Good testing is not only about finding bugs; it also helps prevent previously fixed problems from returning.""",
+
+            """Function
+   ↓
+Unit Test
+   ↓
+Integration Test
+   ↓
+Application""",
+
+            "Write three test cases for a login form."
         ),
 
         lesson(
-            "dev-03",
-            "Debugging",
-            """
-Debugging is the process of finding and correcting defects in software. A good debugging process reproduces the problem, gathers evidence, identifies the likely cause, changes the code carefully and verifies the fix.
-
-Reading error messages rather than guessing is one of the most useful habits for new programmers.
-            """,
-            """
-Error
- ↓
-Read traceback
- ↓
-Locate line
- ↓
-Understand cause
- ↓
-Fix
- ↓
-Test again
-            """
-        ),
-
-        lesson(
-            "dev-04",
             "CI/CD",
-            """
-Continuous Integration and Continuous Delivery or Deployment automate parts of the software delivery process. Developers push changes, automated systems build and test the project, and successful changes can be deployed.
+            """Continuous Integration involves frequently integrating changes and automatically checking them.
 
-GitHub Actions is one example of a CI/CD platform.
-            """,
-            """
-git push
+Continuous Delivery or Deployment extends the process toward releasing software.
+
+Automation can run tests, build applications and deploy changes consistently.""",
+
+            """Git Push
    ↓
-GitHub Actions
+CI
    ↓
-Build + Test
+Tests
    ↓
-Deploy
-            """
+Build
+   ↓
+Deploy""",
+
+            "Explain what should happen after a developer pushes code."
         ),
 
         lesson(
-            "dev-05",
-            "Logging",
-            """
-Logs provide information about what an application is doing. Useful logs help developers diagnose errors, performance problems and unexpected behavior.
+            "Deployment",
+            """Deployment means making software available in an environment where users or other systems can access it.
 
-Production applications should avoid logging passwords, private keys and other sensitive information.
-            """,
-            """print("Quiz API requested")
+A simple web application might be deployed to a server that runs the backend and serves the frontend.
 
-# Production applications
-# should use structured logging.
-            """
+Production systems also require monitoring, logging, backups and security practices.""",
+
+            """GitHub
+   ↓
+Build
+   ↓
+Server
+   ↓
+Live Application""",
+
+            "Describe the steps required to deploy a small Flask application."
         )
     ]
 ),
 
 # ============================================================
-# 16. CAREER
+# 22 CAREER
 # ============================================================
 
 course(
     "career",
-    "Career & Interview Preparation",
-    "🎯",
-    "All Levels",
-    "Turn your technical knowledge into projects, portfolios and job readiness.",
+    "Projects, Resume & Interview Preparation",
+    "💼",
+    "Career",
+    "Turn your technical knowledge into projects, a portfolio, resume and interview preparation.",
     [
 
         lesson(
-            "career-01",
-            "Choosing a Development Path",
-            """
-There are many technology career paths. A student can explore frontend development, backend development, mobile development, data engineering, cybersecurity, cloud engineering, AI/ML and other areas.
-
-You do not need to master every field simultaneously. A strong approach is to learn fundamentals first, then choose a direction and build increasingly realistic projects.
-            """,
-            """
-Fundamentals
- ↓
-Choose direction
- ↓
-Learn tools
- ↓
-Build projects
- ↓
-Portfolio
- ↓
-Internship / Job
-            """
-        ),
-
-        lesson(
-            "career-02",
             "Building Projects",
-            """
-Projects demonstrate that you can apply knowledge to solve problems. A good student project should have a clear problem, understandable users, useful features and evidence that the software actually works.
+            """Projects are one of the most practical ways to demonstrate technical knowledge.
 
-CodeQuest AI itself can become a portfolio project because it combines frontend development, backend APIs, authentication, databases, deployment and programming education.
-            """,
-            """
-Problem
+A useful student project should solve a clear problem and show how you applied programming, databases, APIs, user interfaces or other technical skills.
+
+A project does not need to be enormous. A focused, working application with good documentation can demonstrate more than a large unfinished idea.""",
+
+            """Problem
  ↓
 Design
  ↓
-Implementation
+Development
  ↓
 Testing
  ↓
 Deployment
  ↓
-Documentation
-            """
+GitHub""",
+
+            "Write a one-paragraph description of your own software project."
         ),
 
         lesson(
-            "career-03",
             "GitHub Portfolio",
-            """
-A GitHub portfolio can show source code, project history, documentation and technical interests. A good README should explain the problem, features, technologies, setup process and screenshots or demonstrations where appropriate.
+            """A GitHub profile can act as a public record of software projects and learning progress.
 
-Quality matters more than simply having a large number of repositories.
-            """,
-            """
-README
-├── Project overview
-├── Features
-├── Technologies
-├── Installation
-├── Screenshots
-└── Future improvements
-            """
+Repositories should ideally contain meaningful names, README documentation, setup instructions and screenshots or demonstrations when appropriate.
+
+Regularly improving repositories can make your technical growth easier to demonstrate.""",
+
+            """Repository
+├── README.md
+├── source code
+├── screenshots
+└── documentation""",
+
+            "Improve the README of one existing project."
         ),
 
         lesson(
-            "career-04",
-            "Resume Projects",
-            """
-A technical resume should describe projects using concrete contributions rather than vague claims. Mention the technology used, what you built and what problem the project addresses.
+            "Resume Fundamentals",
+            """A technical resume should communicate relevant education, skills, projects, achievements and experience clearly.
 
-For example, instead of simply writing 'Made a website', describe the application's major functionality and technology stack.
-            """,
-            """
-Weak:
-"Made a coding website."
+Project descriptions are stronger when they explain what you built and what technologies you used rather than simply listing project names.
 
-Better:
-"Developed a gamified CS learning platform using Flask,
-JavaScript, Firebase Authentication and SQLite."
-            """
+Keep information accurate and avoid claiming technologies or experience you cannot explain in an interview.""",
+
+            """PROJECT
+
+CodeQuest AI
+• Built a gamified learning platform
+• Flask backend
+• Firebase authentication
+• Quiz system
+• Course management""",
+
+            "Write three bullet points describing one project."
         ),
 
         lesson(
-            "career-05",
             "Technical Interviews",
-            """
-Technical interviews may evaluate programming fundamentals, data structures, algorithms, databases, operating systems, networking and problem-solving depending on the role.
+            """Technical interviews can evaluate programming fundamentals, problem solving, data structures, databases, operating systems, networking and project knowledge depending on the role.
 
-Interview preparation should combine conceptual understanding with practice problems and the ability to explain your reasoning clearly.
-            """,
-            """
-Question
- ↓
-Understand requirements
- ↓
-Explain approach
- ↓
-Write solution
- ↓
-Test edge cases
- ↓
-Discuss complexity
-            """
+Preparation should involve both understanding concepts and solving practical problems.
+
+For project questions, be prepared to explain your architecture, decisions, challenges and how you tested the application.""",
+
+            """Interview preparation:
+
+Concepts
++
+Coding
++
+Projects
++
+Communication""",
+
+            "Explain one project as if an interviewer asked you to describe it."
         )
     ]
 )
@@ -2022,819 +2137,744 @@ Discuss complexity
 
 
 # ============================================================
-# QUIZ BANK
+# QUIZ QUESTION BANK
+# ============================================================
+#
+# IMPORTANT:
+# Every question has a unique ID.
+# The API randomly selects questions.
+# Questions already used in a quiz are never repeated
+# within that quiz.
+#
 # ============================================================
 
 quiz_questions = [
 
-    # Computer basics
+    # ---------------- COMPUTER ----------------
+
     {
-        "id": "q001",
-        "topic": "Computer Basics",
+        "id": "cb001",
+        "course": "computer-basics",
         "question": "Which component executes program instructions?",
-        "options": ["CPU", "Monitor", "Keyboard", "Printer"],
+        "options": ["Monitor", "CPU", "Keyboard", "Printer"],
         "answer": "CPU"
     },
     {
-        "id": "q002",
-        "topic": "Computer Basics",
-        "question": "Which memory is normally volatile?",
-        "options": ["RAM", "SSD", "HDD", "DVD"],
+        "id": "cb002",
+        "course": "computer-basics",
+        "question": "Which memory is primarily used as temporary working memory?",
+        "options": ["RAM", "SSD", "DVD", "ROM"],
         "answer": "RAM"
     },
     {
-        "id": "q003",
-        "topic": "Computer Basics",
-        "question": "Which device is primarily an input device?",
-        "options": ["Keyboard", "Monitor", "Speaker", "Projector"],
-        "answer": "Keyboard"
+        "id": "cb003",
+        "course": "computer-basics",
+        "question": "Which of these is software?",
+        "options": ["Keyboard", "SSD", "Windows", "RAM"],
+        "answer": "Windows"
     },
     {
-        "id": "q004",
-        "topic": "Computer Basics",
-        "question": "What does CPU stand for?",
-        "options": [
-            "Central Processing Unit",
-            "Computer Program Utility",
-            "Central Program User",
-            "Computer Processing Utility"
-        ],
-        "answer": "Central Processing Unit"
+        "id": "cb004",
+        "course": "computer-basics",
+        "question": "How many bits are normally contained in one byte?",
+        "options": ["4", "8", "16", "32"],
+        "answer": "8"
     },
     {
-        "id": "q005",
-        "topic": "Computer Basics",
-        "question": "Which device provides persistent storage?",
-        "options": ["SSD", "RAM", "CPU register", "Cache only"],
+        "id": "cb005",
+        "course": "computer-basics",
+        "question": "Which device is commonly used for permanent file storage?",
+        "options": ["RAM", "CPU", "SSD", "Cache"],
         "answer": "SSD"
     },
 
-    # C
+    # ---------------- WINDOWS ----------------
+
     {
-        "id": "q006",
-        "topic": "C Programming",
-        "question": "Where does a normal C program begin execution?",
-        "options": ["main()", "start()", "run()", "begin()"],
-        "answer": "main()"
+        "id": "win001",
+        "course": "windows",
+        "question": "Which shortcut normally opens File Explorer?",
+        "options": ["Win + E", "Ctrl + E", "Alt + E", "Win + P"],
+        "answer": "Win + E"
     },
     {
-        "id": "q007",
-        "topic": "C Programming",
-        "question": "Which symbol ends a normal C statement?",
-        "options": [";", ":", ".", ","],
-        "answer": ";"
+        "id": "win002",
+        "course": "windows",
+        "question": "Which tool shows running processes in Windows?",
+        "options": ["Paint", "Task Manager", "Notepad", "Calculator"],
+        "answer": "Task Manager"
     },
     {
-        "id": "q008",
-        "topic": "C Programming",
-        "question": "Which type stores an integer in C?",
-        "options": ["int", "char", "float[]", "string"],
-        "answer": "int"
-    },
-    {
-        "id": "q009",
-        "topic": "C Programming",
-        "question": "Which keyword is used for a loop that commonly has initialization, condition and update?",
-        "options": ["for", "if", "switch", "return"],
-        "answer": "for"
-    },
-    {
-        "id": "q010",
-        "topic": "C Programming",
-        "question": "Which operator obtains the address of a variable?",
-        "options": ["&", "*", "#", "%"],
-        "answer": "&"
+        "id": "win003",
+        "course": "windows",
+        "question": "Which command is commonly used to change directories in a terminal?",
+        "options": ["cd", "open", "move", "folder"],
+        "answer": "cd"
     },
 
-    # Python
+    # ---------------- WORD ----------------
+
     {
-        "id": "q011",
-        "topic": "Python",
-        "question": "Which function displays output in Python?",
-        "options": ["print()", "show()", "displayText()", "output()"],
-        "answer": "print()"
+        "id": "word001",
+        "course": "ms-word",
+        "question": "Which feature helps maintain consistent heading formatting?",
+        "options": ["Styles", "Calculator", "Paint", "Task Manager"],
+        "answer": "Styles"
     },
     {
-        "id": "q012",
-        "topic": "Python",
-        "question": "Which keyword defines a function in Python?",
-        "options": ["def", "function", "func", "define"],
-        "answer": "def"
-    },
-    {
-        "id": "q013",
-        "topic": "Python",
-        "question": "Which Python structure stores key-value pairs?",
-        "options": ["Dictionary", "Tuple only", "Character", "Boolean"],
-        "answer": "Dictionary"
-    },
-    {
-        "id": "q014",
-        "topic": "Python",
-        "question": "Which block is used to handle exceptions?",
-        "options": ["try/except", "if/else only", "loop/end", "catch/error"],
-        "answer": "try/except"
+        "id": "word002",
+        "course": "ms-word",
+        "question": "Which Word feature is useful for presenting structured information?",
+        "options": ["Table", "Recycle Bin", "Terminal", "Firewall"],
+        "answer": "Table"
     },
 
-    # Web
+    # ---------------- EXCEL ----------------
+
     {
-        "id": "q015",
-        "topic": "Web Development",
-        "question": "Which language provides the structure of a web page?",
-        "options": ["HTML", "CSS", "SQL", "C"],
-        "answer": "HTML"
+        "id": "excel001",
+        "course": "ms-excel",
+        "question": "What is the intersection of a row and column called?",
+        "options": ["Cell", "Slide", "Page", "Record"],
+        "answer": "Cell"
     },
     {
-        "id": "q016",
-        "topic": "Web Development",
-        "question": "Which language primarily controls web page styling?",
-        "options": ["CSS", "HTML", "SQL", "Python"],
-        "answer": "CSS"
+        "id": "excel002",
+        "course": "ms-excel",
+        "question": "Which function calculates an average?",
+        "options": ["SUM", "AVERAGE", "COUNTIF", "MAXIMUM"],
+        "answer": "AVERAGE"
     },
     {
-        "id": "q017",
-        "topic": "Web Development",
-        "question": "Which language adds behavior to web pages?",
-        "options": ["JavaScript", "HTML", "CSS", "SQL"],
-        "answer": "JavaScript"
-    },
-    {
-        "id": "q018",
-        "topic": "Web Development",
-        "question": "Which JavaScript API is commonly used to make HTTP requests?",
-        "options": ["fetch()", "print()", "scan()", "requestSQL()"],
-        "answer": "fetch()"
+        "id": "excel003",
+        "course": "ms-excel",
+        "question": "Which formula adds values from B2 through B6?",
+        "options": ["=SUM(B2:B6)", "=ADD(B2-B6)", "=TOTAL(B2:B6)", "=PLUS(B2:B6)"],
+        "answer": "=SUM(B2:B6)"
     },
 
-    # DBMS
-    {
-        "id": "q019",
-        "topic": "DBMS",
-        "question": "Which SQL command retrieves data?",
-        "options": ["SELECT", "GETDATA", "READ", "FETCHSQL"],
-        "answer": "SELECT"
-    },
-    {
-        "id": "q020",
-        "topic": "DBMS",
-        "question": "Which SQL command adds a row?",
-        "options": ["INSERT", "ADDROW", "CREATE", "APPENDSQL"],
-        "answer": "INSERT"
-    },
-    {
-        "id": "q021",
-        "topic": "DBMS",
-        "question": "What uniquely identifies a row in a relational table?",
-        "options": ["Primary key", "Folder", "CSS class", "Loop"],
-        "answer": "Primary key"
-    },
+    # ---------------- INTERNET ----------------
 
-    # DSA
     {
-        "id": "q022",
-        "topic": "DSA",
-        "question": "Which data structure follows LIFO?",
-        "options": ["Stack", "Queue", "Tree only", "Graph"],
-        "answer": "Stack"
+        "id": "net001",
+        "course": "internet",
+        "question": "What does DNS primarily help translate?",
+        "options": ["Domain names to IP addresses", "Images to videos", "RAM to storage", "Passwords to usernames"],
+        "answer": "Domain names to IP addresses"
     },
     {
-        "id": "q023",
-        "topic": "DSA",
-        "question": "Which data structure normally follows FIFO?",
-        "options": ["Queue", "Stack", "Heap only", "Array only"],
-        "answer": "Queue"
-    },
-    {
-        "id": "q024",
-        "topic": "DSA",
-        "question": "What is the typical complexity of binary search on sorted data?",
-        "options": ["O(log n)", "O(n²)", "O(n³)", "O(2n)"],
-        "answer": "O(log n)"
-    },
-    {
-        "id": "q025",
-        "topic": "DSA",
-        "question": "What does Big O help describe?",
-        "options": [
-            "Growth of resource requirements",
-            "Screen resolution",
-            "Programming language age",
-            "File extension"
-        ],
-        "answer": "Growth of resource requirements"
-    },
-
-    # OS
-    {
-        "id": "q026",
-        "topic": "Operating Systems",
-        "question": "What is a running instance of a program called?",
-        "options": ["Process", "Folder", "Compiler", "Packet"],
-        "answer": "Process"
-    },
-    {
-        "id": "q027",
-        "topic": "Operating Systems",
-        "question": "What manages hardware resources and provides services to applications?",
-        "options": ["Operating system", "Text editor", "Browser tab", "Image file"],
-        "answer": "Operating system"
-    },
-
-    # Networks
-    {
-        "id": "q028",
-        "topic": "Networks",
-        "question": "What does DNS help translate?",
-        "options": [
-            "Domain names into network information",
-            "Python into C",
-            "Images into HTML",
-            "RAM into storage"
-        ],
-        "answer": "Domain names into network information"
-    },
-    {
-        "id": "q029",
-        "topic": "Networks",
-        "question": "Which protocol is used to secure HTTP communication?",
-        "options": ["HTTPS", "FTP", "SMTP", "ARP only"],
+        "id": "net002",
+        "course": "internet",
+        "question": "Which protocol is commonly used for secure web communication?",
+        "options": ["HTTPS", "FTP only", "SMTP", "Bluetooth"],
         "answer": "HTTPS"
     },
     {
-        "id": "q030",
-        "topic": "Networks",
-        "question": "Which transport protocol provides ordered reliable delivery?",
-        "options": ["TCP", "UDP", "DNS", "HTTP"],
+        "id": "net003",
+        "course": "internet",
+        "question": "Which email field can hide recipients from other recipients?",
+        "options": ["CC", "BCC", "Subject", "Reply-To"],
+        "answer": "BCC"
+    },
+
+    # ---------------- GIT ----------------
+
+    {
+        "id": "git001",
+        "course": "git-github",
+        "question": "What is Git primarily used for?",
+        "options": ["Version control", "Image editing", "Video streaming", "Hardware repair"],
+        "answer": "Version control"
+    },
+    {
+        "id": "git002",
+        "course": "git-github",
+        "question": "Which command creates a Git commit?",
+        "options": ["git commit", "git save", "git checkpoint", "git version"],
+        "answer": "git commit"
+    },
+    {
+        "id": "git003",
+        "course": "git-github",
+        "question": "What is GitHub commonly used for?",
+        "options": ["Hosting and collaborating on repositories", "Replacing RAM", "Formatting disks", "Creating BIOS"],
+        "answer": "Hosting and collaborating on repositories"
+    },
+    {
+        "id": "git004",
+        "course": "git-github",
+        "question": "What does a Git branch allow developers to do?",
+        "options": [
+            "Work on a separate line of development",
+            "Increase RAM",
+            "Install Windows",
+            "Encrypt the CPU"
+        ],
+        "answer": "Work on a separate line of development"
+    },
+
+    # ---------------- C ----------------
+
+    {
+        "id": "c001",
+        "course": "c",
+        "question": "Which function is the usual entry point of a C program?",
+        "options": ["start()", "main()", "run()", "begin()"],
+        "answer": "main()"
+    },
+    {
+        "id": "c002",
+        "course": "c",
+        "question": "Which format specifier is commonly used for an int with printf?",
+        "options": ["%d", "%f", "%c", "%s"],
+        "answer": "%d"
+    },
+    {
+        "id": "c003",
+        "course": "c",
+        "question": "Which symbol obtains the address of a variable?",
+        "options": ["&", "#", "@", "$"],
+        "answer": "&"
+    },
+    {
+        "id": "c004",
+        "course": "c",
+        "question": "Which keyword is commonly used to define a structure?",
+        "options": ["struct", "record", "object", "type"],
+        "answer": "struct"
+    },
+    {
+        "id": "c005",
+        "course": "c",
+        "question": "Which loop is convenient when the number of iterations is known?",
+        "options": ["for", "switch", "if", "struct"],
+        "answer": "for"
+    },
+    {
+        "id": "c006",
+        "course": "c",
+        "question": "What does scanf commonly require when storing input into an int variable?",
+        "options": ["The variable's address", "The variable's color", "A file name", "A class"],
+        "answer": "The variable's address"
+    },
+    {
+        "id": "c007",
+        "course": "c",
+        "question": "Which data type is commonly used for a single character?",
+        "options": ["char", "string", "text", "character"],
+        "answer": "char"
+    },
+
+    # ---------------- C++ ----------------
+
+    {
+        "id": "cpp001",
+        "course": "cpp",
+        "question": "Which stream is commonly used for output in C++?",
+        "options": ["cout", "cin", "printfin", "output"],
+        "answer": "cout"
+    },
+    {
+        "id": "cpp002",
+        "course": "cpp",
+        "question": "What is an object?",
+        "options": [
+            "An instance of a class",
+            "A compiler",
+            "A loop",
+            "A header file"
+        ],
+        "answer": "An instance of a class"
+    },
+    {
+        "id": "cpp003",
+        "course": "cpp",
+        "question": "Which STL container behaves like a dynamic array?",
+        "options": ["vector", "stackfile", "arraylist", "dynamic"],
+        "answer": "vector"
+    },
+
+    # ---------------- PYTHON ----------------
+
+    {
+        "id": "py001",
+        "course": "python",
+        "question": "Which function displays output in Python?",
+        "options": ["print()", "displayText()", "echo()", "writeScreen()"],
+        "answer": "print()"
+    },
+    {
+        "id": "py002",
+        "course": "python",
+        "question": "Which Python structure stores key-value pairs?",
+        "options": ["Dictionary", "Tuple", "String", "Integer"],
+        "answer": "Dictionary"
+    },
+    {
+        "id": "py003",
+        "course": "python",
+        "question": "Which keyword defines a function?",
+        "options": ["def", "function", "fun", "define"],
+        "answer": "def"
+    },
+    {
+        "id": "py004",
+        "course": "python",
+        "question": "Which Python structure is an ordered mutable collection?",
+        "options": ["List", "Tuple", "Set", "Boolean"],
+        "answer": "List"
+    },
+    {
+        "id": "py005",
+        "course": "python",
+        "question": "Which statement is commonly used to read a text file safely?",
+        "options": [
+            "with open(...)",
+            "read.file()",
+            "file.start()",
+            "open.readonly()"
+        ],
+        "answer": "with open(...)"
+    },
+
+    # ---------------- JAVA ----------------
+
+    {
+        "id": "java001",
+        "course": "java",
+        "question": "Which method is the usual Java program entry point?",
+        "options": ["main()", "start()", "run()", "execute()"],
+        "answer": "main()"
+    },
+    {
+        "id": "java002",
+        "course": "java",
+        "question": "Which keyword creates a Java object?",
+        "options": ["new", "create", "object", "make"],
+        "answer": "new"
+    },
+    {
+        "id": "java003",
+        "course": "java",
+        "question": "Which Java collection can dynamically grow?",
+        "options": ["ArrayList", "FixedArray", "StaticList", "MemoryList"],
+        "answer": "ArrayList"
+    },
+
+    # ---------------- HTML ----------------
+
+    {
+        "id": "html001",
+        "course": "html-css",
+        "question": "What does HTML primarily define?",
+        "options": ["Webpage structure", "CPU speed", "Database indexes", "Network packets"],
+        "answer": "Webpage structure"
+    },
+    {
+        "id": "html002",
+        "course": "html-css",
+        "question": "Which HTML element represents a main heading?",
+        "options": ["<h1>", "<heading>", "<head1>", "<title1>"],
+        "answer": "<h1>"
+    },
+    {
+        "id": "html003",
+        "course": "html-css",
+        "question": "What is CSS primarily used for?",
+        "options": ["Presentation and styling", "Database storage", "CPU scheduling", "Compiling C"],
+        "answer": "Presentation and styling"
+    },
+
+    # ---------------- JAVASCRIPT ----------------
+
+    {
+        "id": "js001",
+        "course": "javascript",
+        "question": "Which keyword can declare a block-scoped JavaScript variable?",
+        "options": ["let", "define", "variable", "declare"],
+        "answer": "let"
+    },
+    {
+        "id": "js002",
+        "course": "javascript",
+        "question": "What does the DOM represent?",
+        "options": [
+            "The webpage as objects",
+            "A database server",
+            "A programming compiler",
+            "A network router"
+        ],
+        "answer": "The webpage as objects"
+    },
+    {
+        "id": "js003",
+        "course": "javascript",
+        "question": "Which API can JavaScript use to request data from a server?",
+        "options": ["Fetch API", "Storage API only", "CPU API", "Compiler API"],
+        "answer": "Fetch API"
+    },
+
+    # ---------------- SQL ----------------
+
+    {
+        "id": "sql001",
+        "course": "sql",
+        "question": "Which SQL command retrieves data?",
+        "options": ["SELECT", "GET", "READ", "FETCHROW"],
+        "answer": "SELECT"
+    },
+    {
+        "id": "sql002",
+        "course": "sql",
+        "question": "Which SQL clause filters rows?",
+        "options": ["WHERE", "FILTER", "ONLY", "LIMITER"],
+        "answer": "WHERE"
+    },
+    {
+        "id": "sql003",
+        "course": "sql",
+        "question": "Which SQL command adds a new record?",
+        "options": ["INSERT", "ADDROW", "CREATEVALUE", "PUT"],
+        "answer": "INSERT"
+    },
+    {
+        "id": "sql004",
+        "course": "sql",
+        "question": "What does a database row normally represent?",
+        "options": ["A record", "A database server", "A formula", "A password"],
+        "answer": "A record"
+    },
+
+    # ---------------- DSA ----------------
+
+    {
+        "id": "dsa001",
+        "course": "dsa",
+        "question": "What does an algorithm provide?",
+        "options": [
+            "Steps for solving a problem",
+            "Only source code",
+            "A computer monitor",
+            "A database password"
+        ],
+        "answer": "Steps for solving a problem"
+    },
+    {
+        "id": "dsa002",
+        "course": "dsa",
+        "question": "What is the typical time complexity of scanning every element once?",
+        "options": ["O(n)", "O(1)", "O(log n)", "O(n²)"],
+        "answer": "O(n)"
+    },
+    {
+        "id": "dsa003",
+        "course": "dsa",
+        "question": "Which data structure follows Last In, First Out?",
+        "options": ["Stack", "Queue", "Graph", "Tree"],
+        "answer": "Stack"
+    },
+    {
+        "id": "dsa004",
+        "course": "dsa",
+        "question": "Which data structure normally follows First In, First Out?",
+        "options": ["Queue", "Stack", "Tree", "Heap"],
+        "answer": "Queue"
+    },
+
+    # ---------------- OS ----------------
+
+    {
+        "id": "os001",
+        "course": "os",
+        "question": "What is a running instance of a program called?",
+        "options": ["Process", "Folder", "File type", "Driver letter"],
+        "answer": "Process"
+    },
+    {
+        "id": "os002",
+        "course": "os",
+        "question": "Which resource does an operating system manage?",
+        "options": ["Memory", "Only keyboard colors", "Only documents", "Only browsers"],
+        "answer": "Memory"
+    },
+    {
+        "id": "os003",
+        "course": "os",
+        "question": "Why is memory protection important?",
+        "options": [
+            "It helps prevent processes from improperly accessing memory",
+            "It increases screen brightness",
+            "It creates Git commits",
+            "It formats Word documents"
+        ],
+        "answer": "It helps prevent processes from improperly accessing memory"
+    },
+
+    # ---------------- NETWORKING ----------------
+
+    {
+        "id": "network001",
+        "course": "networking",
+        "question": "What does an IP address identify?",
+        "options": ["A network interface/address", "A Word document", "A CPU core", "A programming variable"],
+        "answer": "A network interface/address"
+    },
+    {
+        "id": "network002",
+        "course": "networking",
+        "question": "Which protocol provides reliable ordered transport?",
+        "options": ["TCP", "UDP", "HTML", "DNS"],
         "answer": "TCP"
     },
-
-    # Security
     {
-        "id": "q031",
-        "topic": "Cybersecurity",
-        "question": "Authentication primarily answers which question?",
+        "id": "network003",
+        "course": "networking",
+        "question": "What protects HTTP traffic using TLS?",
+        "options": ["HTTPS", "HTTP/0", "FTP", "SMTP"],
+        "answer": "HTTPS"
+    },
+
+    # ---------------- CYBERSECURITY ----------------
+
+    {
+        "id": "sec001",
+        "course": "cybersecurity",
+        "question": "What does the C in the CIA triad represent?",
+        "options": ["Confidentiality", "Compilation", "Connection", "Control"],
+        "answer": "Confidentiality"
+    },
+    {
+        "id": "sec002",
+        "course": "cybersecurity",
+        "question": "What is phishing?",
         "options": [
-            "Who are you?",
-            "What color is the UI?",
-            "How fast is the CPU?",
-            "Where is the monitor?"
+            "A deceptive attempt to obtain information",
+            "A sorting algorithm",
+            "A database query",
+            "A programming language"
         ],
-        "answer": "Who are you?"
+        "answer": "A deceptive attempt to obtain information"
     },
     {
-        "id": "q032",
-        "topic": "Cybersecurity",
-        "question": "Authorization determines what an authenticated user can do.",
-        "options": ["True", "False"],
-        "answer": "True"
-    },
-    {
-        "id": "q033",
-        "topic": "Cybersecurity",
-        "question": "What should applications generally treat external user input as?",
-        "options": ["Untrusted", "Always safe", "Trusted code", "System configuration"],
-        "answer": "Untrusted"
+        "id": "sec003",
+        "course": "cybersecurity",
+        "question": "What should applications avoid storing in plain text?",
+        "options": ["Passwords", "Public documentation", "HTML headings", "CSS comments"],
+        "answer": "Passwords"
     },
 
-    # AI
+    # ---------------- AI ----------------
+
     {
-        "id": "q034",
-        "topic": "AI",
-        "question": "What does ML commonly learn from?",
-        "options": ["Data", "Only monitors", "Keyboard drivers", "CSS files"],
+        "id": "ai001",
+        "course": "ai-ml",
+        "question": "What does machine learning primarily learn from?",
+        "options": ["Data", "Keyboard shortcuts", "Monitor pixels only", "Power cables"],
         "answer": "Data"
     },
     {
-        "id": "q035",
-        "topic": "AI",
-        "question": "What does supervised learning use during training?",
-        "options": ["Labeled examples", "No data", "Only passwords", "Only network packets"],
-        "answer": "Labeled examples"
+        "id": "ai002",
+        "course": "ai-ml",
+        "question": "Why is test data useful?",
+        "options": [
+            "To evaluate performance on data not directly used for training",
+            "To increase monitor resolution",
+            "To install Python",
+            "To create folders"
+        ],
+        "answer": "To evaluate performance on data not directly used for training"
     },
     {
-        "id": "q036",
-        "topic": "AI",
-        "question": "What can generative AI produce?",
-        "options": [
-            "New content",
-            "Only electricity",
-            "Only IP addresses",
-            "Only database tables"
-        ],
-        "answer": "New content"
+        "id": "ai003",
+        "course": "ai-ml",
+        "question": "Which is an example of an AI application?",
+        "options": ["Recommendation system", "Keyboard cable", "USB connector", "Power switch"],
+        "answer": "Recommendation system"
     },
 
-    # Cloud
+    # ---------------- CLOUD ----------------
+
     {
-        "id": "q037",
-        "topic": "Cloud",
+        "id": "cloud001",
+        "course": "cloud",
         "question": "What does cloud computing provide?",
         "options": [
-            "Remote computing resources",
+            "Network-accessible computing resources",
             "Only local storage",
-            "Only keyboard input",
-            "Only desktop wallpapers"
+            "Only keyboard drivers",
+            "Only desktop wallpaper"
         ],
-        "answer": "Remote computing resources"
+        "answer": "Network-accessible computing resources"
     },
     {
-        "id": "q038",
-        "topic": "Cloud",
-        "question": "Why are environment variables useful?",
+        "id": "cloud002",
+        "course": "cloud",
+        "question": "What is a virtual machine?",
         "options": [
-            "They separate configuration from source code",
-            "They replace CPUs",
-            "They create monitors",
-            "They compile C automatically"
+            "A software-based computer environment",
+            "A physical keyboard",
+            "A Git branch",
+            "A database table"
         ],
-        "answer": "They separate configuration from source code"
+        "answer": "A software-based computer environment"
     },
 
-    # Git
-    {
-        "id": "q039",
-        "topic": "Git",
-        "question": "What does Git primarily track?",
-        "options": ["Changes to files", "Internet speed", "CPU temperature", "Screen brightness"],
-        "answer": "Changes to files"
-    },
-    {
-        "id": "q040",
-        "topic": "Git",
-        "question": "Which command creates a commit?",
-        "options": [
-            "git commit",
-            "git save",
-            "git snapshot-now",
-            "git version"
-        ],
-        "answer": "git commit"
-    },
+    # ---------------- DEVOPS ----------------
 
-    # Mixed
     {
-        "id": "q041",
-        "topic": "Programming",
-        "question": "What is a function used for?",
-        "options": [
-            "Reusable logic",
-            "Only storing images",
-            "Changing hardware",
-            "Creating an IP address"
-        ],
-        "answer": "Reusable logic"
-    },
-    {
-        "id": "q042",
-        "topic": "Programming",
-        "question": "What is debugging?",
-        "options": [
-            "Finding and fixing software defects",
-            "Installing a monitor",
-            "Creating a database only",
-            "Changing a keyboard"
-        ],
-        "answer": "Finding and fixing software defects"
-    },
-    {
-        "id": "q043",
-        "topic": "Programming",
-        "question": "What is an algorithm?",
-        "options": [
-            "A sequence of steps for solving a problem",
-            "A physical CPU",
-            "A file extension",
-            "A monitor setting"
-        ],
-        "answer": "A sequence of steps for solving a problem"
-    },
-    {
-        "id": "q044",
-        "topic": "Software Engineering",
-        "question": "Why is testing important?",
-        "options": [
-            "It helps verify expected behavior",
-            "It increases monitor size",
-            "It replaces databases",
-            "It removes all programming languages"
-        ],
-        "answer": "It helps verify expected behavior"
-    },
-    {
-        "id": "q045",
-        "topic": "Software Engineering",
+        "id": "dev001",
+        "course": "devops",
         "question": "What does CI commonly stand for?",
         "options": [
             "Continuous Integration",
             "Computer Installation",
             "Code Internet",
-            "Central Interface"
+            "Cloud Input"
         ],
         "answer": "Continuous Integration"
+    },
+    {
+        "id": "dev002",
+        "course": "devops",
+        "question": "Why is automated testing useful?",
+        "options": [
+            "It helps detect incorrect behavior consistently",
+            "It replaces all programmers",
+            "It increases RAM",
+            "It creates monitors"
+        ],
+        "answer": "It helps detect incorrect behavior consistently"
+    },
+
+    # ---------------- CAREER ----------------
+
+    {
+        "id": "career001",
+        "course": "career",
+        "question": "What makes a project description stronger on a resume?",
+        "options": [
+            "Explaining what was built and technologies used",
+            "Using only the project name",
+            "Adding unrelated words",
+            "Removing all technical details"
+        ],
+        "answer": "Explaining what was built and technologies used"
+    },
+    {
+        "id": "career002",
+        "course": "career",
+        "question": "What is a GitHub repository useful for?",
+        "options": [
+            "Hosting and demonstrating software projects",
+            "Increasing CPU clock speed",
+            "Replacing an operating system",
+            "Formatting a hard disk"
+        ],
+        "answer": "Hosting and demonstrating software projects"
     }
 ]
 
 
 # ============================================================
-# CAREER DATA
+# ADD MORE UNIQUE QUESTIONS AUTOMATICALLY
 # ============================================================
 
-careers = [
-    {
-        "id": "software-developer",
-        "title": "Software Developer",
-        "icon": "💻",
-        "description": "Build applications, services and software products.",
-        "skills": [
-            "Programming",
-            "Data Structures",
-            "Git",
-            "Databases",
-            "APIs",
-            "Testing"
-        ],
-        "roadmap": [
-            "Programming fundamentals",
-            "Git & GitHub",
-            "Data structures",
-            "Databases",
-            "Web/backend development",
-            "Projects",
-            "Interview preparation"
-        ]
-    },
-    {
-        "id": "web-developer",
-        "title": "Web Developer",
-        "icon": "🌐",
-        "description": "Build websites and full-stack web applications.",
-        "skills": [
-            "HTML",
-            "CSS",
-            "JavaScript",
-            "Frontend frameworks",
-            "Backend",
-            "Databases"
-        ],
-        "roadmap": [
-            "HTML",
-            "CSS",
-            "JavaScript",
-            "APIs",
-            "Backend",
-            "Database",
-            "Deployment"
-        ]
-    },
-    {
-        "id": "python-developer",
-        "title": "Python Developer",
-        "icon": "🐍",
-        "description": "Build automation, backend and data-driven applications.",
-        "skills": [
-            "Python",
-            "OOP",
-            "APIs",
-            "SQL",
-            "Git",
-            "Testing"
-        ],
-        "roadmap": [
-            "Python basics",
-            "OOP",
-            "Data structures",
-            "SQL",
-            "Web frameworks",
-            "Projects",
-            "Deployment"
-        ]
-    },
-    {
-        "id": "cybersecurity",
-        "title": "Cybersecurity",
-        "icon": "🛡️",
-        "description": "Learn to identify and defend against security threats.",
-        "skills": [
-            "Networking",
-            "Linux",
-            "Security fundamentals",
-            "Authentication",
-            "Web security",
-            "Monitoring"
-        ],
-        "roadmap": [
-            "Computer fundamentals",
-            "Networking",
-            "Linux",
-            "Security basics",
-            "Web security",
-            "Labs",
-            "Certifications / projects"
-        ]
-    },
-    {
-        "id": "ai-ml",
-        "title": "AI / ML Engineer",
-        "icon": "🤖",
-        "description": "Build data-driven and intelligent applications.",
-        "skills": [
-            "Python",
-            "Math",
-            "Statistics",
-            "Machine Learning",
-            "Data Processing",
-            "Model Evaluation"
-        ],
-        "roadmap": [
-            "Python",
-            "Mathematics",
-            "Statistics",
-            "Data processing",
-            "Machine learning",
-            "Deep learning",
-            "AI projects"
-        ]
-    },
-    {
-        "id": "cloud-devops",
-        "title": "Cloud / DevOps",
-        "icon": "☁️",
-        "description": "Build, deploy and operate reliable applications.",
-        "skills": [
-            "Linux",
-            "Networking",
-            "Cloud",
-            "Docker",
-            "CI/CD",
-            "Monitoring"
-        ],
-        "roadmap": [
-            "Linux",
-            "Networking",
-            "Git",
-            "Cloud basics",
-            "Containers",
-            "CI/CD",
-            "Projects"
-        ]
-    }
+extra_questions = [
+
+    ("cb006", "computer-basics", "Which device is primarily used to display visual output?", ["Monitor", "Keyboard", "Mouse", "Microphone"], "Monitor"),
+    ("cb007", "computer-basics", "Which component performs arithmetic and logical operations?", ["ALU", "Monitor", "SSD", "Keyboard"], "ALU"),
+    ("cb008", "computer-basics", "Which device is commonly used to enter text?", ["Keyboard", "Monitor", "Speaker", "Projector"], "Keyboard"),
+
+    ("win004", "windows", "Which shortcut switches between open applications?", ["Alt + Tab", "Ctrl + P", "Win + L", "Ctrl + D"], "Alt + Tab"),
+    ("win005", "windows", "Which shortcut commonly opens the Run dialog?", ["Win + R", "Win + E", "Ctrl + R", "Alt + R"], "Win + R"),
+
+    ("word003", "ms-word", "Which feature automatically creates a contents list from headings?", ["Table of Contents", "Task Manager", "Mail Merge", "Clipboard"], "Table of Contents"),
+    ("word004", "ms-word", "Which feature can create personalized letters for many recipients?", ["Mail Merge", "WordArt", "Zoom", "Track Changes"], "Mail Merge"),
+
+    ("excel004", "ms-excel", "Which Excel function returns the largest value?", ["MAX", "HIGH", "TOP", "LARGEONLY"], "MAX"),
+    ("excel005", "ms-excel", "Which Excel function returns the smallest value?", ["MIN", "LOW", "BOTTOM", "SMALLESTONLY"], "MIN"),
+
+    ("git005", "git-github", "Which command shows the current Git working state?", ["git status", "git check", "git state", "git inspect"], "git status"),
+    ("git006", "git-github", "Which command downloads changes from a remote repository and integrates them?", ["git pull", "git take", "git download", "git receive"], "git pull"),
+
+    ("c008", "c", "Which keyword exits a function and optionally returns a value?", ["return", "exitvalue", "back", "stop"], "return"),
+    ("c009", "c", "Which symbol terminates most C statements?", [";", ":", ".", ","], ";"),
+    ("c010", "c", "Which operator is used to dereference a pointer?", ["*", "&", "#", "@"], "*"),
+
+    ("cpp004", "cpp", "Which C++ keyword defines a class?", ["class", "object", "defineclass", "typeclass"], "class"),
+    ("cpp005", "cpp", "Which stream is commonly used for input?", ["cin", "cout", "inputstream", "read"], "cin"),
+
+    ("py006", "python", "Which keyword begins a conditional statement?", ["if", "when", "check", "condition"], "if"),
+    ("py007", "python", "Which symbol is used to create a comment on one line?", ["#", "//", "<!--", "--"], "#"),
+    ("py008", "python", "Which function returns the number of items in a collection?", ["len()", "count()", "size()", "length()"], "len()"),
+
+    ("java004", "java", "Which keyword is used to inherit from a class?", ["extends", "inherits", "using", "parent"], "extends"),
+    ("java005", "java", "Which keyword prevents a variable from being reassigned?", ["final", "fixed", "constant", "lock"], "final"),
+
+    ("html004", "html-css", "Which tag creates a hyperlink?", ["<a>", "<linkto>", "<url>", "<href>"], "<a>"),
+    ("html005", "html-css", "Which CSS property changes text color?", ["color", "text-color", "font-color", "foreground"], "color"),
+
+    ("js004", "javascript", "Which keyword declares a constant binding?", ["const", "constant", "fixed", "static"], "const"),
+    ("js005", "javascript", "Which method is commonly used to select an element by ID?", ["getElementById()", "findById()", "selectId()", "elementById()"], "getElementById()"),
+
+    ("sql005", "sql", "Which command modifies existing rows?", ["UPDATE", "CHANGE", "MODIFYROW", "ALTERROW"], "UPDATE"),
+    ("sql006", "sql", "Which command removes rows?", ["DELETE", "REMOVE", "DROPROW", "CLEAR"], "DELETE"),
+
+    ("dsa005", "dsa", "Which algorithm is commonly used to find an item in a sorted array efficiently?", ["Binary Search", "Linear Sort", "Random Search", "Depth Search"], "Binary Search"),
+    ("dsa006", "dsa", "What does O(1) describe?", ["Constant-time growth", "Linear growth", "Quadratic growth", "Exponential growth"], "Constant-time growth"),
+
+    ("os004", "os", "Which operating system component manages hardware resources?", ["Kernel", "Browser", "Text editor", "Compiler only"], "Kernel"),
+    ("os005", "os", "What is multitasking?", ["Running multiple tasks/processes through system scheduling", "Installing multiple keyboards", "Using multiple monitors only", "Writing multiple programs"], "Running multiple tasks/processes through system scheduling"),
+
+    ("network004", "networking", "Which device commonly connects devices within a local network?", ["Switch", "Compiler", "Monitor", "SSD"], "Switch"),
+    ("network005", "networking", "What does DNS help applications discover?", ["Network addresses associated with domain names", "CPU temperature", "RAM size", "File permissions"], "Network addresses associated with domain names"),
+
+    ("sec004", "cybersecurity", "Which security property ensures information is not improperly changed?", ["Integrity", "Availability", "Confidentiality", "Compression"], "Integrity"),
+    ("sec005", "cybersecurity", "Which practice adds another verification factor beyond a password?", ["Multi-factor authentication", "Compression", "Caching", "Indexing"], "Multi-factor authentication"),
+
+    ("ai004", "ai-ml", "What is a model in machine learning?", ["A learned computational representation used to make predictions or decisions", "A computer monitor", "A database password", "A network cable"], "A learned computational representation used to make predictions or decisions"),
+    ("ai005", "ai-ml", "What is training data?", ["Data used to learn patterns for a model", "Data deleted after training", "Only test results", "A programming language"], "Data used to learn patterns for a model"),
+
+    ("cloud003", "cloud", "Which cloud resource can provide computing capacity?", ["Virtual machine", "Word document", "Keyboard", "HTML heading"], "Virtual machine"),
+    ("cloud004", "cloud", "Why might organizations use cloud services?", ["To obtain scalable computing resources", "To remove all software", "To eliminate networking", "To avoid data entirely"], "To obtain scalable computing resources"),
+
+    ("dev003", "devops", "What does deployment mean?", ["Making software available in a target environment", "Deleting source code", "Creating a keyboard", "Formatting a document"], "Making software available in a target environment"),
+    ("dev004", "devops", "Why are logs useful?", ["They provide information about application/system activity", "They increase RAM", "They compile C automatically", "They replace databases"], "They provide information about application/system activity"),
+
+    ("career003", "career", "What should a technical project README usually contain?", ["Project description and setup/use information", "Only emojis", "A random password", "No information"], "Project description and setup/use information"),
+    ("career004", "career", "Why should students be able to explain their projects in interviews?", ["Interviewers may ask about design and implementation decisions", "Projects never matter", "It replaces programming knowledge", "It is required by Git"], "Interviewers may ask about design and implementation decisions")
 ]
 
-
-# ============================================================
-# ACHIEVEMENTS
-# ============================================================
-
-achievements = [
-    {
-        "id": "first-lesson",
-        "title": "First Step",
-        "description": "Complete your first lesson.",
-        "icon": "🚀"
-    },
-    {
-        "id": "five-lessons",
-        "title": "Getting Started",
-        "description": "Complete five lessons.",
-        "icon": "🔥"
-    },
-    {
-        "id": "ten-lessons",
-        "title": "Knowledge Builder",
-        "description": "Complete ten lessons.",
-        "icon": "🧠"
-    },
-    {
-        "id": "quiz-complete",
-        "title": "Quiz Warrior",
-        "description": "Complete a quiz.",
-        "icon": "🏆"
-    },
-    {
-        "id": "perfect-quiz",
-        "title": "Perfect Score",
-        "description": "Get every question correct.",
-        "icon": "💎"
-    },
-    {
-        "id": "hundred-xp",
-        "title": "XP Hunter",
-        "description": "Earn 100 XP.",
-        "icon": "⚡"
-    }
-]
+for qid, cid, question, options, answer in extra_questions:
+    quiz_questions.append({
+        "id": qid,
+        "course": cid,
+        "question": question,
+        "options": options,
+        "answer": answer
+    })
 
 
 # ============================================================
-# UTILITY FUNCTIONS
-# ============================================================
-
-def calculate_level(xp):
-    if xp < 100:
-        return 1
-    if xp < 250:
-        return 2
-    if xp < 500:
-        return 3
-    if xp < 850:
-        return 4
-    if xp < 1300:
-        return 5
-    if xp < 2000:
-        return 6
-    return 7
-
-
-def level_name(level):
-    names = {
-        1: "Code Explorer",
-        2: "Bug Hunter",
-        3: "Logic Builder",
-        4: "Code Warrior",
-        5: "System Architect",
-        6: "Tech Master",
-        7: "CodeQuest Legend"
-    }
-
-    return names.get(level, "Code Explorer")
-
-
-def all_lessons():
-    result = []
-
-    for c in courses:
-        for chapter in c["chapters"]:
-            item = dict(chapter)
-            item["course_id"] = c["id"]
-            item["course_title"] = c["title"]
-            result.append(item)
-
-    return result
-
-
-def find_lesson(lesson_id):
-    for item in all_lessons():
-        if item["id"] == lesson_id:
-            return item
-
-    return None
-
-
-def find_course(course_id):
-    for c in courses:
-        if c["id"] == course_id:
-            return c
-
-    return None
-
-
-def get_uid_from_request():
-    """
-    Gets a Firebase UID from:
-    Authorization: Bearer <Firebase ID token>
-
-    If Firebase Admin is configured, token is verified.
-    """
-
-    auth_header = request.headers.get("Authorization", "")
-
-    if not auth_header.startswith("Bearer "):
-        return None
-
-    token = auth_header.split(" ", 1)[1].strip()
-
-    if not token:
-        return None
-
-    if not firebase_ready:
-        return None
-
-    try:
-        decoded = firebase_auth.verify_id_token(token)
-        return decoded.get("uid")
-
-    except Exception as error:
-        print("Firebase token verification failed:", error)
-        return None
-
-
-def get_optional_uid():
-    return get_uid_from_request()
-
-
-def ensure_user(uid, name="", email="", photo_url=""):
-    if not uid:
-        return
-
-    db = get_db()
-
-    existing = db.execute(
-        "SELECT uid FROM users WHERE uid = ?",
-        (uid,)
-    ).fetchone()
-
-    if existing:
-        db.execute(
-            """
-            UPDATE users
-            SET name = ?,
-                email = ?,
-                photo_url = ?,
-                updated_at = CURRENT_TIMESTAMP
-            WHERE uid = ?
-            """,
-            (name, email, photo_url, uid)
-        )
-    else:
-        db.execute(
-            """
-            INSERT INTO users
-            (uid, name, email, photo_url)
-            VALUES (?, ?, ?, ?)
-            """,
-            (uid, name, email, photo_url)
-        )
-
-    db.commit()
-    db.close()
-
-
-def add_xp(uid, amount, activity="activity"):
-    if not uid:
-        return
-
-    db = get_db()
-
-    user = db.execute(
-        "SELECT xp FROM users WHERE uid = ?",
-        (uid,)
-    ).fetchone()
-
-    if not user:
-        ensure_user(uid)
-        current_xp = 0
-    else:
-        current_xp = user["xp"]
-
-    new_xp = max(0, current_xp + int(amount))
-    new_level = calculate_level(new_xp)
-
-    db.execute(
-        """
-        UPDATE users
-        SET xp = ?,
-            level = ?,
-            last_activity = CURRENT_TIMESTAMP,
-            updated_at = CURRENT_TIMESTAMP
-        WHERE uid = ?
-        """,
-        (new_xp, new_level, uid)
-    )
-
-    db.execute(
-        """
-        INSERT INTO activity_log(uid, activity, xp)
-        VALUES (?, ?, ?)
-        """,
-        (uid, activity, amount)
-    )
-
-    db.commit()
-    db.close()
-
-
-# ============================================================
-# FRONTEND
+# ROUTES
 # ============================================================
 
 @app.route("/")
 def home():
-    try:
-        return render_template("index.html")
-    except Exception:
-        return """
-        <h1>CodeQuest AI</h1>
-        <p>Backend is running.</p>
-        <p>Place index.html inside the templates folder.</p>
-        """
+    return jsonify({
+        "app": "CodeQuest AI",
+        "version": "2.0",
+        "message": "Learn • Practice • Play • Build",
+        "status": "online"
+    })
 
-
-# ============================================================
-# HEALTH
-# ============================================================
 
 @app.route("/health")
 def health():
     return jsonify({
-        "status": "ok",
-        "app": "CodeQuest AI",
-        "version": "1.0",
+        "status": "healthy",
         "courses": len(courses),
-        "lessons": len(all_lessons()),
-        "quiz_questions": len(quiz_questions),
-        "firebase_admin": firebase_ready,
-        "compiler": "wandbox",
-        "compiler_endpoint": "https://wandbox.org/api/compile.json"
+        "quiz_questions": len(quiz_questions)
     })
 
 
@@ -2843,494 +2883,77 @@ def health():
 # ============================================================
 
 @app.route("/api/courses")
-def api_courses():
-    output = []
-
-    for c in courses:
-        output.append({
-            "id": c["id"],
-            "title": c["title"],
-            "icon": c["icon"],
-            "level": c["level"],
-            "description": c["description"],
-            "chapters": [
-                {
-                    "id": chapter["id"],
-                    "title": chapter["title"],
-                    "lesson": chapter["lesson"],
-                    "sample": chapter["sample"],
-                    "key_points": chapter.get("key_points", [])
-                }
-                for chapter in c["chapters"]
-            ]
-        })
-
+def get_courses():
     return jsonify({
-        "courses": output,
-        "total_courses": len(output),
-        "total_lessons": len(all_lessons())
+        "courses": courses
     })
 
 
 @app.route("/api/course/<course_id>")
-def api_course(course_id):
-    selected = find_course(course_id)
+def get_course(course_id):
 
-    if not selected:
-        return jsonify({
-            "error": "Course not found"
-        }), 404
-
-    return jsonify(selected)
-
-
-@app.route("/api/lesson/<lesson_id>")
-def api_lesson(lesson_id):
-    selected = find_lesson(lesson_id)
-
-    if not selected:
-        return jsonify({
-            "error": "Lesson not found"
-        }), 404
-
-    return jsonify(selected)
-
-
-# ============================================================
-# FIREBASE LOGIN
-# ============================================================
-
-@app.route("/api/firebase-login", methods=["POST"])
-def firebase_login():
-
-    if not firebase_ready:
-        return jsonify({
-            "success": False,
-            "error": "Firebase Admin is not configured on the server.",
-            "setup_required": True
-        }), 503
-
-    data = request.get_json(silent=True) or {}
-
-    id_token = data.get("idToken")
-
-    if not id_token:
-        auth_header = request.headers.get("Authorization", "")
-
-        if auth_header.startswith("Bearer "):
-            id_token = auth_header.split(" ", 1)[1].strip()
-
-    if not id_token:
-        return jsonify({
-            "success": False,
-            "error": "Firebase ID token is missing."
-        }), 401
-
-    try:
-        decoded = firebase_auth.verify_id_token(id_token)
-
-        uid = decoded.get("uid")
-        name = decoded.get("name", "")
-        email = decoded.get("email", "")
-        picture = decoded.get("picture", "")
-
-        ensure_user(
-            uid,
-            name,
-            email,
-            picture
-        )
-
-        return jsonify({
-            "success": True,
-            "uid": uid,
-            "name": name,
-            "email": email,
-            "photo_url": picture
-        })
-
-    except Exception as error:
-        print("Firebase login error:", error)
-
-        return jsonify({
-            "success": False,
-            "error": "Invalid or expired Firebase login token."
-        }), 401
-
-
-@app.route("/api/me")
-def api_me():
-
-    uid = get_optional_uid()
-
-    if not uid:
-        return jsonify({
-            "authenticated": False
-        })
-
-    db = get_db()
-
-    user = db.execute(
-        "SELECT * FROM users WHERE uid = ?",
-        (uid,)
-    ).fetchone()
-
-    db.close()
-
-    if not user:
-        return jsonify({
-            "authenticated": True,
-            "uid": uid
-        })
+    for c in courses:
+        if c["id"] == course_id:
+            return jsonify(c)
 
     return jsonify({
-        "authenticated": True,
-        "user": dict(user),
-        "level_name": level_name(user["level"])
-    })
+        "error": "Course not found"
+    }), 404
 
 
 # ============================================================
-# STATS
-# ============================================================
-
-@app.route("/api/stats")
-def api_stats():
-
-    uid = get_optional_uid()
-
-    if not uid:
-        return jsonify({
-            "authenticated": False,
-            "xp": 0,
-            "level": 1,
-            "level_name": "Code Explorer",
-            "streak": 0,
-            "completed": 0
-        })
-
-    db = get_db()
-
-    user = db.execute(
-        "SELECT * FROM users WHERE uid = ?",
-        (uid,)
-    ).fetchone()
-
-    completed = db.execute(
-        """
-        SELECT COUNT(*) AS count
-        FROM progress
-        WHERE uid = ? AND completed = 1
-        """,
-        (uid,)
-    ).fetchone()["count"]
-
-    db.close()
-
-    if not user:
-        return jsonify({
-            "authenticated": True,
-            "xp": 0,
-            "level": 1,
-            "level_name": "Code Explorer",
-            "streak": 0,
-            "completed": completed
-        })
-
-    return jsonify({
-        "authenticated": True,
-        "xp": user["xp"],
-        "level": user["level"],
-        "level_name": level_name(user["level"]),
-        "streak": user["streak"],
-        "completed": completed
-    })
-
-
-# ============================================================
-# PROGRESS
-# ============================================================
-
-@app.route("/api/progress", methods=["GET"])
-def get_progress():
-
-    uid = get_optional_uid()
-
-    if not uid:
-        return jsonify({
-            "authenticated": False,
-            "completed": []
-        })
-
-    db = get_db()
-
-    rows = db.execute(
-        """
-        SELECT lesson_id, course_id, completed, completed_at
-        FROM progress
-        WHERE uid = ?
-        ORDER BY completed_at DESC
-        """,
-        (uid,)
-    ).fetchall()
-
-    db.close()
-
-    return jsonify({
-        "authenticated": True,
-        "completed": [dict(row) for row in rows]
-    })
-
-
-@app.route("/api/progress/lesson", methods=["POST"])
-def complete_lesson():
-
-    uid = get_optional_uid()
-
-    if not uid:
-        return jsonify({
-            "success": False,
-            "error": "Login required."
-        }), 401
-
-    data = request.get_json(silent=True) or {}
-
-    lesson_id = data.get("lesson_id")
-    course_id = data.get("course_id")
-
-    if not lesson_id:
-        return jsonify({
-            "success": False,
-            "error": "lesson_id is required."
-        }), 400
-
-    selected = find_lesson(lesson_id)
-
-    if not selected:
-        return jsonify({
-            "success": False,
-            "error": "Lesson not found."
-        }), 404
-
-    if not course_id:
-        course_id = selected["course_id"]
-
-    db = get_db()
-
-    existing = db.execute(
-        """
-        SELECT completed
-        FROM progress
-        WHERE uid = ? AND lesson_id = ?
-        """,
-        (uid, lesson_id)
-    ).fetchone()
-
-    already_completed = bool(
-        existing and existing["completed"] == 1
-    )
-
-    if not already_completed:
-
-        db.execute(
-            """
-            INSERT INTO progress
-            (uid, lesson_id, course_id, completed, completed_at)
-            VALUES (?, ?, ?, 1, CURRENT_TIMESTAMP)
-            ON CONFLICT(uid, lesson_id)
-            DO UPDATE SET
-                completed = 1,
-                completed_at = CURRENT_TIMESTAMP
-            """,
-            (uid, lesson_id, course_id)
-        )
-
-        db.commit()
-        db.close()
-
-        add_xp(
-            uid,
-            20,
-            "lesson-completed"
-        )
-
-        return jsonify({
-            "success": True,
-            "already_completed": False,
-            "xp_earned": 20
-        })
-
-    db.close()
-
-    return jsonify({
-        "success": True,
-        "already_completed": True,
-        "xp_earned": 0
-    })
-
-
-# ============================================================
-# QUIZ
+# QUIZ ARENA
 # ============================================================
 
 @app.route("/api/quiz")
-def api_quiz():
+def get_quiz():
 
-    # Return the complete bank.
-    # Frontend can randomly choose questions.
-    return jsonify({
-        "success": True,
-        "questions": quiz_questions,
-        "total": len(quiz_questions)
-    })
+    course_id = request.args.get("course", "").strip()
 
+    count = request.args.get("count", "10")
 
-@app.route("/api/quiz/submit", methods=["POST"])
-def submit_quiz():
+    try:
+        count = int(count)
+    except:
+        count = 10
 
-    uid = get_optional_uid()
+    count = max(1, min(count, 20))
 
-    if not uid:
-        return jsonify({
-            "success": False,
-            "error": "Login required."
-        }), 401
+    if course_id:
+        pool = [
+            q for q in quiz_questions
+            if q["course"] == course_id
+        ]
+    else:
+        pool = quiz_questions.copy()
 
-    data = request.get_json(silent=True) or {}
-
-    score = int(data.get("score", 0))
-    total = int(data.get("total", 0))
-
-    if total <= 0:
-        return jsonify({
-            "success": False,
-            "error": "Invalid quiz total."
-        }), 400
-
-    score = max(0, min(score, total))
-
-    # XP:
-    # 10 per correct answer
-    # +25 completion bonus
-    # +50 perfect bonus
-    xp_earned = (score * 10) + 25
-
-    if score == total:
-        xp_earned += 50
-
-    db = get_db()
-
-    db.execute(
-        """
-        INSERT INTO quiz_attempts
-        (uid, score, total, xp_earned)
-        VALUES (?, ?, ?, ?)
-        """,
-        (uid, score, total, xp_earned)
+    # Randomly select unique questions.
+    selected = random.sample(
+        pool,
+        min(count, len(pool))
     )
-
-    db.commit()
-    db.close()
-
-    add_xp(
-        uid,
-        xp_earned,
-        "quiz-completed"
-    )
-
-    return jsonify({
-        "success": True,
-        "score": score,
-        "total": total,
-        "xp_earned": xp_earned,
-        "perfect": score == total
-    })
-
-
-@app.route("/api/quiz/violation", methods=["POST"])
-def quiz_violation():
-
-    uid = get_optional_uid()
-
-    if uid:
-        db = get_db()
-
-        db.execute(
-            """
-            INSERT INTO activity_log
-            (uid, activity, xp)
-            VALUES (?, ?, 0)
-            """,
-            (uid, "quiz-violation")
-        )
-
-        db.commit()
-        db.close()
-
-    return jsonify({
-        "success": True
-    })
-
-
-# ============================================================
-# ACHIEVEMENTS
-# ============================================================
-
-@app.route("/api/achievements")
-def api_achievements():
-
-    uid = get_optional_uid()
-
-    completed_count = 0
-    xp = 0
-
-    if uid:
-        db = get_db()
-
-        completed_count = db.execute(
-            """
-            SELECT COUNT(*) AS count
-            FROM progress
-            WHERE uid = ? AND completed = 1
-            """,
-            (uid,)
-        ).fetchone()["count"]
-
-        user = db.execute(
-            "SELECT xp FROM users WHERE uid = ?",
-            (uid,)
-        ).fetchone()
-
-        if user:
-            xp = user["xp"]
-
-        db.close()
 
     result = []
 
-    for achievement in achievements:
+    for q in selected:
 
-        unlocked = False
+        # Copy question so original bank isn't modified.
+        item = {
+            "id": q["id"],
+            "course": q["course"],
+            "question": q["question"],
+            "options": q["options"][:],
+            "answer": q["answer"]
+        }
 
-        if achievement["id"] == "first-lesson":
-            unlocked = completed_count >= 1
+        # Randomize answer options.
+        random.shuffle(item["options"])
 
-        elif achievement["id"] == "five-lessons":
-            unlocked = completed_count >= 5
-
-        elif achievement["id"] == "ten-lessons":
-            unlocked = completed_count >= 10
-
-        elif achievement["id"] == "hundred-xp":
-            unlocked = xp >= 100
-
-        result.append({
-            **achievement,
-            "unlocked": unlocked
-        })
+        result.append(item)
 
     return jsonify({
-        "achievements": result
+        "questions": result,
+        "total": len(result)
     })
 
 
@@ -3338,107 +2961,341 @@ def api_achievements():
 # CAREER GUIDE
 # ============================================================
 
+careers = [
+
+    {
+        "id": "software-developer",
+        "title": "Software Developer",
+        "icon": "💻",
+        "description": "Build applications, services and software systems.",
+        "skills": [
+            "Programming",
+            "Data Structures",
+            "Git",
+            "Databases",
+            "APIs",
+            "Problem Solving"
+        ],
+        "roadmap": [
+            "Programming fundamentals",
+            "Data Structures",
+            "Git & GitHub",
+            "Databases",
+            "Web/API development",
+            "Projects",
+            "Interview preparation"
+        ]
+    },
+
+    {
+        "id": "web-developer",
+        "title": "Web Developer",
+        "icon": "🌐",
+        "description": "Build websites and web applications.",
+        "skills": [
+            "HTML",
+            "CSS",
+            "JavaScript",
+            "Git",
+            "APIs",
+            "Backend development"
+        ],
+        "roadmap": [
+            "HTML & CSS",
+            "JavaScript",
+            "Git & GitHub",
+            "Frontend framework",
+            "Backend",
+            "Database",
+            "Deployment"
+        ]
+    },
+
+    {
+        "id": "python-developer",
+        "title": "Python Developer",
+        "icon": "🐍",
+        "description": "Build applications and automation using Python.",
+        "skills": [
+            "Python",
+            "OOP",
+            "APIs",
+            "Databases",
+            "Git",
+            "Testing"
+        ],
+        "roadmap": [
+            "Python fundamentals",
+            "OOP",
+            "Data structures",
+            "APIs",
+            "Databases",
+            "Projects",
+            "Deployment"
+        ]
+    },
+
+    {
+        "id": "cybersecurity",
+        "title": "Cybersecurity",
+        "icon": "🔐",
+        "description": "Understand and help protect systems, applications and networks.",
+        "skills": [
+            "Networking",
+            "Linux",
+            "Security fundamentals",
+            "Authentication",
+            "Web security",
+            "Incident awareness"
+        ],
+        "roadmap": [
+            "Computer basics",
+            "Networking",
+            "Operating systems",
+            "Security fundamentals",
+            "Web security",
+            "Security labs",
+            "Certifications/projects"
+        ]
+    },
+
+    {
+        "id": "data-ai",
+        "title": "AI / Data",
+        "icon": "🤖",
+        "description": "Work with data, machine learning and AI systems.",
+        "skills": [
+            "Python",
+            "Statistics",
+            "Data analysis",
+            "Machine learning",
+            "SQL",
+            "Model evaluation"
+        ],
+        "roadmap": [
+            "Python",
+            "Statistics",
+            "SQL",
+            "Data analysis",
+            "Machine learning",
+            "Projects",
+            "Model deployment"
+        ]
+    }
+
+]
+
+
 @app.route("/api/careers")
-def api_careers():
+def get_careers():
     return jsonify({
         "careers": careers
     })
 
 
-@app.route("/api/career-roadmap/<career_id>")
-def career_roadmap(career_id):
+# ============================================================
+# FIREBASE LOGIN BACKEND
+# ============================================================
 
-    for career in careers:
-        if career["id"] == career_id:
-            return jsonify(career)
+firebase_admin_initialized = False
+firebase_auth = None
+
+try:
+
+    import firebase_admin
+    from firebase_admin import credentials, auth
+
+    service_account_json = os.getenv(
+        "FIREBASE_SERVICE_ACCOUNT_JSON"
+    )
+
+    if service_account_json:
+
+        service_account_info = json.loads(
+            service_account_json
+        )
+
+        credential = credentials.Certificate(
+            service_account_info
+        )
+
+        firebase_admin.initialize_app(credential)
+
+        firebase_admin_initialized = True
+        firebase_auth = auth
+
+except Exception as e:
+
+    print("Firebase Admin initialization warning:", e)
+
+
+@app.route("/api/firebase-login", methods=["POST"])
+def firebase_login():
+
+    data = request.get_json(silent=True) or {}
+
+    id_token = data.get("idToken")
+
+    if not id_token:
+        return jsonify({
+            "success": False,
+            "error": "Firebase ID token missing"
+        }), 400
+
+    if not firebase_admin_initialized:
+
+        return jsonify({
+            "success": False,
+            "error": "Firebase Admin is not configured on the server"
+        }), 503
+
+    try:
+
+        decoded = firebase_auth.verify_id_token(id_token)
+
+        uid = decoded.get("uid")
+        email = decoded.get("email", "")
+        name = decoded.get("name", "")
+        photo = decoded.get("picture", "")
+
+        conn = get_db()
+
+        conn.execute("""
+            INSERT INTO users
+            (uid, email, name, photo, created_at)
+            VALUES (?, ?, ?, ?, ?)
+            ON CONFLICT(uid)
+            DO UPDATE SET
+                email=excluded.email,
+                name=excluded.name,
+                photo=excluded.photo
+        """, (
+            uid,
+            email,
+            name,
+            photo,
+            datetime.utcnow().isoformat()
+        ))
+
+        conn.commit()
+        conn.close()
+
+        return jsonify({
+            "success": True,
+            "uid": uid,
+            "email": email,
+            "name": name,
+            "photo": photo
+        })
+
+    except Exception as e:
+
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 401
+
+
+# ============================================================
+# PROGRESS
+# ============================================================
+
+@app.route("/api/progress", methods=["POST"])
+def save_progress():
+
+    data = request.get_json(silent=True) or {}
+
+    uid = data.get("uid")
+    course_id = data.get("course_id")
+    chapter_index = data.get("chapter_index")
+
+    if not uid or not course_id:
+        return jsonify({
+            "success": False,
+            "error": "Missing progress information"
+        }), 400
+
+    try:
+        chapter_index = int(chapter_index)
+    except:
+        chapter_index = 0
+
+    conn = get_db()
+
+    conn.execute("""
+        INSERT INTO progress
+        (uid, course_id, chapter_index, completed)
+        VALUES (?, ?, ?, 1)
+        ON CONFLICT(uid, course_id, chapter_index)
+        DO UPDATE SET completed=1
+    """, (
+        uid,
+        course_id,
+        chapter_index
+    ))
+
+    conn.commit()
+    conn.close()
 
     return jsonify({
-        "error": "Career not found"
-    }), 404
+        "success": True
+    })
 
 
-# ============================================================
-# PROJECTS
-# ============================================================
+@app.route("/api/progress/<uid>")
+def get_progress(uid):
 
-projects = [
-    {
-        "id": "calculator",
-        "title": "Smart Calculator",
-        "level": "Beginner",
-        "description": "Build a calculator and practice conditions and functions.",
-        "technologies": ["HTML", "CSS", "JavaScript"]
-    },
-    {
-        "id": "student-manager",
-        "title": "Student Management System",
-        "level": "Beginner → Intermediate",
-        "description": "Manage student records using a database.",
-        "technologies": ["Python", "Flask", "SQLite"]
-    },
-    {
-        "id": "quiz-app",
-        "title": "Quiz Application",
-        "level": "Intermediate",
-        "description": "Build a question bank, scoring system and progress tracker.",
-        "technologies": ["JavaScript", "Flask", "SQLite"]
-    },
-    {
-        "id": "codequest",
-        "title": "CodeQuest AI",
-        "level": "Advanced Student Project",
-        "description": "Gamified computer-science learning platform.",
-        "technologies": [
-            "HTML",
-            "CSS",
-            "JavaScript",
-            "Flask",
-            "Firebase",
-            "SQLite",
-            "Cloud Deployment"
+    conn = get_db()
+
+    rows = conn.execute("""
+        SELECT course_id, chapter_index, completed
+        FROM progress
+        WHERE uid = ?
+    """, (uid,)).fetchall()
+
+    conn.close()
+
+    return jsonify({
+        "progress": [
+            dict(row)
+            for row in rows
         ]
-    }
-]
-
-
-@app.route("/api/projects")
-def api_projects():
-    return jsonify({
-        "projects": projects
     })
 
 
 # ============================================================
-# ACTIVITY
+# QUIZ RESULT
 # ============================================================
 
-@app.route("/api/activity")
-def api_activity():
+@app.route("/api/quiz-result", methods=["POST"])
+def save_quiz_result():
 
-    uid = get_optional_uid()
+    data = request.get_json(silent=True) or {}
 
-    if not uid:
-        return jsonify({
-            "activities": []
-        })
+    uid = data.get("uid", "guest")
+    score = int(data.get("score", 0))
+    total = int(data.get("total", 0))
 
-    db = get_db()
+    conn = get_db()
 
-    rows = db.execute(
-        """
-        SELECT activity, xp, created_at
-        FROM activity_log
-        WHERE uid = ?
-        ORDER BY id DESC
-        LIMIT 30
-        """,
-        (uid,)
-    ).fetchall()
+    conn.execute("""
+        INSERT INTO quiz_attempts
+        (uid, score, total, created_at)
+        VALUES (?, ?, ?, ?)
+    """, (
+        uid,
+        score,
+        total,
+        datetime.utcnow().isoformat()
+    ))
 
-    db.close()
+    conn.commit()
+    conn.close()
 
     return jsonify({
-        "activities": [dict(row) for row in rows]
+        "success": True,
+        "score": score,
+        "total": total
     })
 
 
@@ -3446,265 +3303,203 @@ def api_activity():
 # C COMPILER
 # ============================================================
 
-WANDBOX_URL = "https://wandbox.org/api/compile.json"
-
-
-def compile_with_wandbox(code, stdin=""):
-
-    payload = {
-        "compiler": "gcc-head-c",
-        "code": code,
-        "stdin": stdin or "",
-        "save": False
-    }
-
-    encoded = json.dumps(payload).encode("utf-8")
-
-    http_request = urllib.request.Request(
-        WANDBOX_URL,
-        data=encoded,
-        headers={
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "User-Agent": "CodeQuest-AI/1.0"
-        },
-        method="POST"
-    )
-
-    try:
-
-        with urllib.request.urlopen(
-            http_request,
-            timeout=25
-        ) as response:
-
-            raw = response.read().decode("utf-8")
-            return json.loads(raw)
-
-    except urllib.error.HTTPError as error:
-
-        try:
-            body = error.read().decode("utf-8")
-        except Exception:
-            body = ""
-
-        return {
-            "error": f"Compiler service HTTP error {error.code}",
-            "details": body
-        }
-
-    except urllib.error.URLError as error:
-
-        return {
-            "error": "Unable to reach the compiler service.",
-            "details": str(error)
-        }
-
-    except Exception as error:
-
-        return {
-            "error": "Compiler service error.",
-            "details": str(error)
-        }
-
-
 @app.route("/api/compile", methods=["POST"])
-def api_compile():
+def compile_c():
 
     data = request.get_json(silent=True) or {}
 
     code = data.get("code", "")
     stdin = data.get("stdin", "")
 
-    if not isinstance(code, str):
-        return jsonify({
-            "success": False,
-            "error": "Invalid code."
-        }), 400
-
-    if len(code) > 50000:
-        return jsonify({
-            "success": False,
-            "error": "Code is too large. Maximum size is 50 KB."
-        }), 413
-
     if not code.strip():
-        return jsonify({
-            "success": False,
-            "error": "Please enter some C code."
-        }), 400
 
-    result = compile_with_wandbox(
-        code,
-        stdin
-    )
-
-    if "error" in result and "status" not in result:
         return jsonify({
             "success": False,
             "output": "",
-            "error": result.get("error"),
-            "details": result.get("details", "")
-        }), 502
+            "error": "Please enter C code.",
+            "compile_output": ""
+        }), 400
 
-    compiler_message = result.get(
-        "compiler_message",
-        ""
-    )
+    # Limit request size.
+    if len(code) > 30000:
 
-    program_message = result.get(
-        "program_message",
-        ""
-    )
+        return jsonify({
+            "success": False,
+            "output": "",
+            "error": "Code is too large.",
+            "compile_output": ""
+        }), 400
 
-    status = result.get(
-        "status",
-        ""
-    )
+    if len(stdin) > 10000:
 
-    signal = result.get(
-        "signal",
-        ""
-    )
+        return jsonify({
+            "success": False,
+            "output": "",
+            "error": "Input is too large.",
+            "compile_output": ""
+        }), 400
 
-    # Wandbox normally provides compiler_message for
-    # compilation errors and program_message for program output.
-    if compiler_message.strip():
+    payload = {
+        "compiler": "gcc-head-c",
+        "code": code,
+        "stdin": stdin,
+        "save": False,
+        "compiler_option_raw": "",
+        "runtime_option_raw": ""
+    }
+
+    try:
+
+        response = requests.post(
+            WANDBOX_URL,
+            json=payload,
+            timeout=25
+        )
+
+        if response.status_code != 200:
+
+            return jsonify({
+                "success": False,
+                "output": "",
+                "error": "Compiler service returned an error.",
+                "compile_output": ""
+            }), 502
+
+        result = response.json()
+
+        compiler_message = (
+            result.get("compiler_message") or ""
+        )
+
+        program_message = (
+            result.get("program_message") or ""
+        )
+
+        status = result.get("status")
+
+        signal = result.get("signal")
+
+        success = (
+            str(status) == "0"
+            and not compiler_message
+        )
+
+        if success:
+
+            return jsonify({
+                "success": True,
+                "output": program_message,
+                "error": "",
+                "compile_output": "",
+                "signal": signal
+            })
+
+        error_text = program_message
+
+        if not error_text:
+            error_text = compiler_message
+
+        if not error_text:
+            error_text = "Program failed to execute."
 
         return jsonify({
             "success": False,
             "output": program_message,
-            "error": compiler_message,
-            "compiler_message": compiler_message,
-            "program_message": program_message,
-            "status": status,
+            "error": error_text,
+            "compile_output": compiler_message,
             "signal": signal
         })
 
+    except requests.Timeout:
+
+        return jsonify({
+            "success": False,
+            "output": "",
+            "error": "Compiler request timed out.",
+            "compile_output": ""
+        }), 504
+
+    except Exception as e:
+
+        return jsonify({
+            "success": False,
+            "output": "",
+            "error": "Compiler connection failed: " + str(e),
+            "compile_output": ""
+        }), 500
+
+
+# ============================================================
+# ACHIEVEMENTS
+# ============================================================
+
+@app.route("/api/achievements")
+def achievements():
+
     return jsonify({
-        "success": True,
-        "output": program_message,
-        "error": "",
-        "compiler_message": "",
-        "program_message": program_message,
-        "status": status,
-        "signal": signal
+        "achievements": [
+            {
+                "id": "first-step",
+                "title": "First Step",
+                "description": "Complete your first lesson.",
+                "icon": "🚀"
+            },
+            {
+                "id": "quiz-starter",
+                "title": "Quiz Starter",
+                "description": "Complete your first quiz.",
+                "icon": "🧠"
+            },
+            {
+                "id": "code-runner",
+                "title": "Code Runner",
+                "description": "Successfully execute your first C program.",
+                "icon": "💻"
+            },
+            {
+                "id": "github-builder",
+                "title": "GitHub Builder",
+                "description": "Create your first GitHub project.",
+                "icon": "🐙"
+            },
+            {
+                "id": "quest-master",
+                "title": "Quest Master",
+                "description": "Make major progress across multiple courses.",
+                "icon": "🏆"
+            }
+        ]
     })
 
 
 # ============================================================
-# ROADMAP
-# ============================================================
-
-@app.route("/api/roadmap")
-def roadmap():
-
-    stages = [
-        {
-            "stage": 1,
-            "title": "Computer Foundations",
-            "courses": [
-                "Computer Basics",
-                "Digital Productivity"
-            ]
-        },
-        {
-            "stage": 2,
-            "title": "Programming Foundations",
-            "courses": [
-                "C Programming",
-                "C++ Programming",
-                "Python Programming"
-            ]
-        },
-        {
-            "stage": 3,
-            "title": "Development",
-            "courses": [
-                "Web Development",
-                "DBMS & SQL",
-                "Git & GitHub"
-            ]
-        },
-        {
-            "stage": 4,
-            "title": "Computer Science Core",
-            "courses": [
-                "Data Structures & Algorithms",
-                "Operating Systems",
-                "Computer Networks"
-            ]
-        },
-        {
-            "stage": 5,
-            "title": "Modern Technology",
-            "courses": [
-                "Cybersecurity",
-                "AI & Machine Learning",
-                "Cloud Computing",
-                "DevOps & Software Engineering"
-            ]
-        },
-        {
-            "stage": 6,
-            "title": "Career Ready",
-            "courses": [
-                "Career & Interview Preparation"
-            ]
-        }
-    ]
-
-    return jsonify({
-        "roadmap": stages
-    })
-
-
-# ============================================================
-# 404
+# ERROR HANDLER
 # ============================================================
 
 @app.errorhandler(404)
 def not_found(error):
 
-    if request.path.startswith("/api/"):
-        return jsonify({
-            "error": "API endpoint not found.",
-            "path": request.path
-        }), 404
+    return jsonify({
+        "error": "Route not found"
+    }), 404
 
-    return error
-
-
-# ============================================================
-# GLOBAL ERROR HANDLER
-# ============================================================
 
 @app.errorhandler(500)
 def server_error(error):
 
-    if request.path.startswith("/api/"):
-        return jsonify({
-            "success": False,
-            "error": "Internal server error."
-        }), 500
-
-    return """
-    <h1>CodeQuest AI server error</h1>
-    <p>Please check the Render logs.</p>
-    """, 500
+    return jsonify({
+        "error": "Internal server error"
+    }), 500
 
 
 # ============================================================
-# LOCAL DEVELOPMENT
+# RUN
 # ============================================================
 
 if __name__ == "__main__":
 
     port = int(
-        os.environ.get(
-            "PORT",
-            5000
-        )
+        os.getenv("PORT", 5000)
     )
 
     app.run(
