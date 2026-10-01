@@ -1,21 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#090914">
-<meta name="description" content="CodeQuest AI - Learn, Practice, Play and Build">
 
 <title>CodeQuest AI</title>
-
-<!-- =========================================================
-     FIREBASE
-========================================================= -->
-
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-
 
 <style>
 
@@ -27,196 +16,168 @@
 
 :root{
     --bg:#070711;
-    --panel:#101020;
-    --panel2:#15152a;
+    --card:#111122;
+    --card2:#17172d;
     --purple:#8b5cf6;
-    --blue:#38bdf8;
-    --pink:#ec4899;
+    --blue:#3b82f6;
+    --cyan:#22d3ee;
     --green:#22c55e;
     --yellow:#facc15;
     --red:#ef4444;
-    --text:#f5f5ff;
-    --muted:#9ca3af;
-    --border:rgba(255,255,255,.09);
-}
-
-html{
-    scroll-behavior:smooth;
+    --text:#f5f3ff;
+    --muted:#aaa7c4;
+    --border:rgba(139,92,246,.22);
 }
 
 body{
-    min-height:100vh;
     font-family:Arial,Helvetica,sans-serif;
-    color:var(--text);
     background:
-        radial-gradient(
-            circle at 10% 0%,
-            rgba(139,92,246,.20),
-            transparent 28%
-        ),
-        radial-gradient(
-            circle at 90% 10%,
-            rgba(56,189,248,.13),
-            transparent 25%
-        ),
-        linear-gradient(
-            180deg,
-            #070711,
-            #090914 55%,
-            #06060d
-        );
+        radial-gradient(circle at 10% 0%,rgba(139,92,246,.18),transparent 30%),
+        radial-gradient(circle at 90% 10%,rgba(59,130,246,.14),transparent 30%),
+        linear-gradient(135deg,#050509,#090914 50%,#060611);
+    color:var(--text);
+    min-height:100vh;
 }
 
-button,
-input,
-textarea,
-select{
-    font:inherit;
-}
-
-button{
-    cursor:pointer;
-}
-
-.hidden{
-    display:none!important;
-}
-
-/* =========================================================
-   NAVBAR
-========================================================= */
+/* ================= NAVBAR ================= */
 
 .navbar{
     position:sticky;
     top:0;
     z-index:1000;
-    height:70px;
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:0 24px;
-    border-bottom:1px solid var(--border);
+    padding:14px 22px;
     background:rgba(7,7,17,.88);
     backdrop-filter:blur(18px);
-}
-
-.brand{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    font-size:21px;
-    font-weight:900;
+    border-bottom:1px solid var(--border);
 }
 
 .logo{
-    width:40px;
-    height:40px;
-    display:grid;
-    place-items:center;
-    border-radius:13px;
-    background:linear-gradient(135deg,var(--purple),var(--blue));
-    box-shadow:0 0 25px rgba(139,92,246,.4);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:21px;
+    font-weight:800;
+    letter-spacing:.4px;
 }
 
-.brand small{
-    display:block;
-    color:var(--muted);
-    font-size:9px;
-    letter-spacing:2px;
-    margin-top:2px;
+.logo-icon{
+    width:38px;
+    height:38px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(135deg,#8b5cf6,#2563eb);
+    box-shadow:0 0 25px rgba(139,92,246,.35);
 }
 
-.nav-actions{
+.logo span{
+    background:linear-gradient(90deg,#c084fc,#60a5fa);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+}
+
+.nav-right{
     display:flex;
     align-items:center;
     gap:10px;
 }
 
-.btn{
-    border:1px solid var(--border);
-    background:#141426;
-    color:var(--text);
-    border-radius:11px;
+.login-btn,
+.logout-btn{
+    border:none;
+    border-radius:12px;
     padding:10px 15px;
     font-weight:700;
+    cursor:pointer;
     transition:.2s;
 }
 
-.btn:hover{
-    transform:translateY(-1px);
-    border-color:rgba(139,92,246,.6);
+.login-btn{
+    background:white;
+    color:#111;
 }
 
-.btn:disabled{
-    opacity:.5;
-    cursor:not-allowed;
-    transform:none;
+.logout-btn{
+    background:#211d38;
+    color:#ddd;
+    border:1px solid var(--border);
 }
 
-.btn-primary{
-    border:0;
-    background:linear-gradient(135deg,var(--purple),#6d28d9);
-    box-shadow:0 8px 25px rgba(139,92,246,.25);
-}
-
-.btn-danger{
-    background:rgba(239,68,68,.12);
-    color:#fecaca;
-    border-color:rgba(239,68,68,.25);
+.login-btn:hover,
+.logout-btn:hover{
+    transform:translateY(-2px);
 }
 
 .user-box{
-    display:flex;
+    display:none;
     align-items:center;
     gap:9px;
-    padding:7px 10px;
+    background:#121225;
     border:1px solid var(--border);
-    border-radius:12px;
-    background:#111121;
+    padding:6px 10px;
+    border-radius:13px;
 }
 
-.avatar{
-    width:32px;
-    height:32px;
+.user-box img{
+    width:30px;
+    height:30px;
     border-radius:50%;
-    object-fit:cover;
-    background:#22223b;
 }
 
-.user-name{
-    font-size:13px;
-    font-weight:700;
-}
-
-/* =========================================================
-   HERO
-========================================================= */
+/* ================= HERO ================= */
 
 .hero{
-    max-width:1200px;
-    margin:auto;
-    padding:75px 24px 45px;
+    min-height:590px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
     text-align:center;
+    padding:80px 20px 60px;
+    position:relative;
+    overflow:hidden;
+}
+
+.hero::before{
+    content:"";
+    position:absolute;
+    width:450px;
+    height:450px;
+    border-radius:50%;
+    background:rgba(139,92,246,.12);
+    filter:blur(90px);
+}
+
+.hero-content{
+    position:relative;
+    z-index:2;
+    max-width:900px;
 }
 
 .badge{
-    display:inline-flex;
-    padding:8px 13px;
+    display:inline-block;
+    padding:8px 14px;
     border-radius:999px;
-    background:rgba(139,92,246,.11);
-    border:1px solid rgba(139,92,246,.3);
+    background:rgba(139,92,246,.1);
+    border:1px solid rgba(139,92,246,.35);
     color:#c4b5fd;
-    font-size:12px;
-    font-weight:800;
-    letter-spacing:1px;
+    font-size:13px;
+    margin-bottom:20px;
 }
 
 .hero h1{
-    margin-top:20px;
-    font-size:clamp(42px,8vw,78px);
+    font-size:clamp(44px,8vw,82px);
     line-height:.95;
-    font-weight:1000;
-    background:linear-gradient(90deg,#fff,#c4b5fd,#67e8f9);
+    font-weight:900;
+    letter-spacing:-3px;
+}
+
+.hero h1 span{
+    background:linear-gradient(90deg,#a78bfa,#60a5fa,#22d3ee);
     -webkit-background-clip:text;
     background-clip:text;
     color:transparent;
@@ -224,340 +185,403 @@ button{
 
 .hero p{
     max-width:720px;
-    margin:22px auto 0;
+    margin:24px auto;
     color:var(--muted);
+    line-height:1.8;
     font-size:17px;
-    line-height:1.7;
 }
 
-.hero-actions{
-    margin-top:28px;
+.hero-buttons{
     display:flex;
     justify-content:center;
     gap:12px;
     flex-wrap:wrap;
+    margin-top:28px;
 }
 
-/* =========================================================
-   MAIN
-========================================================= */
+.primary-btn,
+.secondary-btn{
+    padding:14px 22px;
+    border-radius:14px;
+    font-weight:800;
+    cursor:pointer;
+    border:none;
+    transition:.2s;
+}
+
+.primary-btn{
+    color:white;
+    background:linear-gradient(135deg,#8b5cf6,#2563eb);
+    box-shadow:0 10px 35px rgba(99,102,241,.25);
+}
+
+.secondary-btn{
+    color:#ddd;
+    background:#121225;
+    border:1px solid var(--border);
+}
+
+.primary-btn:hover,
+.secondary-btn:hover{
+    transform:translateY(-3px);
+}
+
+/* ================= APP ================= */
+
+#appSection{
+    display:none;
+}
 
 .container{
-    max-width:1200px;
+    width:min(1200px,94%);
     margin:auto;
-    padding:25px 24px 60px;
 }
 
-/* =========================================================
-   STATS
-========================================================= */
+.section{
+    padding:35px 0;
+}
 
-.stats{
+.section-title{
+    font-size:28px;
+    margin-bottom:7px;
+}
+
+.section-subtitle{
+    color:var(--muted);
+    margin-bottom:22px;
+}
+
+/* ================= DASHBOARD ================= */
+
+.dashboard{
     display:grid;
     grid-template-columns:repeat(4,1fr);
     gap:14px;
 }
 
-.stat{
-    padding:20px;
+.stat-card{
+    background:linear-gradient(145deg,rgba(22,22,43,.95),rgba(12,12,25,.95));
     border:1px solid var(--border);
     border-radius:18px;
-    background:
-        linear-gradient(
-            145deg,
-            rgba(255,255,255,.045),
-            rgba(255,255,255,.015)
-        );
-    box-shadow:0 15px 40px rgba(0,0,0,.18);
+    padding:20px;
+    position:relative;
+    overflow:hidden;
 }
 
-.stat-icon{
-    font-size:24px;
-}
-
-.stat-value{
-    margin-top:8px;
-    font-size:27px;
-    font-weight:900;
+.stat-card::after{
+    content:"";
+    position:absolute;
+    right:-35px;
+    bottom:-35px;
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    background:rgba(139,92,246,.09);
 }
 
 .stat-label{
     color:var(--muted);
-    font-size:12px;
-    margin-top:3px;
+    font-size:13px;
+    margin-bottom:8px;
 }
 
-/* =========================================================
-   SECTIONS
-========================================================= */
-
-.section{
-    margin-top:55px;
-}
-
-.section-head{
-    display:flex;
-    align-items:end;
-    justify-content:space-between;
-    gap:20px;
-    margin-bottom:20px;
-}
-
-.section-title{
-    font-size:28px;
+.stat-value{
+    font-size:29px;
     font-weight:900;
 }
 
-.section-sub{
-    color:var(--muted);
-    margin-top:5px;
-    font-size:13px;
+.progress-wrap{
+    margin-top:11px;
 }
 
-.grid{
+.progress-bar{
+    width:100%;
+    height:7px;
+    background:#25243a;
+    border-radius:99px;
+    overflow:hidden;
+}
+
+.progress-fill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,#8b5cf6,#22d3ee);
+    border-radius:99px;
+}
+
+/* ================= COURSE GRID ================= */
+
+.course-grid{
     display:grid;
     grid-template-columns:repeat(3,1fr);
-    gap:15px;
+    gap:16px;
 }
 
-.card{
-    position:relative;
-    overflow:hidden;
+.course-card{
+    background:linear-gradient(145deg,#111122,#0d0d1c);
     border:1px solid var(--border);
     border-radius:20px;
-    background:
-        linear-gradient(
-            145deg,
-            rgba(20,20,40,.96),
-            rgba(12,12,24,.96)
-        );
-    padding:21px;
+    padding:20px;
+    cursor:pointer;
     transition:.25s;
+    position:relative;
+    overflow:hidden;
 }
 
-.card:hover{
-    transform:translateY(-4px);
-    border-color:rgba(139,92,246,.45);
-    box-shadow:0 18px 45px rgba(0,0,0,.28);
+.course-card:hover{
+    transform:translateY(-5px);
+    border-color:rgba(139,92,246,.65);
+    box-shadow:0 15px 40px rgba(0,0,0,.35);
 }
 
-.card-icon{
-    font-size:35px;
+.course-number{
+    position:absolute;
+    top:12px;
+    right:14px;
+    color:#77758e;
+    font-size:12px;
 }
 
-.card h3{
-    margin-top:12px;
-    font-size:19px;
+.course-icon{
+    font-size:36px;
+    margin-bottom:13px;
 }
 
-.card p{
-    margin-top:8px;
+.course-card h3{
+    font-size:18px;
+    margin-bottom:8px;
+}
+
+.course-card p{
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.6;
+    min-height:67px;
+}
+
+.course-meta{
+    display:flex;
+    justify-content:space-between;
+    margin-top:15px;
+    font-size:12px;
+    color:#aaa;
+}
+
+.level{
+    color:#a78bfa;
+}
+
+/* ================= FEATURE GRID ================= */
+
+.feature-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+}
+
+.feature-card{
+    background:#101020;
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:20px;
+}
+
+.feature-icon{
+    font-size:30px;
+    margin-bottom:12px;
+}
+
+.feature-card h3{
+    margin-bottom:7px;
+}
+
+.feature-card p{
     color:var(--muted);
     font-size:13px;
     line-height:1.6;
 }
 
-.card-footer{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    margin-top:17px;
-}
-
-.level{
-    font-size:11px;
-    color:#c4b5fd;
-    padding:5px 9px;
-    background:rgba(139,92,246,.1);
-    border:1px solid rgba(139,92,246,.2);
-    border-radius:999px;
-}
-
-/* =========================================================
-   MODAL
-========================================================= */
+/* ================= MODALS ================= */
 
 .modal{
     position:fixed;
     inset:0;
     z-index:2000;
+    background:rgba(0,0,0,.78);
+    backdrop-filter:blur(8px);
     display:none;
     align-items:center;
     justify-content:center;
-    padding:20px;
-    background:rgba(0,0,0,.75);
-    backdrop-filter:blur(12px);
+    padding:18px;
 }
 
-.modal.active{
+.modal.show{
     display:flex;
 }
 
 .modal-box{
-    width:min(1050px,100%);
+    width:min(950px,100%);
     max-height:90vh;
     overflow:auto;
-    border:1px solid var(--border);
-    border-radius:24px;
-    background:#0d0d1b;
-    box-shadow:0 30px 100px rgba(0,0,0,.55);
+    background:#0e0e1c;
+    border:1px solid rgba(139,92,246,.35);
+    border-radius:22px;
+    box-shadow:0 25px 90px rgba(0,0,0,.55);
 }
 
-.modal-head{
+.modal-header{
     position:sticky;
     top:0;
-    z-index:3;
+    z-index:2;
     display:flex;
-    justify-content:space-between;
     align-items:center;
-    padding:20px;
+    justify-content:space-between;
+    padding:18px 20px;
+    background:rgba(14,14,28,.96);
     border-bottom:1px solid var(--border);
-    background:rgba(13,13,27,.96);
-    backdrop-filter:blur(15px);
 }
 
-.close{
-    width:38px;
-    height:38px;
-    border-radius:10px;
-    border:1px solid var(--border);
-    background:#17172a;
-    color:#fff;
+.modal-title{
     font-size:20px;
+    font-weight:800;
+}
+
+.close-btn{
+    width:36px;
+    height:36px;
+    border:none;
+    border-radius:10px;
+    background:#201f35;
+    color:white;
+    cursor:pointer;
+    font-size:18px;
 }
 
 .modal-body{
     padding:22px;
 }
 
-/* =========================================================
-   COURSE
-========================================================= */
+/* ================= LESSON ================= */
 
-.chapter-list{
-    display:grid;
-    gap:10px;
-}
-
-.chapter{
-    padding:15px;
-    border:1px solid var(--border);
-    border-radius:15px;
-    background:#111121;
-}
-
-.chapter-top{
+.lesson-list{
     display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
 }
 
-.chapter-title{
-    font-weight:800;
+.lesson-tab{
+    padding:9px 12px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:#131326;
+    color:#bbb;
+    cursor:pointer;
+    font-size:12px;
 }
 
-.chapter-content{
-    display:none;
-    margin-top:15px;
+.lesson-tab.active{
+    color:white;
+    background:linear-gradient(135deg,#6d3de0,#285dc6);
 }
 
-.chapter.open .chapter-content{
-    display:block;
+.lesson-content{
+    background:#111122;
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:22px;
 }
 
-.lesson{
-    color:#d1d5db;
+.lesson-content h2{
+    margin-bottom:15px;
+}
+
+.lesson-text{
     white-space:pre-line;
-    line-height:1.75;
-    font-size:14px;
+    color:#d0cee0;
+    line-height:1.8;
+    font-size:15px;
 }
 
-.code-title{
-    margin-top:18px;
-    margin-bottom:8px;
+.lesson-sample-title{
+    margin-top:25px;
+    margin-bottom:9px;
     color:#c4b5fd;
     font-weight:800;
 }
 
 .code-box{
-    position:relative;
+    background:#050509;
+    border:1px solid #25243b;
+    border-radius:14px;
+    padding:17px;
     overflow:auto;
-    border:1px solid #252540;
-    border-radius:13px;
-    background:#080810;
 }
 
-pre{
-    padding:16px;
-    margin:0;
-    overflow:auto;
-    color:#d1fae5;
-    font-family:"Courier New",monospace;
+.code-box pre{
+    color:#d7d3ff;
+    white-space:pre-wrap;
+    line-height:1.65;
+    font-family:Consolas,monospace;
     font-size:13px;
-    line-height:1.6;
 }
 
-/* =========================================================
-   QUIZ
-========================================================= */
-
-.quiz-layout{
-    display:grid;
-    grid-template-columns:1fr 270px;
-    gap:16px;
+.lesson-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    margin-top:18px;
 }
 
-.quiz-main,
-.quiz-side{
-    border:1px solid var(--border);
-    border-radius:20px;
-    background:#101020;
-}
+/* ================= QUIZ ================= */
 
-.quiz-main{
-    padding:25px;
-}
-
-.quiz-side{
-    padding:20px;
-}
-
-.quiz-meta{
+.quiz-top{
     display:flex;
     justify-content:space-between;
     gap:10px;
-    color:var(--muted);
-    font-size:12px;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+}
+
+.quiz-pill{
+    padding:9px 12px;
+    border-radius:10px;
+    background:#17172c;
+    border:1px solid var(--border);
+    color:#bbb;
 }
 
 .quiz-question{
-    margin-top:30px;
-    font-size:25px;
-    line-height:1.35;
-    font-weight:900;
+    font-size:21px;
+    line-height:1.5;
+    margin-bottom:20px;
 }
 
 .options{
     display:grid;
-    gap:11px;
-    margin-top:25px;
+    gap:10px;
 }
 
 .option{
-    text-align:left;
     width:100%;
+    text-align:left;
     padding:15px;
-    border-radius:14px;
-    border:1px solid var(--border);
-    background:#151529;
-    color:#fff;
+    border-radius:13px;
+    background:#151527;
+    border:1px solid #292841;
+    color:#eee;
+    cursor:pointer;
     transition:.2s;
 }
 
 .option:hover{
-    border-color:rgba(139,92,246,.65);
+    border-color:#8b5cf6;
     transform:translateX(2px);
+}
+
+.option.selected{
+    border-color:#8b5cf6;
+    background:#211842;
 }
 
 .option.correct{
@@ -570,223 +594,152 @@ pre{
     background:rgba(239,68,68,.12);
 }
 
-.quiz-bottom{
-    margin-top:25px;
+.quiz-actions{
     display:flex;
     justify-content:space-between;
-    gap:10px;
+    margin-top:22px;
 }
 
-.timer{
-    font-size:22px;
-    font-weight:900;
-}
+/* ================= COMPILER ================= */
 
-.timer.warning{
-    color:#facc15;
-}
-
-.timer.danger{
-    color:#ef4444;
-}
-
-.violation{
-    margin-top:15px;
-    padding:12px;
-    border-radius:12px;
-    background:rgba(239,68,68,.09);
-    border:1px solid rgba(239,68,68,.22);
-    color:#fca5a5;
-    font-size:12px;
-}
-
-.result{
-    text-align:center;
-    padding:30px;
-}
-
-.result-score{
-    font-size:55px;
-    font-weight:1000;
-}
-
-/* =========================================================
-   CAREER
-========================================================= */
-
-.career-content{
-    white-space:pre-line;
-    line-height:1.8;
-    color:#d1d5db;
-    font-size:14px;
-}
-
-.tip-list{
-    margin-top:14px;
-    display:grid;
+.compiler-toolbar{
+    display:flex;
     gap:9px;
+    flex-wrap:wrap;
+    margin-bottom:12px;
 }
 
-.tip{
-    padding:12px;
-    border-radius:12px;
-    background:#151529;
-    border:1px solid var(--border);
-    color:#d1d5db;
+.compiler-toolbar button{
+    padding:10px 14px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:700;
+}
+
+.run-btn{
+    background:#22c55e;
+    color:#041009;
+}
+
+.example-btn{
+    background:#292541;
+    color:#eee;
+}
+
+.clear-btn{
+    background:#251d2d;
+    color:#ddd;
+}
+
+.compiler-label{
+    display:block;
+    margin:14px 0 7px;
+    color:#aaa;
     font-size:13px;
 }
 
-/* =========================================================
-   COMPILER
-========================================================= */
-
-.compiler{
-    border:1px solid var(--border);
-    border-radius:20px;
-    overflow:hidden;
-    background:#0d0d19;
-}
-
-.compiler-head{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
-    padding:15px 18px;
-    border-bottom:1px solid var(--border);
-}
-
-.editor{
+#cCode,
+#cStdin{
     width:100%;
-    min-height:330px;
+    border:none;
+    outline:none;
     resize:vertical;
-    border:0;
-    outline:0;
-    padding:20px;
-    background:#07070f;
-    color:#d1fae5;
-    font-family:"Courier New",monospace;
-    font-size:14px;
+    background:#050509;
+    color:#d9d4ff;
+    border:1px solid #28263c;
+    border-radius:14px;
+    padding:16px;
+    font-family:Consolas,monospace;
     line-height:1.6;
 }
 
-.compiler-controls{
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px;
-    padding:13px;
-    border-top:1px solid var(--border);
+#cCode{
+    min-height:310px;
+}
+
+#cStdin{
+    min-height:100px;
 }
 
 .compiler-output{
+    margin-top:15px;
+    background:#050509;
+    border:1px solid #28263c;
+    border-radius:14px;
+    padding:15px;
     min-height:120px;
-    padding:18px;
     white-space:pre-wrap;
-    background:#06060c;
-    color:#cbd5e1;
-    font-family:"Courier New",monospace;
-    font-size:13px;
+    font-family:Consolas,monospace;
+    color:#bfffcf;
+    overflow:auto;
 }
 
-.output-success{
-    color:#86efac;
+/* ================= CAREER ================= */
+
+.career-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
 }
 
-.output-error{
-    color:#fca5a5;
+.career-card{
+    padding:19px;
+    background:#111122;
+    border:1px solid var(--border);
+    border-radius:17px;
 }
 
-/* =========================================================
-   ACHIEVEMENTS
-========================================================= */
+.career-card h3{
+    margin-bottom:8px;
+}
+
+.career-card p{
+    color:#aaa;
+    line-height:1.65;
+    font-size:14px;
+}
+
+/* ================= ACHIEVEMENTS ================= */
+
+.achievement-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+}
 
 .achievement{
-    display:flex;
-    gap:14px;
-    align-items:center;
-}
-
-.achievement-icon{
-    width:48px;
-    height:48px;
-    flex-shrink:0;
-    display:grid;
-    place-items:center;
-    border-radius:14px;
-    background:#19192e;
-    font-size:23px;
+    padding:16px;
+    border-radius:15px;
+    border:1px solid var(--border);
+    background:#111122;
 }
 
 .achievement.locked{
-    opacity:.42;
+    opacity:.4;
 }
 
-/* =========================================================
-   LOGIN
-========================================================= */
-
-.login-box{
-    width:min(430px,100%);
-    padding:30px;
-    border-radius:25px;
-    border:1px solid var(--border);
-    background:#0e0e1c;
-    box-shadow:0 30px 100px rgba(0,0,0,.55);
-    text-align:center;
-}
-
-.login-box h2{
+.achievement-icon{
     font-size:28px;
+    margin-bottom:8px;
 }
 
-.login-box p{
-    margin-top:9px;
-    color:var(--muted);
-    font-size:13px;
-    line-height:1.6;
-}
-
-.google-btn{
-    width:100%;
-    margin-top:24px;
-    padding:14px;
-    border-radius:13px;
-    border:1px solid #ddd;
-    background:#fff;
-    color:#111;
-    font-weight:900;
-    transition:.2s;
-}
-
-.google-btn:hover{
-    transform:translateY(-2px);
-}
-
-.login-status{
-    margin-top:15px;
-    font-size:12px;
-    color:#fca5a5;
-}
-
-/* =========================================================
-   TOAST
-========================================================= */
+/* ================= TOAST ================= */
 
 .toast{
     position:fixed;
     right:20px;
     bottom:20px;
     z-index:5000;
-    max-width:330px;
+    max-width:340px;
     padding:14px 17px;
-    border-radius:14px;
-    background:#17172a;
+    background:#151528;
     border:1px solid var(--border);
-    box-shadow:0 20px 50px rgba(0,0,0,.4);
+    border-radius:13px;
+    box-shadow:0 15px 40px rgba(0,0,0,.4);
     transform:translateY(120px);
     opacity:0;
-    transition:.25s;
-    font-size:13px;
+    transition:.3s;
 }
 
 .toast.show{
@@ -794,702 +747,465 @@ pre{
     opacity:1;
 }
 
-/* =========================================================
-   MOBILE
-========================================================= */
+/* ================= FOOTER ================= */
+
+footer{
+    padding:45px 20px;
+    text-align:center;
+    color:#77758c;
+    border-top:1px solid var(--border);
+    margin-top:40px;
+}
+
+footer strong{
+    color:#aaa;
+}
+
+/* ================= RESPONSIVE ================= */
 
 @media(max-width:900px){
 
-    .stats{
+    .dashboard{
         grid-template-columns:repeat(2,1fr);
     }
 
-    .grid{
+    .course-grid{
         grid-template-columns:repeat(2,1fr);
     }
 
-    .quiz-layout{
-        grid-template-columns:1fr;
+    .feature-grid{
+        grid-template-columns:repeat(2,1fr);
     }
 
+    .achievement-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
 }
 
-@media(max-width:600px){
+@media(max-width:650px){
 
     .navbar{
-        padding:0 12px;
+        padding:11px 13px;
     }
 
-    .brand{
+    .logo{
         font-size:17px;
     }
 
-    .brand small{
-        display:none;
+    .logo-icon{
+        width:33px;
+        height:33px;
     }
 
-    .user-name{
-        display:none;
+    .user-box{
+        display:none!important;
     }
 
     .hero{
-        padding-top:55px;
+        min-height:520px;
+        padding-top:60px;
     }
 
     .hero h1{
-        font-size:48px;
+        letter-spacing:-2px;
     }
 
-    .container{
-        padding-left:14px;
-        padding-right:14px;
+    .hero p{
+        font-size:14px;
     }
 
-    .stats{
-        grid-template-columns:1fr 1fr;
-    }
-
-    .grid{
+    .dashboard,
+    .course-grid,
+    .feature-grid,
+    .career-grid,
+    .achievement-grid{
         grid-template-columns:1fr;
     }
 
-    .section-title{
-        font-size:23px;
-    }
-
-    .quiz-question{
-        font-size:20px;
+    .section{
+        padding:25px 0;
     }
 
     .modal{
         padding:8px;
     }
 
-    .modal-box{
-        max-height:95vh;
+    .modal-body{
+        padding:15px;
     }
 
-    .chapter-top{
-        align-items:flex-start;
+    #cCode{
+        min-height:260px;
     }
-
 }
 
 </style>
 </head>
 
-
 <body>
-
 
 <!-- =========================================================
      NAVBAR
 ========================================================= -->
 
-<header class="navbar">
+<nav class="navbar">
 
-    <div class="brand">
-
-        <div class="logo">
-            ⚡
-        </div>
-
-        <div>
-            CodeQuest AI
-
-            <small>
-                LEARN • PRACTICE • PLAY • BUILD
-            </small>
-        </div>
-
+    <div class="logo">
+        <div class="logo-icon">⚡</div>
+        <div>Code<span>Quest AI</span></div>
     </div>
 
+    <div class="nav-right">
 
-    <div class="nav-actions">
-
-        <div id="loggedOutActions">
-
-            <button
-                class="btn btn-primary"
-                onclick="openLogin()">
-
-                🔐 Google Login
-
-            </button>
-
+        <div class="user-box" id="userBox">
+            <img id="userPhoto" src="" alt="User">
+            <span id="userName">User</span>
         </div>
 
-
-        <div
-            id="loggedInActions"
-            class="user-box hidden">
-
-            <img
-                id="userAvatar"
-                class="avatar"
-                src=""
-                alt="User">
-
-            <span
-                id="userName"
-                class="user-name">
-
-                Student
-
-            </span>
-
-            <button
-                class="btn btn-danger"
-                onclick="logoutUser()">
-
-                Logout
-
-            </button>
-
-        </div>
-
-    </div>
-
-</header>
-
-
-<!-- =========================================================
-     HERO
-========================================================= -->
-
-<section class="hero">
-
-    <span class="badge">
-        🚀 YOUR COMPUTER SCIENCE ADVENTURE
-    </span>
-
-    <h1>
-        CODEQUEST AI
-    </h1>
-
-    <p>
-        Learn computer science from zero to job-ready through
-        lessons, coding, quizzes, XP, achievements, projects
-        and career guidance.
-    </p>
-
-    <div class="hero-actions">
-
-        <button
-            class="btn btn-primary"
-            onclick="scrollToSection('learn')">
-
-            📚 Start Learning
-
+        <button class="login-btn" id="googleLoginBtn" onclick="loginWithGoogle()">
+            🔐 Continue with Google
         </button>
 
-        <button
-            class="btn"
-            onclick="scrollToSection('quiz')">
-
-            🧠 Quiz Arena
-
-        </button>
-
-        <button
-            class="btn"
-            onclick="scrollToSection('compiler')">
-
-            💻 C Compiler
-
+        <button class="logout-btn" id="logoutBtn"
+                onclick="logout()"
+                style="display:none;">
+            Logout
         </button>
 
     </div>
 
-</section>
+</nav>
 
 
 <!-- =========================================================
-     MAIN
+     LANDING PAGE
 ========================================================= -->
 
-<main class="container">
+<section class="hero" id="landingSection">
 
+    <div class="hero-content">
 
-<!-- =========================================================
-     DASHBOARD
-========================================================= -->
-
-<section class="stats">
-
-    <div class="stat">
-
-        <div class="stat-icon">
-            ⚡
+        <div class="badge">
+            🚀 A-Z Computer Science Learning Platform
         </div>
 
-        <div
-            id="xpValue"
-            class="stat-value">
-
-            0
-
-        </div>
-
-        <div class="stat-label">
-            XP
-        </div>
-
-    </div>
-
-
-    <div class="stat">
-
-        <div class="stat-icon">
-            🏆
-        </div>
-
-        <div
-            id="levelValue"
-            class="stat-value">
-
-            Level 1
-
-        </div>
-
-        <div
-            id="levelName"
-            class="stat-label">
-
-            Code Explorer
-
-        </div>
-
-    </div>
-
-
-    <div class="stat">
-
-        <div class="stat-icon">
-            🔥
-        </div>
-
-        <div
-            id="streakValue"
-            class="stat-value">
-
-            0
-
-        </div>
-
-        <div class="stat-label">
-            Day Streak
-        </div>
-
-    </div>
-
-
-    <div class="stat">
-
-        <div class="stat-icon">
-            📚
-        </div>
-
-        <div
-            id="completedValue"
-            class="stat-value">
-
-            0
-
-        </div>
-
-        <div class="stat-label">
-            Lessons Completed
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     LEARNING
-========================================================= -->
-
-<section
-    id="learn"
-    class="section">
-
-    <div class="section-head">
-
-        <div>
-
-            <div class="section-title">
-                📚 Learning Universe
-            </div>
-
-            <div class="section-sub">
-                Follow the path from computer basics to advanced technology.
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div
-        id="courseGrid"
-        class="grid">
-
-        <div class="card">
-
-            <div class="card-icon">
-                ⏳
-            </div>
-
-            <h3>
-                Loading courses...
-            </h3>
-
-            <p>
-                Please wait.
-            </p>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     QUIZ
-========================================================= -->
-
-<section
-    id="quiz"
-    class="section">
-
-    <div class="section-head">
-
-        <div>
-
-            <div class="section-title">
-                🧠 Quiz Arena
-            </div>
-
-            <div class="section-sub">
-                Easy questions • XP rewards • Smart anti-malpractice system
-            </div>
-
-        </div>
-
-
-        <button
-            class="btn btn-primary"
-            onclick="startQuiz()">
-
-            ▶ Start Quiz
-
-        </button>
-
-    </div>
-
-
-    <div id="quizContainer">
-
-        <div class="card">
-
-            <div class="card-icon">
-                🎯
-            </div>
-
-            <h3>
-                Ready for the challenge?
-            </h3>
-
-            <p>
-                Start a short 10-question quiz.
-                Stay on the quiz screen,
-                answer the questions and earn XP.
-            </p>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     COMPILER
-========================================================= -->
-
-<section
-    id="compiler"
-    class="section">
-
-    <div class="section-head">
-
-        <div>
-
-            <div class="section-title">
-                💻 C Code Lab
-            </div>
-
-            <div class="section-sub">
-                Write C code, run it and inspect compiler/runtime errors.
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div class="compiler">
-
-        <div class="compiler-head">
-
-            <strong>
-                ⚙️ Online C Compiler
-            </strong>
-
-            <span class="level">
-                C / GCC
-            </span>
-
-        </div>
-
-
-        <textarea
-            id="cCode"
-            class="editor"
-            spellcheck="false">#include <stdio.h>
-
-int main() {
-    printf("Hello, CodeQuest AI!");
-    return 0;
-}</textarea>
-
-
-        <div class="compiler-controls">
-
-            <button
-                class="btn btn-primary"
-                onclick="runCCode()">
-
-                ▶ Run Code
-
-            </button>
-
-
-            <button
-                class="btn"
-                onclick="loadCExample()">
-
-                📄 Example
-
-            </button>
-
-
-            <button
-                class="btn"
-                onclick="clearCompiler()">
-
-                🧹 Clear
-
-            </button>
-
-        </div>
-
-
-        <div
-            id="compilerOutput"
-            class="compiler-output">
-
-            Output will appear here...
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     CAREER
-========================================================= -->
-
-<section
-    id="career"
-    class="section">
-
-    <div class="section-head">
-
-        <div>
-
-            <div class="section-title">
-                🚀 Career Guide
-            </div>
-
-            <div class="section-sub">
-                Understand internships, placements, projects and developer careers.
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div
-        id="careerGrid"
-        class="grid">
-
-        <div class="card">
-
-            <h3>
-                Loading career guide...
-            </h3>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     ACHIEVEMENTS
-========================================================= -->
-
-<section
-    id="achievements"
-    class="section">
-
-    <div class="section-head">
-
-        <div>
-
-            <div class="section-title">
-                🏅 Achievements
-            </div>
-
-            <div class="section-sub">
-                Unlock badges by learning and practicing.
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div
-        id="achievementGrid"
-        class="grid">
-
-    </div>
-
-</section>
-
-
-</main>
-
-
-<!-- =========================================================
-     LOGIN MODAL
-========================================================= -->
-
-<div
-    id="loginModal"
-    class="modal">
-
-    <div class="login-box">
-
-        <button
-            class="close"
-            style="float:right"
-            onclick="closeLogin()">
-
-            ×
-
-        </button>
-
-
-        <div style="font-size:50px">
-            🚀
-        </div>
-
-
-        <h2>
-            Enter CodeQuest
-        </h2>
-
+        <h1>
+            Learn.
+            <span>Play.</span>
+            Build.
+        </h1>
 
         <p>
-            Sign in with your Google account to continue your
-            learning adventure.
+            CodeQuest AI turns computer science learning into a
+            game-like journey. Learn concepts, practice real code,
+            solve quizzes, build projects and prepare for your career.
         </p>
 
+        <div class="hero-buttons">
 
-        <button
-            class="google-btn"
-            onclick="loginWithGoogle()">
+            <button class="primary-btn"
+                    onclick="enterApp()">
+                🚀 Start Your Quest
+            </button>
 
-            🔵 Continue with Google
-
-        </button>
-
-
-        <div
-            id="loginStatus"
-            class="login-status">
+            <button class="secondary-btn"
+                    onclick="loginWithGoogle()">
+                🔐 Login with Google
+            </button>
 
         </div>
 
     </div>
 
+</section>
+
+
+<!-- =========================================================
+     MAIN APP
+========================================================= -->
+
+<main id="appSection">
+
+<div class="container">
+
+    <!-- DASHBOARD -->
+
+    <section class="section">
+
+        <div class="section-title">
+            🎮 Your Dashboard
+        </div>
+
+        <div class="section-subtitle">
+            Learn consistently and level up your skills.
+        </div>
+
+        <div class="dashboard">
+
+            <div class="stat-card">
+                <div class="stat-label">XP</div>
+                <div class="stat-value" id="xpValue">0</div>
+
+                <div class="progress-wrap">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="xpProgress"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">LEVEL</div>
+                <div class="stat-value" id="levelValue">1</div>
+                <div class="stat-label" id="levelName">
+                    Code Explorer
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">🔥 STREAK</div>
+                <div class="stat-value" id="streakValue">0</div>
+                <div class="stat-label">days</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">COMPLETED</div>
+                <div class="stat-value" id="completedValue">0</div>
+                <div class="stat-label">lessons</div>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- COURSES -->
+
+    <section class="section">
+
+        <div class="section-title">
+            🧠 Learning Roadmap
+        </div>
+
+        <div class="section-subtitle">
+            Follow the path from computer basics to job-ready development.
+        </div>
+
+        <div class="course-grid" id="courseGrid">
+
+            <div class="course-card">
+                <div class="course-icon">⏳</div>
+                <h3>Loading courses...</h3>
+                <p>Please wait while CodeQuest AI loads your curriculum.</p>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- FEATURES -->
+
+    <section class="section">
+
+        <div class="section-title">
+            ⚔️ Practice Arena
+        </div>
+
+        <div class="section-subtitle">
+            Don't just read. Practice what you learn.
+        </div>
+
+        <div class="feature-grid">
+
+            <div class="feature-card"
+                 onclick="openQuiz()"
+                 style="cursor:pointer">
+
+                <div class="feature-icon">🧠</div>
+
+                <h3>Quiz Arena</h3>
+
+                <p>
+                    Test your knowledge with timed questions,
+                    XP rewards and progress tracking.
+                </p>
+
+            </div>
+
+
+            <div class="feature-card"
+                 onclick="openCompiler()"
+                 style="cursor:pointer">
+
+                <div class="feature-icon">💻</div>
+
+                <h3>C Compiler</h3>
+
+                <p>
+                    Write real C programs and provide program
+                    input through STDIN.
+                </p>
+
+            </div>
+
+
+            <div class="feature-card"
+                 onclick="openCareer()"
+                 style="cursor:pointer">
+
+                <div class="feature-icon">💼</div>
+
+                <h3>Career Guide</h3>
+
+                <p>
+                    Explore software careers, skills,
+                    projects and interview preparation.
+                </p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">🏆</div>
+
+                <h3>Achievements</h3>
+
+                <p>
+                    Complete lessons, maintain streaks and
+                    unlock achievements.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ACHIEVEMENTS -->
+
+    <section class="section">
+
+        <div class="section-title">
+            🏆 Achievements
+        </div>
+
+        <div class="section-subtitle">
+            Your progress milestones.
+        </div>
+
+        <div class="achievement-grid">
+
+            <div class="achievement locked" id="achievementFirst">
+                <div class="achievement-icon">🌱</div>
+                <h3>First Step</h3>
+                <p>Complete your first lesson.</p>
+            </div>
+
+            <div class="achievement locked" id="achievementFive">
+                <div class="achievement-icon">⚡</div>
+                <h3>Fast Learner</h3>
+                <p>Complete five lessons.</p>
+            </div>
+
+            <div class="achievement locked" id="achievementTen">
+                <div class="achievement-icon">🔥</div>
+                <h3>Quest Warrior</h3>
+                <p>Complete ten lessons.</p>
+            </div>
+
+            <div class="achievement locked" id="achievementQuiz">
+                <div class="achievement-icon">🧠</div>
+                <h3>Quiz Master</h3>
+                <p>Score 80% or more in a quiz.</p>
+            </div>
+
+            <div class="achievement locked" id="achievementXP">
+                <div class="achievement-icon">💎</div>
+                <h3>XP Hunter</h3>
+                <p>Earn 500 XP.</p>
+            </div>
+
+            <div class="achievement locked" id="achievementStreak">
+                <div class="achievement-icon">🔥</div>
+                <h3>Streak Builder</h3>
+                <p>Maintain a 7-day streak.</p>
+            </div>
+
+        </div>
+
+    </section>
+
 </div>
+
+</main>
 
 
 <!-- =========================================================
      COURSE MODAL
 ========================================================= -->
 
-<div
-    id="courseModal"
-    class="modal">
+<div class="modal" id="courseModal">
 
     <div class="modal-box">
 
-        <div class="modal-head">
+        <div class="modal-header">
 
-            <div>
-
-                <strong id="courseModalTitle">
-                    Course
-                </strong>
-
-                <div
-                    id="courseModalSub"
-                    style="
-                        color:#9ca3af;
-                        font-size:12px;
-                        margin-top:4px">
-
-                </div>
-
+            <div class="modal-title" id="courseModalTitle">
+                Course
             </div>
 
-
-            <button
-                class="close"
-                onclick="closeCourse()">
-
-                ×
-
+            <button class="close-btn"
+                    onclick="closeModal('courseModal')">
+                ✕
             </button>
 
         </div>
 
+        <div class="modal-body">
 
-        <div
-            id="courseModalBody"
-            class="modal-body">
+            <div class="lesson-list" id="lessonList"></div>
+
+            <div class="lesson-content">
+
+                <h2 id="lessonTitle">
+                    Lesson
+                </h2>
+
+                <div class="lesson-text"
+                     id="lessonText">
+                    Loading...
+                </div>
+
+                <div class="lesson-sample-title">
+                    💻 Practical Example
+                </div>
+
+                <div class="code-box">
+                    <pre id="lessonSample"></pre>
+                </div>
+
+                <div class="lesson-actions">
+
+                    <button class="secondary-btn"
+                            onclick="previousLesson()">
+                        ← Previous
+                    </button>
+
+                    <button class="primary-btn"
+                            onclick="completeCurrentLesson()">
+                        ✅ Complete Lesson
+                    </button>
+
+                    <button class="primary-btn"
+                            onclick="nextLesson()">
+                        Next →
+                    </button>
+
+                </div>
+
+            </div>
 
         </div>
 
@@ -1502,48 +1218,198 @@ int main() {
      QUIZ MODAL
 ========================================================= -->
 
-<div
-    id="quizModal"
-    class="modal">
+<div class="modal" id="quizModal">
 
     <div class="modal-box">
 
-        <div class="modal-head">
+        <div class="modal-header">
 
-            <div>
-
-                <strong>
-                    🧠 Quiz Arena
-                </strong>
-
-                <div
-                    id="quizSecurityText"
-                    style="
-                        color:#9ca3af;
-                        font-size:12px;
-                        margin-top:4px">
-
-                    Stay on this screen.
-
-                </div>
-
+            <div class="modal-title">
+                🧠 Quiz Arena
             </div>
 
-
-            <button
-                class="close"
-                onclick="attemptCloseQuiz()">
-
-                ×
-
+            <button class="close-btn"
+                    onclick="closeModal('quizModal')">
+                ✕
             </button>
 
         </div>
 
+        <div class="modal-body">
+
+            <div class="quiz-top">
+
+                <div class="quiz-pill">
+                    Question:
+                    <span id="quizNumber">1</span>
+                </div>
+
+                <div class="quiz-pill">
+                    ⏱️
+                    <span id="quizTimer">30</span>s
+                </div>
+
+                <div class="quiz-pill">
+                    Score:
+                    <span id="quizScore">0</span>
+                </div>
+
+            </div>
+
+            <div class="quiz-question"
+                 id="quizQuestion">
+                Loading question...
+            </div>
+
+            <div class="options"
+                 id="quizOptions">
+            </div>
+
+            <div class="quiz-actions">
+
+                <button class="secondary-btn"
+                        onclick="closeModal('quizModal')">
+                    Exit
+                </button>
+
+                <button class="primary-btn"
+                        onclick="nextQuizQuestion()">
+                    Next →
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     COMPILER MODAL
+========================================================= -->
+
+<div class="modal" id="compilerModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <div class="modal-title">
+                💻 C Programming Arena
+            </div>
+
+            <button class="close-btn"
+                    onclick="closeModal('compilerModal')">
+                ✕
+            </button>
+
+        </div>
 
         <div class="modal-body">
 
-            <div id="quizGame"></div>
+            <div class="compiler-toolbar">
+
+                <button class="run-btn"
+                        onclick="runCCode()">
+                    ▶ Run Code
+                </button>
+
+                <button class="example-btn"
+                        onclick="loadCExample()">
+                    📌 Load Example
+                </button>
+
+                <button class="clear-btn"
+                        onclick="clearCompiler()">
+                    🗑 Clear
+                </button>
+
+            </div>
+
+
+            <label class="compiler-label">
+                C Program
+            </label>
+
+            <textarea id="cCode"
+placeholder="Write your C program here...">#include <stdio.h>
+
+int main() {
+    int a, b, sum;
+
+    printf("Enter first number: ");
+    scanf("%d", &a);
+
+    printf("Enter second number: ");
+    scanf("%d", &b);
+
+    sum = a + b;
+
+    printf("Sum = %d\n", sum);
+
+    return 0;
+}</textarea>
+
+
+            <label class="compiler-label">
+                Program Input / STDIN
+            </label>
+
+            <textarea id="cStdin"
+placeholder="Enter input here.
+
+Example:
+10
+20"></textarea>
+
+
+            <label class="compiler-label">
+                Program Output
+            </label>
+
+            <div class="compiler-output"
+                 id="compilerOutput">
+                Output will appear here...
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     CAREER MODAL
+========================================================= -->
+
+<div class="modal" id="careerModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <div class="modal-title">
+                💼 Career Guide
+            </div>
+
+            <button class="close-btn"
+                    onclick="closeModal('careerModal')">
+                ✕
+            </button>
+
+        </div>
+
+        <div class="modal-body">
+
+            <div class="career-grid"
+                 id="careerGrid">
+
+                Loading careers...
+
+            </div>
 
         </div>
 
@@ -1556,45 +1422,50 @@ int main() {
      TOAST
 ========================================================= -->
 
-<div
-    id="toast"
-    class="toast">
+<div class="toast" id="toast"></div>
 
-</div>
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+
+<footer>
+
+    <strong>CodeQuest AI</strong>
+    <br>
+    LEARN • PRACTICE • PLAY • BUILD
+
+    <br><br>
+
+    <small>
+        Learn today. Build tomorrow. 🚀
+    </small>
+
+</footer>
+
+
+<!-- =========================================================
+     FIREBASE
+========================================================= -->
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 
 
 <script>
 
-"use strict";
-
-
 /* =========================================================
-   FIREBASE CONFIGURATION
+   FIREBASE CONFIG
 ========================================================= */
 
 const firebaseConfig = {
-
-    apiKey:
-        "AIzaSyDINYVF59k4gpq1GXFN4UUxGbcs5KxYGrw",
-
-    authDomain:
-        "codequest-ai-69884.firebaseapp.com",
-
-    projectId:
-        "codequest-ai-69884",
-
-    storageBucket:
-        "codequest-ai-69884.firebasestorage.app",
-
-    messagingSenderId:
-        "834925219358",
-
-    appId:
-        "1:834925219358:web:f836451b4db67e1e3fa80f",
-
-    measurementId:
-        "G-ETRG49NSKC"
-
+    apiKey: "AIzaSyDINYVF59k4gpq1GXFN4UUxGbcs5KxYGrw",
+    authDomain: "codequest-ai-69884.firebaseapp.com",
+    projectId: "codequest-ai-69884",
+    storageBucket: "codequest-ai-69884.firebasestorage.app",
+    messagingSenderId: "834925219358",
+    appId: "1:834925219358:web:f836451b4db67e1e3fa80f",
+    measurementId: "G-ETRG49NSKC"
 };
 
 
@@ -1602,292 +1473,77 @@ const firebaseConfig = {
    FIREBASE INITIALIZATION
 ========================================================= */
 
-let firebaseReady = false;
 let auth = null;
 let currentUser = null;
 
-
-try {
+try{
 
     firebase.initializeApp(firebaseConfig);
 
     auth = firebase.auth();
 
-    firebaseReady = true;
-
-
-    auth.onAuthStateChanged(async function(user) {
-
-        currentUser = user || null;
-
-
-        if(user){
-
-            showLoggedInUser(user);
-
-            /*
-             * Give every Google account its own
-             * CodeQuest local progress.
-             */
-
-            setPlayerStorageForUser(user.uid);
-
-            loadPlayer();
-
-
-            /*
-             * Optional Flask backend synchronization.
-             *
-             * If /api/firebase-login exists,
-             * the Firebase ID token will be sent to it.
-             *
-             * If the backend route does not exist,
-             * Google login still works normally.
-             */
-
-            try {
-
-                const token =
-                    await user.getIdToken();
-
-                const response =
-                    await fetch(
-                        "/api/firebase-login",
-                        {
-                            method:"POST",
-
-                            headers:{
-                                "Content-Type":
-                                    "application/json"
-                            },
-
-                            credentials:"same-origin",
-
-                            body:JSON.stringify({
-                                idToken:token
-                            })
-                        }
-                    );
-
-                if(!response.ok){
-
-                    console.warn(
-                        "Firebase backend sync unavailable."
-                    );
-
-                }
-
-            }catch(backendError){
-
-                console.warn(
-                    "Backend Firebase sync unavailable:",
-                    backendError
-                );
-
-            }
-
-
-        }else{
-
-            showLoggedOutUser();
-
-            currentUser = null;
-
-            setPlayerStorageForUser("guest");
-
-            loadPlayer();
-
-        }
-
-    });
-
-
-    /*
-     * Google redirect result.
-     *
-     * This runs after Google sends the user back
-     * to CodeQuest AI.
-     */
-
-    auth.getRedirectResult()
-
-        .then(function(result){
-
-            if(
-                result &&
-                result.user
-            ){
-
-                showToast(
-                    "🔐 Google login successful!"
-                );
-
-                closeLogin();
-
-            }
-
-        })
-
-        .catch(function(error){
-
-            console.error(
-                "Google redirect login error:",
-                error
-            );
-
-            const status =
-                document.getElementById(
-                    "loginStatus"
-                );
-
-            if(status){
-
-                status.textContent =
-                    error.message ||
-                    "Google login failed.";
-
-            }
-
-        });
-
-
 }catch(error){
 
-    console.error(
-        "Firebase initialization error:",
-        error
-    );
-
-    firebaseReady = false;
+    console.error("Firebase initialization error:",error);
 
 }
 
 
 /* =========================================================
-   PLAYER STORAGE
+   PLAYER DATA
 ========================================================= */
 
 let currentUid = "guest";
 
+let player = {
+    xp:0,
+    completed:[],
+    streak:0,
+    lastVisit:"",
+    achievements:[],
+    quizBest:0
+};
+
 
 function storageKey(){
 
-    return "codequest_player_" +
-           currentUid;
+    return "codequest_player_" + currentUid;
 
 }
 
 
 function setPlayerStorageForUser(uid){
 
-    currentUid =
-        uid || "guest";
+    currentUid = uid || "guest";
 
 }
-
-
-let player = {
-
-    xp:0,
-
-    completed:[],
-
-    streak:0,
-
-    lastVisit:"",
-
-    achievements:[]
-
-};
 
 
 function loadPlayer(){
 
     try{
 
-        const saved =
-            localStorage.getItem(
-                storageKey()
-            );
+        const raw =
+            localStorage.getItem(storageKey());
 
-
-        if(saved){
-
-            const parsed =
-                JSON.parse(saved);
-
+        if(raw){
 
             player = {
-
-                xp:0,
-
-                completed:[],
-
-                streak:0,
-
-                lastVisit:"",
-
-                achievements:[],
-
-                ...parsed
-
-            };
-
-
-            if(
-                !Array.isArray(
-                    player.completed
-                )
-            ){
-
-                player.completed = [];
-
-            }
-
-
-            if(
-                !Array.isArray(
-                    player.achievements
-                )
-            ){
-
-                player.achievements = [];
-
-            }
-
-        }else{
-
-            player = {
-
-                xp:0,
-
-                completed:[],
-
-                streak:0,
-
-                lastVisit:"",
-
-                achievements:[]
-
+                ...player,
+                ...JSON.parse(raw)
             };
 
         }
 
     }catch(error){
 
-        console.error(
-            "Player data error:",
-            error
-        );
+        console.error("Player load error:",error);
 
     }
 
-
     updateStreak();
-
     updateDashboard();
-
-    renderAchievements();
+    updateAchievements();
 
 }
 
@@ -1897,19 +1553,13 @@ function savePlayer(){
     try{
 
         localStorage.setItem(
-
             storageKey(),
-
             JSON.stringify(player)
-
         );
 
     }catch(error){
 
-        console.error(
-            "Save player error:",
-            error
-        );
+        console.error("Player save error:",error);
 
     }
 
@@ -1920,68 +1570,49 @@ function savePlayer(){
    STREAK
 ========================================================= */
 
+function dateString(date){
+
+    return date.toISOString().split("T")[0];
+
+}
+
+
 function updateStreak(){
 
     const today =
-        new Date()
-            .toISOString()
-            .slice(0,10);
-
+        dateString(new Date());
 
     if(!player.lastVisit){
 
         player.streak = 1;
-
         player.lastVisit = today;
 
-    }
-
-    else if(
-        player.lastVisit !== today
-    ){
+    }else if(player.lastVisit !== today){
 
         const last =
-            new Date(
-                player.lastVisit
-            );
+            new Date(player.lastVisit);
 
         const now =
             new Date(today);
 
-
-        const difference =
+        const diff =
             Math.floor(
-
-                (
-                    now - last
-                ) /
-                (
-                    1000 *
-                    60 *
-                    60 *
-                    24
-                )
-
+                (now-last)/(1000*60*60*24)
             );
 
+        if(diff === 1){
 
-        if(difference === 1){
+            player.streak++;
 
-            player.streak += 1;
-
-        }
-
-        else if(difference > 1){
+        }else if(diff > 1){
 
             player.streak = 1;
 
         }
 
-
         player.lastVisit = today;
 
     }
-
 
     savePlayer();
 
@@ -1992,164 +1623,86 @@ function updateStreak(){
    LEVEL SYSTEM
 ========================================================= */
 
-const LEVELS = [
-
-    {
-        xp:0,
-        name:"Code Explorer"
-    },
-
-    {
-        xp:100,
-        name:"Logic Builder"
-    },
-
-    {
-        xp:250,
-        name:"Bug Hunter"
-    },
-
-    {
-        xp:500,
-        name:"Code Warrior"
-    },
-
-    {
-        xp:900,
-        name:"Algorithm Master"
-    },
-
-    {
-        xp:1400,
-        name:"Software Crafter"
-    },
-
-    {
-        xp:2000,
-        name:"Tech Adventurer"
-    },
-
-    {
-        xp:3000,
-        name:"CodeQuest Legend"
-    }
-
-];
-
-
 function getLevel(){
 
-    let current =
-        LEVELS[0];
+    const level =
+        Math.floor(player.xp / 100) + 1;
 
+    const names = [
+        "Code Explorer",
+        "Bug Hunter",
+        "Logic Builder",
+        "Code Warrior",
+        "Software Crafter",
+        "Code Master",
+        "Tech Ninja",
+        "Digital Architect",
+        "AI Pioneer",
+        "Legendary Developer"
+    ];
 
-    for(
-        const level of LEVELS
-    ){
-
-        if(
-            player.xp >=
-            level.xp
-        ){
-
-            current = level;
-
-        }
-
-    }
-
-
-    return current;
-
-}
-
-
-function addXP(amount,reason){
-
-    const value =
-        Number(amount) || 0;
-
-
-    player.xp += value;
-
-
-    savePlayer();
-
-    updateDashboard();
-
-
-    if(reason){
-
-        showToast(
-            "⚡ +" +
-            value +
-            " XP — " +
-            reason
+    const index =
+        Math.min(
+            level-1,
+            names.length-1
         );
 
-    }
-
-
-    checkAchievements();
+    return {
+        level,
+        name:names[index]
+    };
 
 }
 
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
 
 function updateDashboard(){
 
     const level =
         getLevel();
 
+    document.getElementById("xpValue")
+        .textContent = player.xp;
 
-    document
-        .getElementById(
-            "xpValue"
-        )
-        .textContent =
-        player.xp;
+    document.getElementById("levelValue")
+        .textContent = level.level;
 
+    document.getElementById("levelName")
+        .textContent = level.name;
 
-    document
-        .getElementById(
-            "levelName"
-        )
-        .textContent =
-        level.name;
+    document.getElementById("streakValue")
+        .textContent = player.streak;
 
-
-    const levelIndex =
-        LEVELS.findIndex(
-            x =>
-            x.name ===
-            level.name
-        );
-
-
-    document
-        .getElementById(
-            "levelValue"
-        )
-        .textContent =
-        "Level " +
-        (
-            levelIndex + 1
-        );
-
-
-    document
-        .getElementById(
-            "streakValue"
-        )
-        .textContent =
-        player.streak;
-
-
-    document
-        .getElementById(
-            "completedValue"
-        )
+    document.getElementById("completedValue")
         .textContent =
         player.completed.length;
+
+    const progress =
+        player.xp % 100;
+
+    document.getElementById("xpProgress")
+        .style.width = progress + "%";
+
+}
+
+
+/* =========================================================
+   XP
+========================================================= */
+
+function addXP(amount){
+
+    player.xp += amount;
+
+    savePlayer();
+
+    updateDashboard();
+    updateAchievements();
+
+    showToast("+" + amount + " XP ⚡");
 
 }
 
@@ -2158,215 +1711,169 @@ function updateDashboard(){
    ACHIEVEMENTS
 ========================================================= */
 
-const ACHIEVEMENTS = [
+function unlockAchievement(id){
 
-    {
-        id:"first-lesson",
-        icon:"📚",
-        title:"First Step",
-        description:
-            "Complete your first lesson.",
-        test:
-            () =>
-            player.completed.length >= 1
-    },
+    if(player.achievements.includes(id))
+        return;
 
+    player.achievements.push(id);
 
-    {
-        id:"five-lessons",
-        icon:"🔥",
-        title:"Getting Serious",
-        description:
-            "Complete 5 lessons.",
-        test:
-            () =>
-            player.completed.length >= 5
-    },
+    savePlayer();
 
-
-    {
-        id:"first-quiz",
-        icon:"🧠",
-        title:"Quiz Rookie",
-        description:
-            "Complete a quiz.",
-        test:
-            () =>
-            player.achievements
-                .includes(
-                    "quiz-complete"
-                )
-    },
-
-
-    {
-        id:"perfect-quiz",
-        icon:"💎",
-        title:"Perfect Run",
-        description:
-            "Get a perfect quiz score.",
-        test:
-            () =>
-            player.achievements
-                .includes(
-                    "perfect-quiz"
-                )
-    },
-
-
-    {
-        id:"hundred-xp",
-        icon:"⚡",
-        title:"XP Hunter",
-        description:
-            "Earn 100 XP.",
-        test:
-            () =>
-            player.xp >= 100
-    },
-
-
-    {
-        id:"five-hundred-xp",
-        icon:"👑",
-        title:"Quest Master",
-        description:
-            "Earn 500 XP.",
-        test:
-            () =>
-            player.xp >= 500
-    }
-
-];
-
-
-function checkAchievements(){
-
-    let changed = false;
-
-
-    for(
-        const achievement of
-        ACHIEVEMENTS
-    ){
-
-        if(
-
-            achievement.test() &&
-
-            !player.achievements
-                .includes(
-                    achievement.id
-                )
-
-        ){
-
-            player.achievements.push(
-                achievement.id
-            );
-
-            changed = true;
-
-
-            showToast(
-
-                "🏅 Achievement unlocked: " +
-                achievement.title
-
-            );
-
-        }
-
-    }
-
-
-    if(changed){
-
-        savePlayer();
-
-        renderAchievements();
-
-    }
+    showToast("🏆 Achievement unlocked!");
 
 }
 
 
-function renderAchievements(){
+function updateAchievements(){
 
-    const grid =
-        document.getElementById(
-            "achievementGrid"
-        );
+    const completed =
+        player.completed.length;
 
+    const xp =
+        player.xp;
 
-    if(!grid){
-        return;
+    const streak =
+        player.streak;
+
+    if(completed >= 1){
+
+        unlockAchievement("first");
+
     }
 
+    if(completed >= 5){
 
-    grid.innerHTML = "";
+        unlockAchievement("five");
 
+    }
 
-    for(
-        const achievement of
-        ACHIEVEMENTS
-    ){
+    if(completed >= 10){
 
-        const unlocked =
-            achievement.test();
+        unlockAchievement("ten");
 
+    }
 
-        const card =
-            document.createElement(
-                "div"
-            );
+    if(xp >= 500){
 
+        unlockAchievement("xp");
 
-        card.className =
-            "card achievement " +
-            (
-                unlocked
-                ? ""
-                : "locked"
-            );
+    }
 
+    if(streak >= 7){
 
-        card.innerHTML = `
+        unlockAchievement("streak");
 
-            <div class="achievement-icon">
+    }
 
-                ${achievement.icon}
+    setAchievement(
+        "achievementFirst",
+        player.achievements.includes("first")
+    );
 
-            </div>
+    setAchievement(
+        "achievementFive",
+        player.achievements.includes("five")
+    );
 
-            <div>
+    setAchievement(
+        "achievementTen",
+        player.achievements.includes("ten")
+    );
 
-                <h3>
-                    ${escapeHTML(
-                        achievement.title
-                    )}
-                </h3>
+    setAchievement(
+        "achievementXP",
+        player.achievements.includes("xp")
+    );
 
-                <p>
-                    ${escapeHTML(
-                        achievement.description
-                    )}
-                </p>
+    setAchievement(
+        "achievementStreak",
+        player.achievements.includes("streak")
+    );
 
-                <small>
-                    ${
-                        unlocked
-                        ? "✓ Unlocked"
-                        : "🔒 Locked"
-                    }
-                </small>
-
-            </div>
-
-        `;
+}
 
 
-        grid.appendChild(card);
+function setAchievement(id,unlocked){
+
+    const element =
+        document.getElementById(id);
+
+    if(!element)
+        return;
+
+    if(unlocked)
+        element.classList.remove("locked");
+    else
+        element.classList.add("locked");
+
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+let toastTimer = null;
+
+function showToast(message){
+
+    const toast =
+        document.getElementById("toast");
+
+    toast.textContent = message;
+
+    toast.classList.add("show");
+
+    clearTimeout(toastTimer);
+
+    toastTimer =
+        setTimeout(
+            () => toast.classList.remove("show"),
+            2500
+        );
+
+}
+
+
+/* =========================================================
+   GOOGLE LOGIN
+========================================================= */
+
+async function loginWithGoogle(){
+
+    if(!auth){
+
+        showToast(
+            "Firebase is not initialized."
+        );
+
+        return;
+
+    }
+
+    try{
+
+        const provider =
+            new firebase.auth.GoogleAuthProvider();
+
+        provider.setCustomParameters({
+            prompt:"select_account"
+        });
+
+        await auth.signInWithRedirect(provider);
+
+    }catch(error){
+
+        console.error(
+            "Google login error:",
+            error
+        );
+
+        showToast(
+            error.message ||
+            "Google login failed."
+        );
 
     }
 
@@ -2374,255 +1881,254 @@ function renderAchievements(){
 
 
 /* =========================================================
-   LOGIN
+   AUTH STATE
 ========================================================= */
 
-function openLogin(){
+if(auth){
 
-    const modal =
-        document.getElementById(
-            "loginModal"
-        );
+    auth.onAuthStateChanged(
+        async function(user){
 
+            currentUser = user || null;
 
-    const status =
-        document.getElementById(
-            "loginStatus"
-        );
+            if(user){
 
+                setPlayerStorageForUser(
+                    user.uid
+                );
 
-    if(status){
+                showLoggedInUser(user);
 
-        status.textContent = "";
+                loadPlayer();
 
-    }
+                await syncFirebaseUser(user);
 
+                enterApp();
 
-    modal.classList.add(
-        "active"
+            }else{
+
+                currentUid = "guest";
+
+                loadPlayer();
+
+                showLoggedOutUser();
+
+            }
+
+        }
     );
 
-}
 
+    auth.getRedirectResult()
+        .then(function(result){
 
-function closeLogin(){
+            if(result && result.user){
 
-    document
-        .getElementById(
-            "loginModal"
-        )
-        .classList.remove(
-            "active"
-        );
+                console.log(
+                    "Google login successful"
+                );
 
-}
+            }
 
+        })
+        .catch(function(error){
 
-async function loginWithGoogle(){
+            console.error(
+                "Redirect login error:",
+                error
+            );
 
-    const status =
-        document.getElementById(
-            "loginStatus"
-        );
+            if(
+                error &&
+                error.code !==
+                "auth/no-auth-event"
+            ){
 
+                showToast(
+                    error.message ||
+                    "Login failed."
+                );
 
-    if(
-        !firebaseReady ||
-        !auth
-    ){
-
-        status.textContent =
-            "Firebase is not initialized. Please refresh the page and try again.";
-
-        return;
-
-    }
-
-
-    try{
-
-        status.textContent =
-            "Opening Google sign-in...";
-
-
-        const provider =
-            new firebase.auth.GoogleAuthProvider();
-
-
-        provider.setCustomParameters({
-
-            prompt:
-                "select_account"
+            }
 
         });
 
-
-        /*
-         * Redirect authentication is used instead
-         * of popup authentication.
-         *
-         * This works better on mobile browsers.
-         */
-
-        await auth
-            .signInWithRedirect(
-                provider
-            );
-
-    }
-
-    catch(error){
-
-        console.error(
-            "Google login failed:",
-            error
-        );
-
-
-        status.textContent =
-            error.message ||
-            "Google login failed. Please try again.";
-
-    }
-
 }
 
 
-async function logoutUser(){
-
-    if(
-        !firebaseReady ||
-        !auth
-    ){
-
-        return;
-
-    }
-
-
-    try{
-
-        await auth.signOut();
-
-
-        currentUser = null;
-
-
-        setPlayerStorageForUser(
-            "guest"
-        );
-
-
-        loadPlayer();
-
-
-        showToast(
-            "👋 Logged out successfully."
-        );
-
-    }
-
-    catch(error){
-
-        console.error(
-            "Logout error:",
-            error
-        );
-
-
-        showToast(
-            "Logout failed. Please try again."
-        );
-
-    }
-
-}
-
+/* =========================================================
+   SHOW USER
+========================================================= */
 
 function showLoggedInUser(user){
 
-    document
-        .getElementById(
-            "loggedOutActions"
-        )
-        .classList.add(
-            "hidden"
-        );
-
-
-    document
-        .getElementById(
-            "loggedInActions"
-        )
-        .classList.remove(
-            "hidden"
-        );
-
-
-    document
-        .getElementById(
-            "userName"
-        )
-        .textContent =
-        user.displayName ||
-        "Student";
-
-
-    const avatar =
+    const loginBtn =
         document.getElementById(
-            "userAvatar"
+            "googleLoginBtn"
         );
 
+    const logoutBtn =
+        document.getElementById(
+            "logoutBtn"
+        );
 
-    avatar.src =
+    const userBox =
+        document.getElementById(
+            "userBox"
+        );
+
+    const name =
+        document.getElementById(
+            "userName"
+        );
+
+    const photo =
+        document.getElementById(
+            "userPhoto"
+        );
+
+    loginBtn.style.display = "none";
+
+    logoutBtn.style.display = "block";
+
+    userBox.style.display = "flex";
+
+    name.textContent =
+        user.displayName ||
+        user.email ||
+        "CodeQuest User";
+
+    photo.src =
         user.photoURL ||
-        "https://via.placeholder.com/80";
+        "https://via.placeholder.com/40";
 
 }
 
 
 function showLoggedOutUser(){
 
-    document
-        .getElementById(
-            "loggedOutActions"
-        )
-        .classList.remove(
-            "hidden"
-        );
+    document.getElementById(
+        "googleLoginBtn"
+    ).style.display = "block";
 
+    document.getElementById(
+        "logoutBtn"
+    ).style.display = "none";
 
-    document
-        .getElementById(
-            "loggedInActions"
-        )
-        .classList.add(
-            "hidden"
-        );
+    document.getElementById(
+        "userBox"
+    ).style.display = "none";
 
 }
 
 
 /* =========================================================
-   NAVIGATION
+   FIREBASE BACKEND SYNC
 ========================================================= */
 
-function scrollToSection(id){
+async function syncFirebaseUser(user){
 
-    const element =
-        document.getElementById(id);
+    try{
 
+        const token =
+            await user.getIdToken();
 
-    if(element){
+        const response =
+            await fetch(
+                "/api/firebase-login",
+                {
+                    method:"POST",
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+                    body:JSON.stringify({
+                        idToken:token
+                    })
+                }
+            );
 
-        element.scrollIntoView({
+        if(!response.ok){
 
-            behavior:
-                "smooth"
+            console.warn(
+                "Backend Firebase sync unavailable."
+            );
 
-        });
+        }
+
+    }catch(error){
+
+        console.warn(
+            "Firebase backend sync:",
+            error
+        );
 
     }
+
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+async function logout(){
+
+    try{
+
+        if(auth){
+
+            await auth.signOut();
+
+        }
+
+        currentUser = null;
+
+        currentUid = "guest";
+
+        loadPlayer();
+
+        document.getElementById(
+            "appSection"
+        ).style.display = "none";
+
+        document.getElementById(
+            "landingSection"
+        ).style.display = "flex";
+
+        showLoggedOutUser();
+
+        showToast("Logged out successfully.");
+
+    }catch(error){
+
+        console.error(error);
+
+    }
+
+}
+
+
+/* =========================================================
+   ENTER APP
+========================================================= */
+
+function enterApp(){
+
+    document.getElementById(
+        "landingSection"
+    ).style.display = "none";
+
+    document.getElementById(
+        "appSection"
+    ).style.display = "block";
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+    loadCourses();
 
 }
 
@@ -2632,6 +2138,8 @@ function scrollToSection(id){
 ========================================================= */
 
 let courses = [];
+let selectedCourse = null;
+let selectedLessonIndex = 0;
 
 
 async function loadCourses(){
@@ -2641,110 +2149,62 @@ async function loadCourses(){
             "courseGrid"
         );
 
-
     try{
 
         const response =
-            await fetch(
-                "/api/courses",
-                {
-                    cache:
-                        "no-store"
-                }
-            );
-
+            await fetch("/api/courses");
 
         if(!response.ok){
 
             throw new Error(
-                "Course API failed: " +
+                "Course API returned " +
                 response.status
             );
 
         }
 
-
         const data =
             await response.json();
 
-
-        /*
-         * Supports both:
-         *
-         * [
-         *   {...}
-         * ]
-         *
-         * and:
-         *
-         * {
-         *   courses:[...]
-         * }
-         */
-
-        if(
-            Array.isArray(data)
-        ){
+        if(Array.isArray(data)){
 
             courses = data;
 
-        }
-
-        else if(
-            data &&
-            Array.isArray(
-                data.courses
-            )
-        ){
+        }else{
 
             courses =
-                data.courses;
+                data.courses || [];
 
         }
-
-        else{
-
-            courses = [];
-
-        }
-
 
         renderCourses();
 
-    }
-
-    catch(error){
+    }catch(error){
 
         console.error(
-            "Course error:",
+            "Course loading error:",
             error
         );
 
-
         grid.innerHTML = `
-
-            <div class="card">
-
-                <div class="card-icon">
-                    ⚠️
-                </div>
-
-                <h3>
-                    Courses unavailable
-                </h3>
-
+            <div class="course-card">
+                <div class="course-icon">⚠️</div>
+                <h3>Courses unavailable</h3>
                 <p>
-                    The Flask course API could not be reached.
+                    The frontend is working, but the
+                    Flask course API is not responding.
                 </p>
-
             </div>
-
         `;
 
     }
 
 }
 
+
+/* =========================================================
+   RENDER COURSES
+========================================================= */
 
 function renderCourses(){
 
@@ -2753,126 +2213,193 @@ function renderCourses(){
             "courseGrid"
         );
 
-
-    grid.innerHTML = "";
-
-
     if(!courses.length){
 
         grid.innerHTML = `
-
-            <div class="card">
-
-                <div class="card-icon">
-                    📚
-                </div>
-
-                <h3>
-                    No courses available
-                </h3>
-
+            <div class="course-card">
+                <div class="course-icon">📚</div>
+                <h3>No courses found</h3>
                 <p>
-                    Add courses to the Flask API.
+                    Add course data to /api/courses.
                 </p>
-
             </div>
-
         `;
 
         return;
 
     }
 
+    grid.innerHTML =
+        courses.map(
+            (course,index) => {
 
-    courses.forEach(
-        (course,index) => {
+                const chapters =
+                    Array.isArray(
+                        course.chapters
+                    )
+                    ? course.chapters.length
+                    : 0;
 
-            const card =
-                document.createElement(
-                    "div"
-                );
+                return `
+                    <div class="course-card"
+                         onclick="openCourse(${index})">
 
+                        <div class="course-number">
+                            ${String(index+1).padStart(2,"0")}
+                        </div>
 
-            card.className =
-                "card";
+                        <div class="course-icon">
+                            ${course.icon || "📘"}
+                        </div>
 
+                        <h3>
+                            ${escapeHTML(
+                                course.title ||
+                                course.name ||
+                                "Course"
+                            )}
+                        </h3>
 
-            const chapters =
-                Array.isArray(
-                    course.chapters
-                )
-                ? course.chapters
-                : [];
+                        <p>
+                            ${escapeHTML(
+                                course.description ||
+                                "Learn practical skills."
+                            )}
+                        </p>
 
+                        <div class="course-meta">
 
-            card.innerHTML = `
+                            <span class="level">
+                                ${escapeHTML(
+                                    course.level ||
+                                    "Beginner"
+                                )}
+                            </span>
 
-                <div class="card-icon">
+                            <span>
+                                ${chapters} lessons
+                            </span>
 
-                    ${escapeHTML(
-                        course.icon ||
-                        "📘"
-                    )}
+                        </div>
 
-                </div>
+                    </div>
+                `;
 
+            }
+        ).join("");
 
-                <h3>
-                    ${escapeHTML(
-                        course.title ||
-                        "Course"
-                    )}
-                </h3>
-
-
-                <p>
-                    ${escapeHTML(
-                        course.description ||
-                        ""
-                    )}
-                </p>
-
-
-                <div class="card-footer">
-
-                    <span class="level">
-
-                        ${escapeHTML(
-                            course.level ||
-                            "Beginner"
-                        )}
-
-                    </span>
+}
 
 
-                    <span
-                        style="
-                            color:#9ca3af;
-                            font-size:12px">
+/* =========================================================
+   OPEN COURSE
+========================================================= */
 
-                        ${chapters.length}
-                        lessons
+function openCourse(index){
 
-                    </span>
+    selectedCourse =
+        courses[index];
 
-                </div>
+    selectedLessonIndex = 0;
 
+    document.getElementById(
+        "courseModalTitle"
+    ).textContent =
+        selectedCourse.title ||
+        selectedCourse.name ||
+        "Course";
+
+    renderLessonTabs();
+    showLesson(0);
+
+    openModal("courseModal");
+
+}
+
+
+/* =========================================================
+   LESSON TABS
+========================================================= */
+
+function renderLessonTabs(){
+
+    const list =
+        document.getElementById(
+            "lessonList"
+        );
+
+    const chapters =
+        selectedCourse.chapters || [];
+
+    list.innerHTML =
+        chapters.map(
+            (chapter,index) => `
 
                 <button
-                    class="btn btn-primary"
-                    style="
-                        width:100%;
-                        margin-top:15px"
-                    onclick="openCourse(${index})">
+                    class="lesson-tab ${index === 0 ? "active":""}"
+                    onclick="showLesson(${index})">
 
-                    🚀 Enter Course
+                    ${index+1}.
+                    ${escapeHTML(
+                        chapter.title ||
+                        "Lesson"
+                    )}
 
                 </button>
 
-            `;
+            `
+        ).join("");
+
+}
 
 
-            grid.appendChild(card);
+/* =========================================================
+   SHOW LESSON
+========================================================= */
+
+function showLesson(index){
+
+    if(!selectedCourse)
+        return;
+
+    const chapters =
+        selectedCourse.chapters || [];
+
+    if(index < 0 || index >= chapters.length)
+        return;
+
+    selectedLessonIndex = index;
+
+    const chapter =
+        chapters[index];
+
+    document.getElementById(
+        "lessonTitle"
+    ).textContent =
+        chapter.title ||
+        "Lesson";
+
+    document.getElementById(
+        "lessonText"
+    ).textContent =
+        chapter.lesson ||
+        "Lesson content is not available yet.";
+
+    document.getElementById(
+        "lessonSample"
+    ).textContent =
+        chapter.sample ||
+        "No practical example available yet.";
+
+    document.querySelectorAll(
+        ".lesson-tab"
+    ).forEach(
+        (button,i) => {
+
+            button.classList.toggle(
+                "active",
+                i === index
+            );
 
         }
     );
@@ -2881,302 +2408,107 @@ function renderCourses(){
 
 
 /* =========================================================
-   COURSE MODAL
+   COMPLETE LESSON
 ========================================================= */
 
-function openCourse(index){
+function completeCurrentLesson(){
 
-    const course =
-        courses[index];
-
-
-    if(!course){
+    if(!selectedCourse)
         return;
-    }
 
+    const courseId =
+        selectedCourse.id ||
+        selectedCourse.title ||
+        "course";
 
-    const chapters =
-        Array.isArray(
-            course.chapters
-        )
-        ? course.chapters
-        : [];
+    const chapter =
+        selectedCourse.chapters[
+            selectedLessonIndex
+        ];
 
-
-    document
-        .getElementById(
-            "courseModalTitle"
-        )
-        .textContent =
-        (
-            course.icon ||
-            "📘"
-        ) +
-        " " +
-        (
-            course.title ||
-            "Course"
-        );
-
-
-    document
-        .getElementById(
-            "courseModalSub"
-        )
-        .textContent =
-        (
-            course.level ||
-            "Beginner"
-        ) +
-        " • " +
-        chapters.length +
-        " lessons";
-
-
-    const body =
-        document.getElementById(
-            "courseModalBody"
-        );
-
-
-    body.innerHTML = "";
-
-
-    const list =
-        document.createElement(
-            "div"
-        );
-
-
-    list.className =
-        "chapter-list";
-
-
-    chapters.forEach(
-        (chapter,chapterIndex) => {
-
-            const chapterBox =
-                document.createElement(
-                    "div"
-                );
-
-
-            chapterBox.className =
-                "chapter";
-
-
-            const safeId =
-                "chapter-" +
-                index +
-                "-" +
-                chapterIndex;
-
-
-            const chapterTitle =
-                chapter.title ||
-                "Lesson " +
-                (
-                    chapterIndex + 1
-                );
-
-
-            const completed =
-                player.completed.includes(
-
-                    (
-                        course.id ||
-                        course.title ||
-                        "course"
-                    ) +
-                    "::" +
-                    chapterTitle
-
-                );
-
-
-            chapterBox.innerHTML = `
-
-                <div class="chapter-top">
-
-                    <div class="chapter-title">
-
-                        ${chapterIndex + 1}.
-                        ${escapeHTML(
-                            chapterTitle
-                        )}
-
-                    </div>
-
-
-                    <button
-                        class="btn"
-                        onclick="toggleChapter('${safeId}')">
-
-                        ${
-                            completed
-                            ? "✓ Completed"
-                            : "Open"
-                        }
-
-                    </button>
-
-                </div>
-
-
-                <div
-                    id="${safeId}"
-                    class="chapter-content">
-
-                    <div class="lesson">
-
-                        ${escapeHTML(
-                            chapter.lesson ||
-                            "Lesson content coming soon."
-                        )}
-
-                    </div>
-
-
-                    <div class="code-title">
-
-                        💻 Coding Example
-
-                    </div>
-
-
-                    <div class="code-box">
-
-                        <pre>${escapeHTML(
-                            chapter.sample ||
-                            "// Coding example coming soon."
-                        )}</pre>
-
-                    </div>
-
-
-                    <button
-                        class="btn btn-primary"
-                        style="margin-top:15px"
-                        onclick="completeLesson(
-                            '${escapeJS(
-                                course.id ||
-                                course.title ||
-                                "course"
-                            )}',
-                            '${escapeJS(
-                                chapterTitle
-                            )}'
-                        )">
-
-                        ${
-                            completed
-                            ? "✓ Lesson Completed"
-                            : "⚡ Complete Lesson +20 XP"
-                        }
-
-                    </button>
-
-                </div>
-
-            `;
-
-
-            list.appendChild(
-                chapterBox
-            );
-
-        }
-    );
-
-
-    body.appendChild(list);
-
-
-    document
-        .getElementById(
-            "courseModal"
-        )
-        .classList.add(
-            "active"
-        );
-
-}
-
-
-function toggleChapter(id){
-
-    const element =
-        document.getElementById(id);
-
-
-    if(element){
-
-        element.parentElement
-            .classList.toggle(
-                "open"
-            );
-
-    }
-
-}
-
-
-function closeCourse(){
-
-    document
-        .getElementById(
-            "courseModal"
-        )
-        .classList.remove(
-            "active"
-        );
-
-}
-
-
-function completeLesson(
-    courseId,
-    chapterTitle
-){
-
-    const key =
+    const lessonId =
         courseId +
         "::" +
-        chapterTitle;
-
+        (
+            chapter.title ||
+            selectedLessonIndex
+        );
 
     if(
         player.completed.includes(
-            key
+            lessonId
         )
     ){
 
         showToast(
-            "Already completed ✓"
+            "Already completed ✅"
         );
 
         return;
 
     }
 
-
     player.completed.push(
-        key
+        lessonId
     );
 
+    addXP(20);
 
     savePlayer();
 
+    updateDashboard();
+    updateAchievements();
 
-    addXP(
-        20,
-        "Lesson completed"
+    showToast(
+        "Lesson completed! +20 XP 🎉"
     );
 
+}
 
-    updateDashboard();
 
-    renderAchievements();
+/* =========================================================
+   NEXT / PREVIOUS LESSON
+========================================================= */
+
+function nextLesson(){
+
+    if(!selectedCourse)
+        return;
+
+    const total =
+        selectedCourse.chapters.length;
+
+    if(
+        selectedLessonIndex <
+        total-1
+    ){
+
+        showLesson(
+            selectedLessonIndex + 1
+        );
+
+    }else{
+
+        showToast(
+            "You reached the end of this course! 🏆"
+        );
+
+    }
+
+}
+
+
+function previousLesson(){
+
+    if(
+        selectedLessonIndex > 0
+    ){
+
+        showLesson(
+            selectedLessonIndex - 1
+        );
+
+    }
 
 }
 
@@ -3185,201 +2517,136 @@ function completeLesson(
    QUIZ
 ========================================================= */
 
-let allQuestions = [];
 let quizQuestions = [];
 let quizIndex = 0;
 let quizScore = 0;
-let quizAnswered = false;
-
 let quizTimer = null;
 let quizSeconds = 30;
-
-let quizRunning = false;
-
-let quizViolations = 0;
-
-let quizInactivityTimer = null;
-
-let lastActivity =
-    Date.now();
+let selectedAnswer = null;
+let quizFinished = false;
 
 
-const MAX_VIOLATIONS = 3;
+async function openQuiz(){
 
-const INACTIVITY_LIMIT =
-    60000;
+    openModal("quizModal");
 
+    document.getElementById(
+        "quizQuestion"
+    ).textContent =
+        "Loading Quiz Arena...";
 
-async function startQuiz(){
+    document.getElementById(
+        "quizOptions"
+    ).innerHTML = "";
 
-    if(
-        quizRunning
-    ){
+    try{
 
-        return;
+        const response =
+            await fetch("/api/quiz");
 
-    }
+        if(!response.ok){
 
+            throw new Error(
+                "Quiz API returned " +
+                response.status
+            );
 
-    if(
-        !allQuestions.length
-    ){
+        }
 
-        try{
+        const data =
+            await response.json();
 
-            const response =
-                await fetch(
-                    "/api/quiz",
-                    {
-                        cache:
-                            "no-store"
-                    }
-                );
+        let rawQuestions =
+            Array.isArray(data)
+            ? data
+            : (
+                data.questions ||
+                data.quiz ||
+                []
+            );
 
+        const unique =
+            [];
 
-            if(!response.ok){
+        const seen =
+            new Set();
 
-                throw new Error(
-                    "Quiz API unavailable"
-                );
+        for(
+            const question
+            of rawQuestions
+        ){
+
+            const text =
+                String(
+                    question.question ||
+                    ""
+                ).trim();
+
+            if(
+                text &&
+                !seen.has(text)
+            ){
+
+                seen.add(text);
+
+                unique.push({
+                    ...question,
+                    question:text
+                });
 
             }
 
-
-            const data =
-                await response.json();
-
-
-            allQuestions =
-                Array.isArray(
-                    data.questions
-                )
-                ? data.questions
-                : (
-                    Array.isArray(data)
-                    ? data
-                    : []
-                );
-
-
         }
 
-        catch(error){
+        quizQuestions =
+            shuffle(unique).slice(0,10);
 
-            console.error(
-                "Quiz error:",
-                error
-            );
+        if(!quizQuestions.length){
 
-
-            showToast(
-                "Quiz service is unavailable."
-            );
-
-
-            return;
-
-        }
-
-    }
-
-
-    if(
-        !allQuestions.length
-    ){
-
-        showToast(
-            "No quiz questions available."
-        );
-
-
-        return;
-
-    }
-
-
-    const unique = [];
-
-    const seen =
-        new Set();
-
-
-    for(
-        const question
-        of allQuestions
-    ){
-
-        const key =
-            String(
-                question.question ||
-                ""
-            )
-            .trim();
-
-
-        if(
-            key &&
-            !seen.has(key)
-        ){
-
-            seen.add(key);
-
-            unique.push(
-                question
+            throw new Error(
+                "No quiz questions were returned."
             );
 
         }
 
+        quizIndex = 0;
+        quizScore = 0;
+        quizFinished = false;
+
+        renderQuizQuestion();
+
+    }catch(error){
+
+        console.error(
+            "Quiz error:",
+            error
+        );
+
+        document.getElementById(
+            "quizQuestion"
+        ).textContent =
+            "Quiz could not be loaded.";
+
+        document.getElementById(
+            "quizOptions"
+        ).innerHTML = `
+            <div class="course-card">
+                ⚠️ ${escapeHTML(
+                    error.message
+                )}
+            </div>
+        `;
+
     }
-
-
-    shuffle(unique);
-
-
-    quizQuestions =
-        unique.slice(
-            0,
-            Math.min(
-                10,
-                unique.length
-            )
-        );
-
-
-    quizIndex = 0;
-
-    quizScore = 0;
-
-    quizViolations = 0;
-
-    quizRunning = true;
-
-
-    document
-        .getElementById(
-            "quizModal"
-        )
-        .classList.add(
-            "active"
-        );
-
-
-    renderQuizQuestion();
-
-
-    requestQuizFullscreen();
-
-    startInactivityMonitor();
 
 }
 
 
+/* =========================================================
+   RENDER QUIZ
+========================================================= */
+
 function renderQuizQuestion(){
-
-    if(!quizRunning){
-        return;
-    }
-
 
     if(
         quizIndex >=
@@ -3392,407 +2659,129 @@ function renderQuizQuestion(){
 
     }
 
+    selectedAnswer = null;
 
     const question =
         quizQuestions[
             quizIndex
         ];
 
+    document.getElementById(
+        "quizNumber"
+    ).textContent =
+        quizIndex + 1;
 
-    quizAnswered = false;
+    document.getElementById(
+        "quizScore"
+    ).textContent =
+        quizScore;
 
-    quizSeconds = 30;
+    document.getElementById(
+        "quizQuestion"
+    ).textContent =
+        question.question;
 
+    let options =
+        question.options ||
+        question.choices ||
+        [];
+
+    if(!Array.isArray(options)){
+
+        options =
+            Object.values(options);
+
+    }
+
+    options =
+        options.filter(
+            x =>
+                x !== null &&
+                x !== undefined
+        );
 
     const container =
         document.getElementById(
-            "quizGame"
+            "quizOptions"
         );
 
+    container.innerHTML =
+        options.map(
+            (option,index) => `
 
-    container.innerHTML = `
-
-        <div class="quiz-layout">
-
-            <div class="quiz-main">
-
-                <div class="quiz-meta">
-
-                    <span>
-
-                        Question
-                        ${quizIndex + 1}
-                        /
-                        ${quizQuestions.length}
-
-                    </span>
-
-
-                    <span>
-
-                        ${escapeHTML(
-                            question.topic ||
-                            "Computer Science"
-                        )}
-
-                    </span>
-
-                </div>
-
-
-                <div class="quiz-question">
+                <button
+                    class="option"
+                    onclick="selectQuizOption(this,${index})">
 
                     ${escapeHTML(
-                        question.question ||
-                        ""
+                        String(option)
                     )}
 
-                </div>
+                </button>
 
+            `
+        ).join("");
 
-                <div
-                    id="options"
-                    class="options">
-
-                </div>
-
-
-                <div
-                    id="quizViolation"
-                    class="violation hidden">
-
-                </div>
-
-
-                <div class="quiz-bottom">
-
-                    <span
-                        id="quizTimer"
-                        class="timer">
-
-                        30s
-
-                    </span>
-
-
-                    <button
-                        id="nextBtn"
-                        class="btn btn-primary hidden"
-                        onclick="nextQuestion()">
-
-                        Next →
-
-                    </button>
-
-                </div>
-
-            </div>
-
-
-            <aside class="quiz-side">
-
-                <h3>
-                    🛡️ Safe Quiz
-                </h3>
-
-
-                <p
-                    style="
-                        color:#9ca3af;
-                        font-size:12px;
-                        line-height:1.7;
-                        margin-top:10px">
-
-                    Stay on this quiz screen.
-                    Leaving the tab, switching windows,
-                    exiting fullscreen or remaining inactive
-                    can create a violation.
-
-                </p>
-
-
-                <div
-                    style="margin-top:20px">
-
-                    <div
-                        style="
-                            color:#9ca3af;
-                            font-size:12px">
-
-                        Score
-
-                    </div>
-
-
-                    <div
-                        id="liveScore"
-                        style="
-                            font-size:30px;
-                            font-weight:900;
-                            margin-top:4px">
-
-                        ${quizScore}
-
-                    </div>
-
-                </div>
-
-
-                <div
-                    style="margin-top:20px">
-
-                    <div
-                        style="
-                            color:#9ca3af;
-                            font-size:12px">
-
-                        Violations
-
-                    </div>
-
-
-                    <div
-                        id="violationCount"
-                        style="
-                            font-size:25px;
-                            font-weight:900;
-                            margin-top:4px">
-
-                        ${quizViolations}/${MAX_VIOLATIONS}
-
-                    </div>
-
-                </div>
-
-            </aside>
-
-        </div>
-
-    `;
-
-
-    const options =
-        document.getElementById(
-            "options"
-        );
-
-
-    const shuffledOptions =
-        Array.isArray(
-            question.options
-        )
-        ? [...question.options]
-        : [];
-
-
-    shuffle(
-        shuffledOptions
-    );
-
-
-    shuffledOptions.forEach(
-        option => {
-
-            const button =
-                document.createElement(
-                    "button"
-                );
-
-
-            button.className =
-                "option";
-
-
-            button.textContent =
-                option;
-
-
-            button.onclick =
-                () =>
-                answerQuestion(
-                    option,
-                    button
-                );
-
-
-            options.appendChild(
-                button
-            );
-
-        }
-    );
-
-
-    startQuestionTimer();
+    startQuizTimer();
 
 }
 
 
-function answerQuestion(
-    answer,
-    button
+/* =========================================================
+   SELECT QUIZ OPTION
+========================================================= */
+
+function selectQuizOption(
+    element,
+    index
 ){
 
-    if(
-        quizAnswered ||
-        !quizRunning
-    ){
-
+    if(quizFinished)
         return;
 
-    }
-
-
-    quizAnswered = true;
-
-
-    clearInterval(
-        quizTimer
+    document.querySelectorAll(
+        "#quizOptions .option"
+    ).forEach(
+        option =>
+            option.classList.remove(
+                "selected"
+            )
     );
 
+    element.classList.add(
+        "selected"
+    );
 
-    const question =
-        quizQuestions[
-            quizIndex
-        ];
-
-
-    const correct =
-        String(answer) ===
-        String(
-            question.answer
-        );
-
-
-    document
-        .querySelectorAll(
-            ".option"
-        )
-        .forEach(
-            option => {
-
-                option.disabled =
-                    true;
-
-
-                if(
-                    option.textContent ===
-                    String(
-                        question.answer
-                    )
-                ){
-
-                    option.classList
-                        .add(
-                            "correct"
-                        );
-
-                }
-
-            }
-        );
-
-
-    if(correct){
-
-        quizScore++;
-
-
-        button.classList.add(
-            "correct"
-        );
-
-
-        addXP(
-            10,
-            "Correct quiz answer"
-        );
-
-    }
-
-    else{
-
-        button.classList.add(
-            "wrong"
-        );
-
-    }
-
-
-    const liveScore =
-        document.getElementById(
-            "liveScore"
-        );
-
-
-    if(liveScore){
-
-        liveScore.textContent =
-            quizScore;
-
-    }
-
-
-    const next =
-        document.getElementById(
-            "nextBtn"
-        );
-
-
-    if(next){
-
-        next.classList.remove(
-            "hidden"
-        );
-
-    }
+    selectedAnswer = index;
 
 }
 
 
-function startQuestionTimer(){
+/* =========================================================
+   QUIZ TIMER
+========================================================= */
 
-    clearInterval(
-        quizTimer
-    );
+function startQuizTimer(){
 
+    clearInterval(quizTimer);
 
     quizSeconds = 30;
 
-
-    const timer =
-        document.getElementById(
-            "quizTimer"
-        );
-
+    document.getElementById(
+        "quizTimer"
+    ).textContent =
+        quizSeconds;
 
     quizTimer =
         setInterval(
-            function(){
+            () => {
 
                 quizSeconds--;
 
-
-                if(timer){
-
-                    timer.textContent =
-                        quizSeconds +
-                        "s";
-
-
-                    timer.classList.toggle(
-                        "warning",
-                        quizSeconds <= 10
-                    );
-
-
-                    timer.classList.toggle(
-                        "danger",
-                        quizSeconds <= 5
-                    );
-
-                }
-
+                document.getElementById(
+                    "quizTimer"
+                ).textContent =
+                    quizSeconds;
 
                 if(
                     quizSeconds <= 0
@@ -3802,51 +2791,7 @@ function startQuestionTimer(){
                         quizTimer
                     );
 
-
-                    if(
-                        !quizAnswered
-                    ){
-
-                        quizAnswered =
-                            true;
-
-
-                        document
-                            .querySelectorAll(
-                                ".option"
-                            )
-                            .forEach(
-                                option => {
-
-                                    option.disabled =
-                                        true;
-
-                                }
-                            );
-
-
-                        const next =
-                            document
-                                .getElementById(
-                                    "nextBtn"
-                                );
-
-
-                        if(next){
-
-                            next.classList
-                                .remove(
-                                    "hidden"
-                                );
-
-                        }
-
-
-                        showToast(
-                            "⏰ Time up!"
-                        );
-
-                    }
+                    submitQuizAnswer();
 
                 }
 
@@ -3857,799 +2802,218 @@ function startQuestionTimer(){
 }
 
 
-function nextQuestion(){
+/* =========================================================
+   NEXT QUIZ
+========================================================= */
 
-    if(!quizRunning){
-        return;
-    }
+function nextQuizQuestion(){
 
-
-    quizIndex++;
-
-
-    renderQuizQuestion();
+    submitQuizAnswer();
 
 }
 
+
+function submitQuizAnswer(){
+
+    if(quizFinished)
+        return;
+
+    clearInterval(
+        quizTimer
+    );
+
+    const question =
+        quizQuestions[
+            quizIndex
+        ];
+
+    if(
+        selectedAnswer !== null
+    ){
+
+        const buttons =
+            document.querySelectorAll(
+                "#quizOptions .option"
+            );
+
+        const selectedButton =
+            buttons[
+                selectedAnswer
+            ];
+
+        const answer =
+            question.answer;
+
+        let correctIndex =
+            -1;
+
+        if(
+            typeof answer === "number"
+        ){
+
+            correctIndex =
+                answer;
+
+        }else{
+
+            correctIndex =
+                Array.from(
+                    buttons
+                ).findIndex(
+                    button =>
+                        button.textContent
+                            .trim()
+                        ===
+                        String(answer)
+                            .trim()
+                );
+
+        }
+
+        if(
+            selectedAnswer ===
+            correctIndex
+        ){
+
+            quizScore++;
+
+            if(selectedButton){
+
+                selectedButton.classList.add(
+                    "correct"
+                );
+
+            }
+
+        }else{
+
+            if(selectedButton){
+
+                selectedButton.classList.add(
+                    "wrong"
+                );
+
+            }
+
+            if(
+                buttons[correctIndex]
+            ){
+
+                buttons[
+                    correctIndex
+                ].classList.add(
+                    "correct"
+                );
+
+            }
+
+        }
+
+    }
+
+    document.getElementById(
+        "quizScore"
+    ).textContent =
+        quizScore;
+
+    setTimeout(
+        () => {
+
+            quizIndex++;
+
+            renderQuizQuestion();
+
+        },
+        550
+    );
+
+}
+
+
+/* =========================================================
+   FINISH QUIZ
+========================================================= */
 
 function finishQuiz(){
 
-    quizRunning = false;
-
-
     clearInterval(
         quizTimer
     );
 
+    quizFinished = true;
 
-    clearInterval(
-        quizInactivityTimer
-    );
+    const total =
+        quizQuestions.length;
 
+    const percentage =
+        total
+        ? Math.round(
+            quizScore /
+            total *
+            100
+        )
+        : 0;
 
-    exitQuizFullscreen();
-
-
-    if(
-        !player.achievements
-            .includes(
-                "quiz-complete"
-            )
-    ){
-
-        player.achievements.push(
-            "quiz-complete"
+    player.quizBest =
+        Math.max(
+            player.quizBest || 0,
+            percentage
         );
-
-    }
-
-
-    if(
-
-        quizScore ===
-        quizQuestions.length &&
-
-        !player.achievements
-            .includes(
-                "perfect-quiz"
-            )
-
-    ){
-
-        player.achievements.push(
-            "perfect-quiz"
-        );
-
-
-        addXP(
-            100,
-            "Perfect quiz"
-        );
-
-    }
-
-    else{
-
-        addXP(
-
-            25 +
-            (
-                quizScore * 5
-            ),
-
-            "Quiz completed"
-
-        );
-
-    }
-
 
     savePlayer();
 
-    updateDashboard();
+    if(
+        percentage >= 80
+    ){
 
-    renderAchievements();
-
-
-    const percentage =
-        Math.round(
-
-            (
-                quizScore /
-                quizQuestions.length
-            ) *
-            100
-
+        unlockAchievement(
+            "quiz"
         );
 
+    }
 
-    document
-        .getElementById(
-            "quizGame"
-        )
-        .innerHTML = `
+    const xp =
+        quizScore * 10 +
+        25 +
+        (
+            percentage === 100
+            ? 100
+            : 0
+        );
 
-            <div class="result">
+    addXP(xp);
 
-                <div style="font-size:60px">
+    document.getElementById(
+        "quizQuestion"
+    ).textContent =
+        `🎉 Quiz Complete! ${quizScore}/${total} correct (${percentage}%)`;
 
-                    ${
-                        percentage >= 80
-                        ? "🏆"
-                        : "🎯"
-                    }
+    document.getElementById(
+        "quizOptions"
+    ).innerHTML = `
 
-                </div>
+        <div class="course-card">
 
-
-                <h2
-                    style="margin-top:10px">
-
-                    Quiz Complete!
-
-                </h2>
-
-
-                <div class="result-score">
-
-                    ${quizScore}/
-                    ${quizQuestions.length}
-
-                </div>
-
-
-                <p
-                    style="
-                        color:#9ca3af;
-                        margin-top:10px">
-
-                    ${percentage}%
-                    correct
-
-                </p>
-
-
-                <button
-                    class="btn btn-primary"
-                    style="margin-top:25px"
-                    onclick="closeQuiz()">
-
-                    Continue Quest
-
-                </button>
-
+            <div class="course-icon">
+                ${percentage >= 80 ? "🏆":"📚"}
             </div>
 
-        `;
-
-}
-
-
-function attemptCloseQuiz(){
-
-    if(!quizRunning){
-
-        closeQuiz();
-
-        return;
-
-    }
-
-
-    addQuizViolation(
-        "You tried to leave the active quiz."
-    );
-
-}
-
-
-function closeQuiz(){
-
-    quizRunning = false;
-
-
-    clearInterval(
-        quizTimer
-    );
-
-
-    clearInterval(
-        quizInactivityTimer
-    );
-
-
-    exitQuizFullscreen();
-
-
-    document
-        .getElementById(
-            "quizModal"
-        )
-        .classList.remove(
-            "active"
-        );
-
-}
-
-
-/* =========================================================
-   QUIZ SECURITY
-========================================================= */
-
-function addQuizViolation(
-    reason
-){
-
-    if(!quizRunning){
-        return;
-    }
-
-
-    quizViolations++;
-
-
-    const message =
-        document.getElementById(
-            "quizViolation"
-        );
-
-
-    if(message){
-
-        message.textContent =
-            "⚠️ " +
-            reason +
-            " Violation " +
-            quizViolations +
-            "/" +
-            MAX_VIOLATIONS;
-
-
-        message.classList.remove(
-            "hidden"
-        );
-
-    }
-
-
-    const count =
-        document.getElementById(
-            "violationCount"
-        );
-
-
-    if(count){
-
-        count.textContent =
-            quizViolations +
-            "/" +
-            MAX_VIOLATIONS;
-
-    }
-
-
-    showToast(
-
-        "⚠️ Quiz violation " +
-        quizViolations +
-        "/" +
-        MAX_VIOLATIONS
-
-    );
-
-
-    if(
-        quizViolations >=
-        MAX_VIOLATIONS
-    ){
-
-        terminateQuiz(
-
-            "Quiz terminated because the maximum number of security violations was reached."
-
-        );
-
-    }
-
-}
-
-
-function handleVisibilityChange(){
-
-    if(
-
-        quizRunning &&
-        document.hidden
-
-    ){
-
-        addQuizViolation(
-            "You moved away from the quiz screen."
-        );
-
-    }
-
-}
-
-
-function handleWindowBlur(){
-
-    if(quizRunning){
-
-        addQuizViolation(
-            "The quiz window lost focus."
-        );
-
-    }
-
-}
-
-
-function handleFullscreenChange(){
-
-    if(
-
-        quizRunning &&
-        !document.fullscreenElement
-
-    ){
-
-        addQuizViolation(
-            "You exited fullscreen mode."
-        );
-
-    }
-
-}
-
-
-function requestQuizFullscreen(){
-
-    const element =
-        document.documentElement;
-
-
-    if(
-
-        document.fullscreenEnabled &&
-        !document.fullscreenElement
-
-    ){
-
-        element
-            .requestFullscreen()
-            .catch(
-                () => {}
-            );
-
-    }
-
-}
-
-
-function exitQuizFullscreen(){
-
-    if(
-        document.fullscreenElement
-    ){
-
-        document
-            .exitFullscreen()
-            .catch(
-                () => {}
-            );
-
-    }
-
-}
-
-
-function startInactivityMonitor(){
-
-    lastActivity =
-        Date.now();
-
-
-    clearInterval(
-        quizInactivityTimer
-    );
-
-
-    quizInactivityTimer =
-        setInterval(
-
-            function(){
-
-                if(
-                    !quizRunning
-                ){
-
-                    return;
-
-                }
-
-
-                const inactive =
-                    Date.now() -
-                    lastActivity;
-
-
-                if(
-                    inactive >=
-                    INACTIVITY_LIMIT
-                ){
-
-                    lastActivity =
-                        Date.now();
-
-
-                    addQuizViolation(
-                        "No activity was detected for 60 seconds."
-                    );
-
-                }
-
-            },
-
-            5000
-
-        );
-
-}
-
-
-function resetActivity(){
-
-    lastActivity =
-        Date.now();
-
-}
-
-
-[
-    "mousemove",
-    "mousedown",
-    "keydown",
-    "touchstart",
-    "scroll"
-].forEach(
-    event => {
-
-        document.addEventListener(
-
-            event,
-
-            resetActivity,
-
-            {
-                passive:true
-            }
-
-        );
-
-    }
-);
-
-
-document.addEventListener(
-    "visibilitychange",
-    handleVisibilityChange
-);
-
-
-window.addEventListener(
-    "blur",
-    handleWindowBlur
-);
-
-
-document.addEventListener(
-    "fullscreenchange",
-    handleFullscreenChange
-);
-
-
-function terminateQuiz(
-    reason
-){
-
-    quizRunning = false;
-
-
-    clearInterval(
-        quizTimer
-    );
-
-
-    clearInterval(
-        quizInactivityTimer
-    );
-
-
-    exitQuizFullscreen();
-
-
-    document
-        .getElementById(
-            "quizGame"
-        )
-        .innerHTML = `
-
-            <div class="result">
-
-                <div style="font-size:60px">
-                    🚫
-                </div>
-
-
-                <h2
-                    style="margin-top:10px">
-
-                    Quiz Terminated
-
-                </h2>
-
-
-                <p
-                    style="
-                        color:#fca5a5;
-                        margin-top:12px;
-                        line-height:1.6">
-
-                    ${escapeHTML(
-                        reason
-                    )}
-
-                </p>
-
-
-                <button
-                    class="btn btn-primary"
-                    style="margin-top:25px"
-                    onclick="closeQuiz()">
-
-                    Return to Dashboard
-
-                </button>
-
-            </div>
-
-        `;
-
-}
-
-
-/* =========================================================
-   CAREER GUIDE
-========================================================= */
-
-let careers = [];
-
-
-async function loadCareers(){
-
-    const grid =
-        document.getElementById(
-            "careerGrid"
-        );
-
-
-    try{
-
-        const response =
-            await fetch(
-                "/api/careers",
-                {
-                    cache:
-                        "no-store"
-                }
-            );
-
-
-        if(!response.ok){
-
-            throw new Error(
-                "Career API failed"
-            );
-
-        }
-
-
-        const data =
-            await response.json();
-
-
-        careers =
-            Array.isArray(data)
-            ? data
-            : (
-                Array.isArray(
-                    data.careers
-                )
-                ? data.careers
-                : []
-            );
-
-
-        if(
-            !careers.length
-        ){
-
-            renderDefaultCareerGuide();
-
-        }
-
-        else{
-
-            renderCareers();
-
-        }
-
-    }
-
-    catch(error){
-
-        console.error(
-            "Career error:",
-            error
-        );
-
-
-        renderDefaultCareerGuide();
-
-    }
-
-}
-
-
-function renderCareers(){
-
-    const grid =
-        document.getElementById(
-            "careerGrid"
-        );
-
-
-    grid.innerHTML = "";
-
-
-    careers.forEach(
-        career => {
-
-            const card =
-                document.createElement(
-                    "div"
-                );
-
-
-            card.className =
-                "card";
-
-
-            card.innerHTML = `
-
-                <div class="card-icon">
-
-                    ${escapeHTML(
-                        String(
-                            career.icon ||
-                            "🚀"
-                        )
-                    )}
-
-                </div>
-
-
-                <h3>
-
-                    ${escapeHTML(
-                        career.title ||
-                        "Career Guide"
-                    )}
-
-                </h3>
-
-
-                <div class="career-content">
-
-                    ${escapeHTML(
-                        career.content ||
-                        ""
-                    )}
-
-                </div>
-
-
-                <div class="tip-list">
-
-                    <div class="tip">
-                        💡 Build real projects.
-                    </div>
-
-                    <div class="tip">
-                        🐙 Keep your GitHub active.
-                    </div>
-
-                    <div class="tip">
-                        🎯 Practice coding and interviews.
-                    </div>
-
-                </div>
-
-            `;
-
-
-            grid.appendChild(
-                card
-            );
-
-        }
-    );
-
-}
-
-
-function renderDefaultCareerGuide(){
-
-    careers = [
-
-        {
-            title:
-                "🎓 Internship Strategy",
-
-            content:
-                "Build 2–4 meaningful projects, learn Git and GitHub, prepare a simple resume, practice coding and apply consistently. A project that solves a real problem is easier to discuss during interviews."
-        },
-
-
-        {
-            title:
-                "💼 Placement Strategy",
-
-            content:
-                "Prepare C/C++, Python or Java, DSA, OOP, DBMS, SQL, Operating Systems, Computer Networks and your projects. Practice explaining your code clearly."
-        },
-
-
-        {
-            title:
-                "🚀 Project Strategy",
-
-            content:
-                "Do not only copy tutorial projects. Add your own features, solve a real problem, deploy the project and document it with screenshots and a README."
-        },
-
-
-        {
-            title:
-                "🐙 GitHub Strategy",
-
-            content:
-                "Use meaningful repository names, write README files, add screenshots, explain technologies and keep your important projects organized."
-        },
-
-
-        {
-            title:
-                "📄 Resume Strategy",
-
-            content:
-                "Keep the resume clear and focused. Highlight education, technical skills, projects, achievements, certifications and links to your portfolio."
-        },
-
-
-        {
-            title:
-                "🧠 Interview Strategy",
-
-            content:
-                "Practice explaining your projects, algorithms and technical decisions. If you do not know an answer, explain what you understand and how you would find the answer."
-        }
-
-    ];
-
-
-    renderCareers();
+            <h3>
+                ${percentage >= 80
+                    ? "Great work!"
+                    : "Keep practicing!"}
+            </h3>
+
+            <p>
+                You earned
+                <strong>${xp} XP</strong>.
+                Review your lessons and try again
+                to improve your score.
+            </p>
+
+        </div>
+
+    `;
 
 }
 
@@ -4658,25 +3022,48 @@ function renderDefaultCareerGuide(){
    C COMPILER
 ========================================================= */
 
+function openCompiler(){
+
+    openModal(
+        "compilerModal"
+    );
+
+}
+
+
 function loadCExample(){
 
     document.getElementById(
         "cCode"
     ).value =
-
 `#include <stdio.h>
 
 int main() {
+    int a, b, sum;
 
-    int a = 10;
-    int b = 20;
+    printf("Enter first number: ");
+    scanf("%d", &a);
 
-    int sum = a + b;
+    printf("Enter second number: ");
+    scanf("%d", &b);
 
-    printf("Sum = %d", sum);
+    sum = a + b;
+
+    printf("Sum = %d\\n", sum);
 
     return 0;
 }`;
+
+    document.getElementById(
+        "cStdin"
+    ).value =
+`10
+20`;
+
+    document.getElementById(
+        "compilerOutput"
+    ).textContent =
+        "Example loaded. Press ▶ Run Code.";
 
 }
 
@@ -4687,59 +3074,50 @@ function clearCompiler(){
         "cCode"
     ).value = "";
 
+    document.getElementById(
+        "cStdin"
+    ).value = "";
 
-    const output =
-        document.getElementById(
-            "compilerOutput"
-        );
-
-
-    output.className =
-        "compiler-output";
-
-
-    output.textContent =
+    document.getElementById(
+        "compilerOutput"
+    ).textContent =
         "Output will appear here...";
 
 }
 
+
+/* =========================================================
+   RUN C CODE
+========================================================= */
 
 async function runCCode(){
 
     const code =
         document.getElementById(
             "cCode"
-        ).value.trim();
+        ).value;
 
+    const stdin =
+        document.getElementById(
+            "cStdin"
+        ).value;
 
     const output =
         document.getElementById(
             "compilerOutput"
         );
 
-
-    if(!code){
-
-        output.className =
-            "compiler-output output-error";
-
+    if(!code.trim()){
 
         output.textContent =
-            "Please enter C code.";
-
+            "Please write a C program first.";
 
         return;
 
     }
 
-
-    output.className =
-        "compiler-output";
-
-
     output.textContent =
-        "⏳ Compiling and running your C program...";
-
+        "⏳ Compiling and running...";
 
     try{
 
@@ -4754,99 +3132,92 @@ async function runCCode(){
                             "application/json"
                     },
 
-                    body:
-                        JSON.stringify({
-                            code:code
-                        })
+                    body:JSON.stringify({
+                        code:code,
+                        stdin:stdin
+                    })
                 }
             );
 
-
-        let data;
-
+        let data = {};
 
         try{
 
             data =
                 await response.json();
 
-        }
+        }catch(error){
 
-        catch(jsonError){
-
-            throw new Error(
-                "Compiler server returned an invalid response."
-            );
+            data = {};
 
         }
-
 
         if(!response.ok){
 
             throw new Error(
-
                 data.error ||
-                data.message ||
                 "Compiler request failed."
-
             );
 
         }
-
 
         if(data.success){
 
-            output.className =
-                "compiler-output output-success";
-
-
             output.textContent =
                 data.output ||
-                "Program executed successfully with no output.";
+                "Program finished with no output.";
 
+            addXP(5);
 
-            addXP(
-                5,
-                "Code executed"
-            );
+        }else{
+
+            let message = "";
+
+            if(data.compile_output){
+
+                message +=
+                    data.compile_output;
+
+            }
+
+            if(data.error){
+
+                if(message)
+                    message += "\n";
+
+                message +=
+                    data.error;
+
+            }
+
+            if(data.output){
+
+                if(message)
+                    message += "\n";
+
+                message +=
+                    data.output;
+
+            }
+
+            output.textContent =
+                message ||
+                "Program failed.";
 
         }
 
-        else{
-
-            output.className =
-                "compiler-output output-error";
-
-
-            output.textContent =
-                data.error ||
-                data.output ||
-                data.compile_output ||
-                "Compilation or runtime error.";
-
-        }
-
-    }
-
-    catch(error){
+    }catch(error){
 
         console.error(
             "Compiler error:",
             error
         );
 
-
-        output.className =
-            "compiler-output output-error";
-
-
         output.textContent =
-
-            "❌ Compiler service error\n\n" +
-
+            "❌ " +
             (
                 error.message ||
-                "Unable to connect to /api/compile."
+                "Compiler service unavailable."
             );
 
     }
@@ -4855,204 +3226,275 @@ async function runCCode(){
 
 
 /* =========================================================
-   UTILITY FUNCTIONS
+   CAREER
 ========================================================= */
 
-function shuffle(array){
+async function openCareer(){
 
-    for(
-        let i =
-            array.length - 1;
+    openModal(
+        "careerModal"
+    );
 
-        i > 0;
-
-        i--
-    ){
-
-        const j =
-            Math.floor(
-                Math.random() *
-                (i + 1)
-            );
-
-
-        [
-            array[i],
-            array[j]
-        ] =
-        [
-            array[j],
-            array[i]
-        ];
-
-    }
-
-}
-
-
-function escapeHTML(value){
-
-    return String(
-        value ?? ""
-    )
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
-}
-
-
-function escapeJS(value){
-
-    return String(
-        value ?? ""
-    )
-
-        .replace(
-            /\\/g,
-            "\\\\"
-        )
-
-        .replace(
-            /'/g,
-            "\\'"
-        )
-
-        .replace(
-            /\n/g,
-            "\\n"
-        )
-
-        .replace(
-            /\r/g,
-            "\\r"
-        );
-
-}
-
-
-function showToast(message){
-
-    const toast =
+    const grid =
         document.getElementById(
-            "toast"
+            "careerGrid"
         );
 
+    grid.innerHTML =
+        "Loading careers...";
 
-    if(!toast){
-        return;
+    try{
+
+        const response =
+            await fetch(
+                "/api/careers"
+            );
+
+        if(!response.ok)
+            throw new Error(
+                "Career API failed"
+            );
+
+        const data =
+            await response.json();
+
+        const careers =
+            Array.isArray(data)
+            ? data
+            : (
+                data.careers ||
+                []
+            );
+
+        if(!careers.length){
+
+            throw new Error(
+                "No career data found."
+            );
+
+        }
+
+        grid.innerHTML =
+            careers.map(
+                career => `
+
+                    <div class="career-card">
+
+                        <h3>
+                            💼
+                            ${escapeHTML(
+                                career.title ||
+                                career.name ||
+                                "Career"
+                            )}
+                        </h3>
+
+                        <p>
+                            ${escapeHTML(
+                                career.description ||
+                                career.skills ||
+                                "Explore this career path."
+                            )}
+                        </p>
+
+                    </div>
+
+                `
+            ).join("");
+
+    }catch(error){
+
+        console.error(error);
+
+        grid.innerHTML = `
+
+            <div class="career-card">
+
+                <h3>
+                    💼 Software Developer
+                </h3>
+
+                <p>
+                    Learn programming, data structures,
+                    databases, Git, software development,
+                    testing and project building.
+                </p>
+
+            </div>
+
+            <div class="career-card">
+
+                <h3>
+                    🤖 AI / ML Developer
+                </h3>
+
+                <p>
+                    Build strong Python fundamentals,
+                    mathematics, data handling,
+                    machine learning and AI projects.
+                </p>
+
+            </div>
+
+            <div class="career-card">
+
+                <h3>
+                    🔐 Cybersecurity Analyst
+                </h3>
+
+                <p>
+                    Study networking, operating systems,
+                    security principles, vulnerabilities
+                    and defensive security practices.
+                </p>
+
+            </div>
+
+            <div class="career-card">
+
+                <h3>
+                    ☁️ Cloud / DevOps Engineer
+                </h3>
+
+                <p>
+                    Learn Linux, networking, cloud platforms,
+                    Git, CI/CD, containers and deployment.
+                </p>
+
+            </div>
+
+        `;
+
     }
-
-
-    toast.textContent =
-        message;
-
-
-    toast.classList.add(
-        "show"
-    );
-
-
-    clearTimeout(
-        window.__toastTimer
-    );
-
-
-    window.__toastTimer =
-        setTimeout(
-
-            function(){
-
-                toast.classList.remove(
-                    "show"
-                );
-
-            },
-
-            3000
-
-        );
 
 }
 
 
 /* =========================================================
-   MODAL CLICK OUTSIDE SUPPORT
+   MODAL FUNCTIONS
 ========================================================= */
 
-document.addEventListener(
-    "click",
-    function(event){
+function openModal(id){
 
-        const loginModal =
-            document.getElementById(
-                "loginModal"
-            );
+    document.getElementById(
+        id
+    ).classList.add("show");
 
-
-        const courseModal =
-            document.getElementById(
-                "courseModal"
-            );
+}
 
 
-        /*
-         * Login modal can close by clicking
-         * outside the login box.
-         */
+function closeModal(id){
 
-        if(
-            event.target ===
-            loginModal
-        ){
+    document.getElementById(
+        id
+    ).classList.remove("show");
 
-            closeLogin();
+    if(id === "quizModal"){
 
-        }
+        clearInterval(
+            quizTimer
+        );
+
+    }
+
+}
 
 
-        /*
-         * Course modal can close by clicking
-         * outside the course box.
-         */
+/* Close modal when clicking outside */
 
-        if(
-            event.target ===
-            courseModal
-        ){
+document.querySelectorAll(
+    ".modal"
+).forEach(
+    modal => {
 
-            closeCourse();
+        modal.addEventListener(
+            "click",
+            function(event){
 
-        }
+                if(
+                    event.target ===
+                    modal
+                ){
+
+                    modal.classList.remove(
+                        "show"
+                    );
+
+                    if(
+                        modal.id ===
+                        "quizModal"
+                    ){
+
+                        clearInterval(
+                            quizTimer
+                        );
+
+                    }
+
+                }
+
+            }
+        );
 
     }
 );
 
 
 /* =========================================================
-   ESC KEY
+   ESCAPE HTML
+========================================================= */
+
+function escapeHTML(value){
+
+    return String(value)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
+
+/* =========================================================
+   SHUFFLE
+========================================================= */
+
+function shuffle(array){
+
+    const copy =
+        [...array];
+
+    for(
+        let i = copy.length-1;
+        i > 0;
+        i--
+    ){
+
+        const j =
+            Math.floor(
+                Math.random() *
+                (i+1)
+            );
+
+        [
+            copy[i],
+            copy[j]
+        ] =
+        [
+            copy[j],
+            copy[i]
+        ];
+
+    }
+
+    return copy;
+
+}
+
+
+/* =========================================================
+   KEYBOARD SHORTCUT
 ========================================================= */
 
 document.addEventListener(
@@ -5060,50 +3502,21 @@ document.addEventListener(
     function(event){
 
         if(
-            event.key ===
-            "Escape"
+            event.key === "Escape"
         ){
 
-            const loginModal =
-                document.getElementById(
-                    "loginModal"
-                );
-
-
-            if(
-                loginModal.classList
-                    .contains(
-                        "active"
+            document.querySelectorAll(
+                ".modal.show"
+            ).forEach(
+                modal =>
+                    modal.classList.remove(
+                        "show"
                     )
-            ){
+            );
 
-                closeLogin();
-
-            }
-
-
-            if(
-                !quizRunning
-            ){
-
-                const courseModal =
-                    document.getElementById(
-                        "courseModal"
-                    );
-
-
-                if(
-                    courseModal.classList
-                        .contains(
-                            "active"
-                        )
-                ){
-
-                    closeCourse();
-
-                }
-
-            }
+            clearInterval(
+                quizTimer
+            );
 
         }
 
@@ -5112,32 +3525,14 @@ document.addEventListener(
 
 
 /* =========================================================
-   STARTUP
+   INITIAL LOAD
 ========================================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
     function(){
 
-        /*
-         * Start with guest storage.
-         *
-         * Firebase will automatically switch
-         * to the Google user's UID after login.
-         */
-
-        setPlayerStorageForUser(
-            "guest"
-        );
-
-
         loadPlayer();
-
-
-        loadCourses();
-
-
-        loadCareers();
 
     }
 );
