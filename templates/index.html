@@ -1,3543 +1,4652 @@
+from flask import Flask, jsonify, request, render_template
+import os
+import json
+import sqlite3
+import secrets
+import hashlib
+from datetime import datetime, timezone
+from functools import wraps
+
+import requests
+
+# Optional Firebase Admin SDK
+try:
+    import firebase_admin
+    from firebase_admin import credentials, auth as firebase_auth
+    FIREBASE_AVAILABLE = True
+except Exception:
+    FIREBASE_AVAILABLE = False
+
+
+# =========================================================
+# CODEQUEST AI
+# LEARN • PRACTICE • PLAY • BUILD
+# =========================================================
+
+app = Flask(__name__)
+
+app.config["SECRET_KEY"] = os.environ.get(
+    "SECRET_KEY",
+    "codequest-ai-development-secret-change-me"
+)
+
+DATABASE_PATH = os.environ.get(
+    "DATABASE_PATH",
+    "codequest.db"
+)
+
+WANDBOX_URL = "https://wandbox.org/api/compile.json"
+
+
+# =========================================================
+# FIREBASE ADMIN INITIALIZATION
+# =========================================================
+
+firebase_ready = False
+
+if FIREBASE_AVAILABLE:
+
+    try:
+        service_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT_JSON")
+
+        if service_json:
+            service_data = json.loads(service_json)
+
+            if not firebase_admin._apps:
+                cred = credentials.Certificate(service_data)
+                firebase_admin.initialize_app(
+                    cred,
+                    {
+                        "projectId": "codequest-ai-69884"
+                    }
+                )
+
+            firebase_ready = True
+
+    except Exception as e:
+        print("Firebase Admin initialization failed:", e)
+
+
+# =========================================================
+# DATABASE
+# =========================================================
+
+def get_db():
+    db = sqlite3.connect(DATABASE_PATH)
+    db.row_factory = sqlite3.Row
+    return db
+
+
+def init_db():
+
+    db = get_db()
+
+    db.executescript(
+        """
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            firebase_uid TEXT UNIQUE,
+            name TEXT,
+            email TEXT,
+            photo_url TEXT,
+            xp INTEGER DEFAULT 0,
+            level INTEGER DEFAULT 1,
+            streak INTEGER DEFAULT 0,
+            completed_lessons INTEGER DEFAULT 0,
+            quizzes_completed INTEGER DEFAULT 0,
+            created_at TEXT,
+            updated_at TEXT
+        );
+
+        CREATE TABLE IF NOT EXISTS progress (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            firebase_uid TEXT,
+            course_id TEXT,
+            lesson_id TEXT,
+            completed INTEGER DEFAULT 0,
+            xp INTEGER DEFAULT 0,
+            completed_at TEXT,
+            UNIQUE(firebase_uid, course_id, lesson_id)
+        );
+
+        CREATE TABLE IF NOT EXISTS quiz_attempts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            firebase_uid TEXT,
+            quiz_id TEXT,
+            score INTEGER DEFAULT 0,
+            total INTEGER DEFAULT 0,
+            percentage REAL DEFAULT 0,
+            terminated INTEGER DEFAULT 0,
+            reason TEXT,
+            created_at TEXT
+        );
+
+        CREATE TABLE IF NOT EXISTS activity_log (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            firebase_uid TEXT,
+            activity TEXT,
+            details TEXT,
+            created_at TEXT
+        );
+        """
+    )
+
+    db.commit()
+    db.close()
+
+
+init_db()
+
+
+# =========================================================
+# HELPERS
+# =========================================================
+
+def now():
+    return datetime.now(timezone.utc).isoformat()
+
+
+def calculate_level(xp):
+
+    if xp < 100:
+        return 1
+
+    if xp < 300:
+        return 2
+
+    if xp < 600:
+        return 3
+
+    if xp < 1000:
+        return 4
+
+    if xp < 1500:
+        return 5
+
+    if xp < 2200:
+        return 6
+
+    if xp < 3000:
+        return 7
+
+    if xp < 4000:
+        return 8
+
+    if xp < 5500:
+        return 9
+
+    return 10
+
+
+def level_name(level):
+
+    names = {
+        1: "Code Explorer",
+        2: "Syntax Scout",
+        3: "Logic Builder",
+        4: "Bug Hunter",
+        5: "Code Warrior",
+        6: "System Architect",
+        7: "Tech Adventurer",
+        8: "Full Stack Fighter",
+        9: "Engineering Master",
+        10: "CodeQuest Legend"
+    }
+
+    return names.get(level, "CodeQuest Legend")
+
+
+def get_or_create_user(
+    firebase_uid,
+    name="CodeQuest User",
+    email="",
+    photo_url=""
+):
+
+    db = get_db()
+
+    user = db.execute(
+        "SELECT * FROM users WHERE firebase_uid = ?",
+        (firebase_uid,)
+    ).fetchone()
+
+    if user:
+
+        db.execute(
+            """
+            UPDATE users
+            SET name = ?,
+                email = ?,
+                photo_url = ?,
+                updated_at = ?
+            WHERE firebase_uid = ?
+            """,
+            (
+                name,
+                email,
+                photo_url,
+                now(),
+                firebase_uid
+            )
+        )
+
+    else:
+
+        db.execute(
+            """
+            INSERT INTO users
+            (
+                firebase_uid,
+                name,
+                email,
+                photo_url,
+                xp,
+                level,
+                streak,
+                completed_lessons,
+                quizzes_completed,
+                created_at,
+                updated_at
+            )
+            VALUES (?, ?, ?, ?, 0, 1, 0, 0, 0, ?, ?)
+            """,
+            (
+                firebase_uid,
+                name,
+                email,
+                photo_url,
+                now(),
+                now()
+            )
+        )
+
+    db.commit()
+
+    user = db.execute(
+        "SELECT * FROM users WHERE firebase_uid = ?",
+        (firebase_uid,)
+    ).fetchone()
+
+    db.close()
+
+    return dict(user)
+
+
+def verify_firebase_request():
+
+    if not firebase_ready:
+        return None
+
+    token = None
+
+    auth_header = request.headers.get("Authorization", "")
+
+    if auth_header.startswith("Bearer "):
+        token = auth_header.split(" ", 1)[1]
+
+    if not token:
+        body = request.get_json(silent=True) or {}
+        token = body.get("idToken")
+
+    if not token:
+        return None
+
+    try:
+        decoded = firebase_auth.verify_id_token(token)
+
+        return decoded
+
+    except Exception as e:
+        print("Firebase token verification failed:", e)
+        return None
+
+
+def firebase_required(function):
+
+    @wraps(function)
+    def wrapper(*args, **kwargs):
+
+        decoded = verify_firebase_request()
+
+        if not decoded:
+            return jsonify(
+                {
+                    "success": False,
+                    "error": "Authentication required."
+                }
+            ), 401
+
+        return function(decoded, *args, **kwargs)
+
+    return wrapper
+
+
+# =========================================================
+# COURSE DATA
+# =========================================================
+
+def lesson(
+    title,
+    explanation,
+    example,
+    points=None
+):
+
+    return {
+        "title": title,
+        "lesson": explanation,
+        "sample": example,
+        "points": points or []
+    }
+
+
+COURSES = [
+
+    # =====================================================
+    # 1. COMPUTER BASICS
+    # =====================================================
+
+    {
+        "id": "computer-basics",
+        "title": "Computer Basics",
+        "icon": "💻",
+        "level": "Beginner",
+        "description":
+            "Understand computers from zero: hardware, software, memory, storage, operating systems and how programs actually run.",
+        "chapters": [
+
+            lesson(
+                "What Is a Computer?",
+                """
+A computer is an electronic machine that accepts input, processes that
+input according to instructions, stores information and produces output.
+
+Almost every application you use follows this basic cycle.
+
+For example, when you type a number into a calculator application,
+the keyboard provides input. The processor performs calculations.
+The result may be temporarily stored in memory and finally displayed
+on the screen.
+
+Understanding this input → processing → output model makes later
+programming concepts much easier because a program is essentially a
+set of instructions that tells a computer how to process information.
+
+Real-world example:
+When you log into CodeQuest AI, your keyboard provides input, your
+browser sends information through a network, the server processes it,
+and the application returns the result to your screen.
+                """,
+                """
+name = input("Enter your name: ")
+print("Welcome", name)
+                """,
+                [
+                    "Input gives data to a system.",
+                    "Processing transforms the data.",
+                    "Output presents the result.",
+                    "Programs are instructions executed by computers."
+                ]
+            ),
+
+            lesson(
+                "CPU and Processing",
+                """
+The CPU, or Central Processing Unit, is responsible for executing
+instructions. It repeatedly fetches instructions, decodes them and
+executes them.
+
+Modern processors contain multiple cores, allowing several streams of
+work to be handled efficiently.
+
+For a programmer, CPU performance matters when an application performs
+large calculations, image processing, simulations, games or machine
+learning.
+
+A simple addition operation may look tiny, but internally the processor
+must retrieve values, perform an arithmetic operation and store the
+result.
+                """,
+                """
+int a = 10;
+int b = 20;
+int result = a + b;
+
+printf("%d", result);
+                """,
+                [
+                    "CPU executes instructions.",
+                    "A processor can have multiple cores.",
+                    "Arithmetic operations are executed by the CPU."
+                ]
+            ),
+
+            lesson(
+                "RAM and Memory",
+                """
+RAM is temporary working memory used by running programs.
+
+When you open a browser, game or code editor, the program's active data
+is placed into RAM so the CPU can access it quickly.
+
+RAM is volatile, which means its contents disappear when power is lost.
+
+More RAM allows a computer to keep more active applications and data
+available without constantly moving information to slower storage.
+
+This is why developers working with IDEs, browsers, databases and
+virtual machines often benefit from higher memory capacity.
+                """,
+                """
+int numbers[5] = {10, 20, 30, 40, 50};
+
+printf("%d", numbers[2]);
+                """,
+                [
+                    "RAM is temporary memory.",
+                    "Running applications use RAM.",
+                    "RAM is faster than permanent storage."
+                ]
+            ),
+
+            lesson(
+                "Storage: HDD and SSD",
+                """
+Storage keeps data even after the computer is turned off.
+
+Hard Disk Drives use spinning magnetic disks, while SSDs use flash
+memory and have no moving mechanical disk.
+
+SSDs normally provide much faster application loading and file access.
+
+When you install CodeQuest AI files, save photographs or install an
+operating system, those files are stored permanently on a storage
+device.
+                """,
+                """
+#include <stdio.h>
+
+int main() {
+    FILE *file = fopen("student.txt", "w");
+
+    fprintf(file, "CodeQuest AI");
+
+    fclose(file);
+
+    return 0;
+}
+                """,
+                [
+                    "Storage is non-volatile.",
+                    "SSD uses flash memory.",
+                    "Files remain after shutdown."
+                ]
+            ),
+
+            lesson(
+                "Operating Systems",
+                """
+An operating system acts as a bridge between applications and
+computer hardware.
+
+Windows, Linux, Android and macOS are examples of operating systems.
+
+The operating system manages memory, processes, files, devices and
+permissions.
+
+When a program requests a file, it normally does not directly control
+the physical storage hardware. Instead, it communicates with the
+operating system, which performs the required operation.
+                """,
+                """
+import os
+
+print("Current folder:")
+print(os.getcwd())
+
+print("Files:")
+print(os.listdir())
+                """,
+                [
+                    "OS manages hardware resources.",
+                    "OS provides services to applications.",
+                    "Examples include Windows, Linux and Android."
+                ]
+            ),
+
+            lesson(
+                "Files and Folders",
+                """
+Files store information while folders organize files.
+
+Programming applications constantly work with files: configuration
+files, source code, databases, images, logs and documents.
+
+Understanding file paths is especially important when working with
+Python, web development, Git and backend development.
+
+An absolute path describes the complete location, while a relative
+path describes a location relative to the current working directory.
+                """,
+                """
+import os
+
+filename = "notes.txt"
+
+with open(filename, "w") as file:
+    file.write("My first programming note")
+
+print("File created:", os.path.exists(filename))
+                """,
+                [
+                    "Files contain data.",
+                    "Folders organize files.",
+                    "Relative and absolute paths are different."
+                ]
+            ),
+
+            lesson(
+                "Binary and Digital Data",
+                """
+Computers ultimately represent information using binary digits:
+0 and 1.
+
+Text, images, audio and video are all encoded into digital data.
+
+A bit is a single binary digit. Eight bits make one byte.
+
+Understanding binary becomes useful when learning memory addresses,
+networking, file sizes, encryption and low-level programming.
+                """,
+                """
+number = 13
+
+print("Decimal:", number)
+print("Binary:", bin(number))
+                """,
+                [
+                    "Bit = binary digit.",
+                    "8 bits = 1 byte.",
+                    "Computers represent digital information using binary."
+                ]
+            ),
+
+            lesson(
+                "Programs and Processes",
+                """
+A program is a set of instructions stored somewhere on a computer.
+When the operating system starts that program, it becomes a running
+process.
+
+For example, the browser application stored on your computer becomes
+one or more processes while it is running.
+
+Processes require CPU time, memory and operating-system resources.
+
+This concept becomes important later when learning operating systems,
+multithreading and backend development.
+                """,
+                """
+import os
+
+print("Current process ID:")
+print(os.getpid())
+                """,
+                [
+                    "Program = stored instructions.",
+                    "Process = running instance of a program.",
+                    "Processes use system resources."
+                ]
+            )
+        ]
+    },
+
+
+    # =====================================================
+    # 2. DIGITAL PRODUCTIVITY
+    # =====================================================
+
+    {
+        "id": "digital-productivity",
+        "title": "Digital Productivity",
+        "icon": "📊",
+        "level": "Beginner",
+        "description":
+            "Learn practical computer productivity skills used in college and professional environments.",
+        "chapters": [
+
+            lesson(
+                "Documents and Formatting",
+                """
+Professional documents are not just about typing text.
+
+Formatting helps readers understand hierarchy, importance and structure.
+Headings, paragraphs, tables, lists and spacing make information
+easier to scan.
+
+Developers also use documentation extensively for APIs, projects,
+technical reports and README files.
+
+A well-structured document communicates information faster than a large
+block of unorganized text.
+                """,
+                """
+# CodeQuest AI Project
+
+## Objective
+
+Build a gamified computer-science learning platform.
+
+## Features
+
+- Lessons
+- Quizzes
+- Compiler
+- Career Guide
+                """
+            ),
+
+            lesson(
+                "Spreadsheets and Data",
+                """
+Spreadsheets are useful for storing structured information,
+calculations and simple analysis.
+
+Students can use spreadsheets for attendance, marks, budgets and
+project data.
+
+Developers should also understand tables and structured data because
+databases use similar ideas.
+
+A spreadsheet formula demonstrates the same fundamental idea used in
+programming: take input values, apply a rule and produce a result.
+                """,
+                """
+A1 = 80
+A2 = 90
+A3 = 70
+
+average = (A1 + A2 + A3) / 3
+
+print("Average:", average)
+                """
+            ),
+
+            lesson(
+                "Presentations",
+                """
+A technical presentation should tell a clear story.
+
+A useful structure is:
+problem → idea → implementation → demonstration → result → future scope.
+
+This structure works particularly well for college projects because
+the audience can understand not only what was built but also why it
+was built.
+
+Avoid filling slides with paragraphs. Use short points and explain the
+details verbally.
+                """,
+                """
+presentation_flow = [
+    "Problem",
+    "Solution",
+    "Technology",
+    "Demo",
+    "Result",
+    "Future Scope"
+]
+
+for step in presentation_flow:
+    print(step)
+                """
+            )
+        ]
+    },
+
+
+    # =====================================================
+    # 3. GIT & GITHUB
+    # =====================================================
+
+    {
+        "id": "git-github",
+        "title": "Git & GitHub",
+        "icon": "🐙",
+        "level": "Beginner → Intermediate",
+        "description":
+            "Learn version control, repositories, commits, branches and professional project workflow.",
+        "chapters": [
+
+            lesson(
+                "What Is Git?",
+                """
+Git is a version-control system.
+
+Instead of keeping files such as project-final, project-final-2 and
+project-final-real-final, Git records changes in a structured history.
+
+You can inspect previous versions, create branches and collaborate with
+other developers.
+
+Git is one of the most important tools for modern software development.
+                """,
+                """
+git init
+git add .
+git commit -m "Initial CodeQuest AI version"
+                """
+            ),
+
+            lesson(
+                "Repositories",
+                """
+A repository is a project tracked by Git.
+
+A repository contains source code and its history.
+
+GitHub provides a remote platform where repositories can be stored,
+shared and collaborated on.
+
+For a student, a clean GitHub repository can demonstrate projects,
+experiments and learning progress.
+                """,
+                """
+git remote add origin YOUR_REPOSITORY_URL
+git push -u origin main
+                """
+            ),
+
+            lesson(
+                "Branches",
+                """
+Branches allow developers to work on changes without immediately
+changing the main version of a project.
+
+For example, a developer can create a feature branch for a new quiz
+system, test it and then merge it into the main branch.
+
+This workflow becomes extremely useful when working in teams.
+                """,
+                """
+git checkout -b quiz-system
+git add .
+git commit -m "Add quiz system"
+git checkout main
+                """
+            ),
+
+            lesson(
+                "Professional Commit Messages",
+                """
+A commit message should explain what changed.
+
+Good commit messages make project history easier to understand.
+
+Examples include:
+Add Google authentication
+Fix quiz API
+Improve compiler error handling
+Add Python lessons
+
+Avoid meaningless messages such as 'update', 'done' or 'final'.
+                """,
+                """
+git commit -m "Fix quiz loading API"
+                """
+            )
+        ]
+    },
+
+
+    # =====================================================
+    # 4. C PROGRAMMING
+    # =====================================================
+
+    {
+        "id": "c-programming",
+        "title": "C Programming",
+        "icon": "⚙️",
+        "level": "Beginner → Advanced",
+        "description":
+            "Learn C from the first program through pointers, structures, files and problem solving.",
+        "chapters": [
+
+            lesson(
+                "Your First C Program",
+                """
+C is a compiled programming language widely used for systems,
+embedded programming and foundational computer-science education.
+
+The main function is where program execution begins.
+
+The printf function displays output on the screen.
+
+Understanding this tiny program gives you the basic structure required
+for many future C programs.
+                """,
+                """
+#include <stdio.h>
+
+int main() {
+    printf("Hello, CodeQuest AI!\\n");
+    return 0;
+}
+                """,
+                [
+                    "#include imports library functionality.",
+                    "main() is the program entry point.",
+                    "printf() displays text."
+                ]
+            ),
+
+            lesson(
+                "Variables and Data Types",
+                """
+A variable is a named storage location used to hold a value.
+
+C requires you to specify the type of data.
+
+int is commonly used for integers.
+float stores decimal values.
+char stores a character.
+double stores higher precision decimal values.
+
+Choosing the correct type helps the compiler understand how much
+memory and what kind of operations are required.
+                """,
+                """
+#include <stdio.h>
+
+int main() {
+
+    int age = 18;
+    float height = 5.8;
+    char grade = 'A';
+
+    printf("Age: %d\\n", age);
+    printf("Height: %.1f\\n", height);
+    printf("Grade: %c\\n", grade);
+
+    return 0;
+}
+                """
+            ),
+
+            lesson(
+                "Input and Output",
+                """
+Most useful programs interact with users.
+
+scanf can read formatted input from the keyboard.
+
+For example, a student-management program may ask for a student's
+name, age and marks.
+
+The important programming idea is that input becomes data stored in
+variables, which can then be processed.
+                """,
+                """
+#include <stdio.h>
+
+int main() {
+
+    int age;
+
+    printf("Enter your age: ");
+    scanf("%d", &age);
+
+    printf("You entered: %d", age);
+
+    return 0;
+}
+                """
+            ),
+
+            lesson(
+                "Conditions",
+                """
+Programs often need to make decisions.
+
+An if statement executes code when a condition is true.
+
+For example, an application may check whether a student passed an
+exam, whether a password is valid or whether a player has enough points
+to unlock a level.
+
+Conditions turn a sequence of instructions into decision-making logic.
+                """,
+                """
+#include <stdio.h>
+
+int main() {
+
+    int mark;
+
+    printf("Enter mark: ");
+    scanf("%d", &mark);
+
+    if (mark >= 50) {
+        printf("Pass");
+    } else {
+        printf("Fail");
+    }
+
+    return 0;
+}
+                """
+            ),
+
+            lesson(
+                "Loops",
+                """
+Loops repeat instructions.
+
+A for loop is useful when the number of repetitions is known.
+
+A while loop is useful when repetition depends on a condition.
+
+Loops are everywhere in software: processing arrays, displaying menu
+items, reading records and running game logic.
+                """,
+                """
+#include <stdio.h>
+
+int main() {
+
+    for (int i = 1; i <= 5; i++) {
+        printf("Level %d\\n", i);
+    }
+
+    return 0;
+}
+                """
+            ),
+
+            lesson(
+                "Arrays",
+                """
+An array stores multiple values of the same type in contiguous memory.
+
+Instead of creating separate variables for every mark, an array can
+store many marks under one variable name.
+
+Arrays are the foundation for many data structures and algorithms.
+                """,
+                """
+#include <stdio.h>
+
+int main() {
+
+    int marks[5] = {80, 75, 90, 65, 88};
+
+    for (int i = 0; i < 5; i++) {
+        printf("%d\\n", marks[i]);
+    }
+
+    return 0;
+}
+                """
+            ),
+
+            lesson(
+                "Functions",
+                """
+Functions divide a large program into smaller reusable units.
+
+Instead of writing the same calculation repeatedly, create a function
+and call it whenever required.
+
+This improves readability, testing and maintenance.
+                """,
+                """
+#include <stdio.h>
+
+int add(int a, int b) {
+    return a + b;
+}
+
+int main() {
+
+    int result = add(10, 20);
+
+    printf("%d", result);
+
+    return 0;
+}
+                """
+            ),
+
+            lesson(
+                "Pointers",
+                """
+A pointer stores the memory address of another variable.
+
+Pointers are one of the most important concepts in C because they
+allow programs to work directly with memory.
+
+They are used for arrays, dynamic memory, strings, data structures and
+many system-level programming tasks.
+
+The & operator obtains an address and * can access the value stored at
+that address.
+                """,
+                """
+#include <stdio.h>
+
+int main() {
+
+    int number = 50;
+    int *ptr = &number;
+
+    printf("Value: %d\\n", number);
+    printf("Address: %p\\n", (void*)ptr);
+    printf("Through pointer: %d\\n", *ptr);
+
+    return 0;
+}
+                """
+            ),
+
+            lesson(
+                "Structures",
+                """
+Structures allow different types of information to be grouped
+together.
+
+For example, a student record may contain an ID, name and mark.
+
+Structures are extremely useful when designing real-world data models.
+                """,
+                """
+#include <stdio.h>
+
+struct Student {
+    int id;
+    char name[30];
+    float mark;
+};
+
+int main() {
+
+    struct Student s = {101, "Joe", 89.5};
+
+    printf("ID: %d\\n", s.id);
+    printf("Name: %s\\n", s.name);
+    printf("Mark: %.2f\\n", s.mark);
+
+    return 0;
+}
+                """
+            ),
+
+            lesson(
+                "File Handling",
+                """
+Programs often need to store information permanently.
+
+C provides file functions such as fopen, fprintf, fscanf and fclose.
+
+A student-management program could save student records to a file so
+they remain available after the application closes.
+                """,
+                """
+#include <stdio.h>
+
+int main() {
+
+    FILE *file = fopen("student.txt", "w");
+
+    if (file == NULL) {
+        return 1;
+    }
+
+    fprintf(file, "Joe 101 89");
+
+    fclose(file);
+
+    return 0;
+}
+                """
+            )
+        ]
+    },
+
+
+    # =====================================================
+    # 5. C++
+    # =====================================================
+
+    {
+        "id": "cpp-programming",
+        "title": "C++ Programming",
+        "icon": "🚀",
+        "level": "Intermediate",
+        "description":
+            "Move from procedural programming to object-oriented programming, STL and modern C++.",
+        "chapters": [
+
+            lesson(
+                "C++ Basics",
+                """
+C++ extends the C programming language with features such as classes,
+objects, templates and the Standard Template Library.
+
+It is widely used in competitive programming, game engines, systems
+software and performance-sensitive applications.
+                """,
+                """
+#include <iostream>
+
+using namespace std;
+
+int main() {
+
+    cout << "Hello C++!" << endl;
+
+    return 0;
+}
+                """
+            ),
+
+            lesson(
+                "Classes and Objects",
+                """
+A class defines a blueprint for objects.
+
+For example, a Player class could contain health, score and movement
+functions.
+
+Objects are individual instances created from that class.
+
+This approach helps model real-world entities in software.
+                """,
+                """
+#include <iostream>
+
+using namespace std;
+
+class Player {
+
+public:
+    string name;
+    int score;
+
+    void show() {
+        cout << name << " : " << score << endl;
+    }
+};
+
+int main() {
+
+    Player p;
+
+    p.name = "Code Warrior";
+    p.score = 500;
+
+    p.show();
+
+    return 0;
+}
+                """
+            ),
+
+            lesson(
+                "Inheritance",
+                """
+Inheritance allows one class to reuse properties and behaviour from
+another class.
+
+For example, a GameCharacter class could provide common functionality
+while Player and Enemy classes extend it.
+
+This reduces repeated code and supports object-oriented design.
+                """,
+                """
+#include <iostream>
+
+using namespace std;
+
+class Character {
+
+public:
+    void move() {
+        cout << "Character moving" << endl;
+    }
+};
+
+class Player : public Character {
+
+public:
+    void attack() {
+        cout << "Player attacks" << endl;
+    }
+};
+
+int main() {
+
+    Player p;
+
+    p.move();
+    p.attack();
+
+    return 0;
+}
+                """
+            ),
+
+            lesson(
+                "STL Vectors",
+                """
+The Standard Template Library provides ready-to-use data structures.
+
+vector is a dynamic array that can grow as elements are added.
+
+Using STL makes C++ development faster and avoids manually implementing
+many common data structures.
+                """,
+                """
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int main() {
+
+    vector<int> numbers = {10, 20, 30};
+
+    numbers.push_back(40);
+
+    for (int n : numbers) {
+        cout << n << " ";
+    }
+
+    return 0;
+}
+                """
+            )
+        ]
+    },
+
+
+    # =====================================================
+    # 6. PYTHON
+    # =====================================================
+
+    {
+        "id": "python-programming",
+        "title": "Python Programming",
+        "icon": "🐍",
+        "level": "Beginner → Advanced",
+        "description":
+            "Learn Python for automation, web development, data analysis and AI.",
+        "chapters": [
+
+            lesson(
+                "Python Fundamentals",
+                """
+Python is a high-level programming language known for readable syntax.
+
+It is heavily used in automation, web development, data analysis,
+artificial intelligence and scripting.
+
+Unlike C, Python does not require you to explicitly declare the type
+of every variable in normal code.
+                """,
+                """
+name = "CodeQuest"
+age = 18
+
+print(name)
+print(age)
+                """
+            ),
+
+            lesson(
+                "Conditions and Loops",
+                """
+Python uses indentation to define code blocks.
+
+if statements make decisions while loops repeat operations.
+
+The same programming logic learned in C can be expressed with much
+less syntax in Python.
+                """,
+                """
+for mark in [45, 72, 91, 38]:
+
+    if mark >= 50:
+        print(mark, "Pass")
+    else:
+        print(mark, "Fail")
+                """
+            ),
+
+            lesson(
+                "Lists",
+                """
+Lists are ordered collections that can store multiple values.
+
+They are one of the most commonly used Python data structures.
+
+Lists can be modified by adding, removing or replacing elements.
+                """,
+                """
+students = ["Joe", "Arun", "Priya"]
+
+students.append("Kavin")
+
+for student in students:
+    print(student)
+                """
+            ),
+
+            lesson(
+                "Functions",
+                """
+Functions allow reusable blocks of logic.
+
+A function can receive input parameters and return a result.
+
+Breaking applications into functions makes code easier to test and
+maintain.
+                """,
+                """
+def calculate_average(a, b, c):
+
+    return (a + b + c) / 3
+
+
+average = calculate_average(80, 90, 70)
+
+print(average)
+                """
+            ),
+
+            lesson(
+                "Dictionaries",
+                """
+A dictionary stores information using key-value pairs.
+
+This is useful when representing real-world objects.
+
+For example, a student's information can be stored using keys such as
+name, ID and mark.
+                """,
+                """
+student = {
+    "id": 101,
+    "name": "Joe",
+    "mark": 92
+}
+
+print(student["name"])
+print(student["mark"])
+                """
+            ),
+
+            lesson(
+                "Object-Oriented Python",
+                """
+Python supports object-oriented programming.
+
+Classes can represent reusable models.
+
+For example, a Course class could represent a CodeQuest learning
+course containing a title, level and number of lessons.
+                """,
+                """
+class Course:
+
+    def __init__(self, title, level):
+        self.title = title
+        self.level = level
+
+    def show(self):
+        print(self.title, "-", self.level)
+
+
+course = Course("Python", "Beginner")
+
+course.show()
+                """
+            ),
+
+            lesson(
+                "Python Automation",
+                """
+One of Python's biggest practical advantages is automation.
+
+Instead of manually repeating a task, a script can perform it
+automatically.
+
+Examples include renaming files, reading spreadsheets, processing
+text and generating reports.
+                """,
+                """
+import os
+
+for filename in os.listdir("."):
+    print(filename)
+                """
+            )
+        ]
+    },
+
+
+    # =====================================================
+    # 7. WEB DEVELOPMENT
+    # =====================================================
+
+    {
+        "id": "web-development",
+        "title": "Web Development",
+        "icon": "🌐",
+        "level": "Beginner → Advanced",
+        "description":
+            "Build modern websites using HTML, CSS and JavaScript.",
+        "chapters": [
+
+            lesson(
+                "HTML Structure",
+                """
+HTML defines the structure of a web page.
+
+Elements such as headings, paragraphs, buttons, images and forms tell
+the browser what content exists.
+
+HTML is not primarily responsible for visual design; that job belongs
+to CSS.
+                """,
+                """
 <!DOCTYPE html>
-<html lang="en">
+
+<html>
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>CodeQuest AI</title>
-
-<style>
-
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-}
-
-:root{
-    --bg:#070711;
-    --card:#111122;
-    --card2:#17172d;
-    --purple:#8b5cf6;
-    --blue:#3b82f6;
-    --cyan:#22d3ee;
-    --green:#22c55e;
-    --yellow:#facc15;
-    --red:#ef4444;
-    --text:#f5f3ff;
-    --muted:#aaa7c4;
-    --border:rgba(139,92,246,.22);
-}
-
-body{
-    font-family:Arial,Helvetica,sans-serif;
-    background:
-        radial-gradient(circle at 10% 0%,rgba(139,92,246,.18),transparent 30%),
-        radial-gradient(circle at 90% 10%,rgba(59,130,246,.14),transparent 30%),
-        linear-gradient(135deg,#050509,#090914 50%,#060611);
-    color:var(--text);
-    min-height:100vh;
-}
-
-/* ================= NAVBAR ================= */
-
-.navbar{
-    position:sticky;
-    top:0;
-    z-index:1000;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:14px 22px;
-    background:rgba(7,7,17,.88);
-    backdrop-filter:blur(18px);
-    border-bottom:1px solid var(--border);
-}
-
-.logo{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    font-size:21px;
-    font-weight:800;
-    letter-spacing:.4px;
-}
-
-.logo-icon{
-    width:38px;
-    height:38px;
-    border-radius:12px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:linear-gradient(135deg,#8b5cf6,#2563eb);
-    box-shadow:0 0 25px rgba(139,92,246,.35);
-}
-
-.logo span{
-    background:linear-gradient(90deg,#c084fc,#60a5fa);
-    -webkit-background-clip:text;
-    background-clip:text;
-    color:transparent;
-}
-
-.nav-right{
-    display:flex;
-    align-items:center;
-    gap:10px;
-}
-
-.login-btn,
-.logout-btn{
-    border:none;
-    border-radius:12px;
-    padding:10px 15px;
-    font-weight:700;
-    cursor:pointer;
-    transition:.2s;
-}
-
-.login-btn{
-    background:white;
-    color:#111;
-}
-
-.logout-btn{
-    background:#211d38;
-    color:#ddd;
-    border:1px solid var(--border);
-}
-
-.login-btn:hover,
-.logout-btn:hover{
-    transform:translateY(-2px);
-}
-
-.user-box{
-    display:none;
-    align-items:center;
-    gap:9px;
-    background:#121225;
-    border:1px solid var(--border);
-    padding:6px 10px;
-    border-radius:13px;
-}
-
-.user-box img{
-    width:30px;
-    height:30px;
-    border-radius:50%;
-}
-
-/* ================= HERO ================= */
-
-.hero{
-    min-height:590px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    padding:80px 20px 60px;
-    position:relative;
-    overflow:hidden;
-}
-
-.hero::before{
-    content:"";
-    position:absolute;
-    width:450px;
-    height:450px;
-    border-radius:50%;
-    background:rgba(139,92,246,.12);
-    filter:blur(90px);
-}
-
-.hero-content{
-    position:relative;
-    z-index:2;
-    max-width:900px;
-}
-
-.badge{
-    display:inline-block;
-    padding:8px 14px;
-    border-radius:999px;
-    background:rgba(139,92,246,.1);
-    border:1px solid rgba(139,92,246,.35);
-    color:#c4b5fd;
-    font-size:13px;
-    margin-bottom:20px;
-}
-
-.hero h1{
-    font-size:clamp(44px,8vw,82px);
-    line-height:.95;
-    font-weight:900;
-    letter-spacing:-3px;
-}
-
-.hero h1 span{
-    background:linear-gradient(90deg,#a78bfa,#60a5fa,#22d3ee);
-    -webkit-background-clip:text;
-    background-clip:text;
-    color:transparent;
-}
-
-.hero p{
-    max-width:720px;
-    margin:24px auto;
-    color:var(--muted);
-    line-height:1.8;
-    font-size:17px;
-}
-
-.hero-buttons{
-    display:flex;
-    justify-content:center;
-    gap:12px;
-    flex-wrap:wrap;
-    margin-top:28px;
-}
-
-.primary-btn,
-.secondary-btn{
-    padding:14px 22px;
-    border-radius:14px;
-    font-weight:800;
-    cursor:pointer;
-    border:none;
-    transition:.2s;
-}
-
-.primary-btn{
-    color:white;
-    background:linear-gradient(135deg,#8b5cf6,#2563eb);
-    box-shadow:0 10px 35px rgba(99,102,241,.25);
-}
-
-.secondary-btn{
-    color:#ddd;
-    background:#121225;
-    border:1px solid var(--border);
-}
-
-.primary-btn:hover,
-.secondary-btn:hover{
-    transform:translateY(-3px);
-}
-
-/* ================= APP ================= */
-
-#appSection{
-    display:none;
-}
-
-.container{
-    width:min(1200px,94%);
-    margin:auto;
-}
-
-.section{
-    padding:35px 0;
-}
-
-.section-title{
-    font-size:28px;
-    margin-bottom:7px;
-}
-
-.section-subtitle{
-    color:var(--muted);
-    margin-bottom:22px;
-}
-
-/* ================= DASHBOARD ================= */
-
-.dashboard{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:14px;
-}
-
-.stat-card{
-    background:linear-gradient(145deg,rgba(22,22,43,.95),rgba(12,12,25,.95));
-    border:1px solid var(--border);
-    border-radius:18px;
-    padding:20px;
-    position:relative;
-    overflow:hidden;
-}
-
-.stat-card::after{
-    content:"";
-    position:absolute;
-    right:-35px;
-    bottom:-35px;
-    width:100px;
-    height:100px;
-    border-radius:50%;
-    background:rgba(139,92,246,.09);
-}
-
-.stat-label{
-    color:var(--muted);
-    font-size:13px;
-    margin-bottom:8px;
-}
-
-.stat-value{
-    font-size:29px;
-    font-weight:900;
-}
-
-.progress-wrap{
-    margin-top:11px;
-}
-
-.progress-bar{
-    width:100%;
-    height:7px;
-    background:#25243a;
-    border-radius:99px;
-    overflow:hidden;
-}
-
-.progress-fill{
-    height:100%;
-    width:0%;
-    background:linear-gradient(90deg,#8b5cf6,#22d3ee);
-    border-radius:99px;
-}
-
-/* ================= COURSE GRID ================= */
-
-.course-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:16px;
-}
-
-.course-card{
-    background:linear-gradient(145deg,#111122,#0d0d1c);
-    border:1px solid var(--border);
-    border-radius:20px;
-    padding:20px;
-    cursor:pointer;
-    transition:.25s;
-    position:relative;
-    overflow:hidden;
-}
-
-.course-card:hover{
-    transform:translateY(-5px);
-    border-color:rgba(139,92,246,.65);
-    box-shadow:0 15px 40px rgba(0,0,0,.35);
-}
-
-.course-number{
-    position:absolute;
-    top:12px;
-    right:14px;
-    color:#77758e;
-    font-size:12px;
-}
-
-.course-icon{
-    font-size:36px;
-    margin-bottom:13px;
-}
-
-.course-card h3{
-    font-size:18px;
-    margin-bottom:8px;
-}
-
-.course-card p{
-    color:var(--muted);
-    font-size:14px;
-    line-height:1.6;
-    min-height:67px;
-}
-
-.course-meta{
-    display:flex;
-    justify-content:space-between;
-    margin-top:15px;
-    font-size:12px;
-    color:#aaa;
-}
-
-.level{
-    color:#a78bfa;
-}
-
-/* ================= FEATURE GRID ================= */
-
-.feature-grid{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:14px;
-}
-
-.feature-card{
-    background:#101020;
-    border:1px solid var(--border);
-    border-radius:18px;
-    padding:20px;
-}
-
-.feature-icon{
-    font-size:30px;
-    margin-bottom:12px;
-}
-
-.feature-card h3{
-    margin-bottom:7px;
-}
-
-.feature-card p{
-    color:var(--muted);
-    font-size:13px;
-    line-height:1.6;
-}
-
-/* ================= MODALS ================= */
-
-.modal{
-    position:fixed;
-    inset:0;
-    z-index:2000;
-    background:rgba(0,0,0,.78);
-    backdrop-filter:blur(8px);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    padding:18px;
-}
-
-.modal.show{
-    display:flex;
-}
-
-.modal-box{
-    width:min(950px,100%);
-    max-height:90vh;
-    overflow:auto;
-    background:#0e0e1c;
-    border:1px solid rgba(139,92,246,.35);
-    border-radius:22px;
-    box-shadow:0 25px 90px rgba(0,0,0,.55);
-}
-
-.modal-header{
-    position:sticky;
-    top:0;
-    z-index:2;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:18px 20px;
-    background:rgba(14,14,28,.96);
-    border-bottom:1px solid var(--border);
-}
-
-.modal-title{
-    font-size:20px;
-    font-weight:800;
-}
-
-.close-btn{
-    width:36px;
-    height:36px;
-    border:none;
-    border-radius:10px;
-    background:#201f35;
-    color:white;
-    cursor:pointer;
-    font-size:18px;
-}
-
-.modal-body{
-    padding:22px;
-}
-
-/* ================= LESSON ================= */
-
-.lesson-list{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    margin-bottom:20px;
-}
-
-.lesson-tab{
-    padding:9px 12px;
-    border-radius:10px;
-    border:1px solid var(--border);
-    background:#131326;
-    color:#bbb;
-    cursor:pointer;
-    font-size:12px;
-}
-
-.lesson-tab.active{
-    color:white;
-    background:linear-gradient(135deg,#6d3de0,#285dc6);
-}
-
-.lesson-content{
-    background:#111122;
-    border:1px solid var(--border);
-    border-radius:18px;
-    padding:22px;
-}
-
-.lesson-content h2{
-    margin-bottom:15px;
-}
-
-.lesson-text{
-    white-space:pre-line;
-    color:#d0cee0;
-    line-height:1.8;
-    font-size:15px;
-}
-
-.lesson-sample-title{
-    margin-top:25px;
-    margin-bottom:9px;
-    color:#c4b5fd;
-    font-weight:800;
-}
-
-.code-box{
-    background:#050509;
-    border:1px solid #25243b;
-    border-radius:14px;
-    padding:17px;
-    overflow:auto;
-}
-
-.code-box pre{
-    color:#d7d3ff;
-    white-space:pre-wrap;
-    line-height:1.65;
-    font-family:Consolas,monospace;
-    font-size:13px;
-}
-
-.lesson-actions{
-    display:flex;
-    justify-content:flex-end;
-    gap:10px;
-    margin-top:18px;
-}
-
-/* ================= QUIZ ================= */
-
-.quiz-top{
-    display:flex;
-    justify-content:space-between;
-    gap:10px;
-    margin-bottom:20px;
-    flex-wrap:wrap;
-}
-
-.quiz-pill{
-    padding:9px 12px;
-    border-radius:10px;
-    background:#17172c;
-    border:1px solid var(--border);
-    color:#bbb;
-}
-
-.quiz-question{
-    font-size:21px;
-    line-height:1.5;
-    margin-bottom:20px;
-}
-
-.options{
-    display:grid;
-    gap:10px;
-}
-
-.option{
-    width:100%;
-    text-align:left;
-    padding:15px;
-    border-radius:13px;
-    background:#151527;
-    border:1px solid #292841;
-    color:#eee;
-    cursor:pointer;
-    transition:.2s;
-}
-
-.option:hover{
-    border-color:#8b5cf6;
-    transform:translateX(2px);
-}
-
-.option.selected{
-    border-color:#8b5cf6;
-    background:#211842;
-}
-
-.option.correct{
-    border-color:#22c55e;
-    background:rgba(34,197,94,.12);
-}
-
-.option.wrong{
-    border-color:#ef4444;
-    background:rgba(239,68,68,.12);
-}
-
-.quiz-actions{
-    display:flex;
-    justify-content:space-between;
-    margin-top:22px;
-}
-
-/* ================= COMPILER ================= */
-
-.compiler-toolbar{
-    display:flex;
-    gap:9px;
-    flex-wrap:wrap;
-    margin-bottom:12px;
-}
-
-.compiler-toolbar button{
-    padding:10px 14px;
-    border:none;
-    border-radius:10px;
-    cursor:pointer;
-    font-weight:700;
-}
-
-.run-btn{
-    background:#22c55e;
-    color:#041009;
-}
-
-.example-btn{
-    background:#292541;
-    color:#eee;
-}
-
-.clear-btn{
-    background:#251d2d;
-    color:#ddd;
-}
-
-.compiler-label{
-    display:block;
-    margin:14px 0 7px;
-    color:#aaa;
-    font-size:13px;
-}
-
-#cCode,
-#cStdin{
-    width:100%;
-    border:none;
-    outline:none;
-    resize:vertical;
-    background:#050509;
-    color:#d9d4ff;
-    border:1px solid #28263c;
-    border-radius:14px;
-    padding:16px;
-    font-family:Consolas,monospace;
-    line-height:1.6;
-}
-
-#cCode{
-    min-height:310px;
-}
-
-#cStdin{
-    min-height:100px;
-}
-
-.compiler-output{
-    margin-top:15px;
-    background:#050509;
-    border:1px solid #28263c;
-    border-radius:14px;
-    padding:15px;
-    min-height:120px;
-    white-space:pre-wrap;
-    font-family:Consolas,monospace;
-    color:#bfffcf;
-    overflow:auto;
-}
-
-/* ================= CAREER ================= */
-
-.career-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:14px;
-}
-
-.career-card{
-    padding:19px;
-    background:#111122;
-    border:1px solid var(--border);
-    border-radius:17px;
-}
-
-.career-card h3{
-    margin-bottom:8px;
-}
-
-.career-card p{
-    color:#aaa;
-    line-height:1.65;
-    font-size:14px;
-}
-
-/* ================= ACHIEVEMENTS ================= */
-
-.achievement-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:12px;
-}
-
-.achievement{
-    padding:16px;
-    border-radius:15px;
-    border:1px solid var(--border);
-    background:#111122;
-}
-
-.achievement.locked{
-    opacity:.4;
-}
-
-.achievement-icon{
-    font-size:28px;
-    margin-bottom:8px;
-}
-
-/* ================= TOAST ================= */
-
-.toast{
-    position:fixed;
-    right:20px;
-    bottom:20px;
-    z-index:5000;
-    max-width:340px;
-    padding:14px 17px;
-    background:#151528;
-    border:1px solid var(--border);
-    border-radius:13px;
-    box-shadow:0 15px 40px rgba(0,0,0,.4);
-    transform:translateY(120px);
-    opacity:0;
-    transition:.3s;
-}
-
-.toast.show{
-    transform:translateY(0);
-    opacity:1;
-}
-
-/* ================= FOOTER ================= */
-
-footer{
-    padding:45px 20px;
-    text-align:center;
-    color:#77758c;
-    border-top:1px solid var(--border);
-    margin-top:40px;
-}
-
-footer strong{
-    color:#aaa;
-}
-
-/* ================= RESPONSIVE ================= */
-
-@media(max-width:900px){
-
-    .dashboard{
-        grid-template-columns:repeat(2,1fr);
-    }
-
-    .course-grid{
-        grid-template-columns:repeat(2,1fr);
-    }
-
-    .feature-grid{
-        grid-template-columns:repeat(2,1fr);
-    }
-
-    .achievement-grid{
-        grid-template-columns:repeat(2,1fr);
-    }
-}
-
-@media(max-width:650px){
-
-    .navbar{
-        padding:11px 13px;
-    }
-
-    .logo{
-        font-size:17px;
-    }
-
-    .logo-icon{
-        width:33px;
-        height:33px;
-    }
-
-    .user-box{
-        display:none!important;
-    }
-
-    .hero{
-        min-height:520px;
-        padding-top:60px;
-    }
-
-    .hero h1{
-        letter-spacing:-2px;
-    }
-
-    .hero p{
-        font-size:14px;
-    }
-
-    .dashboard,
-    .course-grid,
-    .feature-grid,
-    .career-grid,
-    .achievement-grid{
-        grid-template-columns:1fr;
-    }
-
-    .section{
-        padding:25px 0;
-    }
-
-    .modal{
-        padding:8px;
-    }
-
-    .modal-body{
-        padding:15px;
-    }
-
-    #cCode{
-        min-height:260px;
-    }
-}
-
-</style>
+    <title>CodeQuest</title>
 </head>
 
 <body>
 
-<!-- =========================================================
-     NAVBAR
-========================================================= -->
+    <h1>Welcome to CodeQuest AI</h1>
 
-<nav class="navbar">
+    <p>Learn. Practice. Play. Build.</p>
 
-    <div class="logo">
-        <div class="logo-icon">⚡</div>
-        <div>Code<span>Quest AI</span></div>
-    </div>
-
-    <div class="nav-right">
-
-        <div class="user-box" id="userBox">
-            <img id="userPhoto" src="" alt="User">
-            <span id="userName">User</span>
-        </div>
-
-        <button class="login-btn" id="googleLoginBtn" onclick="loginWithGoogle()">
-            🔐 Continue with Google
-        </button>
-
-        <button class="logout-btn" id="logoutBtn"
-                onclick="logout()"
-                style="display:none;">
-            Logout
-        </button>
-
-    </div>
-
-</nav>
-
-
-<!-- =========================================================
-     LANDING PAGE
-========================================================= -->
-
-<section class="hero" id="landingSection">
-
-    <div class="hero-content">
-
-        <div class="badge">
-            🚀 A-Z Computer Science Learning Platform
-        </div>
-
-        <h1>
-            Learn.
-            <span>Play.</span>
-            Build.
-        </h1>
-
-        <p>
-            CodeQuest AI turns computer science learning into a
-            game-like journey. Learn concepts, practice real code,
-            solve quizzes, build projects and prepare for your career.
-        </p>
-
-        <div class="hero-buttons">
-
-            <button class="primary-btn"
-                    onclick="enterApp()">
-                🚀 Start Your Quest
-            </button>
-
-            <button class="secondary-btn"
-                    onclick="loginWithGoogle()">
-                🔐 Login with Google
-            </button>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     MAIN APP
-========================================================= -->
-
-<main id="appSection">
-
-<div class="container">
-
-    <!-- DASHBOARD -->
-
-    <section class="section">
-
-        <div class="section-title">
-            🎮 Your Dashboard
-        </div>
-
-        <div class="section-subtitle">
-            Learn consistently and level up your skills.
-        </div>
-
-        <div class="dashboard">
-
-            <div class="stat-card">
-                <div class="stat-label">XP</div>
-                <div class="stat-value" id="xpValue">0</div>
-
-                <div class="progress-wrap">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="xpProgress"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-label">LEVEL</div>
-                <div class="stat-value" id="levelValue">1</div>
-                <div class="stat-label" id="levelName">
-                    Code Explorer
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-label">🔥 STREAK</div>
-                <div class="stat-value" id="streakValue">0</div>
-                <div class="stat-label">days</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-label">COMPLETED</div>
-                <div class="stat-value" id="completedValue">0</div>
-                <div class="stat-label">lessons</div>
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- COURSES -->
-
-    <section class="section">
-
-        <div class="section-title">
-            🧠 Learning Roadmap
-        </div>
-
-        <div class="section-subtitle">
-            Follow the path from computer basics to job-ready development.
-        </div>
-
-        <div class="course-grid" id="courseGrid">
-
-            <div class="course-card">
-                <div class="course-icon">⏳</div>
-                <h3>Loading courses...</h3>
-                <p>Please wait while CodeQuest AI loads your curriculum.</p>
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- FEATURES -->
-
-    <section class="section">
-
-        <div class="section-title">
-            ⚔️ Practice Arena
-        </div>
-
-        <div class="section-subtitle">
-            Don't just read. Practice what you learn.
-        </div>
-
-        <div class="feature-grid">
-
-            <div class="feature-card"
-                 onclick="openQuiz()"
-                 style="cursor:pointer">
-
-                <div class="feature-icon">🧠</div>
-
-                <h3>Quiz Arena</h3>
-
-                <p>
-                    Test your knowledge with timed questions,
-                    XP rewards and progress tracking.
-                </p>
-
-            </div>
-
-
-            <div class="feature-card"
-                 onclick="openCompiler()"
-                 style="cursor:pointer">
-
-                <div class="feature-icon">💻</div>
-
-                <h3>C Compiler</h3>
-
-                <p>
-                    Write real C programs and provide program
-                    input through STDIN.
-                </p>
-
-            </div>
-
-
-            <div class="feature-card"
-                 onclick="openCareer()"
-                 style="cursor:pointer">
-
-                <div class="feature-icon">💼</div>
-
-                <h3>Career Guide</h3>
-
-                <p>
-                    Explore software careers, skills,
-                    projects and interview preparation.
-                </p>
-
-            </div>
-
-
-            <div class="feature-card">
-
-                <div class="feature-icon">🏆</div>
-
-                <h3>Achievements</h3>
-
-                <p>
-                    Complete lessons, maintain streaks and
-                    unlock achievements.
-                </p>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- ACHIEVEMENTS -->
-
-    <section class="section">
-
-        <div class="section-title">
-            🏆 Achievements
-        </div>
-
-        <div class="section-subtitle">
-            Your progress milestones.
-        </div>
-
-        <div class="achievement-grid">
-
-            <div class="achievement locked" id="achievementFirst">
-                <div class="achievement-icon">🌱</div>
-                <h3>First Step</h3>
-                <p>Complete your first lesson.</p>
-            </div>
-
-            <div class="achievement locked" id="achievementFive">
-                <div class="achievement-icon">⚡</div>
-                <h3>Fast Learner</h3>
-                <p>Complete five lessons.</p>
-            </div>
-
-            <div class="achievement locked" id="achievementTen">
-                <div class="achievement-icon">🔥</div>
-                <h3>Quest Warrior</h3>
-                <p>Complete ten lessons.</p>
-            </div>
-
-            <div class="achievement locked" id="achievementQuiz">
-                <div class="achievement-icon">🧠</div>
-                <h3>Quiz Master</h3>
-                <p>Score 80% or more in a quiz.</p>
-            </div>
-
-            <div class="achievement locked" id="achievementXP">
-                <div class="achievement-icon">💎</div>
-                <h3>XP Hunter</h3>
-                <p>Earn 500 XP.</p>
-            </div>
-
-            <div class="achievement locked" id="achievementStreak">
-                <div class="achievement-icon">🔥</div>
-                <h3>Streak Builder</h3>
-                <p>Maintain a 7-day streak.</p>
-            </div>
-
-        </div>
-
-    </section>
-
-</div>
-
-</main>
-
-
-<!-- =========================================================
-     COURSE MODAL
-========================================================= -->
-
-<div class="modal" id="courseModal">
-
-    <div class="modal-box">
-
-        <div class="modal-header">
-
-            <div class="modal-title" id="courseModalTitle">
-                Course
-            </div>
-
-            <button class="close-btn"
-                    onclick="closeModal('courseModal')">
-                ✕
-            </button>
-
-        </div>
-
-        <div class="modal-body">
-
-            <div class="lesson-list" id="lessonList"></div>
-
-            <div class="lesson-content">
-
-                <h2 id="lessonTitle">
-                    Lesson
-                </h2>
-
-                <div class="lesson-text"
-                     id="lessonText">
-                    Loading...
-                </div>
-
-                <div class="lesson-sample-title">
-                    💻 Practical Example
-                </div>
-
-                <div class="code-box">
-                    <pre id="lessonSample"></pre>
-                </div>
-
-                <div class="lesson-actions">
-
-                    <button class="secondary-btn"
-                            onclick="previousLesson()">
-                        ← Previous
-                    </button>
-
-                    <button class="primary-btn"
-                            onclick="completeCurrentLesson()">
-                        ✅ Complete Lesson
-                    </button>
-
-                    <button class="primary-btn"
-                            onclick="nextLesson()">
-                        Next →
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     QUIZ MODAL
-========================================================= -->
-
-<div class="modal" id="quizModal">
-
-    <div class="modal-box">
-
-        <div class="modal-header">
-
-            <div class="modal-title">
-                🧠 Quiz Arena
-            </div>
-
-            <button class="close-btn"
-                    onclick="closeModal('quizModal')">
-                ✕
-            </button>
-
-        </div>
-
-        <div class="modal-body">
-
-            <div class="quiz-top">
-
-                <div class="quiz-pill">
-                    Question:
-                    <span id="quizNumber">1</span>
-                </div>
-
-                <div class="quiz-pill">
-                    ⏱️
-                    <span id="quizTimer">30</span>s
-                </div>
-
-                <div class="quiz-pill">
-                    Score:
-                    <span id="quizScore">0</span>
-                </div>
-
-            </div>
-
-            <div class="quiz-question"
-                 id="quizQuestion">
-                Loading question...
-            </div>
-
-            <div class="options"
-                 id="quizOptions">
-            </div>
-
-            <div class="quiz-actions">
-
-                <button class="secondary-btn"
-                        onclick="closeModal('quizModal')">
-                    Exit
-                </button>
-
-                <button class="primary-btn"
-                        onclick="nextQuizQuestion()">
-                    Next →
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     COMPILER MODAL
-========================================================= -->
-
-<div class="modal" id="compilerModal">
-
-    <div class="modal-box">
-
-        <div class="modal-header">
-
-            <div class="modal-title">
-                💻 C Programming Arena
-            </div>
-
-            <button class="close-btn"
-                    onclick="closeModal('compilerModal')">
-                ✕
-            </button>
-
-        </div>
-
-        <div class="modal-body">
-
-            <div class="compiler-toolbar">
-
-                <button class="run-btn"
-                        onclick="runCCode()">
-                    ▶ Run Code
-                </button>
-
-                <button class="example-btn"
-                        onclick="loadCExample()">
-                    📌 Load Example
-                </button>
-
-                <button class="clear-btn"
-                        onclick="clearCompiler()">
-                    🗑 Clear
-                </button>
-
-            </div>
-
-
-            <label class="compiler-label">
-                C Program
-            </label>
-
-            <textarea id="cCode"
-placeholder="Write your C program here...">#include <stdio.h>
-
-int main() {
-    int a, b, sum;
-
-    printf("Enter first number: ");
-    scanf("%d", &a);
-
-    printf("Enter second number: ");
-    scanf("%d", &b);
-
-    sum = a + b;
-
-    printf("Sum = %d\n", sum);
-
-    return 0;
-}</textarea>
-
-
-            <label class="compiler-label">
-                Program Input / STDIN
-            </label>
-
-            <textarea id="cStdin"
-placeholder="Enter input here.
-
-Example:
-10
-20"></textarea>
-
-
-            <label class="compiler-label">
-                Program Output
-            </label>
-
-            <div class="compiler-output"
-                 id="compilerOutput">
-                Output will appear here...
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     CAREER MODAL
-========================================================= -->
-
-<div class="modal" id="careerModal">
-
-    <div class="modal-box">
-
-        <div class="modal-header">
-
-            <div class="modal-title">
-                💼 Career Guide
-            </div>
-
-            <button class="close-btn"
-                    onclick="closeModal('careerModal')">
-                ✕
-            </button>
-
-        </div>
-
-        <div class="modal-body">
-
-            <div class="career-grid"
-                 id="careerGrid">
-
-                Loading careers...
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     TOAST
-========================================================= -->
-
-<div class="toast" id="toast"></div>
-
-
-<!-- =========================================================
-     FOOTER
-========================================================= -->
-
-<footer>
-
-    <strong>CodeQuest AI</strong>
-    <br>
-    LEARN • PRACTICE • PLAY • BUILD
-
-    <br><br>
-
-    <small>
-        Learn today. Build tomorrow. 🚀
-    </small>
-
-</footer>
-
-
-<!-- =========================================================
-     FIREBASE
-========================================================= -->
-
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-
-
-<script>
-
-/* =========================================================
-   FIREBASE CONFIG
-========================================================= */
-
-const firebaseConfig = {
-    apiKey: "AIzaSyDINYVF59k4gpq1GXFN4UUxGbcs5KxYGrw",
-    authDomain: "codequest-ai-69884.firebaseapp.com",
-    projectId: "codequest-ai-69884",
-    storageBucket: "codequest-ai-69884.firebasestorage.app",
-    messagingSenderId: "834925219358",
-    appId: "1:834925219358:web:f836451b4db67e1e3fa80f",
-    measurementId: "G-ETRG49NSKC"
-};
-
-
-/* =========================================================
-   FIREBASE INITIALIZATION
-========================================================= */
-
-let auth = null;
-let currentUser = null;
-
-try{
-
-    firebase.initializeApp(firebaseConfig);
-
-    auth = firebase.auth();
-
-}catch(error){
-
-    console.error("Firebase initialization error:",error);
-
-}
-
-
-/* =========================================================
-   PLAYER DATA
-========================================================= */
-
-let currentUid = "guest";
-
-let player = {
-    xp:0,
-    completed:[],
-    streak:0,
-    lastVisit:"",
-    achievements:[],
-    quizBest:0
-};
-
-
-function storageKey(){
-
-    return "codequest_player_" + currentUid;
-
-}
-
-
-function setPlayerStorageForUser(uid){
-
-    currentUid = uid || "guest";
-
-}
-
-
-function loadPlayer(){
-
-    try{
-
-        const raw =
-            localStorage.getItem(storageKey());
-
-        if(raw){
-
-            player = {
-                ...player,
-                ...JSON.parse(raw)
-            };
-
-        }
-
-    }catch(error){
-
-        console.error("Player load error:",error);
-
-    }
-
-    updateStreak();
-    updateDashboard();
-    updateAchievements();
-
-}
-
-
-function savePlayer(){
-
-    try{
-
-        localStorage.setItem(
-            storageKey(),
-            JSON.stringify(player)
-        );
-
-    }catch(error){
-
-        console.error("Player save error:",error);
-
-    }
-
-}
-
-
-/* =========================================================
-   STREAK
-========================================================= */
-
-function dateString(date){
-
-    return date.toISOString().split("T")[0];
-
-}
-
-
-function updateStreak(){
-
-    const today =
-        dateString(new Date());
-
-    if(!player.lastVisit){
-
-        player.streak = 1;
-        player.lastVisit = today;
-
-    }else if(player.lastVisit !== today){
-
-        const last =
-            new Date(player.lastVisit);
-
-        const now =
-            new Date(today);
-
-        const diff =
-            Math.floor(
-                (now-last)/(1000*60*60*24)
-            );
-
-        if(diff === 1){
-
-            player.streak++;
-
-        }else if(diff > 1){
-
-            player.streak = 1;
-
-        }
-
-        player.lastVisit = today;
-
-    }
-
-    savePlayer();
-
-}
-
-
-/* =========================================================
-   LEVEL SYSTEM
-========================================================= */
-
-function getLevel(){
-
-    const level =
-        Math.floor(player.xp / 100) + 1;
-
-    const names = [
-        "Code Explorer",
-        "Bug Hunter",
-        "Logic Builder",
-        "Code Warrior",
-        "Software Crafter",
-        "Code Master",
-        "Tech Ninja",
-        "Digital Architect",
-        "AI Pioneer",
-        "Legendary Developer"
-    ];
-
-    const index =
-        Math.min(
-            level-1,
-            names.length-1
-        );
-
-    return {
-        level,
-        name:names[index]
-    };
-
-}
-
-
-/* =========================================================
-   DASHBOARD
-========================================================= */
-
-function updateDashboard(){
-
-    const level =
-        getLevel();
-
-    document.getElementById("xpValue")
-        .textContent = player.xp;
-
-    document.getElementById("levelValue")
-        .textContent = level.level;
-
-    document.getElementById("levelName")
-        .textContent = level.name;
-
-    document.getElementById("streakValue")
-        .textContent = player.streak;
-
-    document.getElementById("completedValue")
-        .textContent =
-        player.completed.length;
-
-    const progress =
-        player.xp % 100;
-
-    document.getElementById("xpProgress")
-        .style.width = progress + "%";
-
-}
-
-
-/* =========================================================
-   XP
-========================================================= */
-
-function addXP(amount){
-
-    player.xp += amount;
-
-    savePlayer();
-
-    updateDashboard();
-    updateAchievements();
-
-    showToast("+" + amount + " XP ⚡");
-
-}
-
-
-/* =========================================================
-   ACHIEVEMENTS
-========================================================= */
-
-function unlockAchievement(id){
-
-    if(player.achievements.includes(id))
-        return;
-
-    player.achievements.push(id);
-
-    savePlayer();
-
-    showToast("🏆 Achievement unlocked!");
-
-}
-
-
-function updateAchievements(){
-
-    const completed =
-        player.completed.length;
-
-    const xp =
-        player.xp;
-
-    const streak =
-        player.streak;
-
-    if(completed >= 1){
-
-        unlockAchievement("first");
-
-    }
-
-    if(completed >= 5){
-
-        unlockAchievement("five");
-
-    }
-
-    if(completed >= 10){
-
-        unlockAchievement("ten");
-
-    }
-
-    if(xp >= 500){
-
-        unlockAchievement("xp");
-
-    }
-
-    if(streak >= 7){
-
-        unlockAchievement("streak");
-
-    }
-
-    setAchievement(
-        "achievementFirst",
-        player.achievements.includes("first")
-    );
-
-    setAchievement(
-        "achievementFive",
-        player.achievements.includes("five")
-    );
-
-    setAchievement(
-        "achievementTen",
-        player.achievements.includes("ten")
-    );
-
-    setAchievement(
-        "achievementXP",
-        player.achievements.includes("xp")
-    );
-
-    setAchievement(
-        "achievementStreak",
-        player.achievements.includes("streak")
-    );
-
-}
-
-
-function setAchievement(id,unlocked){
-
-    const element =
-        document.getElementById(id);
-
-    if(!element)
-        return;
-
-    if(unlocked)
-        element.classList.remove("locked");
-    else
-        element.classList.add("locked");
-
-}
-
-
-/* =========================================================
-   TOAST
-========================================================= */
-
-let toastTimer = null;
-
-function showToast(message){
-
-    const toast =
-        document.getElementById("toast");
-
-    toast.textContent = message;
-
-    toast.classList.add("show");
-
-    clearTimeout(toastTimer);
-
-    toastTimer =
-        setTimeout(
-            () => toast.classList.remove("show"),
-            2500
-        );
-
-}
-
-
-/* =========================================================
-   GOOGLE LOGIN
-========================================================= */
-
-async function loginWithGoogle(){
-
-    if(!auth){
-
-        showToast(
-            "Firebase is not initialized."
-        );
-
-        return;
-
-    }
-
-    try{
-
-        const provider =
-            new firebase.auth.GoogleAuthProvider();
-
-        provider.setCustomParameters({
-            prompt:"select_account"
-        });
-
-        await auth.signInWithRedirect(provider);
-
-    }catch(error){
-
-        console.error(
-            "Google login error:",
-            error
-        );
-
-        showToast(
-            error.message ||
-            "Google login failed."
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   AUTH STATE
-========================================================= */
-
-if(auth){
-
-    auth.onAuthStateChanged(
-        async function(user){
-
-            currentUser = user || null;
-
-            if(user){
-
-                setPlayerStorageForUser(
-                    user.uid
-                );
-
-                showLoggedInUser(user);
-
-                loadPlayer();
-
-                await syncFirebaseUser(user);
-
-                enterApp();
-
-            }else{
-
-                currentUid = "guest";
-
-                loadPlayer();
-
-                showLoggedOutUser();
-
-            }
-
-        }
-    );
-
-
-    auth.getRedirectResult()
-        .then(function(result){
-
-            if(result && result.user){
-
-                console.log(
-                    "Google login successful"
-                );
-
-            }
-
-        })
-        .catch(function(error){
-
-            console.error(
-                "Redirect login error:",
-                error
-            );
-
-            if(
-                error &&
-                error.code !==
-                "auth/no-auth-event"
-            ){
-
-                showToast(
-                    error.message ||
-                    "Login failed."
-                );
-
-            }
-
-        });
-
-}
-
-
-/* =========================================================
-   SHOW USER
-========================================================= */
-
-function showLoggedInUser(user){
-
-    const loginBtn =
-        document.getElementById(
-            "googleLoginBtn"
-        );
-
-    const logoutBtn =
-        document.getElementById(
-            "logoutBtn"
-        );
-
-    const userBox =
-        document.getElementById(
-            "userBox"
-        );
-
-    const name =
-        document.getElementById(
-            "userName"
-        );
-
-    const photo =
-        document.getElementById(
-            "userPhoto"
-        );
-
-    loginBtn.style.display = "none";
-
-    logoutBtn.style.display = "block";
-
-    userBox.style.display = "flex";
-
-    name.textContent =
-        user.displayName ||
-        user.email ||
-        "CodeQuest User";
-
-    photo.src =
-        user.photoURL ||
-        "https://via.placeholder.com/40";
-
-}
-
-
-function showLoggedOutUser(){
-
-    document.getElementById(
-        "googleLoginBtn"
-    ).style.display = "block";
-
-    document.getElementById(
-        "logoutBtn"
-    ).style.display = "none";
-
-    document.getElementById(
-        "userBox"
-    ).style.display = "none";
-
-}
-
-
-/* =========================================================
-   FIREBASE BACKEND SYNC
-========================================================= */
-
-async function syncFirebaseUser(user){
-
-    try{
-
-        const token =
-            await user.getIdToken();
-
-        const response =
-            await fetch(
-                "/api/firebase-login",
-                {
-                    method:"POST",
-                    headers:{
-                        "Content-Type":
-                            "application/json"
-                    },
-                    body:JSON.stringify({
-                        idToken:token
-                    })
-                }
-            );
-
-        if(!response.ok){
-
-            console.warn(
-                "Backend Firebase sync unavailable."
-            );
-
-        }
-
-    }catch(error){
-
-        console.warn(
-            "Firebase backend sync:",
-            error
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   LOGOUT
-========================================================= */
-
-async function logout(){
-
-    try{
-
-        if(auth){
-
-            await auth.signOut();
-
-        }
-
-        currentUser = null;
-
-        currentUid = "guest";
-
-        loadPlayer();
-
-        document.getElementById(
-            "appSection"
-        ).style.display = "none";
-
-        document.getElementById(
-            "landingSection"
-        ).style.display = "flex";
-
-        showLoggedOutUser();
-
-        showToast("Logged out successfully.");
-
-    }catch(error){
-
-        console.error(error);
-
-    }
-
-}
-
-
-/* =========================================================
-   ENTER APP
-========================================================= */
-
-function enterApp(){
-
-    document.getElementById(
-        "landingSection"
-    ).style.display = "none";
-
-    document.getElementById(
-        "appSection"
-    ).style.display = "block";
-
-    window.scrollTo({
-        top:0,
-        behavior:"smooth"
-    });
-
-    loadCourses();
-
-}
-
-
-/* =========================================================
-   COURSES
-========================================================= */
-
-let courses = [];
-let selectedCourse = null;
-let selectedLessonIndex = 0;
-
-
-async function loadCourses(){
-
-    const grid =
-        document.getElementById(
-            "courseGrid"
-        );
-
-    try{
-
-        const response =
-            await fetch("/api/courses");
-
-        if(!response.ok){
-
-            throw new Error(
-                "Course API returned " +
-                response.status
-            );
-
-        }
-
-        const data =
-            await response.json();
-
-        if(Array.isArray(data)){
-
-            courses = data;
-
-        }else{
-
-            courses =
-                data.courses || [];
-
-        }
-
-        renderCourses();
-
-    }catch(error){
-
-        console.error(
-            "Course loading error:",
-            error
-        );
-
-        grid.innerHTML = `
-            <div class="course-card">
-                <div class="course-icon">⚠️</div>
-                <h3>Courses unavailable</h3>
-                <p>
-                    The frontend is working, but the
-                    Flask course API is not responding.
-                </p>
-            </div>
-        `;
-
-    }
-
-}
-
-
-/* =========================================================
-   RENDER COURSES
-========================================================= */
-
-function renderCourses(){
-
-    const grid =
-        document.getElementById(
-            "courseGrid"
-        );
-
-    if(!courses.length){
-
-        grid.innerHTML = `
-            <div class="course-card">
-                <div class="course-icon">📚</div>
-                <h3>No courses found</h3>
-                <p>
-                    Add course data to /api/courses.
-                </p>
-            </div>
-        `;
-
-        return;
-
-    }
-
-    grid.innerHTML =
-        courses.map(
-            (course,index) => {
-
-                const chapters =
-                    Array.isArray(
-                        course.chapters
-                    )
-                    ? course.chapters.length
-                    : 0;
-
-                return `
-                    <div class="course-card"
-                         onclick="openCourse(${index})">
-
-                        <div class="course-number">
-                            ${String(index+1).padStart(2,"0")}
-                        </div>
-
-                        <div class="course-icon">
-                            ${course.icon || "📘"}
-                        </div>
-
-                        <h3>
-                            ${escapeHTML(
-                                course.title ||
-                                course.name ||
-                                "Course"
-                            )}
-                        </h3>
-
-                        <p>
-                            ${escapeHTML(
-                                course.description ||
-                                "Learn practical skills."
-                            )}
-                        </p>
-
-                        <div class="course-meta">
-
-                            <span class="level">
-                                ${escapeHTML(
-                                    course.level ||
-                                    "Beginner"
-                                )}
-                            </span>
-
-                            <span>
-                                ${chapters} lessons
-                            </span>
-
-                        </div>
-
-                    </div>
-                `;
-
-            }
-        ).join("");
-
-}
-
-
-/* =========================================================
-   OPEN COURSE
-========================================================= */
-
-function openCourse(index){
-
-    selectedCourse =
-        courses[index];
-
-    selectedLessonIndex = 0;
-
-    document.getElementById(
-        "courseModalTitle"
-    ).textContent =
-        selectedCourse.title ||
-        selectedCourse.name ||
-        "Course";
-
-    renderLessonTabs();
-    showLesson(0);
-
-    openModal("courseModal");
-
-}
-
-
-/* =========================================================
-   LESSON TABS
-========================================================= */
-
-function renderLessonTabs(){
-
-    const list =
-        document.getElementById(
-            "lessonList"
-        );
-
-    const chapters =
-        selectedCourse.chapters || [];
-
-    list.innerHTML =
-        chapters.map(
-            (chapter,index) => `
-
-                <button
-                    class="lesson-tab ${index === 0 ? "active":""}"
-                    onclick="showLesson(${index})">
-
-                    ${index+1}.
-                    ${escapeHTML(
-                        chapter.title ||
-                        "Lesson"
-                    )}
-
-                </button>
-
-            `
-        ).join("");
-
-}
-
-
-/* =========================================================
-   SHOW LESSON
-========================================================= */
-
-function showLesson(index){
-
-    if(!selectedCourse)
-        return;
-
-    const chapters =
-        selectedCourse.chapters || [];
-
-    if(index < 0 || index >= chapters.length)
-        return;
-
-    selectedLessonIndex = index;
-
-    const chapter =
-        chapters[index];
-
-    document.getElementById(
-        "lessonTitle"
-    ).textContent =
-        chapter.title ||
-        "Lesson";
-
-    document.getElementById(
-        "lessonText"
-    ).textContent =
-        chapter.lesson ||
-        "Lesson content is not available yet.";
-
-    document.getElementById(
-        "lessonSample"
-    ).textContent =
-        chapter.sample ||
-        "No practical example available yet.";
-
-    document.querySelectorAll(
-        ".lesson-tab"
-    ).forEach(
-        (button,i) => {
-
-            button.classList.toggle(
-                "active",
-                i === index
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   COMPLETE LESSON
-========================================================= */
-
-function completeCurrentLesson(){
-
-    if(!selectedCourse)
-        return;
-
-    const courseId =
-        selectedCourse.id ||
-        selectedCourse.title ||
-        "course";
-
-    const chapter =
-        selectedCourse.chapters[
-            selectedLessonIndex
-        ];
-
-    const lessonId =
-        courseId +
-        "::" +
-        (
-            chapter.title ||
-            selectedLessonIndex
-        );
-
-    if(
-        player.completed.includes(
-            lessonId
-        )
-    ){
-
-        showToast(
-            "Already completed ✅"
-        );
-
-        return;
-
-    }
-
-    player.completed.push(
-        lessonId
-    );
-
-    addXP(20);
-
-    savePlayer();
-
-    updateDashboard();
-    updateAchievements();
-
-    showToast(
-        "Lesson completed! +20 XP 🎉"
-    );
-
-}
-
-
-/* =========================================================
-   NEXT / PREVIOUS LESSON
-========================================================= */
-
-function nextLesson(){
-
-    if(!selectedCourse)
-        return;
-
-    const total =
-        selectedCourse.chapters.length;
-
-    if(
-        selectedLessonIndex <
-        total-1
-    ){
-
-        showLesson(
-            selectedLessonIndex + 1
-        );
-
-    }else{
-
-        showToast(
-            "You reached the end of this course! 🏆"
-        );
-
-    }
-
-}
-
-
-function previousLesson(){
-
-    if(
-        selectedLessonIndex > 0
-    ){
-
-        showLesson(
-            selectedLessonIndex - 1
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   QUIZ
-========================================================= */
-
-let quizQuestions = [];
-let quizIndex = 0;
-let quizScore = 0;
-let quizTimer = null;
-let quizSeconds = 30;
-let selectedAnswer = null;
-let quizFinished = false;
-
-
-async function openQuiz(){
-
-    openModal("quizModal");
-
-    document.getElementById(
-        "quizQuestion"
-    ).textContent =
-        "Loading Quiz Arena...";
-
-    document.getElementById(
-        "quizOptions"
-    ).innerHTML = "";
-
-    try{
-
-        const response =
-            await fetch("/api/quiz");
-
-        if(!response.ok){
-
-            throw new Error(
-                "Quiz API returned " +
-                response.status
-            );
-
-        }
-
-        const data =
-            await response.json();
-
-        let rawQuestions =
-            Array.isArray(data)
-            ? data
-            : (
-                data.questions ||
-                data.quiz ||
-                []
-            );
-
-        const unique =
-            [];
-
-        const seen =
-            new Set();
-
-        for(
-            const question
-            of rawQuestions
-        ){
-
-            const text =
-                String(
-                    question.question ||
-                    ""
-                ).trim();
-
-            if(
-                text &&
-                !seen.has(text)
-            ){
-
-                seen.add(text);
-
-                unique.push({
-                    ...question,
-                    question:text
-                });
-
-            }
-
-        }
-
-        quizQuestions =
-            shuffle(unique).slice(0,10);
-
-        if(!quizQuestions.length){
-
-            throw new Error(
-                "No quiz questions were returned."
-            );
-
-        }
-
-        quizIndex = 0;
-        quizScore = 0;
-        quizFinished = false;
-
-        renderQuizQuestion();
-
-    }catch(error){
-
-        console.error(
-            "Quiz error:",
-            error
-        );
-
-        document.getElementById(
-            "quizQuestion"
-        ).textContent =
-            "Quiz could not be loaded.";
-
-        document.getElementById(
-            "quizOptions"
-        ).innerHTML = `
-            <div class="course-card">
-                ⚠️ ${escapeHTML(
-                    error.message
-                )}
-            </div>
-        `;
-
-    }
-
-}
-
-
-/* =========================================================
-   RENDER QUIZ
-========================================================= */
-
-function renderQuizQuestion(){
-
-    if(
-        quizIndex >=
-        quizQuestions.length
-    ){
-
-        finishQuiz();
-
-        return;
-
-    }
-
-    selectedAnswer = null;
-
-    const question =
-        quizQuestions[
-            quizIndex
-        ];
-
-    document.getElementById(
-        "quizNumber"
-    ).textContent =
-        quizIndex + 1;
-
-    document.getElementById(
-        "quizScore"
-    ).textContent =
-        quizScore;
-
-    document.getElementById(
-        "quizQuestion"
-    ).textContent =
-        question.question;
-
-    let options =
-        question.options ||
-        question.choices ||
-        [];
-
-    if(!Array.isArray(options)){
-
-        options =
-            Object.values(options);
-
-    }
-
-    options =
-        options.filter(
-            x =>
-                x !== null &&
-                x !== undefined
-        );
-
-    const container =
-        document.getElementById(
-            "quizOptions"
-        );
-
-    container.innerHTML =
-        options.map(
-            (option,index) => `
-
-                <button
-                    class="option"
-                    onclick="selectQuizOption(this,${index})">
-
-                    ${escapeHTML(
-                        String(option)
-                    )}
-
-                </button>
-
-            `
-        ).join("");
-
-    startQuizTimer();
-
-}
-
-
-/* =========================================================
-   SELECT QUIZ OPTION
-========================================================= */
-
-function selectQuizOption(
-    element,
-    index
-){
-
-    if(quizFinished)
-        return;
-
-    document.querySelectorAll(
-        "#quizOptions .option"
-    ).forEach(
-        option =>
-            option.classList.remove(
-                "selected"
-            )
-    );
-
-    element.classList.add(
-        "selected"
-    );
-
-    selectedAnswer = index;
-
-}
-
-
-/* =========================================================
-   QUIZ TIMER
-========================================================= */
-
-function startQuizTimer(){
-
-    clearInterval(quizTimer);
-
-    quizSeconds = 30;
-
-    document.getElementById(
-        "quizTimer"
-    ).textContent =
-        quizSeconds;
-
-    quizTimer =
-        setInterval(
-            () => {
-
-                quizSeconds--;
-
-                document.getElementById(
-                    "quizTimer"
-                ).textContent =
-                    quizSeconds;
-
-                if(
-                    quizSeconds <= 0
-                ){
-
-                    clearInterval(
-                        quizTimer
-                    );
-
-                    submitQuizAnswer();
-
-                }
-
-            },
-            1000
-        );
-
-}
-
-
-/* =========================================================
-   NEXT QUIZ
-========================================================= */
-
-function nextQuizQuestion(){
-
-    submitQuizAnswer();
-
-}
-
-
-function submitQuizAnswer(){
-
-    if(quizFinished)
-        return;
-
-    clearInterval(
-        quizTimer
-    );
-
-    const question =
-        quizQuestions[
-            quizIndex
-        ];
-
-    if(
-        selectedAnswer !== null
-    ){
-
-        const buttons =
-            document.querySelectorAll(
-                "#quizOptions .option"
-            );
-
-        const selectedButton =
-            buttons[
-                selectedAnswer
-            ];
-
-        const answer =
-            question.answer;
-
-        let correctIndex =
-            -1;
-
-        if(
-            typeof answer === "number"
-        ){
-
-            correctIndex =
-                answer;
-
-        }else{
-
-            correctIndex =
-                Array.from(
-                    buttons
-                ).findIndex(
-                    button =>
-                        button.textContent
-                            .trim()
-                        ===
-                        String(answer)
-                            .trim()
-                );
-
-        }
-
-        if(
-            selectedAnswer ===
-            correctIndex
-        ){
-
-            quizScore++;
-
-            if(selectedButton){
-
-                selectedButton.classList.add(
-                    "correct"
-                );
-
-            }
-
-        }else{
-
-            if(selectedButton){
-
-                selectedButton.classList.add(
-                    "wrong"
-                );
-
-            }
-
-            if(
-                buttons[correctIndex]
-            ){
-
-                buttons[
-                    correctIndex
-                ].classList.add(
-                    "correct"
-                );
-
-            }
-
-        }
-
-    }
-
-    document.getElementById(
-        "quizScore"
-    ).textContent =
-        quizScore;
-
-    setTimeout(
-        () => {
-
-            quizIndex++;
-
-            renderQuizQuestion();
-
-        },
-        550
-    );
-
-}
-
-
-/* =========================================================
-   FINISH QUIZ
-========================================================= */
-
-function finishQuiz(){
-
-    clearInterval(
-        quizTimer
-    );
-
-    quizFinished = true;
-
-    const total =
-        quizQuestions.length;
-
-    const percentage =
-        total
-        ? Math.round(
-            quizScore /
-            total *
-            100
-        )
-        : 0;
-
-    player.quizBest =
-        Math.max(
-            player.quizBest || 0,
-            percentage
-        );
-
-    savePlayer();
-
-    if(
-        percentage >= 80
-    ){
-
-        unlockAchievement(
-            "quiz"
-        );
-
-    }
-
-    const xp =
-        quizScore * 10 +
-        25 +
-        (
-            percentage === 100
-            ? 100
-            : 0
-        );
-
-    addXP(xp);
-
-    document.getElementById(
-        "quizQuestion"
-    ).textContent =
-        `🎉 Quiz Complete! ${quizScore}/${total} correct (${percentage}%)`;
-
-    document.getElementById(
-        "quizOptions"
-    ).innerHTML = `
-
-        <div class="course-card">
-
-            <div class="course-icon">
-                ${percentage >= 80 ? "🏆":"📚"}
-            </div>
-
-            <h3>
-                ${percentage >= 80
-                    ? "Great work!"
-                    : "Keep practicing!"}
-            </h3>
-
-            <p>
-                You earned
-                <strong>${xp} XP</strong>.
-                Review your lessons and try again
-                to improve your score.
-            </p>
-
-        </div>
-
-    `;
-
-}
-
-
-/* =========================================================
-   C COMPILER
-========================================================= */
-
-function openCompiler(){
-
-    openModal(
-        "compilerModal"
-    );
-
-}
-
-
-function loadCExample(){
-
-    document.getElementById(
-        "cCode"
-    ).value =
-`#include <stdio.h>
-
-int main() {
-    int a, b, sum;
-
-    printf("Enter first number: ");
-    scanf("%d", &a);
-
-    printf("Enter second number: ");
-    scanf("%d", &b);
-
-    sum = a + b;
-
-    printf("Sum = %d\\n", sum);
-
-    return 0;
-}`;
-
-    document.getElementById(
-        "cStdin"
-    ).value =
-`10
-20`;
-
-    document.getElementById(
-        "compilerOutput"
-    ).textContent =
-        "Example loaded. Press ▶ Run Code.";
-
-}
-
-
-function clearCompiler(){
-
-    document.getElementById(
-        "cCode"
-    ).value = "";
-
-    document.getElementById(
-        "cStdin"
-    ).value = "";
-
-    document.getElementById(
-        "compilerOutput"
-    ).textContent =
-        "Output will appear here...";
-
-}
-
-
-/* =========================================================
-   RUN C CODE
-========================================================= */
-
-async function runCCode(){
-
-    const code =
-        document.getElementById(
-            "cCode"
-        ).value;
-
-    const stdin =
-        document.getElementById(
-            "cStdin"
-        ).value;
-
-    const output =
-        document.getElementById(
-            "compilerOutput"
-        );
-
-    if(!code.trim()){
-
-        output.textContent =
-            "Please write a C program first.";
-
-        return;
-
-    }
-
-    output.textContent =
-        "⏳ Compiling and running...";
-
-    try{
-
-        const response =
-            await fetch(
-                "/api/compile",
-                {
-                    method:"POST",
-
-                    headers:{
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:JSON.stringify({
-                        code:code,
-                        stdin:stdin
-                    })
-                }
-            );
-
-        let data = {};
-
-        try{
-
-            data =
-                await response.json();
-
-        }catch(error){
-
-            data = {};
-
-        }
-
-        if(!response.ok){
-
-            throw new Error(
-                data.error ||
-                "Compiler request failed."
-            );
-
-        }
-
-        if(data.success){
-
-            output.textContent =
-                data.output ||
-                "Program finished with no output.";
-
-            addXP(5);
-
-        }else{
-
-            let message = "";
-
-            if(data.compile_output){
-
-                message +=
-                    data.compile_output;
-
-            }
-
-            if(data.error){
-
-                if(message)
-                    message += "\n";
-
-                message +=
-                    data.error;
-
-            }
-
-            if(data.output){
-
-                if(message)
-                    message += "\n";
-
-                message +=
-                    data.output;
-
-            }
-
-            output.textContent =
-                message ||
-                "Program failed.";
-
-        }
-
-    }catch(error){
-
-        console.error(
-            "Compiler error:",
-            error
-        );
-
-        output.textContent =
-            "❌ " +
-            (
-                error.message ||
-                "Compiler service unavailable."
-            );
-
-    }
-
-}
-
-
-/* =========================================================
-   CAREER
-========================================================= */
-
-async function openCareer(){
-
-    openModal(
-        "careerModal"
-    );
-
-    const grid =
-        document.getElementById(
-            "careerGrid"
-        );
-
-    grid.innerHTML =
-        "Loading careers...";
-
-    try{
-
-        const response =
-            await fetch(
-                "/api/careers"
-            );
-
-        if(!response.ok)
-            throw new Error(
-                "Career API failed"
-            );
-
-        const data =
-            await response.json();
-
-        const careers =
-            Array.isArray(data)
-            ? data
-            : (
-                data.careers ||
-                []
-            );
-
-        if(!careers.length){
-
-            throw new Error(
-                "No career data found."
-            );
-
-        }
-
-        grid.innerHTML =
-            careers.map(
-                career => `
-
-                    <div class="career-card">
-
-                        <h3>
-                            💼
-                            ${escapeHTML(
-                                career.title ||
-                                career.name ||
-                                "Career"
-                            )}
-                        </h3>
-
-                        <p>
-                            ${escapeHTML(
-                                career.description ||
-                                career.skills ||
-                                "Explore this career path."
-                            )}
-                        </p>
-
-                    </div>
-
-                `
-            ).join("");
-
-    }catch(error){
-
-        console.error(error);
-
-        grid.innerHTML = `
-
-            <div class="career-card">
-
-                <h3>
-                    💼 Software Developer
-                </h3>
-
-                <p>
-                    Learn programming, data structures,
-                    databases, Git, software development,
-                    testing and project building.
-                </p>
-
-            </div>
-
-            <div class="career-card">
-
-                <h3>
-                    🤖 AI / ML Developer
-                </h3>
-
-                <p>
-                    Build strong Python fundamentals,
-                    mathematics, data handling,
-                    machine learning and AI projects.
-                </p>
-
-            </div>
-
-            <div class="career-card">
-
-                <h3>
-                    🔐 Cybersecurity Analyst
-                </h3>
-
-                <p>
-                    Study networking, operating systems,
-                    security principles, vulnerabilities
-                    and defensive security practices.
-                </p>
-
-            </div>
-
-            <div class="career-card">
-
-                <h3>
-                    ☁️ Cloud / DevOps Engineer
-                </h3>
-
-                <p>
-                    Learn Linux, networking, cloud platforms,
-                    Git, CI/CD, containers and deployment.
-                </p>
-
-            </div>
-
-        `;
-
-    }
-
-}
-
-
-/* =========================================================
-   MODAL FUNCTIONS
-========================================================= */
-
-function openModal(id){
-
-    document.getElementById(
-        id
-    ).classList.add("show");
-
-}
-
-
-function closeModal(id){
-
-    document.getElementById(
-        id
-    ).classList.remove("show");
-
-    if(id === "quizModal"){
-
-        clearInterval(
-            quizTimer
-        );
-
-    }
-
-}
-
-
-/* Close modal when clicking outside */
-
-document.querySelectorAll(
-    ".modal"
-).forEach(
-    modal => {
-
-        modal.addEventListener(
-            "click",
-            function(event){
-
-                if(
-                    event.target ===
-                    modal
-                ){
-
-                    modal.classList.remove(
-                        "show"
-                    );
-
-                    if(
-                        modal.id ===
-                        "quizModal"
-                    ){
-
-                        clearInterval(
-                            quizTimer
-                        );
-
-                    }
-
-                }
-
-            }
-        );
-
-    }
-);
-
-
-/* =========================================================
-   ESCAPE HTML
-========================================================= */
-
-function escapeHTML(value){
-
-    return String(value)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-
-}
-
-
-/* =========================================================
-   SHUFFLE
-========================================================= */
-
-function shuffle(array){
-
-    const copy =
-        [...array];
-
-    for(
-        let i = copy.length-1;
-        i > 0;
-        i--
-    ){
-
-        const j =
-            Math.floor(
-                Math.random() *
-                (i+1)
-            );
-
-        [
-            copy[i],
-            copy[j]
-        ] =
-        [
-            copy[j],
-            copy[i]
-        ];
-
-    }
-
-    return copy;
-
-}
-
-
-/* =========================================================
-   KEYBOARD SHORTCUT
-========================================================= */
-
-document.addEventListener(
-    "keydown",
-    function(event){
-
-        if(
-            event.key === "Escape"
-        ){
-
-            document.querySelectorAll(
-                ".modal.show"
-            ).forEach(
-                modal =>
-                    modal.classList.remove(
-                        "show"
-                    )
-            );
-
-            clearInterval(
-                quizTimer
-            );
-
-        }
-
-    }
-);
-
-
-/* =========================================================
-   INITIAL LOAD
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function(){
-
-        loadPlayer();
-
-    }
-);
-
-</script>
+    <button>Start Learning</button>
 
 </body>
+
 </html>
+                """
+            ),
+
+            lesson(
+                "CSS Styling",
+                """
+CSS controls how HTML content looks.
+
+It can change colors, spacing, typography, layouts, animations and
+responsive behaviour.
+
+Modern applications commonly use Flexbox and Grid to create layouts
+that work across different screen sizes.
+                """,
+                """
+body {
+    background: #101020;
+    color: white;
+    font-family: Arial;
+}
+
+.card {
+    padding: 20px;
+    border-radius: 15px;
+}
+                """
+            ),
+
+            lesson(
+                "JavaScript Basics",
+                """
+JavaScript adds behaviour to web pages.
+
+It can respond to button clicks, update page content, communicate with
+APIs and control application state.
+
+For example, a quiz application can use JavaScript to display questions
+and calculate scores.
+                """,
+                """
+const button = document.querySelector("#start");
+
+button.addEventListener("click", () => {
+    alert("Quiz started!");
+});
+                """
+            ),
+
+            lesson(
+                "Fetch API",
+                """
+Modern websites communicate with backend servers through APIs.
+
+JavaScript's fetch function can send HTTP requests and receive JSON.
+
+CodeQuest AI uses this pattern when the frontend requests courses,
+quizzes and compiler results from Flask.
+                """,
+                """
+fetch("/api/courses")
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+    });
+                """
+            )
+        ]
+    },
+
+
+    # =====================================================
+    # 8. DBMS
+    # =====================================================
+
+    {
+        "id": "dbms-sql",
+        "title": "DBMS & SQL",
+        "icon": "🗄️",
+        "level": "Intermediate",
+        "description":
+            "Understand databases, tables, relationships and SQL queries.",
+        "chapters": [
+
+            lesson(
+                "What Is a Database?",
+                """
+A database is a structured system for storing and retrieving
+information.
+
+Applications use databases for users, products, orders, marks,
+messages, courses and almost every type of persistent application data.
+
+CodeQuest AI can use a database to store user progress instead of
+depending only on browser local storage.
+                """,
+                """
+CREATE TABLE students (
+    id INTEGER PRIMARY KEY,
+    name TEXT,
+    mark INTEGER
+);
+                """
+            ),
+
+            lesson(
+                "SELECT Queries",
+                """
+SELECT retrieves information from a database.
+
+You can select all records or only specific columns.
+
+Queries are the language through which applications ask databases for
+information.
+                """,
+                """
+SELECT name, mark
+FROM students
+WHERE mark >= 50;
+                """
+            ),
+
+            lesson(
+                "INSERT",
+                """
+INSERT adds new records.
+
+A registration system might insert a new user into a users table after
+successful authentication.
+                """,
+                """
+INSERT INTO students (name, mark)
+VALUES ('Joe', 92);
+                """
+            ),
+
+            lesson(
+                "UPDATE and DELETE",
+                """
+UPDATE changes existing records.
+
+DELETE removes records.
+
+These operations must be handled carefully in real applications,
+especially when user or financial data is involved.
+                """,
+                """
+UPDATE students
+SET mark = 95
+WHERE name = 'Joe';
+
+DELETE FROM students
+WHERE id = 10;
+                """
+            ),
+
+            lesson(
+                "Relationships",
+                """
+Real applications commonly contain multiple related tables.
+
+For example, one table may contain users while another contains their
+quiz attempts.
+
+A foreign key can connect records between tables.
+
+This prevents unnecessary duplication and makes structured data easier
+to manage.
+                """,
+                """
+CREATE TABLE quiz_attempts (
+    id INTEGER PRIMARY KEY,
+    user_id INTEGER,
+    score INTEGER,
+    FOREIGN KEY(user_id) REFERENCES users(id)
+);
+                """
+            )
+        ]
+    },
+
+
+    # =====================================================
+    # 9. DSA
+    # =====================================================
+
+    {
+        "id": "dsa",
+        "title": "Data Structures & Algorithms",
+        "icon": "🧠",
+        "level": "Intermediate → Advanced",
+        "description":
+            "Build problem-solving ability through arrays, stacks, queues, searching and sorting.",
+        "chapters": [
+
+            lesson(
+                "Why DSA Matters",
+                """
+Data structures determine how information is organized while
+algorithms describe how problems are solved.
+
+A solution that works for ten items may become extremely slow for ten
+million items.
+
+Learning DSA teaches you how to choose appropriate structures and
+algorithms based on the problem and its constraints.
+                """,
+                """
+numbers = [10, 20, 30, 40]
+
+target = 30
+
+for number in numbers:
+    if number == target:
+        print("Found")
+                """
+            ),
+
+            lesson(
+                "Linear Search",
+                """
+Linear search checks elements one by one.
+
+It is simple and works on unsorted data.
+
+Its worst-case time complexity is O(n), because in the worst case every
+element must be inspected.
+                """,
+                """
+def linear_search(numbers, target):
+
+    for i in range(len(numbers)):
+
+        if numbers[i] == target:
+            return i
+
+    return -1
+
+
+print(linear_search([10, 20, 30], 20))
+                """
+            ),
+
+            lesson(
+                "Binary Search",
+                """
+Binary search works on sorted data.
+
+Instead of checking every element, it repeatedly divides the search
+space in half.
+
+Its time complexity is O(log n), making it much faster than linear
+search for large sorted collections.
+                """,
+                """
+def binary_search(numbers, target):
+
+    low = 0
+    high = len(numbers) - 1
+
+    while low <= high:
+
+        mid = (low + high) // 2
+
+        if numbers[mid] == target:
+            return mid
+
+        if numbers[mid] < target:
+            low = mid + 1
+        else:
+            high = mid - 1
+
+    return -1
+                """
+            ),
+
+            lesson(
+                "Stack",
+                """
+A stack follows LIFO: Last In, First Out.
+
+The last item added is the first item removed.
+
+Stacks are used in function calls, undo systems, expression evaluation
+and browser navigation.
+                """,
+                """
+stack = []
+
+stack.append("Page 1")
+stack.append("Page 2")
+stack.append("Page 3")
+
+print(stack.pop())
+                """
+            ),
+
+            lesson(
+                "Queue",
+                """
+A queue follows FIFO: First In, First Out.
+
+The first item added is the first item removed.
+
+Queues are used in task scheduling, print systems, networking and
+message processing.
+                """,
+                """
+from collections import deque
+
+queue = deque()
+
+queue.append("Student 1")
+queue.append("Student 2")
+
+print(queue.popleft())
+                """
+            ),
+
+            lesson(
+                "Sorting",
+                """
+Sorting arranges data according to a chosen order.
+
+Simple algorithms such as bubble sort help beginners understand
+algorithmic thinking, while efficient algorithms such as merge sort and
+quick sort are more suitable for larger datasets.
+                """,
+                """
+numbers = [5, 2, 8, 1, 3]
+
+numbers.sort()
+
+print(numbers)
+                """
+            )
+        ]
+    },
+
+
+    # =====================================================
+    # 10. OPERATING SYSTEMS
+    # =====================================================
+
+    {
+        "id": "operating-systems",
+        "title": "Operating Systems",
+        "icon": "🖥️",
+        "level": "Intermediate",
+        "description":
+            "Understand processes, memory, scheduling, files and operating-system fundamentals.",
+        "chapters": [
+
+            lesson(
+                "Processes",
+                """
+A process is a running program.
+
+The operating system gives each process resources such as memory and
+CPU time.
+
+Modern applications may create multiple processes to perform different
+tasks.
+                """,
+                """
+import os
+
+print("Process ID:", os.getpid())
+                """
+            ),
+
+            lesson(
+                "Threads",
+                """
+A thread is a smaller execution unit inside a process.
+
+Multiple threads can allow an application to perform tasks
+concurrently.
+
+For example, a browser may handle networking, rendering and user
+interaction using different execution paths.
+                """,
+                """
+import threading
+
+def task():
+    print("Task running")
+
+thread = threading.Thread(target=task)
+
+thread.start()
+thread.join()
+                """
+            ),
+
+            lesson(
+                "Memory Management",
+                """
+Operating systems manage memory so multiple applications can run
+without interfering with each other.
+
+Concepts such as virtual memory, paging and memory protection are
+important for understanding modern systems.
+                """,
+                """
+numbers = [1, 2, 3, 4, 5]
+
+print("Python manages the object's memory automatically.")
+                """
+            )
+        ]
+    },
+
+
+    # =====================================================
+    # 11. NETWORKING
+    # =====================================================
+
+    {
+        "id": "computer-networks",
+        "title": "Computer Networks",
+        "icon": "🌍",
+        "level": "Intermediate",
+        "description":
+            "Learn IP addresses, DNS, HTTP, TCP/IP and how web applications communicate.",
+        "chapters": [
+
+            lesson(
+                "What Is a Network?",
+                """
+A network allows devices to communicate and exchange information.
+
+Your phone communicating with a website is an example of network
+communication.
+
+Networks can be local, such as a home Wi-Fi network, or global, such
+as the Internet.
+                """,
+                """
+import socket
+
+hostname = socket.gethostname()
+
+print("Computer:", hostname)
+print("IP:", socket.gethostbyname(hostname))
+                """
+            ),
+
+            lesson(
+                "IP Addresses",
+                """
+An IP address identifies a device or network interface within an IP
+network.
+
+IPv4 uses 32-bit addresses while IPv6 uses much larger 128-bit
+addresses.
+
+Applications use IP addresses to determine where network traffic should
+be delivered.
+                """,
+                """
+import socket
+
+print(socket.gethostbyname("example.com"))
+                """
+            ),
+
+            lesson(
+                "DNS",
+                """
+Humans prefer names such as example.com while computers communicate
+using network addresses.
+
+DNS translates domain names into IP addresses.
+
+When you open a website, DNS resolution is one of the steps that can
+occur before the browser connects to the server.
+                """,
+                """
+import socket
+
+ip = socket.gethostbyname("example.com")
+
+print(ip)
+                """
+            ),
+
+            lesson(
+                "HTTP and APIs",
+                """
+HTTP is the protocol commonly used for communication between browsers
+and web servers.
+
+APIs expose functionality through HTTP endpoints.
+
+CodeQuest AI uses endpoints such as /api/courses and /api/quiz so the
+frontend can communicate with Flask.
+                """,
+                """
+GET /api/courses
+
+POST /api/compile
+                """
+            )
+        ]
+    },
+
+
+    # =====================================================
+    # 12. CYBERSECURITY
+    # =====================================================
+
+    {
+        "id": "cybersecurity",
+        "title": "Cybersecurity",
+        "icon": "🛡️",
+        "level": "Intermediate",
+        "description":
+            "Learn defensive security, authentication, hashing and secure application practices.",
+        "chapters": [
+
+            lesson(
+                "Security Fundamentals",
+                """
+Cybersecurity protects systems, applications and information from
+unauthorized access, modification and disruption.
+
+A common model is the CIA triad:
+Confidentiality, Integrity and Availability.
+
+Good software security begins during design rather than being added
+only after an application is finished.
+                """,
+                """
+security = {
+    "confidentiality": True,
+    "integrity": True,
+    "availability": True
+}
+
+print(security)
+                """
+            ),
+
+            lesson(
+                "Password Hashing",
+                """
+Passwords should not normally be stored as plain text.
+
+Hashing transforms input into a one-way representation.
+
+Production systems should use dedicated password-hashing algorithms
+such as Argon2, bcrypt or scrypt rather than a simple general-purpose
+hash alone.
+                """,
+                """
+import hashlib
+
+password = "example-password"
+
+hashed = hashlib.sha256(
+    password.encode()
+).hexdigest()
+
+print(hashed)
+                """
+            ),
+
+            lesson(
+                "Authentication",
+                """
+Authentication answers the question: who are you?
+
+Authorization answers: what are you allowed to do?
+
+CodeQuest AI uses Firebase Authentication for Google sign-in. A
+backend can receive the Firebase ID token and verify it before allowing
+protected operations.
+                """,
+                """
+Authorization: Bearer FIREBASE_ID_TOKEN
+                """
+            ),
+
+            lesson(
+                "Input Validation",
+                """
+Applications should never blindly trust user input.
+
+Validation helps prevent invalid data and reduces the risk of attacks.
+
+For example, an API accepting a score should check that the value is
+actually numeric and within an expected range.
+                """,
+                """
+def validate_score(score):
+
+    if not isinstance(score, int):
+        return False
+
+    return 0 <= score <= 100
+
+
+print(validate_score(85))
+                """
+            )
+        ]
+    },
+
+
+    # =====================================================
+    # 13. AI & MACHINE LEARNING
+    # =====================================================
+
+    {
+        "id": "ai-machine-learning",
+        "title": "AI & Machine Learning",
+        "icon": "🤖",
+        "level": "Intermediate → Advanced",
+        "description":
+            "Understand AI, machine learning, datasets, models and practical AI workflows.",
+        "chapters": [
+
+            lesson(
+                "What Is AI?",
+                """
+Artificial Intelligence refers broadly to systems designed to perform
+tasks that normally require aspects of human intelligence.
+
+Examples include language understanding, image recognition,
+recommendation systems and planning.
+
+AI applications are built from many different techniques rather than
+one single algorithm.
+                """,
+                """
+responses = {
+    "hello": "Hi! Welcome to CodeQuest AI.",
+    "bye": "Keep learning!"
+}
+
+message = "hello"
+
+print(responses.get(message, "I don't understand yet."))
+                """
+            ),
+
+            lesson(
+                "Machine Learning",
+                """
+Machine learning allows systems to learn patterns from data.
+
+Instead of manually writing every possible rule, a model can learn a
+relationship between inputs and outputs from examples.
+
+A basic machine-learning workflow is:
+collect data → clean data → train model → evaluate → deploy.
+                """,
+                """
+from sklearn.linear_model import LinearRegression
+
+model = LinearRegression()
+
+print("Model created")
+                """
+            ),
+
+            lesson(
+                "Training Data",
+                """
+Training data provides examples from which a machine-learning model
+learns.
+
+The quality of training data strongly affects the quality of the model.
+
+Datasets should be checked for missing values, incorrect labels,
+duplicates and unwanted bias.
+                """,
+                """
+X = [
+    [1],
+    [2],
+    [3],
+    [4]
+]
+
+y = [2, 4, 6, 8]
+
+print(X)
+print(y)
+                """
+            ),
+
+            lesson(
+                "Model Evaluation",
+                """
+A model should not be judged only by its performance on training data.
+
+A separate validation or test dataset can provide evidence about how
+well it generalizes to unseen examples.
+
+Different problems require different metrics.
+                """,
+                """
+actual = [1, 0, 1, 1]
+predicted = [1, 0, 0, 1]
+
+correct = sum(
+    a == p
+    for a, p in zip(actual, predicted)
+)
+
+accuracy = correct / len(actual)
+
+print("Accuracy:", accuracy)
+                """
+            )
+        ]
+    },
+
+
+    # =====================================================
+    # 14. CLOUD COMPUTING
+    # =====================================================
+
+    {
+        "id": "cloud-computing",
+        "title": "Cloud Computing",
+        "icon": "☁️",
+        "level": "Intermediate",
+        "description":
+            "Understand cloud services, deployment, containers and scalable applications.",
+        "chapters": [
+
+            lesson(
+                "What Is Cloud Computing?",
+                """
+Cloud computing provides computing resources over a network.
+
+Instead of buying and maintaining every physical server yourself, you
+can rent computing resources from cloud providers.
+
+Web applications such as CodeQuest AI can be deployed to platforms
+such as Render and accessed through the Internet.
+                """,
+                """
+app_name = "CodeQuest AI"
+
+deployment = {
+    "platform": "Cloud",
+    "status": "Live"
+}
+
+print(app_name, deployment)
+                """
+            ),
+
+            lesson(
+                "Servers",
+                """
+A server is a computer or software service that provides resources to
+other programs or clients.
+
+A Flask application running behind Gunicorn is an example of a web
+server application architecture.
+                """,
+                """
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "CodeQuest AI Server"
+
+if __name__ == "__main__":
+    app.run()
+                """
+            ),
+
+            lesson(
+                "Environment Variables",
+                """
+Sensitive configuration should not be hard-coded into source code.
+
+Environment variables allow deployment platforms to provide values such
+as database paths, secret keys and service credentials.
+
+This is especially important when source code is stored publicly on
+GitHub.
+                """,
+                """
+import os
+
+secret = os.environ.get("SECRET_KEY")
+
+print("Secret configured:", bool(secret))
+                """
+            )
+        ]
+    },
+
+
+    # =====================================================
+    # 15. DEVOPS & SOFTWARE ENGINEERING
+    # =====================================================
+
+    {
+        "id": "devops-software-engineering",
+        "title": "DevOps & Software Engineering",
+        "icon": "🔧",
+        "level": "Intermediate → Advanced",
+        "description":
+            "Learn APIs, testing, deployment, logging, debugging and professional development workflow.",
+        "chapters": [
+
+            lesson(
+                "Software Development Lifecycle",
+                """
+Professional software is normally developed through a lifecycle.
+
+A simplified process is:
+requirements → design → development → testing → deployment →
+maintenance.
+
+Understanding the lifecycle helps developers think beyond writing code.
+                """,
+                """
+steps = [
+    "Requirements",
+    "Design",
+    "Development",
+    "Testing",
+    "Deployment",
+    "Maintenance"
+]
+
+for step in steps:
+    print(step)
+                """
+            ),
+
+            lesson(
+                "REST APIs",
+                """
+REST-style APIs expose resources through HTTP methods.
+
+GET is commonly used to retrieve data.
+POST creates or submits data.
+PUT/PATCH updates data.
+DELETE removes data.
+
+CodeQuest AI's frontend and Flask backend communicate using this model.
+                """,
+                """
+@app.get("/api/hello")
+def hello():
+    return {
+        "message": "Hello CodeQuest"
+    }
+                """
+            ),
+
+            lesson(
+                "Debugging",
+                """
+Debugging is the process of finding and fixing incorrect behaviour.
+
+A useful workflow is:
+reproduce the problem → inspect logs → isolate the failing component →
+identify the cause → fix → test again.
+
+Do not randomly change many parts of a project at once because that
+makes the actual cause harder to identify.
+                """,
+                """
+try:
+    number = int("hello")
+except ValueError as error:
+    print("Input error:", error)
+                """
+            ),
+
+            lesson(
+                "Testing",
+                """
+Testing checks whether software behaves as expected.
+
+Unit tests check small pieces of logic.
+
+Integration tests check how multiple components work together.
+
+For CodeQuest AI, useful tests include checking whether the course API
+returns lessons, whether quiz questions load and whether the compiler
+endpoint handles valid and invalid programs.
+                """,
+                """
+def add(a, b):
+    return a + b
+
+
+assert add(2, 3) == 5
+
+print("Test passed")
+                """
+            ),
+
+            lesson(
+                "Logging",
+                """
+Logs provide information about what an application is doing.
+
+Useful logs can show startup events, API failures, authentication
+problems and external-service errors.
+
+Good logs help developers diagnose production problems without
+guessing.
+                """,
+                """
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
+logging.info("CodeQuest API started")
+                """
+            )
+        ]
+    },
+
+
+    # =====================================================
+    # 16. CAREER & PROJECTS
+    # =====================================================
+
+    {
+        "id": "career-projects",
+        "title": "Career & Project Preparation",
+        "icon": "🎯",
+        "level": "All Levels",
+        "description":
+            "Turn your programming knowledge into projects, portfolios, resumes and interview skills.",
+        "chapters": [
+
+            lesson(
+                "Build Projects",
+                """
+Tutorial exercises teach individual concepts, but projects teach you
+how concepts work together.
+
+A strong student project should solve a real problem.
+
+For example, CodeQuest AI combines frontend development, Flask APIs,
+authentication, databases, quizzes and compiler integration.
+
+Projects also give you something concrete to demonstrate during
+interviews.
+                """,
+                """
+project = {
+    "name": "CodeQuest AI",
+    "frontend": "HTML/CSS/JavaScript",
+    "backend": "Flask",
+    "database": "SQLite",
+    "authentication": "Firebase"
+}
+
+for key, value in project.items():
+    print(key, ":", value)
+                """
+            ),
+
+            lesson(
+                "GitHub Portfolio",
+                """
+Your GitHub profile can act as a technical portfolio.
+
+Keep repositories organized and write useful README files.
+
+A good project README should explain:
+what the project does, why it exists, technologies used, how to run it,
+screenshots and future improvements.
+                """,
+                """
+README_sections = [
+    "Project Overview",
+    "Features",
+    "Tech Stack",
+    "Installation",
+    "Screenshots",
+    "Future Scope"
+]
+
+print("\\n".join(README_sections))
+                """
+            ),
+
+            lesson(
+                "Resume Skills",
+                """
+A technical resume should demonstrate evidence rather than simply
+listing technologies.
+
+Instead of writing only 'Python', describe what you built using Python.
+
+Project-focused descriptions make your technical experience easier to
+understand.
+                """,
+                """
+skills = [
+    "Python",
+    "C",
+    "C++",
+    "HTML",
+    "CSS",
+    "JavaScript",
+    "Flask",
+    "Git",
+    "SQL"
+]
+
+print(", ".join(skills))
+                """
+            ),
+
+            lesson(
+                "Interview Problem Solving",
+                """
+Technical interviews often evaluate how you approach unfamiliar
+problems.
+
+A useful method is:
+understand the problem → identify inputs and outputs → create a simple
+solution → analyze complexity → improve if necessary → test edge cases.
+
+Do not immediately jump into code without understanding the problem.
+                """,
+                """
+def find_max(numbers):
+
+    if not numbers:
+        return None
+
+    maximum = numbers[0]
+
+    for number in numbers[1:]:
+
+        if number > maximum:
+            maximum = number
+
+    return maximum
+
+
+print(find_max([10, 25, 7, 40]))
+                """
+            ),
+
+            lesson(
+                "Learning Strategy",
+                """
+Technology changes quickly, so learning how to learn is itself a
+technical skill.
+
+Do not try to memorize every API.
+
+Understand fundamentals, build projects, read documentation, debug
+problems and repeatedly practice.
+
+A useful cycle is:
+Learn → Code → Break → Debug → Improve → Build.
+                """,
+                """
+cycle = [
+    "Learn",
+    "Code",
+    "Break",
+    "Debug",
+    "Improve",
+    "Build"
+]
+
+print(" → ".join(cycle))
+                """
+            )
+        ]
+    }
+]
+
+
+# =========================================================
+# QUIZ BANK
+# =========================================================
+
+QUIZ_BANK = [
+
+    {
+        "id": "q001",
+        "topic": "Computer Basics",
+        "question": "What does CPU stand for?",
+        "options": [
+            "Central Processing Unit",
+            "Computer Personal Unit",
+            "Central Program Utility",
+            "Control Processing User"
+        ],
+        "answer": "Central Processing Unit"
+    },
+
+    {
+        "id": "q002",
+        "topic": "Computer Basics",
+        "question": "Which memory is normally volatile?",
+        "options": [
+            "RAM",
+            "SSD",
+            "HDD",
+            "ROM"
+        ],
+        "answer": "RAM"
+    },
+
+    {
+        "id": "q003",
+        "topic": "Computer Basics",
+        "question": "Which device is used for permanent storage?",
+        "options": [
+            "SSD",
+            "CPU",
+            "RAM",
+            "Cache"
+        ],
+        "answer": "SSD"
+    },
+
+    {
+        "id": "q004",
+        "topic": "Computer Basics",
+        "question": "What is binary based on?",
+        "options": [
+            "0 and 1",
+            "1 and 2",
+            "A and B",
+            "0 to 9"
+        ],
+        "answer": "0 and 1"
+    },
+
+    {
+        "id": "q005",
+        "topic": "C",
+        "question": "Which function is the usual entry point of a C program?",
+        "options": [
+            "main",
+            "start",
+            "run",
+            "begin"
+        ],
+        "answer": "main"
+    },
+
+    {
+        "id": "q006",
+        "topic": "C",
+        "question": "Which function is commonly used to print output in C?",
+        "options": [
+            "printf",
+            "print",
+            "cout",
+            "display"
+        ],
+        "answer": "printf"
+    },
+
+    {
+        "id": "q007",
+        "topic": "C",
+        "question": "Which symbol obtains the address of a variable?",
+        "options": [
+            "&",
+            "*",
+            "#",
+            "%"
+        ],
+        "answer": "&"
+    },
+
+    {
+        "id": "q008",
+        "topic": "C",
+        "question": "Which data type stores a character?",
+        "options": [
+            "char",
+            "int",
+            "float",
+            "double"
+        ],
+        "answer": "char"
+    },
+
+    {
+        "id": "q009",
+        "topic": "C",
+        "question": "Which structure repeats code while a condition remains true?",
+        "options": [
+            "while",
+            "if",
+            "switch",
+            "struct"
+        ],
+        "answer": "while"
+    },
+
+    {
+        "id": "q010",
+        "topic": "C",
+        "question": "What does an array store?",
+        "options": [
+            "Multiple values of the same general type",
+            "Only functions",
+            "Only characters",
+            "Only pointers"
+        ],
+        "answer": "Multiple values of the same general type"
+    },
+
+    {
+        "id": "q011",
+        "topic": "C++",
+        "question": "Which keyword is commonly used to define a class?",
+        "options": [
+            "class",
+            "object",
+            "define",
+            "structor"
+        ],
+        "answer": "class"
+    },
+
+    {
+        "id": "q012",
+        "topic": "C++",
+        "question": "What does OOP stand for?",
+        "options": [
+            "Object-Oriented Programming",
+            "Open Output Programming",
+            "Object Operating Process",
+            "Online Object Protocol"
+        ],
+        "answer": "Object-Oriented Programming"
+    },
+
+    {
+        "id": "q013",
+        "topic": "C++",
+        "question": "Which STL container is a dynamic array?",
+        "options": [
+            "vector",
+            "stack",
+            "queue",
+            "map"
+        ],
+        "answer": "vector"
+    },
+
+    {
+        "id": "q014",
+        "topic": "Python",
+        "question": "Which symbol starts a comment in Python?",
+        "options": [
+            "#",
+            "//",
+            "/*",
+            "<!--"
+        ],
+        "answer": "#"
+    },
+
+    {
+        "id": "q015",
+        "topic": "Python",
+        "question": "Which keyword defines a function in Python?",
+        "options": [
+            "def",
+            "function",
+            "fun",
+            "define"
+        ],
+        "answer": "def"
+    },
+
+    {
+        "id": "q016",
+        "topic": "Python",
+        "question": "Which data structure stores key-value pairs?",
+        "options": [
+            "Dictionary",
+            "List",
+            "Tuple",
+            "Set"
+        ],
+        "answer": "Dictionary"
+    },
+
+    {
+        "id": "q017",
+        "topic": "Web",
+        "question": "What does HTML mainly define?",
+        "options": [
+            "Page structure",
+            "Database queries",
+            "Server hardware",
+            "Encryption"
+        ],
+        "answer": "Page structure"
+    },
+
+    {
+        "id": "q018",
+        "topic": "Web",
+        "question": "What is CSS mainly used for?",
+        "options": [
+            "Styling web pages",
+            "Creating databases",
+            "Running Python",
+            "Managing RAM"
+        ],
+        "answer": "Styling web pages"
+    },
+
+    {
+        "id": "q019",
+        "topic": "Web",
+        "question": "Which language adds behaviour to web pages?",
+        "options": [
+            "JavaScript",
+            "HTML",
+            "CSS",
+            "SQL"
+        ],
+        "answer": "JavaScript"
+    },
+
+    {
+        "id": "q020",
+        "topic": "DBMS",
+        "question": "Which SQL command retrieves data?",
+        "options": [
+            "SELECT",
+            "GET",
+            "READ",
+            "FETCHDATA"
+        ],
+        "answer": "SELECT"
+    },
+
+    {
+        "id": "q021",
+        "topic": "DBMS",
+        "question": "Which SQL command adds a new record?",
+        "options": [
+            "INSERT",
+            "ADD",
+            "CREATE ROW",
+            "PUSH"
+        ],
+        "answer": "INSERT"
+    },
+
+    {
+        "id": "q022",
+        "topic": "DBMS",
+        "question": "What is a primary key used for?",
+        "options": [
+            "Uniquely identifying records",
+            "Styling tables",
+            "Encrypting passwords",
+            "Sorting images"
+        ],
+        "answer": "Uniquely identifying records"
+    },
+
+    {
+        "id": "q023",
+        "topic": "DSA",
+        "question": "What is the worst-case time complexity of linear search?",
+        "options": [
+            "O(n)",
+            "O(1)",
+            "O(log n)",
+            "O(n²)"
+        ],
+        "answer": "O(n)"
+    },
+
+    {
+        "id": "q024",
+        "topic": "DSA",
+        "question": "Binary search requires what type of data?",
+        "options": [
+            "Sorted data",
+            "Encrypted data",
+            "Random data",
+            "Image data"
+        ],
+        "answer": "Sorted data"
+    },
+
+    {
+        "id": "q025",
+        "topic": "DSA",
+        "question": "Which principle does a stack follow?",
+        "options": [
+            "LIFO",
+            "FIFO",
+            "Random",
+            "Priority only"
+        ],
+        "answer": "LIFO"
+    },
+
+    {
+        "id": "q026",
+        "topic": "DSA",
+        "question": "Which principle does a queue follow?",
+        "options": [
+            "FIFO",
+            "LIFO",
+            "Random",
+            "Reverse priority"
+        ],
+        "answer": "FIFO"
+    },
+
+    {
+        "id": "q027",
+        "topic": "Networking",
+        "question": "What does DNS help translate?",
+        "options": [
+            "Domain names to IP addresses",
+            "Passwords to usernames",
+            "Files to folders",
+            "RAM to storage"
+        ],
+        "answer": "Domain names to IP addresses"
+    },
+
+    {
+        "id": "q028",
+        "topic": "Networking",
+        "question": "What protocol is commonly used by web APIs?",
+        "options": [
+            "HTTP",
+            "RAM",
+            "CPU",
+            "BIOS"
+        ],
+        "answer": "HTTP"
+    },
+
+    {
+        "id": "q029",
+        "topic": "Cybersecurity",
+        "question": "What does authentication determine?",
+        "options": [
+            "Who you are",
+            "What color a button is",
+            "CPU speed",
+            "File size"
+        ],
+        "answer": "Who you are"
+    },
+
+    {
+        "id": "q030",
+        "topic": "Cybersecurity",
+        "question": "What does authorization determine?",
+        "options": [
+            "What you are allowed to do",
+            "Your CPU model",
+            "Your screen size",
+            "Your IP speed"
+        ],
+        "answer": "What you are allowed to do"
+    },
+
+    {
+        "id": "q031",
+        "topic": "AI",
+        "question": "What does AI stand for?",
+        "options": [
+            "Artificial Intelligence",
+            "Automated Internet",
+            "Application Interface",
+            "Advanced Input"
+        ],
+        "answer": "Artificial Intelligence"
+    },
+
+    {
+        "id": "q032",
+        "topic": "AI",
+        "question": "What does machine learning primarily use to learn patterns?",
+        "options": [
+            "Data",
+            "Only HTML",
+            "Only electricity",
+            "Folders"
+        ],
+        "answer": "Data"
+    },
+
+    {
+        "id": "q033",
+        "topic": "Cloud",
+        "question": "What does cloud computing provide?",
+        "options": [
+            "Computing resources over a network",
+            "Only local storage",
+            "Only keyboards",
+            "Only source code"
+        ],
+        "answer": "Computing resources over a network"
+    },
+
+    {
+        "id": "q034",
+        "topic": "Git",
+        "question": "Which command creates a Git repository?",
+        "options": [
+            "git init",
+            "git start",
+            "git create",
+            "git repo"
+        ],
+        "answer": "git init"
+    },
+
+    {
+        "id": "q035",
+        "topic": "Git",
+        "question": "Which command records staged changes?",
+        "options": [
+            "git commit",
+            "git save",
+            "git record",
+            "git upload"
+        ],
+        "answer": "git commit"
+    },
+
+    {
+        "id": "q036",
+        "topic": "Git",
+        "question": "Which platform is commonly used to host Git repositories?",
+        "options": [
+            "GitHub",
+            "Notepad",
+            "BIOS",
+            "RAM"
+        ],
+        "answer": "GitHub"
+    },
+
+    {
+        "id": "q037",
+        "topic": "Software Engineering",
+        "question": "What is debugging?",
+        "options": [
+            "Finding and fixing software problems",
+            "Deleting all source code",
+            "Installing RAM",
+            "Creating hardware"
+        ],
+        "answer": "Finding and fixing software problems"
+    },
+
+    {
+        "id": "q038",
+        "topic": "Software Engineering",
+        "question": "What does an API allow?",
+        "options": [
+            "Software components to communicate",
+            "Only images to load",
+            "Only computers to shut down",
+            "Only users to print"
+        ],
+        "answer": "Software components to communicate"
+    },
+
+    {
+        "id": "q039",
+        "topic": "Computer Basics",
+        "question": "Which device displays visual output?",
+        "options": [
+            "Monitor",
+            "Keyboard",
+            "Microphone",
+            "Router"
+        ],
+        "answer": "Monitor"
+    },
+
+    {
+        "id": "q040",
+        "topic": "Computer Basics",
+        "question": "Which device is mainly used to enter text?",
+        "options": [
+            "Keyboard",
+            "Monitor",
+            "Speaker",
+            "Projector"
+        ],
+        "answer": "Keyboard"
+    },
+
+    {
+        "id": "q041",
+        "topic": "C",
+        "question": "Which header commonly provides printf?",
+        "options": [
+            "stdio.h",
+            "math.h",
+            "string.cpp",
+            "input.h"
+        ],
+        "answer": "stdio.h"
+    },
+
+    {
+        "id": "q042",
+        "topic": "C",
+        "question": "Which loop is commonly used when the repetition count is known?",
+        "options": [
+            "for",
+            "if",
+            "switch",
+            "struct"
+        ],
+        "answer": "for"
+    },
+
+    {
+        "id": "q043",
+        "topic": "Python",
+        "question": "Which function displays output in Python?",
+        "options": [
+            "print()",
+            "printf()",
+            "cout()",
+            "displayText()"
+        ],
+        "answer": "print()"
+    },
+
+    {
+        "id": "q044",
+        "topic": "Python",
+        "question": "Which symbol is commonly used for exponentiation in Python?",
+        "options": [
+            "**",
+            "^",
+            "^^",
+            "EXP"
+        ],
+        "answer": "**"
+    },
+
+    {
+        "id": "q045",
+        "topic": "Web",
+        "question": "Which HTML tag creates a heading?",
+        "options": [
+            "<h1>",
+            "<headtext>",
+            "<titletext>",
+            "<heading>"
+        ],
+        "answer": "<h1>"
+    },
+
+    {
+        "id": "q046",
+        "topic": "Web",
+        "question": "Which CSS property changes text color?",
+        "options": [
+            "color",
+            "text-color",
+            "font-paint",
+            "foreground"
+        ],
+        "answer": "color"
+    },
+
+    {
+        "id": "q047",
+        "topic": "SQL",
+        "question": "Which SQL command modifies existing rows?",
+        "options": [
+            "UPDATE",
+            "CHANGE",
+            "MODIFYROW",
+            "ALTERDATA"
+        ],
+        "answer": "UPDATE"
+    },
+
+    {
+        "id": "q048",
+        "topic": "SQL",
+        "question": "Which SQL command removes rows?",
+        "options": [
+            "DELETE",
+            "REMOVE",
+            "DROP ROW",
+            "ERASE"
+        ],
+        "answer": "DELETE"
+    },
+
+    {
+        "id": "q049",
+        "topic": "DSA",
+        "question": "Which data structure is commonly used for function-call management?",
+        "options": [
+            "Stack",
+            "Queue",
+            "Graph only",
+            "Database"
+        ],
+        "answer": "Stack"
+    },
+
+    {
+        "id": "q050",
+        "topic": "Career",
+        "question": "What is a portfolio useful for?",
+        "options": [
+            "Showing your practical work",
+            "Increasing RAM",
+            "Compiling C code",
+            "Changing an IP address"
+        ],
+        "answer": "Showing your practical work"
+    },
+
+    {
+        "id": "q051",
+        "topic": "Career",
+        "question": "Which is more useful in a technical portfolio?",
+        "options": [
+            "A working project with explanation",
+            "Only a list of buzzwords",
+            "Empty repositories",
+            "Copied screenshots"
+        ],
+        "answer": "A working project with explanation"
+    },
+
+    {
+        "id": "q052",
+        "topic": "Cloud",
+        "question": "Why are environment variables useful?",
+        "options": [
+            "They keep deployment configuration outside source code",
+            "They increase CPU speed",
+            "They replace HTML",
+            "They create monitors"
+        ],
+        "answer": "They keep deployment configuration outside source code"
+    },
+
+    {
+        "id": "q053",
+        "topic": "Cybersecurity",
+        "question": "Why should user input be validated?",
+        "options": [
+            "To prevent invalid or unsafe data from being processed",
+            "To increase screen brightness",
+            "To change the keyboard",
+            "To install RAM"
+        ],
+        "answer": "To prevent invalid or unsafe data from being processed"
+    },
+
+    {
+        "id": "q054",
+        "topic": "Operating Systems",
+        "question": "What is a process?",
+        "options": [
+            "A running instance of a program",
+            "A storage device",
+            "A keyboard command",
+            "A database table"
+        ],
+        "answer": "A running instance of a program"
+    },
+
+    {
+        "id": "q055",
+        "topic": "Operating Systems",
+        "question": "What is a thread?",
+        "options": [
+            "An execution path within a process",
+            "A hard disk",
+            "An IP address",
+            "A file extension"
+        ],
+        "answer": "An execution path within a process"
+    },
+
+    {
+        "id": "q056",
+        "topic": "Networking",
+        "question": "What does IP stand for?",
+        "options": [
+            "Internet Protocol",
+            "Internal Program",
+            "Input Process",
+            "Internet Program"
+        ],
+        "answer": "Internet Protocol"
+    },
+
+    {
+        "id": "q057",
+        "topic": "Networking",
+        "question": "What does URL identify?",
+        "options": [
+            "A resource location on the web",
+            "A CPU core",
+            "A RAM block",
+            "A database password"
+        ],
+        "answer": "A resource location on the web"
+    },
+
+    {
+        "id": "q058",
+        "topic": "AI",
+        "question": "What is a model in machine learning?",
+        "options": [
+            "A learned computational representation",
+            "A monitor",
+            "A keyboard",
+            "A Git branch"
+        ],
+        "answer": "A learned computational representation"
+    },
+
+    {
+        "id": "q059",
+        "topic": "C++",
+        "question": "Which stream is commonly used for C++ output?",
+        "options": [
+            "cout",
+            "printf",
+            "output",
+            "display"
+        ],
+        "answer": "cout"
+    },
+
+    {
+        "id": "q060",
+        "topic": "C++",
+        "question": "Which header provides cout?",
+        "options": [
+            "<iostream>",
+            "<stdio.h>",
+            "<console>",
+            "<output.h>"
+        ],
+        "answer": "<iostream>"
+    }
+]
+
+
+# =========================================================
+# CAREER PATHWAYS
+# =========================================================
+
+CAREERS = [
+
+    {
+        "id": "software-developer",
+        "title": "Software Developer",
+        "icon": "💻",
+        "description":
+            "Build applications, APIs and software products.",
+        "learn": [
+            "Programming fundamentals",
+            "C/C++ or Python",
+            "Data Structures & Algorithms",
+            "Git & GitHub",
+            "SQL",
+            "APIs",
+            "Testing",
+            "Projects"
+        ],
+        "projects": [
+            "Student Management System",
+            "Expense Tracker",
+            "Task Manager",
+            "CodeQuest AI"
+        ]
+    },
+
+    {
+        "id": "web-developer",
+        "title": "Web Developer",
+        "icon": "🌐",
+        "description":
+            "Build modern frontend and backend web applications.",
+        "learn": [
+            "HTML",
+            "CSS",
+            "JavaScript",
+            "Responsive Design",
+            "REST APIs",
+            "Python/Flask or Node.js",
+            "SQL",
+            "Git"
+        ],
+        "projects": [
+            "Portfolio Website",
+            "College Event Platform",
+            "E-commerce Demo",
+            "Learning Platform"
+        ]
+    },
+
+    {
+        "id": "python-developer",
+        "title": "Python Developer",
+        "icon": "🐍",
+        "description":
+            "Use Python for automation, backend development and data applications.",
+        "learn": [
+            "Python",
+            "OOP",
+            "Data Structures",
+            "Flask/FastAPI",
+            "SQL",
+            "APIs",
+            "Git",
+            "Testing"
+        ],
+        "projects": [
+            "Automation Tool",
+            "REST API",
+            "Student Management API",
+            "AI-powered application"
+        ]
+    },
+
+    {
+        "id": "ai-ml",
+        "title": "AI / ML Developer",
+        "icon": "🤖",
+        "description":
+            "Build applications using machine learning and AI techniques.",
+        "learn": [
+            "Python",
+            "NumPy",
+            "Pandas",
+            "Statistics",
+            "Machine Learning",
+            "Model Evaluation",
+            "Deep Learning",
+            "AI APIs"
+        ],
+        "projects": [
+            "Student Performance Predictor",
+            "Recommendation System",
+            "Image Classifier",
+            "AI Assistant"
+        ]
+    },
+
+    {
+        "id": "cybersecurity",
+        "title": "Cybersecurity",
+        "icon": "🛡️",
+        "description":
+            "Learn defensive security and secure application development.",
+        "learn": [
+            "Networking",
+            "Linux",
+            "Python",
+            "Authentication",
+            "Cryptography fundamentals",
+            "Web security",
+            "Security testing",
+            "Incident awareness"
+        ],
+        "projects": [
+            "Password Security Demo",
+            "Security Scanner for Your Own Lab",
+            "Authentication System",
+            "Secure API"
+        ]
+    },
+
+    {
+        "id": "cloud-devops",
+        "title": "Cloud / DevOps",
+        "icon": "☁️",
+        "description":
+            "Deploy, monitor and automate software systems.",
+        "learn": [
+            "Linux",
+            "Git",
+            "Networking",
+            "Docker",
+            "CI/CD",
+            "Cloud platforms",
+            "Environment variables",
+            "Monitoring"
+        ],
+        "projects": [
+            "Deploy Flask API",
+            "Dockerized Web App",
+            "CI/CD Pipeline",
+            "Cloud-hosted Portfolio"
+        ]
+    }
+]
+
+
+# =========================================================
+# TRICKS AND SKILLS
+# =========================================================
+
+TRICKS = [
+
+    {
+        "title": "Debug Before Rewriting",
+        "category": "Debugging",
+        "tip":
+            "Read the exact error message first. Find the line that failed, reproduce the problem and change one thing at a time."
+    },
+
+    {
+        "title": "Build Small First",
+        "category": "Projects",
+        "tip":
+            "Create a minimum working version before adding advanced features. A working small project is easier to expand."
+    },
+
+    {
+        "title": "Use Git Frequently",
+        "category": "Git",
+        "tip":
+            "Make meaningful commits after stable changes so you can return to a known working version."
+    },
+
+    {
+        "title": "Learn by Breaking Code",
+        "category": "Learning",
+        "tip":
+            "Change a working example intentionally, observe the error and fix it. Debugging teaches how the system actually works."
+    },
+
+    {
+        "title": "Read Documentation",
+        "category": "Professional Skill",
+        "tip":
+            "Documentation is often more reliable than random tutorials. Learn how to find parameters, return values and examples."
+    },
+
+    {
+        "title": "Master Keyboard Shortcuts",
+        "category": "Productivity",
+        "tip":
+            "Learning common editor shortcuts can save significant time during long coding sessions."
+    },
+
+    {
+        "title": "Explain Your Code",
+        "category": "Interview",
+        "tip":
+            "If you cannot explain why your code works, revisit the concept. Interviewers often evaluate reasoning, not just syntax."
+    },
+
+    {
+        "title": "Practice Edge Cases",
+        "category": "Problem Solving",
+        "tip":
+            "Test empty input, zero, negative values, very large values and unexpected input instead of testing only the normal case."
+    },
+
+    {
+        "title": "Understand Before Memorizing",
+        "category": "Learning",
+        "tip":
+            "Memorizing syntax helps temporarily. Understanding why the syntax exists helps you solve unfamiliar problems."
+    },
+
+    {
+        "title": "Build a Project After Each Major Topic",
+        "category": "Career",
+        "tip":
+            "Turn lessons into small projects. Practical work connects theory and makes your portfolio stronger."
+    }
+]
+
+
+# =========================================================
+# API: HOME
+# =========================================================
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+
+# =========================================================
+# API: HEALTH
+# =========================================================
+
+@app.route("/health")
+def health():
+
+    return jsonify(
+        {
+            "success": True,
+            "app": "CodeQuest AI",
+            "status": "online",
+            "firebase_admin": firebase_ready,
+            "compiler": "Wandbox",
+            "supported_languages": [
+                "C",
+                "C++",
+                "Python",
+                "Java"
+            ],
+            "courses": len(COURSES),
+            "quiz_questions": len(QUIZ_BANK)
+        }
+    )
+
+
+# =========================================================
+# API: FIREBASE LOGIN
+# =========================================================
+
+@app.route("/api/firebase-login", methods=["POST"])
+def firebase_login():
+
+    decoded = verify_firebase_request()
+
+    if not decoded:
+
+        return jsonify(
+            {
+                "success": False,
+                "error":
+                    "Firebase authentication failed. Check Firebase Admin configuration."
+            }
+        ), 401
+
+    uid = decoded.get("uid")
+
+    user = get_or_create_user(
+        uid,
+        decoded.get("name", "CodeQuest User"),
+        decoded.get("email", ""),
+        decoded.get("picture", "")
+    )
+
+    return jsonify(
+        {
+            "success": True,
+            "message": "Google login synchronized successfully.",
+            "user": user
+        }
+    )
+
+
+# =========================================================
+# API: CURRENT USER
+# =========================================================
+
+@app.route("/api/me")
+@firebase_required
+def current_user(decoded):
+
+    user = get_or_create_user(
+        decoded["uid"],
+        decoded.get("name", "CodeQuest User"),
+        decoded.get("email", ""),
+        decoded.get("picture", "")
+    )
+
+    return jsonify(
+        {
+            "success": True,
+            "user": user
+        }
+    )
+
+
+# =========================================================
+# API: COURSES
+# =========================================================
+
+@app.route("/api/courses")
+def get_courses():
+
+    result = []
+
+    for course in COURSES:
+
+        chapters = []
+
+        for index, chapter in enumerate(course["chapters"], 1):
+
+            chapters.append(
+                {
+                    "id": f'{course["id"]}-{index}',
+                    "title": chapter["title"],
+                    "lesson": chapter["lesson"],
+                    "sample": chapter["sample"],
+                    "points": chapter.get("points", [])
+                }
+            )
+
+        result.append(
+            {
+                "id": course["id"],
+                "title": course["title"],
+                "icon": course["icon"],
+                "level": course["level"],
+                "description": course["description"],
+                "chapters": chapters
+            }
+        )
+
+    return jsonify(
+        {
+            "success": True,
+            "courses": result
+        }
+    )
+
+
+# =========================================================
+# API: SINGLE COURSE
+# =========================================================
+
+@app.route("/api/course/<course_id>")
+def get_course(course_id):
+
+    for course in COURSES:
+
+        if course["id"] == course_id:
+
+            return jsonify(
+                {
+                    "success": True,
+                    "course": course
+                }
+            )
+
+    return jsonify(
+        {
+            "success": False,
+            "error": "Course not found."
+        }
+    ), 404
+
+
+# =========================================================
+# API: PROGRESS
+# =========================================================
+
+@app.route("/api/progress", methods=["POST"])
+@firebase_required
+def save_progress(decoded):
+
+    data = request.get_json(silent=True) or {}
+
+    course_id = data.get("course_id")
+    lesson_id = data.get("lesson_id")
+    xp = int(data.get("xp", 10))
+
+    if not course_id or not lesson_id:
+
+        return jsonify(
+            {
+                "success": False,
+                "error": "course_id and lesson_id are required."
+            }
+        ), 400
+
+    uid = decoded["uid"]
+
+    db = get_db()
+
+    existing = db.execute(
+        """
+        SELECT id
+        FROM progress
+        WHERE firebase_uid = ?
+        AND course_id = ?
+        AND lesson_id = ?
+        """,
+        (
+            uid,
+            course_id,
+            lesson_id
+        )
+    ).fetchone()
+
+    if existing:
+
+        db.close()
+
+        return jsonify(
+            {
+                "success": True,
+                "already_completed": True
+            }
+        )
+
+    db.execute(
+        """
+        INSERT INTO progress
+        (
+            firebase_uid,
+            course_id,
+            lesson_id,
+            completed,
+            xp,
+            completed_at
+        )
+        VALUES (?, ?, ?, 1, ?, ?)
+        """,
+        (
+            uid,
+            course_id,
+            lesson_id,
+            xp,
+            now()
+        )
+    )
+
+    user = db.execute(
+        "SELECT xp FROM users WHERE firebase_uid = ?",
+        (uid,)
+    ).fetchone()
+
+    current_xp = user["xp"] if user else 0
+
+    new_xp = current_xp + xp
+    new_level = calculate_level(new_xp)
+
+    db.execute(
+        """
+        UPDATE users
+        SET xp = ?,
+            level = ?,
+            completed_lessons = completed_lessons + 1,
+            updated_at = ?
+        WHERE firebase_uid = ?
+        """,
+        (
+            new_xp,
+            new_level,
+            now(),
+            uid
+        )
+    )
+
+    db.commit()
+
+    updated = db.execute(
+        "SELECT * FROM users WHERE firebase_uid = ?",
+        (uid,)
+    ).fetchone()
+
+    db.close()
+
+    return jsonify(
+        {
+            "success": True,
+            "xp_added": xp,
+            "user": dict(updated)
+        }
+    )
+
+
+# =========================================================
+# API: STATS
+# =========================================================
+
+@app.route("/api/stats")
+@firebase_required
+def stats(decoded):
+
+    uid = decoded["uid"]
+
+    db = get_db()
+
+    user = db.execute(
+        "SELECT * FROM users WHERE firebase_uid = ?",
+        (uid,)
+    ).fetchone()
+
+    completed = db.execute(
+        """
+        SELECT COUNT(*)
+        AS count
+        FROM progress
+        WHERE firebase_uid = ?
+        AND completed = 1
+        """,
+        (uid,)
+    ).fetchone()
+
+    quizzes = db.execute(
+        """
+        SELECT COUNT(*)
+        AS count
+        FROM quiz_attempts
+        WHERE firebase_uid = ?
+        """,
+        (uid,)
+    ).fetchone()
+
+    db.close()
+
+    if not user:
+
+        return jsonify(
+            {
+                "success": False,
+                "error": "User not found."
+            }
+        ), 404
+
+    user_data = dict(user)
+
+    user_data["level_name"] = level_name(
+        user_data["level"]
+    )
+
+    return jsonify(
+        {
+            "success": True,
+            "stats": {
+                "xp": user_data["xp"],
+                "level": user_data["level"],
+                "level_name": user_data["level_name"],
+                "streak": user_data["streak"],
+                "completed_lessons": completed["count"],
+                "quizzes_completed": quizzes["count"]
+            }
+        }
+    )
+
+
+# =========================================================
+# API: QUIZ
+# =========================================================
+
+@app.route("/api/quiz")
+def get_quiz():
+
+    # Return ALL questions.
+    # Frontend can randomly select from the complete bank.
+    # IDs make questions uniquely identifiable.
+
+    return jsonify(
+        {
+            "success": True,
+            "count": len(QUIZ_BANK),
+            "questions": QUIZ_BANK
+        }
+    )
+
+
+# =========================================================
+# API: QUIZ SUBMISSION
+# =========================================================
+
+@app.route("/api/quiz/submit", methods=["POST"])
+@firebase_required
+def submit_quiz(decoded):
+
+    data = request.get_json(silent=True) or {}
+
+    score = int(data.get("score", 0))
+    total = int(data.get("total", 0))
+    terminated = bool(data.get("terminated", False))
+    reason = data.get("reason", "")
+
+    if total <= 0:
+        return jsonify(
+            {
+                "success": False,
+                "error": "Invalid quiz total."
+            }
+        ), 400
+
+    percentage = (score / total) * 100
+
+    uid = decoded["uid"]
+
+    db = get_db()
+
+    db.execute(
+        """
+        INSERT INTO quiz_attempts
+        (
+            firebase_uid,
+            quiz_id,
+            score,
+            total,
+            percentage,
+            terminated,
+            reason,
+            created_at
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            uid,
+            data.get("quiz_id", "quiz-arena"),
+            score,
+            total,
+            percentage,
+            1 if terminated else 0,
+            reason,
+            now()
+        )
+    )
+
+    if not terminated:
+
+        xp = max(
+            10,
+            score * 10
+        )
+
+        user = db.execute(
+            """
+            SELECT xp
+            FROM users
+            WHERE firebase_uid = ?
+            """,
+            (uid,)
+        ).fetchone()
+
+        current_xp = user["xp"] if user else 0
+
+        new_xp = current_xp + xp
+
+        db.execute(
+            """
+            UPDATE users
+            SET xp = ?,
+                level = ?,
+                quizzes_completed = quizzes_completed + 1,
+                updated_at = ?
+            WHERE firebase_uid = ?
+            """,
+            (
+                new_xp,
+                calculate_level(new_xp),
+                now(),
+                uid
+            )
+        )
+
+    db.commit()
+
+    user = db.execute(
+        """
+        SELECT *
+        FROM users
+        WHERE firebase_uid = ?
+        """,
+        (uid,)
+    ).fetchone()
+
+    db.close()
+
+    return jsonify(
+        {
+            "success": True,
+            "score": score,
+            "total": total,
+            "percentage": percentage,
+            "terminated": terminated,
+            "reason": reason,
+            "user": dict(user) if user else None
+        }
+    )
+
+
+# =========================================================
+# API: QUIZ TERMINATION
+# =========================================================
+
+@app.route("/api/quiz/violation", methods=["POST"])
+@firebase_required
+def quiz_violation(decoded):
+
+    data = request.get_json(silent=True) or {}
+
+    reason = data.get(
+        "reason",
+        "Quiz terminated due to malpractice detection."
+    )
+
+    db = get_db()
+
+    db.execute(
+        """
+        INSERT INTO quiz_attempts
+        (
+            firebase_uid,
+            quiz_id,
+            score,
+            total,
+            percentage,
+            terminated,
+            reason,
+            created_at
+        )
+        VALUES (?, ?, 0, ?, 0, 1, ?, ?)
+        """,
+        (
+            decoded["uid"],
+            data.get("quiz_id", "quiz-arena"),
+            int(data.get("total", 10)),
+            reason,
+            now()
+        )
+    )
+
+    db.commit()
+    db.close()
+
+    return jsonify(
+        {
+            "success": True,
+            "terminated": True,
+            "message":
+                "Quiz terminated because a malpractice event was detected."
+        }
+    )
+
+
+# =========================================================
+# API: CAREERS
+# =========================================================
+
+@app.route("/api/careers")
+def careers():
+
+    return jsonify(
+        {
+            "success": True,
+            "careers": CAREERS
+        }
+    )
+
+
+@app.route("/api/career-roadmap")
+def career_roadmap():
+
+    return jsonify(
+        {
+            "success": True,
+            "roadmap": [
+                {
+                    "step": 1,
+                    "title": "Build Fundamentals",
+                    "description":
+                        "Learn programming, computer basics and problem solving."
+                },
+                {
+                    "step": 2,
+                    "title": "Choose Your Direction",
+                    "description":
+                        "Explore software, web, AI, cybersecurity, cloud or another area."
+                },
+                {
+                    "step": 3,
+                    "title": "Practice DSA",
+                    "description":
+                        "Improve algorithmic problem solving and coding confidence."
+                },
+                {
+                    "step": 4,
+                    "title": "Build Projects",
+                    "description":
+                        "Turn your knowledge into useful real-world applications."
+                },
+                {
+                    "step": 5,
+                    "title": "Build GitHub Portfolio",
+                    "description":
+                        "Publish clean repositories with documentation."
+                },
+                {
+                    "step": 6,
+                    "title": "Prepare Resume",
+                    "description":
+                        "Describe your practical work and technical skills."
+                },
+                {
+                    "step": 7,
+                    "title": "Practice Interviews",
+                    "description":
+                        "Work on coding, technical and communication questions."
+                },
+                {
+                    "step": 8,
+                    "title": "Apply and Improve",
+                    "description":
+                        "Apply for internships/jobs and continue improving through feedback."
+                }
+            ]
+        }
+    )
+
+
+# =========================================================
+# API: TRICKS & SKILLS
+# =========================================================
+
+@app.route("/api/tricks")
+def tricks():
+
+    return jsonify(
+        {
+            "success": True,
+            "tricks": TRICKS
+        }
+    )
+
+
+# =========================================================
+# API: ACHIEVEMENTS
+# =========================================================
+
+@app.route("/api/achievements")
+def achievements():
+
+    return jsonify(
+        {
+            "success": True,
+            "achievements": [
+
+                {
+                    "id": "first-lesson",
+                    "title": "First Step",
+                    "description": "Complete your first lesson.",
+                    "xp": 20
+                },
+
+                {
+                    "id": "five-lessons",
+                    "title": "Getting Started",
+                    "description": "Complete 5 lessons.",
+                    "xp": 50
+                },
+
+                {
+                    "id": "ten-lessons",
+                    "title": "Knowledge Hunter",
+                    "description": "Complete 10 lessons.",
+                    "xp": 100
+                },
+
+                {
+                    "id": "first-quiz",
+                    "title": "Quiz Warrior",
+                    "description": "Complete your first quiz.",
+                    "xp": 50
+                },
+
+                {
+                    "id": "perfect-quiz",
+                    "title": "Perfect Run",
+                    "description": "Score 100% in a quiz.",
+                    "xp": 100
+                },
+
+                {
+                    "id": "compiler",
+                    "title": "Code Runner",
+                    "description": "Successfully run code.",
+                    "xp": 50
+                },
+
+                {
+                    "id": "project-builder",
+                    "title": "Builder",
+                    "description": "Complete a project.",
+                    "xp": 150
+                },
+
+                {
+                    "id": "legend",
+                    "title": "CodeQuest Legend",
+                    "description": "Reach Level 10.",
+                    "xp": 500
+                }
+            ]
+        }
+    )
+
+
+# =========================================================
+# COMPILER HELPERS
+# =========================================================
+
+COMPILER_MAP = {
+
+    "c": {
+        "compiler": "gcc-head-c",
+        "language": "C"
+    },
+
+    "cpp": {
+        "compiler": "gcc-head",
+        "language": "C++"
+    },
+
+    "c++": {
+        "compiler": "gcc-head",
+        "language": "C++"
+    },
+
+    "python": {
+        "compiler": "cpython-head",
+        "language": "Python"
+    },
+
+    "py": {
+        "compiler": "cpython-head",
+        "language": "Python"
+    },
+
+    "java": {
+        "compiler": "openjdk-head",
+        "language": "Java"
+    }
+}
+
+
+# =========================================================
+# API: COMPILER
+# =========================================================
+
+@app.route("/api/compile", methods=["POST"])
+def compile_code():
+
+    data = request.get_json(silent=True) or {}
+
+    code = data.get("code", "")
+    language = (
+        data.get("language", "c")
+        .lower()
+        .strip()
+    )
+
+    stdin = data.get(
+        "stdin",
+        ""
+    )
+
+    if not code.strip():
+
+        return jsonify(
+            {
+                "success": False,
+                "output": "",
+                "error": "Code cannot be empty."
+            }
+        ), 400
+
+    compiler_info = COMPILER_MAP.get(language)
+
+    if not compiler_info:
+
+        return jsonify(
+            {
+                "success": False,
+                "output": "",
+                "error":
+                    "Unsupported language. Use C, C++, Python or Java."
+            }
+        ), 400
+
+    compiler = compiler_info["compiler"]
+
+    payload = {
+        "compiler": compiler,
+        "code": code,
+        "stdin": stdin,
+        "save": False,
+        "compiler-option-raw": "",
+        "runtime-option-raw": ""
+    }
+
+    try:
+
+        response = requests.post(
+            WANDBOX_URL,
+            json=payload,
+            headers={
+                "Content-Type": "application/json"
+            },
+            timeout=30
+        )
+
+    except requests.RequestException as e:
+
+        return jsonify(
+            {
+                "success": False,
+                "output": "",
+                "error":
+                    "Compiler service is temporarily unavailable.",
+                "details": str(e)
+            }
+        ), 503
+
+    if response.status_code != 200:
+
+        return jsonify(
+            {
+                "success": False,
+                "output": "",
+                "error":
+                    "Compiler service returned an error.",
+                "status_code": response.status_code
+            }
+        ), 502
+
+    try:
+
+        result = response.json()
+
+    except Exception:
+
+        return jsonify(
+            {
+                "success": False,
+                "output": "",
+                "error":
+                    "Compiler returned an invalid response."
+            }
+        ), 502
+
+    compiler_message = result.get(
+        "compiler_message",
+        ""
+    )
+
+    program_message = result.get(
+        "program_message",
+        ""
+    )
+
+    program_output = result.get(
+        "program_output",
+        ""
+    )
+
+    status = result.get(
+        "status",
+        ""
+    )
+
+    signal = result.get(
+        "signal",
+        ""
+    )
+
+    # Wandbox can return program_message separately.
+    # Present everything clearly to the frontend.
+
+    if compiler_message:
+
+        final_error = compiler_message
+
+    elif signal:
+
+        final_error = f"Program terminated by signal: {signal}"
+
+    elif status not in ("", "0", 0):
+
+        final_error = program_message or str(status)
+
+    else:
+
+        final_error = ""
+
+    success = (
+        not compiler_message
+        and not final_error
+        and (
+            status in ("", "0", 0)
+        )
+    )
+
+    output = (
+        program_output
+        or program_message
+        or ""
+    )
+
+    return jsonify(
+        {
+            "success": success,
+            "output": output,
+            "error": final_error,
+            "compiler_message": compiler_message,
+            "program_message": program_message,
+            "program_output": program_output,
+            "status": status,
+            "signal": signal,
+            "language": compiler_info["language"],
+            "compiler": compiler
+        }
+    )
+
+
+# =========================================================
+# API: COMPILER LIST
+# =========================================================
+
+@app.route("/api/compilers")
+def compilers():
+
+    return jsonify(
+        {
+            "success": True,
+            "compilers": [
+                {
+                    "id": "c",
+                    "name": "C",
+                    "compiler": "gcc-head-c"
+                },
+                {
+                    "id": "cpp",
+                    "name": "C++",
+                    "compiler": "gcc-head"
+                },
+                {
+                    "id": "python",
+                    "name": "Python",
+                    "compiler": "cpython-head"
+                },
+                {
+                    "id": "java",
+                    "name": "Java",
+                    "compiler": "openjdk-head"
+                }
+            ]
+        }
+    )
+
+
+# =========================================================
+# API: ACTIVITY
+# =========================================================
+
+@app.route("/api/activity", methods=["POST"])
+@firebase_required
+def activity(decoded):
+
+    data = request.get_json(silent=True) or {}
+
+    activity_name = data.get(
+        "activity",
+        "unknown"
+    )
+
+    details = json.dumps(
+        data.get("details", {}),
+        ensure_ascii=False
+    )
+
+    db = get_db()
+
+    db.execute(
+        """
+        INSERT INTO activity_log
+        (
+            firebase_uid,
+            activity,
+            details,
+            created_at
+        )
+        VALUES (?, ?, ?, ?)
+        """,
+        (
+            decoded["uid"],
+            activity_name,
+            details,
+            now()
+        )
+    )
+
+    db.commit()
+    db.close()
+
+    return jsonify(
+        {
+            "success": True
+        }
+    )
+
+
+# =========================================================
+# ERROR HANDLERS
+# =========================================================
+
+@app.errorhandler(404)
+def not_found(error):
+
+    if request.path.startswith("/api/"):
+
+        return jsonify(
+            {
+                "success": False,
+                "error": "API endpoint not found."
+            }
+        ), 404
+
+    return error
+
+
+@app.errorhandler(500)
+def server_error(error):
+
+    if request.path.startswith("/api/"):
+
+        return jsonify(
+            {
+                "success": False,
+                "error":
+                    "Internal server error."
+            }
+        ), 500
+
+    return error
+
+
+# =========================================================
+# START
+# =========================================================
+
+if __name__ == "__main__":
+
+    port = int(
+        os.environ.get(
+            "PORT",
+            5000
+        )
+    )
+
+    app.run(
+        host="0.0.0.0",
+        port=port,
+        debug=False
+    )
